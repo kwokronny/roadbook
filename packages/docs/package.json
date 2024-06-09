@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "notion": "node script/notion.mjs",
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "pinyin-pro": "^3.20.3",
+    "vitepress": "^1.1.4"
+  }
+}

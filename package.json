@@ -1,0 +1,16 @@
+{
+  "name": "roadbook",
+  "version": "1.0.0",
+  "description": "小肥路书，基于高德+点评的方式完成行程的规划",
+  "scripts": {
+    "dev-api": "pnpm -F ./packages/roadbook-api dev",
+    "build-api": "pnpm -F ./packages/roadbook-api deploy roadbook-api",
+    "dev-web": "pnpm -F ./packages/roadbook-vue dev",
+    "build-web": "pnpm -F ./packages/roadbook-vue build"
+  },
+  "keywords": [
+    "roadbook"
+  ],
+  "author": "Ronny Kwok",
+  "license": "ISC"
+}
