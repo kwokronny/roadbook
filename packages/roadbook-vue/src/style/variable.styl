@@ -1,0 +1,98 @@
+yoz_prefix ?= ''; /**
+ * 常用颜色
+ * default variable by color
+ */
+yoz_color ?= {
+  primary: var(--maz-color-primary),
+  secondary: var(--maz-color-secondary),
+  info: var(--maz-color-info),
+  success: var(--maz-color-success),
+  warning: var(--maz-color-warning),
+  danger: var(--maz-color-danger),
+  t: var(--maz-color-text),
+  ts: var(--maz-color-muted),
+  // border: var(--maz-color-bg-lighter)
+  bg: var(--maz-color-bg)
+}; /**
+ * 常用线变量
+ * default variable by line
+ */
+yoz_line ?= {
+  so1: 1px solid yoz_color.ts,
+  do1: 1px dotted yoz_color.ts,
+  da1: 1px dashed yoz_color.ts
+};
+/**
+ * 常用圆角变量
+ * default variable by border radius
+ */
+yoz_radius ?= {
+  s: 8px,
+  m: 12px,
+  l: 16px,
+  b: 30px,
+  c: 100%
+};
+/**
+ * 常用阴影变量
+ * default variable by shadow
+ */
+yoz_shadow ?= {
+  p: 20px 20px 41px rgba(10, 10, 10, 0.32),
+  ph: 17px 20px 40px rgba(0, 0, 0, 0.21)
+};
+/**
+ * 常用字体变量
+ * default variable by font-family`
+ */
+yoz_font_family ?= {
+  sans: unquote('-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif'),
+  serif: unquote('serif')
+};
+/**
+ * 常用字体大小与行距变量
+ * default variable by font-size and line-height
+ */
+yoz_font_size ?= {
+  s: 14px 24px,
+  m: 16px 28px,
+  l: 18px 28px,
+  b: 28px 28px
+};
+/**
+ * 常用间距变量
+ * default variable by spacing
+ */
+yoz_spacing ?= {
+  s0: 0,
+  s1: 8px,
+  s2: 2 * 8px,
+  s3: 3 * 8px,
+  s4: 4 * 8px,
+  s5: 5 * 8px,
+  m1: 30px,
+  m2: 2 * 30px,
+  m3: 3 * 30px,
+  m4: 4 * 30px,
+  a: auto,
+  gm: -12px
+};
+yoz_filter ?= {
+  b: blur(15px) saturate(86%)
+};
+/**
+ * 默认栅格化相关变量
+ * default variable by grid system
+ */
+yoz_grid_col ?= 24;
+// 栅格化 栅格间距
+yoz_grid_gutter ?= {
+  s: 18px,
+  m: 12px
+};
+// 栅格化 响应式界限
+yoz_grid_query ?= {
+  d: 'max-width: 992px',
+  t: 'max-width: 768px',
+  m: 'max-width: 640px'
+};
