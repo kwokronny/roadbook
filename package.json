@@ -6,7 +6,8 @@
     "dev-api": "pnpm -F ./packages/roadbook-api dev",
     "build-api": "pnpm -F ./packages/roadbook-api deploy roadbook-api",
     "dev-web": "pnpm -F ./packages/roadbook-vue dev",
-    "build-web": "pnpm -F ./packages/roadbook-vue build"
+    "build-web": "pnpm -F ./packages/roadbook-vue build",
+    "build-doc": "pnpm -F ./packages/docs build"
   },
   "keywords": [
     "roadbook"

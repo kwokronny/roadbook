@@ -6,6 +6,7 @@ COPY . /app
 WORKDIR /app
 RUN npm config set registry https://registry.npmmirror.com
 RUN npm install -g pnpm
+RUN pnpm config set registry https://registry.npmmirror.com
 RUN pnpm install
 RUN pnpm run build-web
 RUN pnpm run build-api
