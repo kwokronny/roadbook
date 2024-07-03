@@ -1,14 +1,20 @@
-![logo](packages/docs/src/logo.png)
+![logo](packages/docs/public/logo.png)
 
 # 小肥路书帮助文档
-[帮助文档-Gitee](https://kwokronny.github.io/roadbook)  |  [帮助文档-Github](https://kwokronny.github.io/roadbook)  | [项目示例](https://roadbook.kwokronny.com)
 
 
-![layout](packages/docs/src/layout.png)
+![layout](packages/docs/public/layout.png)
 
 
 多次旅行经验汇集的路书工具，让你在可视地图的工具下直观的快速安排自己的行程与在旅行中快速导航与查看景点。
 
+
+## [项目示例](https://roadbook.kwokronny.com) 
+
+## 帮助文档
+- [Gitee](https://kwokronny.gitee.io/roadbook)
+- [Github](https://kwokronny.github.io/roadbook)
+  
 ## 特点 💡
 
 - 快速导入点评专辑
