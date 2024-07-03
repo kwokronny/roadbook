@@ -7,6 +7,7 @@ on:
       - "packages/roadbook-api/**"
       - "packages/roadbook-vue/**"
       - "Dockerfile"
+      - ".github/workflows/docker-image.yml"
 
 
 jobs:
@@ -15,6 +16,34 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required for fetch all history
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Bump version
+        id: bump_version
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          npm version --no-commit-hooks --no-git-tag-version patch
+          echo RELEASE=$(node -p -e "require('./package.json').version") >> $GITHUB_ENV
+
+      - name: "Generate Changelog"
+        uses: sercanuste/gitmoji-changelog-action@v1
+        with:
+          commit_message: "📝 Release ${{ env.RELEASE }}"
+          add_author: true
+          author_name: "github-actions[bot]"
+          author_email: "github-actions[bot]@users.noreply.github.com"
+
+      - name: "Create Git Tag"
+        run: |
+          git tag v${{env.RELEASE}}
+          git push origin v${{env.RELEASE}}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -22,15 +51,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Bump version
-        id: bump_version
-        run: |
-          npm version patch -m "🔖 release %s"
-          echo RELEASE=$(cat ./package.json | jq -r .release) >> $GITHUB_ENV
-
-      - name: "Generate Changelog"
-        uses: sercanuste/gitmoji-changelog-action@v1
 
       - name: Build & Publish Docker Image
         uses: docker/build-push-action@v5
