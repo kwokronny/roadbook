@@ -27,6 +27,8 @@
 
   .login-section{
     l-wh: 90vw calc(90vw/(16/9)) var(--maz-border-radius);
+    max-width: 1440px;
+    max-height: calc(1440px/(16/9));
     background: var(--maz-color-bg);
     color: var(--maz-color-text)
     l-mh: auto;

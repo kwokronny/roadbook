@@ -2,12 +2,16 @@
   <div class="detail-page">
     <Header back>
       <template #title>
-        <div>
-          <h5 class="spac-mv_s0 spac-mr_s2 text-clamp_1">{{ detail?.name }}</h5>
-          <div class="text-s_s text-c_ts">{{ currentDate }}</div>
-        </div>
+        <h5 class="spac-mv_s0 spac-mr_s2 text-o_e">{{ detail?.name }}</h5>
+        <div class="text-s_s text-c_ts">{{ currentDate }}</div>
       </template>
       <template #extra>
+        <MazBtn
+          fab
+          @click="store.toggleTheme"
+          color="theme"
+          :icon="theme"
+        ></MazBtn>
         <MazBtn
           color="secondary"
           pastel
@@ -113,7 +117,7 @@
                         <div class="flex-h">
                           <MazAvatar
                             rounded-size="lg"
-                            :caption="item.name"
+                            fallback-src="/logo.png"
                             :src="item.cover"
                           >
                             <template #icon>
@@ -346,13 +350,17 @@ import { DateUtil, copy, share } from "@/helper/util";
 import { useToast, useWindowSize, sleep } from "maz-ui";
 import { useStore } from "@/store";
 import { roleType } from "@/helper/enum";
+import { storeToRefs } from "pinia";
 
 const loading = ref(true);
 const toast = useToast();
 const route = useRoute();
 const router = useRouter();
 const { width } = useWindowSize();
-const { userInfo } = useStore();
+const store = useStore();
+const { userInfo } = store;
+
+const { theme } = storeToRefs(store);
 
 onMounted(() => {
   window.addEventListener("scroll", handleScroll);
@@ -832,6 +840,8 @@ async function renderMap() {
 }
 .detail-page{
   width: 90vw;
+  max-width: 1440px;
+  // max-height: calc(1440px/(16/9));
   l-mh: auto;
   padding-bottom: 50px;
 
@@ -877,7 +887,7 @@ async function renderMap() {
         .m-avatar .m-avatar__wrapper{
           width: 65px;
           height: 65px;
-          background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+          background-image: var(--bg-gradient);
         }
         &__header{
           l-flex: h sb c;
