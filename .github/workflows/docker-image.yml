@@ -3,29 +3,37 @@ name: Docker Image CI
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - "packages/roadbook-api/**"
+      - "packages/roadbook-vue/**"
+      - "Dockerfile"
+
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-        
-    - name: Set environment variables
-      run: echo RELEASE=$(cat ./package.json | jq -r .release) >> $GITHUB_ENV
-    
-    - name: Build & Publish Docker Image
-      uses: docker/build-push-action@v5
-      with:
-        push: true
-        tags: ghcr.io/kwokronny/roadbook:latest, ghcr.io/kwokronny/roadbook:${{ env.RELEASE }}
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Bump version
+        id: bump_version
+        run: |
+          npm version patch -m "🔖 release %s"
+          echo RELEASE=$(cat ./package.json | jq -r .release) >> $GITHUB_ENV
+
+      - name: "Generate Changelog"
+        uses: sercanuste/gitmoji-changelog-action@v1
+
+      - name: Build & Publish Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: ghcr.io/kwokronny/roadbook:latest, ghcr.io/kwokronny/roadbook:${{ env.RELEASE }}

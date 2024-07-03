@@ -10,12 +10,12 @@ RUN pnpm config set registry https://registry.npmmirror.com
 RUN pnpm install
 RUN pnpm run build-web
 RUN pnpm run build-api
-RUN pnpm run build-doc
+# RUN pnpm run build-doc
 
 FROM node:18-alpine
 COPY --from=builder /app/roadbook-api /app
 COPY --from=builder /app/packages/roadbook-vue/dist /app/views
-COPY --from=builder /app/packages/docs/dist /app/views/docs
+# COPY --from=builder /app/packages/docs/dist /app/views/docs
 WORKDIR /app
 ENV NODE_ENV=production
 RUN mkdir -p /app/storage/public/uploads
