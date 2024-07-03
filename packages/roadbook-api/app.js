@@ -55,6 +55,7 @@ apiRouter.post(
       filename: () => {
         return `${Math.random().toString(36).substring(2, 20)}`;
       },
+      maxFileSize: 1024 * 500
     },
   }),
   (ctx, next) => {
