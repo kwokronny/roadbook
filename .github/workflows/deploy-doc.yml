@@ -1,0 +1,31 @@
+name: Deploy Document
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'packages/docs/**'  # 监控的目录
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18.16.0'
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: Install and Build
+      run: |
+        cp CHANGELOG.md packages/docs/CHANGELOG.md
+        npm install -g pnpm
+        pnpm install -F ./packages/docs
+        pnpm build-doc
+
+    - name: Deploy
+      uses: JamesIves/github-pages-deploy-action@4.1.5
+      with:
+        branch: gh-pages
+        folder: packages/docs/dist
