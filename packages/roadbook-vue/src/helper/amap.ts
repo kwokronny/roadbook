@@ -16,7 +16,7 @@ export namespace MapUtil {
             "AMap.Riding",
             "AMap.Geocoder",
             "AMap.Geolocation",
-            "AMap.AutoComplete",
+            "AMap.PlaceSearch",
           ],
         })
           .then((AMap) => {
@@ -71,11 +71,11 @@ export namespace MapUtil {
 
   export function searchPleace(
     keyword: string
-  ): Promise<AMap.Autocomplete.SearchResult | void> {
+  ): Promise<AMap.PlaceSearch.SearchResult | void> {
     return new Promise(async (resolve, reject) => {
       await getAMap();
-      const POIAutoComplete = new AMap.AutoComplete({ datatype: "poi" });
-      POIAutoComplete.search(keyword, (status, result) => {
+      const placeSearch = new AMap.PlaceSearch({ city: "深圳" });
+      placeSearch.search(keyword, (status, result) => {
         if (status === "complete" && typeof result !== "string") {
           resolve(result);
         } else {

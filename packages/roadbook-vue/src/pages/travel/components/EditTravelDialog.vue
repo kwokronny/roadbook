@@ -33,6 +33,12 @@
         format="YYYY-MM-DD 23:59:59"
         v-bind="hints.endDate"
       ></MazPicker>
+      <MazInput
+        v-model="model.city"
+        left-icon="location"
+        label="城市"
+        v-bind="hints.city"
+      ></MazInput>
       <MazSelect
         v-if="!model.id"
         v-model="model.equip"
@@ -73,7 +79,7 @@ import { travelApi, ITravel } from "@/server/travel";
 import { IEquipList, equipApi } from "@/server/equip";
 import { useForm } from "@/hook/useForm";
 import dayjs from "dayjs";
-import { objectUtil } from "@/helper/util";
+import { DateUtil, objectUtil } from "@/helper/util";
 
 interface IProp {
   modelValue: boolean;
@@ -104,7 +110,8 @@ const loading = ref<boolean>(false);
 const { model, handleSubmit, hints, reset } = useForm<ITravel>(
   {
     id: undefined,
-    name: "",
+    name: `旅程计划${DateUtil.dateFm(new Date())}`,
+    city: "",
     startDate: "",
     endDate: "",
     userIds: [],

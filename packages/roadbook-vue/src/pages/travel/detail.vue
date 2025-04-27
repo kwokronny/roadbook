@@ -40,7 +40,16 @@
     </Header>
     <div class="detail-row">
       <div class="map-section" v-if="width > 768">
-        <div class="tip text-o_e">可双击行程编辑</div>
+        <div class="flex-h gap-s1">
+          <MazInput
+            class="flex-fill"
+            v-model="keyword"
+            autocomplete="off"
+            placeholder="搜索地点"
+            @keyup.enter="handleSearch()"
+          />
+          <MazBtn icon="solar/search" @click="handleSearch()" fab />
+        </div>
         <AMapComponent @loaded="handleMapLoaded"></AMapComponent>
       </div>
       <div class="schedule-section">
@@ -67,107 +76,7 @@
                   v-for="item in scheduleDay[day]"
                   :key="`schedule_${item.id}`"
                 >
-                  <div class="schedule-item text-c_t">
-                    <h2 class="schedule-item__header">
-                      <div class="flex-h flex-ai_c gap-s1">
-                        <template v-if="item.isHotel">
-                          <MazIcon size="30px" name="hotel"></MazIcon>
-                          <span>酒店</span>
-                        </template>
-                        <template v-else>
-                          <MazIcon size="30px" name="time"></MazIcon>
-                          <span>
-                            {{
-                              item.startTime
-                                ? DateUtil.timeFm(item.startTime)
-                                : "未安排"
-                            }}
-                          </span>
-                        </template>
-                      </div>
-
-                      <MazDropdown
-                        v-if="perm !== 'view'"
-                        :items="scheduleOptionDropMenu"
-                        position="bottom right"
-                      >
-                        <template #menuitem="{ item: menuItem }">
-                          <button
-                            tabindex="-1"
-                            type="button"
-                            :class="`menuitem ${menuItem.class} ${menuItem.itemClass}`"
-                            @click.stop="menuItem.action(item)"
-                          >
-                            <div class="flex-h flex-ai_c gap-s1 text-s_s">
-                              <MazIcon :name="menuItem.icon" size="24px" />
-                              <span> {{ menuItem.label }} </span>
-                            </div>
-                          </button>
-                        </template>
-                        <template #element>
-                          <MazIcon name="more" class="text-c_ts"></MazIcon>
-                        </template>
-                      </MazDropdown>
-                    </h2>
-                    <MazCardSpotlight
-                      :color="item.isHotel ? 'warning' : 'info'"
-                      style="width: 100%; display: block"
-                    >
-                      <div class="spac-p_s2 flex-v" style="gap: 16px">
-                        <div class="flex-h">
-                          <MazAvatar
-                            rounded-size="lg"
-                            fallback-src="/logo.png"
-                            :src="item.cover"
-                          >
-                            <template #icon>
-                              <MazIcon name="more" class="text-c_w"></MazIcon>
-                            </template>
-                          </MazAvatar>
-                          <div class="spac-ml_s2" style="width: 0; flex: 1">
-                            <h3 class="text-o_e spac-mv_s0 text-s_m">
-                              {{ item.name }}
-                            </h3>
-                            <div class="text-clamp_2 text-s_s text-c_ts">
-                              {{ item.address }}
-                            </div>
-                          </div>
-                        </div>
-                        <div class="flex-h gap-s1">
-                          <TrafficBtn
-                            :coordinate="item.coordinate"
-                            :traffic="item.traffic || 'car'"
-                            :name="item.name"
-                            style="flex: 1; width: 0"
-                          ></TrafficBtn>
-                          <DianpinBtn
-                            v-if="item.dianpingUUID"
-                            :uuid="item.dianpingUUID"
-                          ></DianpinBtn>
-                        </div>
-                        <div v-if="item.screenshots">
-                          <h4 class="spac-mt_s0 spac-mb_s1 text-a_c">
-                            截图/票据
-                          </h4>
-                          <MazGallery
-                            :images="item.screenshots.split(',')"
-                            height="120px"
-                          ></MazGallery>
-                        </div>
-                        <MazBtn
-                          v-if="item.notes"
-                          right-icon="arrow-right"
-                          color="theme"
-                          outline
-                          @click="handleOpenNoteDrawer(item)"
-                          block
-                          size="sm"
-                        >
-                          查看攻略
-                        </MazBtn>
-                      </div>
-                    </MazCardSpotlight>
-                  </div>
+                  <ScheduleItem :item="item"></ScheduleItem>
                 </template>
               </MazTransitionExpand>
             </Sketch>
@@ -310,14 +219,14 @@
       :row="detail"
     ></EditTravelPremDialog>
     <!-- 编辑行程弹窗 -->
-    <EditScheduleDialog
+    <!-- <EditScheduleDialog
       v-if="perm !== 'view'"
       v-model="scheduleEditDialog.show"
       :t-id="detail.id"
       :item="scheduleEditDialog.item"
       :limit-date="limitDate"
       @saved="handleSaveSchedule"
-    ></EditScheduleDialog>
+    ></EditScheduleDialog> -->
     <!-- 行李弹窗 -->
     <EquipDrawer
       v-model="equipDrawer.show"
@@ -326,6 +235,7 @@
       :can-edit="perm !== 'view'"
       @close="getDetail"
     ></EquipDrawer>
+    <!-- <BatchAddSchedule v-model="scheduleEditDialog.show"></BatchAddSchedule> -->
   </template>
 </template>
 <script lang="ts" setup>
@@ -335,12 +245,12 @@ import {
   type DialogData,
 } from "maz-ui/components/MazDialogPromise";
 import AMapComponent from "@/components/AMapContainer.vue";
-import TrafficBtn from "@/components/TrafficBtn.vue";
-import DianpinBtn from "@/components/DianpinBtn.vue";
 import EditTravelDialog from "./components/EditTravelDialog.vue";
 import EditTravelPremDialog from "./components/EditTravelPremDialog.vue";
-import EditScheduleDialog from "./components/EditScheduleDialog.vue";
+// import EditScheduleDialog from "./components/EditScheduleDialog.vue";
 import EquipDrawer from "./components/EquipDrawer.vue";
+// import ScheduleItem from "@/components/ScheduleItem.vue";
+// import BatchAddSchedule from "./components/BatchAddSchedule.vue";
 import { ISchedule, ITravel, travelApi } from "@/server/travel";
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -351,6 +261,7 @@ import { useToast, useWindowSize, sleep } from "maz-ui";
 import { useStore } from "@/store";
 import { roleType } from "@/helper/enum";
 import { storeToRefs } from "pinia";
+import ScheduleItem from "@/components/ScheduleItem.vue";
 
 const loading = ref(true);
 const toast = useToast();
@@ -560,56 +471,56 @@ const scheduleDay = computed(() => {
 //#endregion
 
 //#region 行程编辑
-const scheduleOptionDropMenu = [
-  {
-    label: "编辑",
-    itemClass: "text-c_ts",
-    icon: "solar/edit",
-    action: (item: ISchedule) => handleEditSchedule(item),
-  },
-  {
-    label: "克隆",
-    icon: "solar/copy",
-    itemClass: "text-c_ts",
-    action: (item: ISchedule) => handleCloneSchedule(item),
-  },
-  {
-    label: "移除",
-    icon: "solar/close",
-    itemClass: "text-c_danger",
-    action: (item: ISchedule) => handleRemoveSchedule(item),
-  },
-];
+// const scheduleOptionDropMenu = [
+//   {
+//     label: "编辑",
+//     itemClass: "text-c_ts",
+//     icon: "solar/edit",
+//     action: (item: ISchedule) => handleEditSchedule(item),
+//   },
+//   {
+//     label: "克隆",
+//     icon: "solar/copy",
+//     itemClass: "text-c_ts",
+//     action: (item: ISchedule) => handleCloneSchedule(item),
+//   },
+//   {
+//     label: "移除",
+//     icon: "solar/close",
+//     itemClass: "text-c_danger",
+//     action: (item: ISchedule) => handleRemoveSchedule(item),
+//   },
+// ];
 
-async function handleCloneSchedule(item: ISchedule) {
-  try {
-    if (!item?.id) return;
-    const res = await travelApi.cloneSchedule(item.id);
-    schedules.value?.push(res.data);
-    await sleep(1000);
-    renderMap();
-  } catch (e) {
-    console.error(e);
-  }
-}
+// async function handleCloneSchedule(item: ISchedule) {
+//   try {
+//     if (!item?.id) return;
+//     const res = await travelApi.cloneSchedule(item.id);
+//     schedules.value?.push(res.data);
+//     await sleep(1000);
+//     renderRouteMap();
+//   } catch (e) {
+//     console.error(e);
+//   }
+// }
 
 const { showDialogAndWaitChoice } = useMazDialogPromise();
-async function handleRemoveSchedule(item: ISchedule) {
-  try {
-    if (!item?.id) return;
-    confirmData.message = `确认删除${item.name}行程吗？`;
-    await showDialogAndWaitChoice("confirm");
-    await travelApi.removeSchedule(item.id);
-    let index = schedules.value?.findIndex((i) => i.id === item.id);
-    if (index !== undefined && index > -1) {
-      schedules.value?.splice(index, 1);
-      await sleep(1000);
-      renderMap();
-    }
-  } catch (e) {
-    console.error(e);
-  }
-}
+// async function handleRemoveSchedule(item: ISchedule) {
+//   try {
+//     if (!item?.id) return;
+//     confirmData.message = `确认删除${item.name}行程吗？`;
+//     await showDialogAndWaitChoice("confirm");
+//     await travelApi.removeSchedule(item.id);
+//     let index = schedules.value?.findIndex((i) => i.id === item.id);
+//     if (index !== undefined && index > -1) {
+//       schedules.value?.splice(index, 1);
+//       await sleep(1000);
+//       renderRouteMap();
+//     }
+//   } catch (e) {
+//     console.error(e);
+//   }
+// }
 
 //#endregion
 
@@ -640,39 +551,39 @@ const travelPremShow = ref<boolean>(false);
 //#endregion
 
 //#region 行程编辑
-const scheduleEditDialog = reactive<{
-  show: boolean;
-  item?: ISchedule;
-}>({
-  show: false,
-});
+// const scheduleEditDialog = reactive<{
+//   show: boolean;
+//   item?: ISchedule;
+// }>({
+//   show: true,
+// });
 
-function handleEditSchedule(item?: ISchedule) {
-  if (perm.value === "view") return;
-  if (item) {
-    let data = schedules.value?.find((i) => i.id === item.id);
-    scheduleEditDialog.item = Object.assign({}, data);
-  } else {
-    scheduleEditDialog.item = undefined;
-  }
-  scheduleEditDialog.show = true;
-}
+// function handleEditSchedule(item?: ISchedule) {
+//   if (perm.value === "view") return;
+//   if (item) {
+//     let data = schedules.value?.find((i) => i.id === item.id);
+//     scheduleEditDialog.item = Object.assign({}, data);
+//   } else {
+//     scheduleEditDialog.item = undefined;
+//   }
+//   scheduleEditDialog.show = true;
+// }
 
-async function handleSaveSchedule(data: ISchedule) {
-  scheduleEditDialog.show = false;
-  if (schedules.value && data) {
-    let schedule = schedules.value.find((i) => i.id === data.id);
-    if (schedule) {
-      schedule = Object.assign(schedule, data);
-      toast.success("保存行程成功", { position: "top" });
-    } else {
-      schedules.value.push(data);
-      toast.success("添加行程成功", { position: "top" });
-    }
-    await sleep(1000);
-    renderMap();
-  }
-}
+// async function handleSaveSchedule(data: ISchedule) {
+//   scheduleEditDialog.show = false;
+//   if (schedules.value && data) {
+//     let schedule = schedules.value.find((i) => i.id === data.id);
+//     if (schedule) {
+//       schedule = Object.assign(schedule, data);
+//       toast.success("保存行程成功", { position: "top" });
+//     } else {
+//       schedules.value.push(data);
+//       toast.success("添加行程成功", { position: "top" });
+//     }
+//     await sleep(1000);
+//     renderRouteMap();
+//   }
+// }
 
 // #endregion
 
@@ -775,22 +686,22 @@ let mapInstance: AMap.Map | null = null;
 
 function handleMapLoaded(map: AMap.Map) {
   mapInstance = map;
-  sleep(1000).then(renderMap);
+  sleep(1000).then(renderRouteMap);
 }
 
 watch(
   () => day.value,
   async () => {
     await sleep(1000);
-    renderMap();
+    renderRouteMap();
   }
 );
 
-async function renderMap() {
+async function renderRouteMap() {
   if (!mapInstance) return false;
   mapInstance.clearMap?.();
   let markers: AMap.Marker[] = [];
-  scheduleDay.value[day.value]?.forEach((item: ISchedule, index: number) => {
+  scheduleDay.value[day.value]?.forEach((item: ISchedule) => {
     let position: AMap.LngLat = MapUtil.LngLat(item.coordinate);
     let instance = new AMap.Marker({
       icon: "/icons/marker.svg",
@@ -805,23 +716,23 @@ async function renderMap() {
         }${item.name}`,
       },
     });
-    instance.on("dblclick", () => {
-      handleEditSchedule(item);
-    });
+    // instance.on("dblclick", () => {
+    //   handleEditSchedule(item);
+    // });
     markers.push(instance);
-    if (day.value !== "-1") {
-      if (index > 0) {
-        let startLngLat = markers[index - 1].getPosition();
-        if (mapInstance && item.traffic && startLngLat && position) {
-          MapUtil.planningRoute(
-            mapInstance,
-            item.traffic,
-            startLngLat,
-            position
-          );
-        }
-      }
-    }
+    // if (day.value !== "-1") {
+    //   if (index > 0) {
+    //     let startLngLat = markers[index - 1].getPosition();
+    //     if (mapInstance && item.traffic && startLngLat && position) {
+    //       MapUtil.planningRoute(
+    //         mapInstance,
+    //         item.traffic,
+    //         startLngLat,
+    //         position
+    //       );
+    //     }
+    //   }
+    // }
   });
   mapInstance.add(markers);
   if (markers.length) {

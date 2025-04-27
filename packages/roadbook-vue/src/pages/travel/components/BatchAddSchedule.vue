@@ -1,20 +1,22 @@
 <template>
   <MazDrawer
     v-model="props.modelValue"
-    size="768px"
-    :variant="width > 768 ? 'right' : 'bottom'"
+    size="900px"
+    :variant="width > 900 ? 'right' : 'bottom'"
     title="添加地点"
-    backdrop-class="location-selector-drawer"
+    backdrop-class="batch-add-schedule-drawer"
   >
-    <div class="abs-lt-0_0 flex-h gap-s1">
-      <MazInput
-        class="flex-fill"
-        v-model="keyword"
-        autocomplete="off"
-        placeholder="搜索地点"
-        @keyup.enter="handleSearch()"
-      />
-      <MazBtn icon="solar/search" @click="handleSearch()" fab />
+    <div class="selected-poi-list">
+      <div class="flex-h gap-s1">
+        <MazInput
+          class="flex-fill"
+          v-model="keyword"
+          autocomplete="off"
+          placeholder="搜索地点"
+          @keyup.enter="handleSearch()"
+        />
+        <MazBtn icon="solar/search" @click="handleSearch()" fab />
+      </div>
     </div>
     <AMapComponent @loaded="handleMapLoaded"></AMapComponent>
     <!-- <div class="localtion-selector">
@@ -53,15 +55,14 @@
   </MazDrawer>
 </template>
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import AMapComponent from "./AMapContainer.vue";
+import { ref } from "vue";
+import AMapComponent from "@/components/AMapContainer.vue";
 import { useWindowSize } from "maz-ui";
 import { MapUtil } from "@/helper/amap";
 import { throttle } from "@/helper/util";
 
 const props = defineProps<{
   modelValue: boolean;
-  
 }>();
 
 const { width } = useWindowSize();
@@ -74,12 +75,11 @@ const selectedPOI = ref<AMap.PlaceSearch.Poi[]>([]);
 const markers = ref<AMap.Marker[]>([]);
 
 const keyword = ref("");
-const options = ref<AMap.PlaceSearch.Poi[]>([]);
 const handleSearch = throttle(async () => {
   const res = await MapUtil.searchPleace(keyword.value);
   if (res) {
-    options.value = res.poiList.pois;
-    options.value.forEach((item) => renderMarker(item));
+    mapInstance?.clearMap?.();
+    res.poiList?.pois?.forEach((item) => renderMarker(item));
   }
 }, 500);
 
@@ -134,12 +134,12 @@ function renderMarker(poi: AMap.PlaceSearch.Poi) {
 // }
 </script>
 <style lang="stylus" scoped>
-.location-selector-drawer{
+.batch-add-schedule-drawer{
   .m-drawer-body{
     position relative
   }
 }
-.localtion-selector{
+.selected-poi-list{
   l-abs 5% 20px 'lb';
   l-wh 90% auto;
 }

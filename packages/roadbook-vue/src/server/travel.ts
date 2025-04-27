@@ -19,6 +19,7 @@ export interface ITravel {
   Schedules?: ISchedule[];
   userIds?: number[];
   equip?: string;
+  city?: string;
 }
 
 export interface ISchedule {
