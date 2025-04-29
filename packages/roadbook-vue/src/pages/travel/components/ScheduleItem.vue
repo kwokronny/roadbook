@@ -13,29 +13,16 @@
           </span>
         </template>
       </div>
-
-      <!-- <MazDropdown
-        v-if="perm !== 'view'"
-        :items="scheduleOptionDropMenu"
-        position="bottom right"
-      >
-        <template #menuitem="{ item: menuItem }">
-          <button
-            tabindex="-1"
-            type="button"
-            :class="`menuitem ${menuItem.class} ${menuItem.itemClass}`"
-            @click.stop="menuItem.action(item)"
-          >
-            <div class="flex-h flex-ai_c gap-s1 text-s_s">
-              <MazIcon :name="menuItem.icon" size="24px" />
-              <span> {{ menuItem.label }} </span>
-            </div>
-          </button>
-        </template>
-        <template #element>
-          <MazIcon name="more" class="text-c_ts"></MazIcon>
-        </template>
-      </MazDropdown> -->
+      <div class="flex-h gap-s1 align-center">
+        <MazIcon
+          name="solar/edit"
+          @click="emit('action', 'edit')"
+          class="text-c_ts curs-pointer"
+        ></MazIcon>
+        <Dropdown v-if="canEdit" :items="dropMenu">
+          <MazIcon name="more" class="text-c_ts curs-pointer"></MazIcon>
+        </Dropdown>
+      </div>
     </h2>
     <MazCardSpotlight
       :color="item.isHotel ? 'warning' : 'info'"
@@ -73,24 +60,15 @@
             :uuid="item.dianpingUUID"
           ></DianpinBtn>
         </div>
-        <!-- <div v-if="item.screenshots">
-          <h4 class="spac-mt_s0 spac-mb_s1 text-a_c">截图/票据</h4>
-          <MazGallery
-            :images="item.screenshots.split(',')"
-            height="120px"
-          ></MazGallery>
-        </div> -->
-        <!-- <MazBtn
-          v-if="item.notes"
-          right-icon="arrow-right"
-          color="theme"
-          outline
-          @click="handleOpenNoteDrawer(item)"
-          block
-          size="sm"
-        >
-          查看攻略
-        </MazBtn> -->
+        <details class="notes">
+          <summary>备注：</summary>
+          <div class="text-s_s">
+            {{ item.notes }}
+          </div>
+        </details>
+        <template v-if="item.screenshots">
+          <MazLazyImg v-for="url in item.screenshots.split(',')" :src="url" />
+        </template>
       </div>
     </MazCardSpotlight>
   </div>
@@ -98,13 +76,65 @@
 <script setup lang="ts">
 import TrafficBtn from "@/components/TrafficBtn.vue";
 import DianpinBtn from "@/components/DianpinBtn.vue";
+import Dropdown from "@/components/Dropdown.vue";
 import { DateUtil } from "@/helper/util";
 import { ISchedule } from "@/server/travel";
 import { toRefs } from "vue";
 
 const props = defineProps<{
   item: ISchedule;
+  canEdit: boolean;
 }>();
 
-const { item } = toRefs(props);
+const { item, canEdit } = toRefs(props);
+
+const emit = defineEmits<{
+  (e: "action", actionType: "edit" | "clone" | "remove"): void;
+}>();
+
+//#region 行程编辑
+const dropMenu = [
+  {
+    label: "克隆",
+    icon: "solar/copy",
+    itemClass: "text-c_ts",
+    action: () => emit("action", "clone"),
+  },
+  {
+    label: "移除",
+    icon: "solar/close",
+    itemClass: "text-c_danger",
+    action: () => emit("action", "remove"),
+  },
+];
+
+// #endregion
 </script>
+<style lang="stylus" scoped>
+
+.schedule-item{
+  width: 100%;
+  margin-bottom: 24px;
+  .m-avatar .m-avatar__wrapper{
+    width: 65px;
+    height: 65px;
+    background-image: var(--bg-gradient);
+  }
+  &__header{
+    l-flex: h sb c;
+    margin: yoz_spacing.s1
+    // svg{
+    //   cursor pointer
+    // }
+  }
+}
+.notes{
+  summary{
+    font-size: 14px;
+    cursor: pointer;
+  }
+  white-space: pre-wrap;
+  word-break: break-all;
+  color: #666
+}
+</style>

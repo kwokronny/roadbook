@@ -16,27 +16,17 @@
           color="theme"
           :icon="theme"
         ></MazBtn>
-        <MazDropdown
+        <Dropdown
           :items="avatarDropMenu"
           v-if="userInfo"
           position="bottom right"
         >
-          <template #menuitem-label="{ item }">
-            <div class="flex-h flex-ai_c gap-s1 text-c_t">
-              <MazIcon size="24px" :name="item.icon" />
-              <span>
-                {{ item.label }}
-              </span>
-            </div>
-          </template>
-          <template #element>
-            <MazAvatar
-              :src="userInfo.avatar || '/icons/user.svg'"
-              imageHeightFull
-              :caption="userInfo.name || userInfo.username"
-            ></MazAvatar>
-          </template>
-        </MazDropdown>
+          <MazAvatar
+            :src="userInfo.avatar || '/icons/user.svg'"
+            imageHeightFull
+            :caption="userInfo.name || userInfo.username"
+          ></MazAvatar>
+        </Dropdown>
       </template>
     </Header>
     <div class="travel-section">
@@ -178,6 +168,7 @@
 import ModifyInfoDialog from "./components/ModifyInfoDialog.vue";
 import ModifyPasswordDialog from "./components/ModifyPasswordDialog.vue";
 import EditTravelDialog from "./components/EditTravelDialog.vue";
+import Dropdown from "@/components/Dropdown.vue";
 import { ITravel, travelApi } from "@/server/travel";
 import { onMounted, reactive, ref } from "vue";
 import dayjs from "dayjs";
@@ -186,7 +177,7 @@ import { useFetch } from "@/hook/useFecth";
 import { trafficStatus, trafficStatusEnum } from "@/helper/enum";
 import { DateUtil, throttle } from "@/helper/util";
 import { useStore } from "@/store";
-import { storeToRefs } from "pinia";
+import { storeToRefs } from "pinia";  
 
 const router = useRouter();
 const store = useStore();

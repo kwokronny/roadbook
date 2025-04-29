@@ -13,7 +13,7 @@
       </div>
     </template>
     <div class="equip-list flex-v gap-s3 spac-p_s3">
-      <MazCard
+      <!-- <MazCard
         v-if="props.canEdit"
         size="sm"
         collapsable
@@ -37,7 +37,7 @@
           </MazSelect>
           <MazBtn @click="handlePull()">重新拉取</MazBtn>
         </div>
-      </MazCard>
+      </MazCard> -->
       <div class="flex-h flex-ai_c flex-jc_sb spac-ph_s2">
         <div class="text-a_c text-c_ts text-s_s">
           勾选不储存，仅用于现场确认物品是否准备

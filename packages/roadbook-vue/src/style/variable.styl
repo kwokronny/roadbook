@@ -11,16 +11,16 @@ yoz_color ?= {
   danger: var(--maz-color-danger),
   t: var(--maz-color-text),
   ts: var(--maz-color-muted),
-  // border: var(--maz-color-bg-lighter)
+  border: var(--maz-color-bg-lighter)
   bg: var(--maz-color-bg)
 }; /**
  * 常用线变量
  * default variable by line
  */
 yoz_line ?= {
-  so1: 1px solid yoz_color.ts,
-  do1: 1px dotted yoz_color.ts,
-  da1: 1px dashed yoz_color.ts
+  so1: 1px solid rgb(229,231,235),
+  do1: 1px dotted rgb(229,231,235),
+  da1: 1px dashed rgb(229,231,235)
 };
 /**
  * 常用圆角变量
@@ -54,8 +54,8 @@ yoz_font_family ?= {
  * default variable by font-size and line-height
  */
 yoz_font_size ?= {
-  s: 14px 24px,
-  m: 16px 28px,
+  s: 14px 20px,
+  m: 16px 24px,
   l: 18px 28px,
   b: 28px 28px
 };

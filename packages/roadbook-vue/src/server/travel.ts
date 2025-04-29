@@ -121,7 +121,7 @@ export const travelApi = {
     return api.post("/travel/schedule/pull_collect", data);
   },
 
-  updateSchedule(data: ISchedule): Promise<IRes<void>> {
+  updateSchedule(data: Partial<ISchedule>): Promise<IRes<void>> {
     return api.post("/travel/schedule/update", data);
   },
 

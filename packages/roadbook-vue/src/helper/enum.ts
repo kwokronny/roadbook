@@ -54,9 +54,9 @@ export type trafficType =
   | "ride"
   | "walk"
   | "bus"
-  | "train"
-  | "ship"
-  | "plane";
+  // | "train"
+  // | "ship"
+  // | "plane";
 
 export const trafficTypeEnum = new IEnum<{
   label: string;
@@ -65,11 +65,11 @@ export const trafficTypeEnum = new IEnum<{
   icon: string;
 }>([
   { label: "驾车", mapMode: "car", value: "car", icon: "solar/car" },
-  { label: "出租车", mapMode: "taxi", value: "taxi", icon: "solar/taxi" },
+  { label: "打车", mapMode: "taxi", value: "taxi", icon: "solar/taxi" },
   { label: "步行", mapMode: "walk", value: "walk", icon: "solar/walk" },
   { label: "骑行", mapMode: "ride", value: "ride", icon: "solar/ride" },
   { label: "公交", mapMode: "bus", value: "bus", icon: "solar/bus" },
-  { label: "动车", mapMode: "train", value: "train", icon: "solar/train" },
-  { label: "轮渡", mapMode: "ship", value: "ship", icon: "solar/ship" },
-  { label: "飞机", mapMode: "plane", value: "plane", icon: "solar/plane" },
+  // { label: "动车", mapMode: "train", value: "train", icon: "solar/train" },
+  // { label: "轮渡", mapMode: "ship", value: "ship", icon: "solar/ship" },
+  // { label: "飞机", mapMode: "plane", value: "plane", icon: "solar/plane" },
 ]);

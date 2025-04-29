@@ -7,31 +7,26 @@
   >
     <template #title>
       <div class="spac-pv_s2 flex-h flex-ai_c flex-jc_fs">
-        <MazIcon name="sun" size="24px" class="spac-mr_s1"></MazIcon>
-        {{ model.id ? "编辑" : "添加" }}行程
+        <MazIcon
+          :name="model.isHotel ? 'hotel' : 'time'"
+          size="24px"
+          class="spac-mr_s1"
+        ></MazIcon>
+        编辑{{ model.isHotel ? "住宿" : "行程" }}
       </div>
     </template>
     <form class="flex-v gap-s3" @keyup.enter="handleSubmit">
+      <div class="flex-h gap-s2 flex-jc_c">
+        <span>行程</span>
+        <MazSwitch v-model="model.isHotel" />
+        <span>住宿</span>
+      </div>
       <MazInput
         v-model="model.name"
-        label="行程地点"
+        label="行程名称"
         v-bind="hints.name"
         maxlength="50"
       ></MazInput>
-
-      <div class="flex-h gap-s2">
-        <MazInput
-          class="flex-fill"
-          readonly
-          :model-value="model.coordinate"
-          v-bind="hints.coordinate"
-          label="坐标"
-        ></MazInput>
-        <LocationSelector
-          :center="model.coordinate"
-          @select="handleSelectLocation"
-        ></LocationSelector>
-      </div>
       <MazInput
         v-model="model.address"
         label="地址"
@@ -39,41 +34,40 @@
         maxlength="300"
       >
       </MazInput>
-      <MazTextarea v-model="model.notes" label="攻略" v-bind="hints.equipId">
-      </MazTextarea>
-      <div class="flex-h gap-s2 flex-jc_c">
-        <span>行程</span>
-        <MazSwitch v-model="model.isHotel" @change="handleSwitchIsHotel" />
-        <span>住宿</span>
-      </div>
-      <MazPicker
+      <LimitDatePicker
+        v-model="daySelect"
+        :limit-date="props.limitDate"
+        :is-range="!!model.isHotel"
+      ></LimitDatePicker>
+      <!-- <MazPicker
         v-model="model.startTime"
-        pickerPosition="top"
+        pickerPosition="bottom"
         :label="model.isHotel ? '住店时间' : '出发时间'"
+        :minuteInterval="10"
         :min-date="props.limitDate[0]"
         :max-date="props.limitDate[1]"
         v-bind="hints.startTime"
         format="YYYY-MM-DD HH:mm:ss"
-        time
+        :time="!model.isHotel"
       ></MazPicker>
       <MazPicker
         v-if="model.isHotel"
         v-model="model.endTime"
-        pickerPosition="top"
+        pickerPosition="bottom"
         label="离店时间"
+        :minuteInterval="10"
         :min-date="props.limitDate[0]"
         :max-date="props.limitDate[1]"
         format="YYYY-MM-DD HH:mm:ss"
         v-bind="hints.endTime"
-        time
-      ></MazPicker>
+      ></MazPicker> -->
       <div class="flex-v gap-s2">
-        <div class="text-a_c">交通方式</div>
+        <!-- <div class="text-a_l">交通方式</div> -->
         <MazRadioButtons
           v-model="model.traffic"
           :options="trafficTypeEnum.getArray()"
           color="secondary"
-          class="flex-jc_c"
+          orientation="row"
         >
           <template #default="{ option }">
             <div class="flex-v flex-ai_c gap-s1 spac-pv_s1" style="width: 50px">
@@ -86,7 +80,10 @@
         </MazRadioButtons>
       </div>
       <div class="flex-v gap-s2 spac-mb_s3">
-        <div class="text-a_c">截图/票据</div>
+        <DropUpload
+          tip="上传截图/票据"
+          @success="handleUploadSuccess"
+        ></DropUpload>
         <div class="flex-h gap-s2 flex-w_w">
           <MazAvatar
             v-for="(url, idx) in model.screenshots"
@@ -102,11 +99,9 @@
             </template>
           </MazAvatar>
         </div>
-        <DropUpload
-          tip="上传截图/票据"
-          @success="handleUploadSuccess"
-        ></DropUpload>
       </div>
+      <MazTextarea v-model="model.notes" label="攻略" v-bind="hints.equipId">
+      </MazTextarea>
     </form>
     <template #footer>
       <MazBtn
@@ -122,15 +117,14 @@
   </MazDialog>
 </template>
 <script setup lang="ts">
-import LocationSelector from "@/components/LocationSelector.vue";
 import DropUpload from "@/components/DropUpload.vue";
 import { useForm } from "@/hook/useForm";
-import { MapUtil } from "@/helper/amap";
 import { travelApi, ISchedule } from "@/server/travel";
 import { trafficTypeEnum } from "@/helper/enum";
-import { watch, nextTick } from "vue";
-import dayjs from "dayjs";
+import { watch, nextTick, ref } from "vue";
 import { ruleColl } from "@/helper/rules";
+import dayjs from "dayjs";
+import LimitDatePicker from "@/components/LimitDatePicker.vue";
 
 interface IProp {
   modelValue: boolean;
@@ -163,6 +157,8 @@ const emit = defineEmits<{
   (e: "update:model-value", show: boolean): void;
   (e: "saved", data: ISchedule): void;
 }>();
+
+const daySelect = ref<number>(1);
 
 const { loading, model, hints, handleSubmit, reset } = useForm<
   Omit<ISchedule, "screenshots"> & { screenshots: string[] }
@@ -243,38 +239,10 @@ function timeIsInTravelDate(value: string) {
   );
 }
 
-function handleSwitchIsHotel() {
-  model.startTime = "";
-  model.endTime = undefined;
-}
-
-async function handleSelectLocation({
-  lnglat,
-  POI,
-}: {
-  lnglat: AMap.LocationValue | null;
-  POI: AMap.Autocomplete.Tip | null;
-}) {
-  if (lnglat) {
-    model.coordinate = lnglat.toString();
-  }
-  if (POI) {
-    model.name = POI.name;
-    model.address = `${POI.district}${POI.address}`;
-  } else if (lnglat) {
-    handleTransformAddress();
-  }
-}
-
-async function handleTransformAddress() {
-  const lnglat = MapUtil.stringToLngLat(model.coordinate);
-  if (lnglat) {
-    let address = await MapUtil.getAddress(lnglat);
-    if (address) {
-      model.address = address.regeocode.formattedAddress;
-    }
-  }
-}
+// function handleSwitchIsHotel() {
+//   model.startTime = "";
+//   model.endTime = "";
+// }
 
 async function handleUploadSuccess(urls: string[]) {
   model.screenshots = model.screenshots.concat(urls);

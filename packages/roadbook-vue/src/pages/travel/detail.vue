@@ -19,38 +19,28 @@
           icon="solar/share"
           @click="handleShare"
         ></MazBtn>
-        <MazDropdown
+        <Dropdown
           v-if="perm === 'manage'"
           :items="travelOptionDropMenu"
           position="bottom right"
         >
-          <template #menuitem-label="{ item }">
-            <div class="flex-h flex-ai_c gap-s1">
-              <MazIcon :name="item.icon" size="24px" />
-              <span>
-                {{ item.label }}
-              </span>
-            </div>
-          </template>
-          <template #element>
-            <MazBtn color="info" fab icon="solar/setting"></MazBtn>
-          </template>
-        </MazDropdown>
+          <MazBtn color="info" fab icon="solar/setting"></MazBtn>
+        </Dropdown>
       </template>
     </Header>
     <div class="detail-row">
       <div class="map-section" v-if="width > 768">
-        <div class="flex-h gap-s1">
+        <div class="search-bar">
           <MazInput
             class="flex-fill"
             v-model="keyword"
             autocomplete="off"
-            placeholder="搜索地点"
+            placeholder="搜索地点 ➡️ 添加行程"
             @keyup.enter="handleSearch()"
           />
           <MazBtn icon="solar/search" @click="handleSearch()" fab />
         </div>
-        <AMapComponent @loaded="handleMapLoaded"></AMapComponent>
+        <AMapComponent @loaded="handleMapLoaded" />
       </div>
       <div class="schedule-section">
         <div class="schedule-section__wrap">
@@ -58,16 +48,16 @@
             <Sketch :loading="loading" :count="3">
               <template #template>
                 <div class="schedule-item">
-                  <SketchItem type="hn"></SketchItem>
+                  <SketchItem type="hn" />
                   <SketchItem type="box" class="spac-p_s2 flex-v radius-b">
                     <div class="flex-h">
-                      <SketchItem type="circle" size="4.4rem"></SketchItem>
+                      <SketchItem type="circle" size="4.4rem" />
                       <div class="spac-ml_s2" style="width: 0; flex: 1">
-                        <SketchItem type="text"></SketchItem>
-                        <SketchItem type="text"></SketchItem>
+                        <SketchItem type="text" />
+                        <SketchItem type="text" />
                       </div>
                     </div>
-                    <SketchItem type="text"></SketchItem>
+                    <SketchItem type="text" />
                   </SketchItem>
                 </div>
               </template>
@@ -76,7 +66,13 @@
                   v-for="item in scheduleDay[day]"
                   :key="`schedule_${item.id}`"
                 >
-                  <ScheduleItem :item="item"></ScheduleItem>
+                  <ScheduleItem
+                    :item="item"
+                    :can-edit="perm === 'manage'"
+                    draggable="true"
+                    @dragstart="handleDragStart($event, item)"
+                    @action="handleScheduleAction($event, item)"
+                  />
                 </template>
               </MazTransitionExpand>
             </Sketch>
@@ -89,8 +85,8 @@
                 <div class="text-c_ts spac-mv_s2">当天还没添加行程哟</div>
               </div>
             </div>
-            <div class="flex-v gap-s2 spac-mt_s3" v-if="perm !== 'view'">
-              <MazBtn
+            <!-- <div class="flex-v gap-s2 spac-mt_s3" v-if="perm === 'manage'"> -->
+            <!-- <MazBtn
                 outline
                 color="info"
                 left-icon="solar/add"
@@ -98,8 +94,8 @@
                 @click="handleEditSchedule()"
               >
                 添加行程
-              </MazBtn>
-              <MazBtn
+              </MazBtn> -->
+            <!-- <MazBtn
                 outline
                 color="success"
                 left-icon="solar/add-collection"
@@ -107,25 +103,34 @@
                 @click="handleOpenBatchDrawer"
               >
                 添加合集
-              </MazBtn>
-            </div>
+              </MazBtn> -->
+            <!-- </div> -->
           </div>
           <div class="options-panel gap-s2 flex-v">
             <div class="day-list" v-if="scheduleDay">
               <MazRadioButtons
                 v-model="day"
-                color="primary"
+                color="success"
                 :options="dayTabs"
                 orientation="col"
               >
                 <template #default="{ option, selected }">
                   <div class="text-a_c" :class="{ 'text-c_t': !selected }">
-                    {{ option.label }}
+                    <span v-if="option.value === '-1'">{{ option.label }}</span>
+                    <div
+                      v-else
+                      class="drag-over"
+                      @dragover="handleDragOver"
+                      @drop="handleDrop($event, option.value)"
+                    >
+                      <div class="text-s_b">{{ option.label }}</div>
+                      <div class="text-s_s">Day</div>
+                    </div>
                   </div>
                 </template>
               </MazRadioButtons>
             </div>
-            <MazBtn
+            <!-- <MazBtn
               v-if="width <= 768"
               outline
               color="secondary"
@@ -135,7 +140,7 @@
                 <MazIcon name="solar/map" size="24px"></MazIcon>
                 地图
               </div>
-            </MazBtn>
+            </MazBtn> -->
             <MazBtn outline color="info" @click="handleOpenEquipDrawer()">
               <div class="flex-v flex-ai_c gap-s1">
                 <MazIcon name="solar/luggage" size="24px"></MazIcon>
@@ -147,8 +152,35 @@
       </div>
     </div>
   </div>
+  <template v-if="detail && perm === 'manage'">
+    <!-- 编辑旅程弹窗 -->
+    <EditTravelDialog
+      v-if="travelEditShow"
+      v-model="travelEditShow"
+      :item="detail"
+      @saved="getDetail"
+    />
+    <!-- 管理协作者弹窗 -->
+    <EditTravelPremDialog v-model="travelPremShow" :row="detail" />
+    <!-- 编辑行程弹窗 -->
+    <EditScheduleDialog
+      v-model="scheduleEditDialog.show"
+      :t-id="detail.id"
+      :item="scheduleEditDialog.item"
+      :limit-date="limitDate"
+      @saved="handleSaveSchedule"
+    />
+    <!-- 行李弹窗 -->
+    <EquipDrawer
+      v-model="equipDrawer.show"
+      :id="detail.id"
+      :data="equipDrawer.data"
+      :can-edit="perm === 'manage'"
+      @close="getDetail"
+    />
+  </template>
   <!-- #region 攻略弹窗 -->
-  <MazDialog v-model="noteDialog.show" max-height="50vh" scrollable>
+  <!-- <MazDialog v-model="noteDialog.show" max-height="50vh" scrollable>
     <template #title>
       <div class="spac-pv_s2 flex-h flex-ai_c">
         <MazIcon
@@ -167,10 +199,10 @@
     <template #footer>
       <div class="spac-pb_s3"></div>
     </template>
-  </MazDialog>
+  </MazDialog> -->
   <!-- #endregion -->
   <!-- #region 拉取合集弹窗 -->
-  <MazDialog v-model="pullCollectDialog.show" max-height="50vh" scrollable>
+  <!-- <MazDialog v-model="pullCollectDialog.show" max-height="50vh" scrollable>
     <template #title>
       <div class="spac-pt_s2 flex-h flex-ai_c">
         <MazIcon name="island" size="24px" class="spac-mr_s1"></MazIcon>
@@ -196,60 +228,28 @@
         添加点评合集
       </MazBtn>
     </template>
-  </MazDialog>
+  </MazDialog> -->
   <!-- #endregion -->
   <!-- 确认弹窗 -->
-  <MazDialogPromise
+  <!-- <MazDialogPromise
     :data="confirmData"
     :buttons="confirmData.buttons"
     identifier="confirm"
-  />
-  <template v-if="detail">
-    <!-- 编辑旅程弹窗 -->
-    <EditTravelDialog
-      v-if="perm === 'manage'"
-      v-model="travelEditShow"
-      :item="detail"
-      @saved="getDetail"
-    ></EditTravelDialog>
-    <!-- 管理协作者弹窗 -->
-    <EditTravelPremDialog
-      v-if="perm === 'manage'"
-      v-model="travelPremShow"
-      :row="detail"
-    ></EditTravelPremDialog>
-    <!-- 编辑行程弹窗 -->
-    <!-- <EditScheduleDialog
-      v-if="perm !== 'view'"
-      v-model="scheduleEditDialog.show"
-      :t-id="detail.id"
-      :item="scheduleEditDialog.item"
-      :limit-date="limitDate"
-      @saved="handleSaveSchedule"
-    ></EditScheduleDialog> -->
-    <!-- 行李弹窗 -->
-    <EquipDrawer
-      v-model="equipDrawer.show"
-      :id="detail.id"
-      :data="equipDrawer.data"
-      :can-edit="perm !== 'view'"
-      @close="getDetail"
-    ></EquipDrawer>
-    <!-- <BatchAddSchedule v-model="scheduleEditDialog.show"></BatchAddSchedule> -->
-  </template>
+  /> -->
 </template>
 <script lang="ts" setup>
-import {
-  useMazDialogPromise,
-  DialogButton,
-  type DialogData,
-} from "maz-ui/components/MazDialogPromise";
+// import {
+//   useMazDialogPromise,
+//   DialogButton,
+//   type DialogData,
+// } from "maz-ui/components/MazDialogPromise";
 import AMapComponent from "@/components/AMapContainer.vue";
+import Dropdown from "@/components/Dropdown.vue";
 import EditTravelDialog from "./components/EditTravelDialog.vue";
 import EditTravelPremDialog from "./components/EditTravelPremDialog.vue";
-// import EditScheduleDialog from "./components/EditScheduleDialog.vue";
+import EditScheduleDialog from "./components/EditScheduleDialog.vue";
 import EquipDrawer from "./components/EquipDrawer.vue";
-// import ScheduleItem from "@/components/ScheduleItem.vue";
+import ScheduleItem from "./components/ScheduleItem.vue";
 // import BatchAddSchedule from "./components/BatchAddSchedule.vue";
 import { ISchedule, ITravel, travelApi } from "@/server/travel";
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from "vue";
@@ -257,11 +257,10 @@ import { useRoute, useRouter } from "vue-router";
 import dayjs from "dayjs";
 import { MapUtil } from "@/helper/amap";
 import { DateUtil, copy, share } from "@/helper/util";
-import { useToast, useWindowSize, sleep } from "maz-ui";
+import { useToast, useWindowSize, sleep, throttle } from "maz-ui";
 import { useStore } from "@/store";
 import { roleType } from "@/helper/enum";
 import { storeToRefs } from "pinia";
-import ScheduleItem from "@/components/ScheduleItem.vue";
 
 const loading = ref(true);
 const toast = useToast();
@@ -394,9 +393,9 @@ async function getSchedule() {
 //#region 行程数据展示处理
 const day = ref<string>("");
 const dayTabs = computed(() =>
-  Object.keys(scheduleDay.value).map((value) => ({
-    label: value == "-1" ? "待安排" : `第${value}天`,
-    value,
+  Object.keys(scheduleDay.value).map((key) => ({
+    label: key === "-1" ? "待规划" : key,
+    value: key,
   }))
 );
 
@@ -492,57 +491,27 @@ const scheduleDay = computed(() => {
 //   },
 // ];
 
-// async function handleCloneSchedule(item: ISchedule) {
-//   try {
-//     if (!item?.id) return;
-//     const res = await travelApi.cloneSchedule(item.id);
-//     schedules.value?.push(res.data);
-//     await sleep(1000);
-//     renderRouteMap();
-//   } catch (e) {
-//     console.error(e);
-//   }
-// }
-
-const { showDialogAndWaitChoice } = useMazDialogPromise();
-// async function handleRemoveSchedule(item: ISchedule) {
-//   try {
-//     if (!item?.id) return;
-//     confirmData.message = `确认删除${item.name}行程吗？`;
-//     await showDialogAndWaitChoice("confirm");
-//     await travelApi.removeSchedule(item.id);
-//     let index = schedules.value?.findIndex((i) => i.id === item.id);
-//     if (index !== undefined && index > -1) {
-//       schedules.value?.splice(index, 1);
-//       await sleep(1000);
-//       renderRouteMap();
-//     }
-//   } catch (e) {
-//     console.error(e);
-//   }
-// }
-
 //#endregion
 
 //#region 攻略弹窗
-const noteDialog = ref<{ show: boolean; title: string; content: string }>({
-  show: false,
-  title: "",
-  content: "",
-});
+// const noteDialog = ref<{ show: boolean; title: string; content: string }>({
+//   show: false,
+//   title: "",
+//   content: "",
+// });
 
-const handleOpenNoteDrawer = function (schedule: ISchedule) {
-  let data = {
-    show: true,
-    title: `行程攻略：${schedule?.name}`,
-    content:
-      schedule?.notes?.replace?.(
-        /(((http|https):\/\/)[^\s]+)/g,
-        '<a href="$1" target="_blank" ref="noreferrer noopener">$1</a>'
-      ) || "",
-  };
-  noteDialog.value = data;
-};
+// const handleOpenNoteDrawer = function (schedule: ISchedule) {
+//   let data = {
+//     show: true,
+//     title: `行程攻略：${schedule?.name}`,
+//     content:
+//       schedule?.notes?.replace?.(
+//         /(((http|https):\/\/)[^\s]+)/g,
+//         '<a href="$1" target="_blank" ref="noreferrer noopener">$1</a>'
+//       ) || "",
+//   };
+//   noteDialog.value = data;
+// };
 //#endregion
 
 //#region 旅程编辑弹窗与管理协作者弹窗
@@ -551,82 +520,176 @@ const travelPremShow = ref<boolean>(false);
 //#endregion
 
 //#region 行程编辑
-// const scheduleEditDialog = reactive<{
-//   show: boolean;
-//   item?: ISchedule;
-// }>({
-//   show: true,
-// });
+async function handleAddSchedule(poi: AMap.PlaceSearch.PoiExt) {
+  try {
+    const isHotel = poi.type.indexOf("住宿服务") > -1;
+    const res = await travelApi.addSchedule({
+      tId: id,
+      name: poi.name,
+      coordinate: poi.location?.toString() || "",
+      address: `${poi.pname || ""} ${poi.cityname || ""} ${poi.adname || ""} ${
+        poi.address || ""
+      }`,
+      cover: poi.photos?.[0]?.url || "",
+      isHotel,
+      startTime: isHotel
+        ? dayjs(limitDate.value[0]).format("YYYY-MM-DD 12:00:00")
+        : "",
+      endTime: isHotel
+        ? dayjs(limitDate.value[1]).format("YYYY-MM-DD 12:00:00")
+        : "",
+      notes: `====高德店铺信息====\n联系电话：${poi.tel || "无"}`,
+    });
+    schedules.value?.push(res.data);
+  } catch (e) {
+    console.error(e);
+  }
+}
 
-// function handleEditSchedule(item?: ISchedule) {
-//   if (perm.value === "view") return;
-//   if (item) {
-//     let data = schedules.value?.find((i) => i.id === item.id);
-//     scheduleEditDialog.item = Object.assign({}, data);
-//   } else {
-//     scheduleEditDialog.item = undefined;
-//   }
-//   scheduleEditDialog.show = true;
-// }
+async function handleDragStart(e: DragEvent, item: ISchedule) {
+  e.dataTransfer?.setData("text/plain", `${item.id}`);
+  console.log(e, item);
+}
 
-// async function handleSaveSchedule(data: ISchedule) {
-//   scheduleEditDialog.show = false;
-//   if (schedules.value && data) {
-//     let schedule = schedules.value.find((i) => i.id === data.id);
-//     if (schedule) {
-//       schedule = Object.assign(schedule, data);
-//       toast.success("保存行程成功", { position: "top" });
-//     } else {
-//       schedules.value.push(data);
-//       toast.success("添加行程成功", { position: "top" });
-//     }
-//     await sleep(1000);
-//     renderRouteMap();
-//   }
-// }
+async function handleDragOver(e: DragEvent) {
+  e.preventDefault();
+}
+
+async function handleDrop(e: DragEvent, day: string) {
+  let scheduleId = e.dataTransfer?.getData("text/plain");
+  if (scheduleId) {
+    let schedule = schedules.value?.find((i) => i.id === parseInt(scheduleId));
+    if (schedule && !schedule.isHotel) {
+      travelApi.updateSchedule({
+        id: schedule.id,
+        startTime: dayjs(detail.value?.startDate)
+          .add(parseInt(day) - 1, "day")
+          .format("YYYY-MM-DD 09:00:00"),
+      });
+    }
+  }
+  e.preventDefault();
+}
+
+function handleScheduleAction(
+  actionType: "edit" | "clone" | "remove",
+  item: ISchedule
+) {
+  console.log(actionType, item);
+  if (actionType === "edit") {
+    handleEditSchedule(item);
+  } else if (actionType === "clone") {
+    handleCloneSchedule(item);
+  } else if (actionType === "remove") {
+    handleRemoveSchedule(item);
+  }
+}
+
+const scheduleEditDialog = reactive<{
+  show: boolean;
+  item?: ISchedule;
+}>({
+  show: false,
+});
+
+function handleEditSchedule(item?: ISchedule) {
+  if (perm.value === "view") return;
+  if (item) {
+    let data = schedules.value?.find((i) => i.id === item.id);
+    scheduleEditDialog.item = Object.assign({}, data);
+  } else {
+    scheduleEditDialog.item = undefined;
+  }
+  scheduleEditDialog.show = true;
+}
+
+async function handleSaveSchedule(data: ISchedule) {
+  scheduleEditDialog.show = false;
+  if (schedules.value && data) {
+    let schedule = schedules.value.find((i) => i.id === data.id);
+    if (schedule) {
+      schedule = Object.assign(schedule, data);
+      toast.success("保存行程成功", { position: "top" });
+    } else {
+      schedules.value.push(data);
+      toast.success("添加行程成功", { position: "top" });
+    }
+    await sleep(1000);
+    renderRouteMap();
+  }
+}
+async function handleCloneSchedule(item: ISchedule) {
+  try {
+    if (!item?.id) return;
+    const res = await travelApi.cloneSchedule(item.id);
+    schedules.value?.push(res.data);
+    await sleep(1000);
+    renderRouteMap();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+// const { showDialogAndWaitChoice } = useMazDialogPromise();
+async function handleRemoveSchedule(item: ISchedule) {
+  try {
+    if (!item?.id) return;
+    // confirmData.message = `确认删除${item.name}行程吗？`;
+    // await showDialogAndWaitChoice("confirm");
+    await travelApi.removeSchedule(item.id);
+    let index = schedules.value?.findIndex((i) => i.id === item.id);
+    if (index !== undefined && index > -1) {
+      schedules.value?.splice(index, 1);
+      await sleep(1000);
+      renderRouteMap();
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
 
 // #endregion
 
 //#region 拉取弹窗
 
-interface IPullCollectDialog {
-  loading: boolean;
-  show: boolean;
-  url: string;
-  skip: boolean;
-}
-const pullCollectDialog = reactive<IPullCollectDialog>({
-  show: false,
-  url: "",
-  loading: false,
-  skip: false,
-});
+// interface IPullCollectDialog {
+//   loading: boolean;
+//   show: boolean;
+//   url: string;
+//   skip: boolean;
+// }
+// const pullCollectDialog = reactive<IPullCollectDialog>({
+//   show: false,
+//   url: "",
+//   loading: false,
+//   skip: false,
+// });
 
-function handleOpenBatchDrawer() {
-  pullCollectDialog.show = true;
-  pullCollectDialog.url = "";
-  pullCollectDialog.skip = false;
-}
+// function handleOpenBatchDrawer() {
+//   pullCollectDialog.show = true;
+//   pullCollectDialog.url = "";
+//   pullCollectDialog.skip = false;
+// }
 
-async function handleBatch() {
-  try {
-    pullCollectDialog.loading = true;
-    const res = await travelApi.pullCollect({
-      tId: id,
-      url: pullCollectDialog.url,
-      isSkip: pullCollectDialog.skip,
-    });
-    pullCollectDialog.loading = false;
-    getSchedule();
-    pullCollectDialog.show = false;
-    toast.success(
-      `拉取 ${res.data.all} 个行程，成功添加了 ${res.data.success} 个行程`,
-      { position: "top" }
-    );
-  } catch {
-    pullCollectDialog.loading = false;
-  }
-}
+// async function handleBatch() {
+//   try {
+//     pullCollectDialog.loading = true;
+//     const res = await travelApi.pullCollect({
+//       tId: id,
+//       url: pullCollectDialog.url,
+//       isSkip: pullCollectDialog.skip,
+//     });
+//     pullCollectDialog.loading = false;
+//     getSchedule();
+//     pullCollectDialog.show = false;
+//     toast.success(
+//       `拉取 ${res.data.all} 个行程，成功添加了 ${res.data.success} 个行程`,
+//       { position: "top" }
+//     );
+//   } catch {
+//     pullCollectDialog.loading = false;
+//   }
+// }
 //#endregion
 
 // #region 行李清单
@@ -645,32 +708,32 @@ async function handleOpenEquipDrawer() {
 // #endregion
 
 //#region confirmData
-const confirmData = reactive<DialogData & { buttons: DialogButton[] }>({
-  title: "温馨提示",
-  message: "",
-  cancelText: "取消",
-  confirmText: "确定",
-  buttons: [
-    {
-      text: "取消",
-      type: "reject",
-      color: "transparent",
-      response: "cancel",
-    },
-    {
-      text: "删除!",
-      type: "resolve",
-      color: "danger",
-      response: "delete",
-    },
-  ],
-});
+// const confirmData = reactive<DialogData & { buttons: DialogButton[] }>({
+//   title: "温馨提示",
+//   message: "",
+//   cancelText: "取消",
+//   confirmText: "确定",
+//   buttons: [
+//     {
+//       text: "取消",
+//       type: "reject",
+//       color: "transparent",
+//       response: "cancel",
+//     },
+//     {
+//       text: "删除!",
+//       type: "resolve",
+//       color: "danger",
+//       response: "delete",
+//     },
+//   ],
+// });
 
 async function handleRemoveTravel() {
   if (detail.value) {
     try {
-      confirmData.message = `确认删除旅程 "${detail.value.name}" 吗？`;
-      await showDialogAndWaitChoice("confirm");
+      // confirmData.message = `确认删除旅程 "${detail.value.name}" 吗？`;
+      // await showDialogAndWaitChoice("confirm");
       await travelApi.remove(detail.value.id);
       router.replace("/travel");
     } catch (e) {
@@ -679,6 +742,45 @@ async function handleRemoveTravel() {
   }
 }
 
+//#endregion
+
+//#region 搜索
+// const markers = ref<AMap.Marker[]>([]);
+const keyword = ref("");
+const handleSearch = throttle(async () => {
+  if (keyword.value === "") {
+    mapInstance?.clearMap?.();
+    // markers.value = [];
+    return;
+  }
+  const res = await MapUtil.searchPleace(keyword.value, {
+    city: "深圳",
+    extensions: "all",
+  });
+  if (res) {
+    res.poiList?.pois?.forEach((item) =>
+      renderMarker(item as AMap.PlaceSearch.PoiExt)
+    );
+  }
+}, 500);
+
+function renderMarker(poi: AMap.PlaceSearch.PoiExt) {
+  if (!mapInstance || !poi.location) return;
+  const marker = new AMap.Marker({
+    icon: "/icons/marker.svg",
+    position: poi.location,
+    anchor: "bottom-left",
+    label: {
+      offset: new AMap.Pixel(5, 0),
+      content: `${poi.name}`,
+    },
+  });
+  marker.on("click", () => {
+    handleAddSchedule(poi);
+  });
+  // markers.value.push(marker);
+  mapInstance?.add(marker);
+}
 //#endregion
 
 //#region 地图渲染
@@ -702,9 +804,9 @@ async function renderRouteMap() {
   mapInstance.clearMap?.();
   let markers: AMap.Marker[] = [];
   scheduleDay.value[day.value]?.forEach((item: ISchedule) => {
-    let position: AMap.LngLat = MapUtil.LngLat(item.coordinate);
+    let position: AMap.LngLat = MapUtil.LngLat(item.coordinate || "");
     let instance = new AMap.Marker({
-      icon: "/icons/marker.svg",
+      icon: "/icons/time.svg",
       position,
       anchor: "bottom-left",
       label: {
@@ -716,9 +818,9 @@ async function renderRouteMap() {
         }${item.name}`,
       },
     });
-    // instance.on("dblclick", () => {
-    //   handleEditSchedule(item);
-    // });
+    instance.on("dblclick", () => {
+      handleEditSchedule(item);
+    });
     markers.push(instance);
     // if (day.value !== "-1") {
     //   if (index > 0) {
@@ -735,9 +837,9 @@ async function renderRouteMap() {
     // }
   });
   mapInstance.add(markers);
-  if (markers.length) {
-    mapInstance.setFitView(markers);
-  }
+  // if (markers.length) {
+  //   mapInstance.setFitView(markers, false);
+  // }
   // }
 }
 
@@ -792,22 +894,6 @@ async function renderRouteMap() {
     }
     .schedule-list{
       margin-right: 110px;
-      .schedule-item{
-        width: 100%;
-        margin-bottom: 24px;
-        .m-avatar .m-avatar__wrapper{
-          width: 65px;
-          height: 65px;
-          background-image: var(--bg-gradient);
-        }
-        &__header{
-          l-flex: h sb c;
-          margin: yoz_spacing.s1
-          // svg{
-          //   cursor pointer
-          // }
-        }
-      }
     }
     .options-panel{
       l-abs: 10px 49px 'rt';
@@ -822,6 +908,9 @@ async function renderRouteMap() {
       .m-radio-buttons__items{
         box-shadow: none;
         padding: 0.5rem 0.2rem;
+        &.drag-over:hover{
+          background: var(--maz-color-muted);
+        }
       }
     }
   }
@@ -835,18 +924,27 @@ async function renderRouteMap() {
     flex: 1;
     overflow: hidden;
     box-shadow: yoz_shadow.ph;
-    .tip{
-      l-abs 50% 20px 'lt';
-      transform: translateX(-50%)
-      background: var(--maz-color-bg-lighter)
-      l-wh auto 40px;
-      l-ph: 40px;
-      t-fl: 14px 40px;
-      border-radius: var(--maz-border-radius)
-      z-index 1;
-      text-align: center;
-      overflow: hidden;
-      color: var(--maz-color-muted)
+    // .tip{
+    //   l-abs 50% 20px 'lt';
+    //   transform: translateX(-50%)
+    //   background: var(--maz-color-bg-lighter)
+    //   l-wh auto 40px;
+    //   l-ph: 40px;
+    //   t-fl: 14px 40px;
+    //   border-radius: var(--maz-border-radius)
+    //   z-index 1;
+    //   text-align: center;
+    //   overflow: hidden;
+    //   color: var(--maz-color-muted)
+    // }
+    .search-bar {
+      position: absolute;
+      top: 8px;
+      left: 30%;
+      right: 30%;
+      z-index: 2;
+      l-flex: h c;
+      gap: 8px;
     }
   }
 }

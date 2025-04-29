@@ -70,11 +70,12 @@ export namespace MapUtil {
   }
 
   export function searchPleace(
-    keyword: string
+    keyword: string,
+    options: AMap.PlaceSearch.Options = {}
   ): Promise<AMap.PlaceSearch.SearchResult | void> {
     return new Promise(async (resolve, reject) => {
       await getAMap();
-      const placeSearch = new AMap.PlaceSearch({ city: "深圳" });
+      const placeSearch = new AMap.PlaceSearch(options);
       placeSearch.search(keyword, (status, result) => {
         if (status === "complete" && typeof result !== "string") {
           resolve(result);

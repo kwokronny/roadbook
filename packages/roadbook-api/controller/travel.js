@@ -179,10 +179,10 @@ class TravelController {
       let data = ctx.request.body
       await ctx.verifyParams({
         id: "int",
-        name: "string",
-        coordinate: "string",
+        name: { type: "string", required: false },
+        coordinate: { type: "string", required: false },
         address: { type: "string", allowEmpty: true, required: false },
-        isHotel: { type: "boolean", required: true },
+        isHotel: { type: "boolean", required: false },
         startTime: { type: "dateTime", required: false },
         endTime: { type: "dateTime", required: false },
         traffic: {

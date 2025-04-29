@@ -41,7 +41,7 @@ onMounted(async () => {
   }
 });
 </script>
-<style lang="stylus">
+<style lang="stylus" scoped>
 .amap-container{
   l-wh 100% 100%;
 }
