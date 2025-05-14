@@ -1,47 +1,95 @@
 <template>
-  <div class="radius-sm day-wrap line-a_so1">
-    <div
-      v-for="day in days"
-      :key="day.num"
-      :class="[
-        'day',
-        {
-          active:
-            isRange && Array.isArray(modelValue)
-              ? day.num >= modelValue[0] && day.num <= modelValue[1]
-              : day.num === modelValue,
-        },
-      ]"
-      @click="handleClick(day.num)"
-    >
-      <span class="number">{{ day.num }} </span>
-      <i class="week">{{ day.week }}</i>
+  <div class="radius-md line-a_so1 input-wrap">
+    <div class="input-label">{{ label }}</div>
+    <div class="day-wrap">
+      <div
+        v-for="day in days"
+        :key="day.num"
+        :class="dayCls(day.num)"
+        @click="handleClick(day.num)"
+        @mouseenter="handleMouseEnter(day.num)"
+      >
+        <span class="number">{{ day.num }} </span>
+        <i class="week">{{ day.week }}</i>
+      </div>
     </div>
   </div>
-  <!-- <div class="radius-sm hour-wrap line-a_so1">
-    <div v-for="idx in 24" :key="idx" class="hour">
-      <span>{{ idx }}</span>
-    </div>
-  </div> -->
 </template>
 <script setup lang="ts">
 import dayjs from "dayjs";
-import { computed } from "vue";
+import { reactive, toRefs, computed } from "vue";
 
 const props = defineProps<{
   modelValue: [number, number] | number;
+  label: string;
   limitDate: [string, string];
   isRange: boolean;
 }>();
+const { isRange, modelValue } = toRefs(props);
 
 const emit = defineEmits<{
   (e: "update:modelValue", value: [number, number] | number): void;
 }>();
 
-// const;
+const dayCls = (num: number) => {
+  let cls = ["day"];
+  if (isRange.value) {
+    if (range.start && range.end) {
+      if (num === range.start || num === range.end) {
+        cls.push("active");
+      } else if (
+        range.start < range.end &&
+        num > range.start &&
+        num < range.end
+      ) {
+        cls.push("between");
+      } else if (
+        range.start > range.end &&
+        num > range.start &&
+        num < range.end
+      ) {
+        cls.push("between");
+      }
+    } else if (range.start) {
+      num === range.start && cls.push("active");
+    } else if (Array.isArray(modelValue.value)) {
+      if (num === modelValue.value[0] || num === modelValue.value[1]) {
+        cls.push("active");
+      } else if (num > modelValue.value[0] && num < modelValue.value[1]) {
+        cls.push("between");
+      }
+    }
+  } else if (num === modelValue.value) {
+    cls.push("active");
+  }
+  return cls;
+};
+const range = reactive<{
+  start?: number;
+  end?: number;
+}>({});
+
+const handleMouseEnter = (num: number) => {
+  if (isRange.value && range.start) {
+    range.end = num;
+  }
+};
 
 const handleClick = (num: number) => {
-  emit("update:modelValue", num);
+  if (isRange.value) {
+    if (range.start === undefined) {
+      range.start = num;
+    } else {
+      range.end = num;
+      let [start, end] = Object.values(range).sort((a, b) => a - b);
+      console.log(start, end);
+      emit("update:modelValue", [start, end]);
+      range.start = undefined;
+      range.end = undefined;
+    }
+  } else {
+    emit("update:modelValue", num);
+  }
 };
 
 const days = computed(() => {
@@ -57,21 +105,38 @@ const days = computed(() => {
 });
 </script>
 <style lang="stylus" scoped>
+.input-wrap{
+  padding: 4px 12px;
+}
+.input-label{
+  font-size: 13px;
+  color: var(--maz-color-muted);
+  margin-bottom: 8px;
+}
 .day-wrap{
-  border-radius: var(--maz-border-radius);
-  overflow: auto hidden;
+  padding: 6px 0;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  gap: 4px
 }
 .day {
   l-flex: v c c;
-  padding-top: 14px;
+  border-radius: 8px;
+  // padding-top: 8px;
   cursor: pointer;
   color: var(--maz-color-text);
   position: relative;
-  height: 65px;
+  height: 60px;
+  transition: background-color 0.3s ease;
   &:hover{
-    background-color: var(--maz-color-bg-lighter);
+    background-color: var(--maz-color-primary-50);
+  }
+  &.between{
+    background-color: var(--maz-color-primary-50);
+    color: black;
+    .number:before{
+      color: black;
+    }
   }
   &.active {
     background-color: var(--maz-color-primary);
@@ -91,34 +156,19 @@ const days = computed(() => {
     }
   }
   .week{
-    t-fl: 12px 14px;
+    t-fl: 12px 16px;
     text-align: center;
     position: absolute;
     font-style: normal;
-    top: 3px;
-    right: 3px;
-    width: 28px;
-    height: 14px;
+    top: -3px;
+    right: -3px;
+    width: 32px;
+    height: 16px;
     background-color: var(--maz-color-warning);
     color: white;
-    border-radius: 2px;
+    padding: 0 4px;
+    border-radius: 4px;
     text-align: center;
   }
 }
-// .hour-wrap{
-//   border-radius: var(--maz-border-radius);
-//   overflow: auto hidden;
-//   display: grid;
-//   grid-template-columns: repeat(6, 1fr);
-// }
-// .hour {
-//   l-flex: v c c;
-//   flex: 1 0 10px;
-//   cursor: pointer;
-//   height: 40px;
-//   border-radius: var(--maz-border-radius);
-//   &:hover{
-//     background-color: var(--maz-color-bg-lighter);
-//   }
-// }
 </style>

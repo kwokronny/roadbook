@@ -11,26 +11,24 @@ yoz_color ?= {
   danger: var(--maz-color-danger),
   t: var(--maz-color-text),
   ts: var(--maz-color-muted),
-  border: var(--maz-color-bg-lighter)
+  border: var(--maz-color-border)
   bg: var(--maz-color-bg)
 }; /**
  * 常用线变量
  * default variable by line
  */
 yoz_line ?= {
-  so1: 1px solid rgb(229,231,235),
-  do1: 1px dotted rgb(229,231,235),
-  da1: 1px dashed rgb(229,231,235)
+  so1: 1px solid var(--maz-color-border),
+  do1: 1px dotted var(--maz-color-border),
+  da1: 1px dashed var(--maz-color-border)
 };
 /**
  * 常用圆角变量
  * default variable by border radius
  */
 yoz_radius ?= {
-  s: 8px,
-  m: 12px,
-  l: 16px,
-  b: 30px,
+  md: var(--maz-border-radius),
+  lg: var(--maz-border-radius-lg),
   c: 100%
 };
 /**
@@ -54,7 +52,7 @@ yoz_font_family ?= {
  * default variable by font-size and line-height
  */
 yoz_font_size ?= {
-  s: 14px 20px,
+  s: 14px 24px,
   m: 16px 24px,
   l: 18px 28px,
   b: 28px 28px
@@ -64,7 +62,8 @@ yoz_font_size ?= {
  * default variable by spacing
  */
 yoz_spacing ?= {
-  s0: 0,
+  '0': 0,
+  s0: 4px,
   s1: 8px,
   s2: 2 * 8px,
   s3: 3 * 8px,

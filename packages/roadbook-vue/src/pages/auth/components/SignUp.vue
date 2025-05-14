@@ -2,7 +2,9 @@
   <form class="sign-up-form" @keyup.enter="handleSubmit">
     <MazInput
       v-model="model.username"
-      left-icon="user"
+      left-icon="solar/user"
+      block
+      color="success"
       label="用户名"
       maxlength="16"
       v-bind="hints.username"
@@ -10,30 +12,37 @@
     <MazInput
       v-model="model.password"
       left-icon="key"
+      block
+      color="success"
       type="password"
       label="密码"
       maxlength="16"
+      autocomplete="new-password"
       v-bind="hints.password"
     ></MazInput>
     <MazInput
       v-model="model.confirmPassword"
       left-icon="key"
+      block
+      color="success"
       type="password"
       label="确认密码"
       maxlength="16"
+      autocomplete="new-password"
       v-bind="hints.confirmPassword"
     >
     </MazInput>
     <MazBtn
       block
       :loading="loading"
+      color="success"
       right-icon="arrow-right"
       @click="handleSubmit"
     >
       注册
     </MazBtn>
   </form>
-  <div class="spac-mt_s2">
+  <div class="spac-mt_s2 flex-h flex-ai_c flex-jc_c">
     已有账号，<MazBtn color="theme" outline to="/signin">去登录</MazBtn>
   </div>
 </template>

@@ -5,7 +5,7 @@
     @dragover="handleDropOver"
     @drop="handleDrop"
   >
-    <MazIcon name="solar/upload" size="40px"></MazIcon>
+    <MazIcon name="solar/upload" size="40px"/>
     <div>{{ props.tip }}</div>
     <input
       ref="FileRef"
@@ -93,7 +93,7 @@ function handleFileChange(e: Event) {
 .uploader-dropzone{
   l-flex: v c c;
   border: yoz_line.da1;
-  border-radius: yoz_radius.b;
+  border-radius: yoz_radius.md;
   padding: yoz_spacing.m1 yoz_spacing.s3
   gap: yoz_spacing.s2;
   text-align: center;

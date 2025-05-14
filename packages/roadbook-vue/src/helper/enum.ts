@@ -43,20 +43,15 @@ export const trafficStatusEnum = new IEnum<{
   value: trafficStatus;
   icon: string;
 }>([
-  { label: "旅程中", color: "success", value: "traving", icon: "sun" },
-  { label: "旅程结束", color: "secondary", value: "over", icon: "sun" },
-  { label: "旅程准备中", color: "primary", value: "ready", icon: "sun" },
+  { label: "旅程中", color: "var(--maz-color-success-alpha-05)", value: "traving", icon: "sun" },
+  { label: "旅程结束", color: "var(--maz-color-bg-lighter)", value: "over", icon: "sun" },
+  { label: "旅程准备中", color: "var(--maz-color-warning-alpha-05)", value: "ready", icon: "sun" },
 ]);
 
-export type trafficType =
-  | "car"
-  | "taxi"
-  | "ride"
-  | "walk"
-  | "bus"
-  // | "train"
-  // | "ship"
-  // | "plane";
+export type trafficType = "car" | "taxi" | "ride" | "walk" | "bus";
+// | "train"
+// | "ship"
+// | "plane";
 
 export const trafficTypeEnum = new IEnum<{
   label: string;
@@ -66,9 +61,9 @@ export const trafficTypeEnum = new IEnum<{
 }>([
   { label: "驾车", mapMode: "car", value: "car", icon: "solar/car" },
   { label: "打车", mapMode: "taxi", value: "taxi", icon: "solar/taxi" },
+  { label: "公交", mapMode: "bus", value: "bus", icon: "solar/bus" },
   { label: "步行", mapMode: "walk", value: "walk", icon: "solar/walk" },
   { label: "骑行", mapMode: "ride", value: "ride", icon: "solar/ride" },
-  { label: "公交", mapMode: "bus", value: "bus", icon: "solar/bus" },
   // { label: "动车", mapMode: "train", value: "train", icon: "solar/train" },
   // { label: "轮渡", mapMode: "ship", value: "ship", icon: "solar/ship" },
   // { label: "飞机", mapMode: "plane", value: "plane", icon: "solar/plane" },

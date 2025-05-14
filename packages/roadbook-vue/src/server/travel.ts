@@ -19,7 +19,7 @@ export interface ITravel {
   Schedules?: ISchedule[];
   userIds?: number[];
   equip?: string;
-  city?: string;
+  city?: string[];
 }
 
 export interface ISchedule {
@@ -71,11 +71,11 @@ export const travelApi = {
     return api.post("/travel/page", data);
   },
 
-  detail(id: number): Promise<IRes<Required<ITravel>>> {
+  detail(id: number): Promise<IRes<Required<ITravel> & { city: string }>> {
     return api.post("/travel/detail", { id });
   },
 
-  save(data: ITravel): Promise<IRes<ITravel>> {
+  save(data: ITravel): Promise<IRes<ITravel & { city: string }>> {
     if (data.Users) {
       data.userIds = data.Users.reduce((p, t) => {
         t && t.id && p.push(t.id);

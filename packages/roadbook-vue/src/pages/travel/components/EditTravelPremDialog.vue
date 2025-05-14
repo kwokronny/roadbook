@@ -5,7 +5,7 @@
   >
     <template #title>
       <div class="spac-pv_s2 flex-h flex-ai_c">
-        <MazIcon name="luggage" size="24px" class="spac-mr_s1"></MazIcon>
+        <MazIcon name="solar/perm" size="24px" class="spac-mr_s1"></MazIcon>
         权限设置
       </div>
     </template>
@@ -13,6 +13,7 @@
       <MazInput
         left-icon="solar/share"
         label="邀请链接"
+        block
         :model-value="url"
         readonly
       >
@@ -21,19 +22,18 @@
         </template>
       </MazInput>
       <div
-        v-for="user in props.row?.Users"
+        v-for="user in detail?.Users"
         :key="`user_${user.id}`"
         class="flex-h gap-s2 flex-ai_c flex-jc_sb spac-ph_s2"
       >
         <div class="flex-h gap-s1 flex-ai_c flex-fill" style="width: 0">
           <MazAvatar
-            :src="user.avatar || '/icons/user.svg'"
+            :src="user.avatar"
+            fallback-src="/logo.png"
+            :caption="user.name || user.username"
             size="0.8rem"
           ></MazAvatar>
-          <div
-            class="text-c_t text-s_l text-o_e flex-fill"
-            style="width: 0"
-          >
+          <div class="text-c_t text-s_l text-o_e flex-fill" style="width: 0">
             {{ user.name || user.username }}
           </div>
         </div>
@@ -43,7 +43,7 @@
         <MazSelect
           v-else
           :model-value="user.UserTravel.role"
-          @update:model-value="(val:roleType) => handleSetRole(user, val)"
+          @update:model-value="(val) => handleSetRole(user, val as roleType)"
           :options="roleTypeEnum.getArray()"
           style="width: 120px"
           color="info"
@@ -62,13 +62,16 @@ import { ITravel, travelApi } from "@/server/travel";
 import { IUser } from "@/server/user";
 import { useStore } from "@/store";
 import { useToast } from "maz-ui";
-import { ref, watch } from "vue";
+import { ref, watch, toRefs } from "vue";
 
 interface IProp {
   modelValue: boolean;
-  row?: Required<ITravel>;
+  detail?: Required<ITravel>;
 }
 const props = defineProps<IProp>();
+
+const { detail } = toRefs(props);
+
 const emit = defineEmits<{
   (e: "update:model-value", value: boolean): void;
   (e: "saved"): void;
@@ -80,8 +83,8 @@ const url = ref("");
 watch(
   () => props.modelValue,
   async (val) => {
-    if (val && props.row) {
-      const res = await travelApi.invite(props.row.id);
+    if (val && detail.value) {
+      const res = await travelApi.invite(detail.value.id);
       url.value = `${window.location.href.replace(
         /travel\/(\d+)$/,
         "accept"
@@ -101,9 +104,9 @@ async function handleSetRole(
   perm: roleType
 ) {
   try {
-    if (props.row?.id && user) {
+    if (detail.value?.id && user) {
       await travelApi.setRole({
-        id: props.row.id,
+        id: detail.value.id,
         uid: user.id,
         role: perm,
       });

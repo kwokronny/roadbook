@@ -1,19 +1,12 @@
 <template>
   <div class="schedule-item text-c_t">
     <h2 class="schedule-item__header">
-      <div class="flex-h flex-ai_c gap-s1">
-        <template v-if="item.isHotel">
-          <MazIcon size="30px" name="hotel"></MazIcon>
-          <span>酒店</span>
-        </template>
-        <template v-else>
-          <MazIcon size="30px" name="time"></MazIcon>
-          <span>
-            {{ item.startTime ? DateUtil.timeFm(item.startTime) : "未安排" }}
-          </span>
-        </template>
+      <div class="flex-h flex-ai_c gap-s1 drag-handle" :title="title">
+        <MazIcon v-if="item.isHotel" size="30px" name="hotel"></MazIcon>
+        <MazIcon v-else size="30px" name="time"></MazIcon>
+        <span> {{ title }} </span>
       </div>
-      <div class="flex-h gap-s1 align-center">
+      <div class="flex-h gap-s1 flex-ai_c">
         <MazIcon
           name="solar/edit"
           @click="emit('action', 'edit')"
@@ -24,14 +17,12 @@
         </Dropdown>
       </div>
     </h2>
-    <MazCardSpotlight
-      :color="item.isHotel ? 'warning' : 'info'"
-      style="width: 100%; display: block"
-    >
-      <div class="spac-p_s2 flex-v" style="gap: 16px">
+    <div class="schedule-item__content" style="gap: 16px">
+      <div class="spac-p_s2 flex-v gap-s2">
         <div class="flex-h">
           <MazAvatar
-            rounded-size="lg"
+            rounded-size="md"
+            size="1.3rem"
             fallback-src="/logo.png"
             :src="item.cover"
           >
@@ -40,7 +31,7 @@
             </template>
           </MazAvatar>
           <div class="spac-ml_s2" style="width: 0; flex: 1">
-            <h3 class="text-o_e spac-mv_s0 text-s_m">
+            <h3 class="text-o_e spac-mv_0 text-s_m">
               {{ item.name }}
             </h3>
             <div class="text-clamp_2 text-s_s text-c_ts">
@@ -60,53 +51,86 @@
             :uuid="item.dianpingUUID"
           ></DianpinBtn>
         </div>
-        <details class="notes">
-          <summary>备注：</summary>
-          <div class="text-s_s">
-            {{ item.notes }}
-          </div>
-        </details>
-        <template v-if="item.screenshots">
-          <MazLazyImg v-for="url in item.screenshots.split(',')" :src="url" />
-        </template>
       </div>
-    </MazCardSpotlight>
+      <div class="line-t_do1 spac-ph_s2 spac-pv_s1">
+        <MazTransitionExpand>
+          <template v-if="moreShow && item.notes">
+            <div class="text-s_s text-c_ts spac-mb_s1">备注</div>
+            <div
+              class="text-s_s text-clamp_3 spac-mb_s1"
+              v-html="parseNotes(item.notes || '')"
+            />
+          </template>
+          <template v-if="moreShow && item.screenshots">
+            <div class="text-s_s text-c_ts spac-mb_s1">截图</div>
+            <div class="screenshots spac-mb_s1">
+              <MazAvatar
+                rounded-size="xl"
+                size="1.5rem"
+                v-for="url in item.screenshots.split(',')"
+                v-fullscreen-img="url"
+                :src="url"
+              />
+            </div>
+          </template>
+        </MazTransitionExpand>
+        <div
+          class="text-s_s text-c_ts text-a_c curs-pointer"
+          @click="moreShow = !moreShow"
+        >
+          {{ moreShow ? "收起" : "更多" }}
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
 import TrafficBtn from "@/components/TrafficBtn.vue";
 import DianpinBtn from "@/components/DianpinBtn.vue";
 import Dropdown from "@/components/Dropdown.vue";
-import { DateUtil } from "@/helper/util";
+import { DateUtil, parseNotes } from "@/helper/util";
 import { ISchedule } from "@/server/travel";
-import { toRefs } from "vue";
+import { computed, inject, ref, Ref, toRefs } from "vue";
+import { roleType } from "@/helper/enum";
 
 const props = defineProps<{
   item: ISchedule;
-  canEdit: boolean;
 }>();
 
-const { item, canEdit } = toRefs(props);
+const { item } = toRefs(props);
+const perm = inject<Ref<roleType>>("perm");
+const canEdit = computed(() => perm?.value === "manage");
 
 const emit = defineEmits<{
   (e: "action", actionType: "edit" | "clone" | "remove"): void;
+  (e: "drag", pointerEvent: PointerEvent): void;
 }>();
 
+const title = computed(() => {
+  if (item.value.isHotel) {
+    return "酒店";
+  }
+  return item.value.startTime
+    ? DateUtil.timeFm(item.value.startTime)
+    : "未安排";
+});
 //#region 行程编辑
 const dropMenu = [
   {
-    label: "克隆",
+    label: "复制",
     icon: "solar/copy",
-    itemClass: "text-c_ts",
+    class: "text-c_ts",
     action: () => emit("action", "clone"),
   },
   {
     label: "移除",
     icon: "solar/close",
-    itemClass: "text-c_danger",
+    class: "text-c_danger",
     action: () => emit("action", "remove"),
   },
 ];
+
+const moreShow = ref(false);
 
 // #endregion
 </script>
@@ -128,6 +152,13 @@ const dropMenu = [
     // }
   }
 }
+.schedule-item__content{
+  border-radius: var(--maz-border-radius);
+  // box-shadow: 0 5px 10px #0000000d;
+  background: var(--maz-color-bg);
+  border: 1px solid var(--maz-color-success-200);
+  // padding: yoz_spacing.s2;
+}
 .notes{
   summary{
     font-size: 14px;
@@ -136,5 +167,12 @@ const dropMenu = [
   white-space: pre-wrap;
   word-break: break-all;
   color: #666
+}
+.screenshots{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+  // padding: 0 8px;
 }
 </style>

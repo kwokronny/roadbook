@@ -9,7 +9,7 @@
         v-if="props.back"
         @click="router.push('/travel')"
       ></MazBtn>
-      <h2 class="spac-mv_s0 flex-fill" style="width: 0">
+      <h2 class="spac-mv_0 flex-fill" style="width: 0">
         <slot name="title">小肥路书</slot>
       </h2>
     </div>

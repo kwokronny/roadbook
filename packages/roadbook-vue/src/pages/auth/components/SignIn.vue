@@ -2,7 +2,9 @@
   <form class="sign-in-form" @keyup.enter="handleSubmit">
     <MazInput
       v-model="model.username"
-      left-icon="user"
+      left-icon="solar/user"
+      block
+      color="success"
       label="用户名"
       maxlength="16"
       v-bind="hints.username"
@@ -12,6 +14,8 @@
       v-model="model.password"
       left-icon="key"
       type="password"
+      block
+      color="success"
       label="密码"
       maxlength="16"
       v-bind="hints.password"
@@ -19,13 +23,14 @@
     </MazInput>
     <MazBtn
       block
+      color="success"
       :loading="loading"
       right-icon="arrow-right"
       @click="handleSubmit"
       >登录</MazBtn
     >
   </form>
-  <div class="spac-mt_s2">
+  <div class="spac-mt_s2 flex-h flex-ai_c flex-jc_c">
     未注册账号，<MazBtn color="theme" outline to="/signup">去注册</MazBtn>
   </div>
 </template>
@@ -50,12 +55,9 @@ const { model, loading, hints, handleSubmit } = useForm<IReqUserLogin>(
     rules: {
       username: [
         { required: true, message: "请输入用户名" },
-        ruleColl.username
+        ruleColl.username,
       ],
-      password: [
-        { required: true, message: "请输入密码" },
-        ruleColl.password
-      ],
+      password: [{ required: true, message: "请输入密码" }, ruleColl.password],
     },
     onSubmit: async (data) => {
       data.password = md5(data.password);

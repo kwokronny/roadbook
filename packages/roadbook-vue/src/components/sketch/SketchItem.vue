@@ -1,28 +1,44 @@
 <template>
-  <div class="sketch-item" :data-type="type" :style="{ width: size || '100%' }">
+  <div class="sketch-item" :data-type="type" :style="sty">
     <slot></slot>
   </div>
 </template>
 <script setup lang="ts">
+import { computed } from "vue";
+
 interface IProp {
   type: "hn" | "text" | "circle" | "box";
   size?: string;
 }
-const { type } = defineProps<IProp>();
+const { type, size } = defineProps<IProp>();
+const sty = computed(() => {
+  if (type === "circle") {
+    return {
+      width: size || "100%",
+      height: size || "100%",
+    };
+  } else {
+    return {
+      width: size || "100%",
+    };
+  }
+});
 </script>
-<style lang="stylus">
+<style lang="stylus" scoped>
 .sketch-item {
   opacity 0.6;
   background: linear-gradient(120deg,  #cccccc 25%,  #f2f2f2 37%,  #cccccc 63%);
   background-size: 400% 100%;
   animation: sketchBg 1.4s ease infinite;
-  border-radius: 8px;
-  margin-bottom: 16px;
+  display: inline-block;
+  // margin-bottom: 16px;
   &[data-type=hn]{
-    min-height: 30px;
+    min-height: 24px;
+    border-radius: 4px;
   }
   &[data-type=text]{
-    min-height: 20px;
+    min-height: 14px;
+    border-radius: 4px;
   }
   &[data-type=circle]{
     aspect-ratio: 1;
@@ -33,6 +49,9 @@ const { type } = defineProps<IProp>();
     border: yoz_line.do1
     border-color: #cccccc;
   }
+}
+.sketch-item +.sketch-item:not([data-type=circle]){
+  margin-top: 8px;
 }
 @keyframes sketchBg {
   0% {

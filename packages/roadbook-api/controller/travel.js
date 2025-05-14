@@ -33,8 +33,8 @@ class TravelController {
         description: { type: "string", required: false, allowEmpty: true },
         startDate: { type: "dateTime", required: true },
         endDate: { type: "dateTime", required: true },
-        equip: { type: "string", required: false },
-        city: { type: "string", required: false },
+        equip: { type: "string", required: false, allowEmpty: true },
+        city: { type: "string", required: false, allowEmpty: true },
         public: { type: "boolean", required: true }
       });
       ctx.body = ajaxReturn(await TravelService.save(ctx.state.user.id, ctx.request.body));

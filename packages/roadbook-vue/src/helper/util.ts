@@ -1,4 +1,3 @@
-
 import dayjs from "dayjs";
 
 type DateType = string | number | Date | dayjs.Dayjs | null | undefined;
@@ -19,9 +18,9 @@ export const DateUtil = {
     if (dayjs(startDate).isSame(endDate, "day")) {
       return this.dateFm(startDate);
     } else if (dayjs(startDate).isSame(endDate, "year")) {
-      return `${this.dateFm(startDate)}~${dayjs(endDate).format("M月D日")}`;
+      return `${this.dateFm(startDate)} - ${dayjs(endDate).format("M.D")}`;
     } else {
-      return `${this.dateFm(startDate)}~${this.dateFm(endDate)}`;
+      return `${this.dateFm(startDate)} - ${this.dateFm(endDate)}`;
     }
   },
 
@@ -39,11 +38,11 @@ export const DateUtil = {
   },
 
   dateFm(date: DateType) {
-    return dayjs(date).format("YY年M月D日");
+    return dayjs(date).format("YYYY.M.D");
   },
 
   dateWeekFm(date: DateType) {
-    return dayjs(date).format("YY年M月D日 ddd");
+    return dayjs(date).format("YYYY.M.D. ddd");
   },
 };
 
@@ -137,7 +136,6 @@ export function share(data: { title: string; url: string }): Promise<void> {
   });
 }
 
-
 export type Platform = "pc" | "ios" | "android";
 export function getPlatform(): Platform {
   const userAgent = navigator.userAgent;
@@ -148,4 +146,17 @@ export function getPlatform(): Platform {
     platform = "ios";
   }
   return platform;
+}
+
+export function parseNotes(notes: string) {
+  const linkRegex = /(((http|https):\/\/)[^\s]+)/g;
+  const phoneRegex = /^[+0-9\-]{8,11}$/;
+  return notes
+    .replace(/<[\s\S]*?>/g, "")
+    .replace(
+      linkRegex,
+      '<a href="$1" target="_blank" ref="noreferrer noopener">$1</a>'
+    )
+    .replace(phoneRegex, '<a href="tel:$1">$1</a>')
+    .replace(/(\n|\r)/g, "<br>");
 }

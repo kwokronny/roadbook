@@ -1,22 +1,15 @@
 <template>
-  <MazBtn
-    color="secondary"
-    block
-    size="sm"
-    rounded
-    :left-icon="btnInfo.icon || 'car'"
-    :href="btnInfo.href"
-    target="_blank"
-  >
-    {{ btnInfo.label }}
-  </MazBtn>
+  <Dropdown :items="items" position="bottom" fit>
+    <MazBtn color="success" block outline size="sm" left-icon="solar/map" rounded target="_blank" :key="coordinate">
+      导航出发
+    </MazBtn>
+  </Dropdown>
 </template>
 <script lang="ts" setup>
 import { trafficTypeEnum } from "@/helper/enum";
 import { Platform, getPlatform } from "@/helper/util";
-import { computed } from "vue";
+import Dropdown from "./Dropdown.vue";
 interface IProp {
-  traffic: string;
   name: string;
   coordinate: string;
 }
@@ -39,12 +32,12 @@ const platformURI: Record<Platform, (mapMode: string) => string> = {
   },
 };
 
-const btnInfo = computed(() => {
-  let trafficType = trafficTypeEnum.get(props.traffic);
+const items = trafficTypeEnum.getArray().map((item) => {
   return {
-    label: `${trafficType?.label || "导航"}前往`,
-    icon: trafficType?.icon || "car",
-    href: platformURI[platform](trafficType.mapMode || "car"),
+    label: item.label,
+    icon: item.icon,
+    class: "text-s_m",
+    href: platformURI[platform](item.mapMode),
   };
 });
 </script>

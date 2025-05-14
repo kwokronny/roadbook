@@ -8,7 +8,7 @@ class TravelService {
     try {
       return await db.Travel.findAndCountAll({
         include: [
-          { model: db.User, attributes: ["id", "username"], where: { id: uid } },
+          { model: db.User, attributes: ["id", "username", "avatar", "name"] },
         ],
         where: {
           name: {

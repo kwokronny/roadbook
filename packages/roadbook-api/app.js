@@ -85,21 +85,20 @@ if (process.env.NODE_ENV === 'development') {
   router.get('/(.*)', proxy('http://127.0.0.1:6847'))
 } else {
   router.get('/(.*)', Static('./views'))
-}
+  function proxyReqPathResolver(ctx) {
+    return `${ctx.url.replace('/_AMapService', '')}&jscode=${process.env.AMAP_SECRET}`
+  }
 
-function proxyReqPathResolver(ctx) {
-  return `${ctx.url.replace('/_AMapService', '')}&jscode=${process.env.AMAP_SECRET}`
+  router.use('/_AMapService/(.*)', proxy('https://restapi.amap.com/', {
+    proxyReqPathResolver
+  }));
+  router.all('/_AMapService/v4/map/styles(.*)', proxy('https://webapi.amap.com/v4/map/styles', {
+    proxyReqPathResolver
+  }));
+  router.all('/_AMapService/v3/vectormap(.*)', proxy('https://fmap01.amap.com/v3/vectormap', {
+    proxyReqPathResolver
+  }));
 }
-
-router.use('/_AMapService/(.*)', proxy('https://restapi.amap.com/', {
-  proxyReqPathResolver
-}));
-router.all('/_AMapService/v4/map/styles(.*)', proxy('https://webapi.amap.com/v4/map/styles', {
-  proxyReqPathResolver
-}));
-router.all('/_AMapService/v3/vectormap(.*)', proxy('https://fmap01.amap.com/v3/vectormap', {
-  proxyReqPathResolver
-}));
 
 app.use(router.routes()).use(router.allowedMethods());
 app.listen(3000);

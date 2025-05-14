@@ -87,7 +87,7 @@
             </div>
             <h3
               v-else
-              class="spac-mv_s0 spac-ph_s1 flex-h text-c_t flex-jc_sb flex-ai_c flex-fill"
+              class="spac-mv_0 spac-ph_s1 flex-h text-c_t flex-jc_sb flex-ai_c flex-fill"
             >
               {{ group.name }}
               <div class="flex-h flex-ai_c gap-s2" v-if="isShowOption">
@@ -107,7 +107,7 @@
           </template>
           <template #content>
             <div class="flex-v gap-s3 spac-p_s3">
-              <div class="flex-h" v-for="(item, idx) in group.list">
+              <div class="flex" v-for="(item, idx) in group.list">
                 <MazInput
                   v-if="isEdit(gidx, idx)"
                   class="flex-fill"

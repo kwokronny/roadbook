@@ -1,17 +1,29 @@
 <template>
-  <MazDropdown :items="items" position="bottom right" trigger="click">
+  <MazDropdown
+    :items="items"
+    position="bottom right"
+    trigger="click"
+    :class="[{ 'is-fit': fit }]"
+  >
     <template #menuitem="{ item: menuItem }">
-      <button
+      <component
+        :is="menuItem.href ? 'a' : 'div'"
         tabindex="-1"
-        type="button"
-        :class="`menuitem ${menuItem.class} ${menuItem.itemClass}`"
-        @click.stop="menuItem.action()"
+        :href="menuItem.href"
+        target="_blank"
+        rel="noreferrer noopener"
+        :class="[
+          'menuitem',
+          menuItem.class,
+          'flex-h flex-ai_c gap-s1 text-s_s',
+        ]"
+        v-on="{
+          click: menuItem.action,
+        }"
       >
-        <div class="flex-h flex-ai_c gap-s1 text-s_s">
-          <MazIcon :name="menuItem.icon" size="18px" />
-          <span> {{ menuItem.label }} </span>
-        </div>
-      </button>
+        <MazIcon v-if="menuItem.icon" :name="menuItem.icon || ''" size="18px" />
+        <span> {{ menuItem.label }} </span>
+      </component>
     </template>
     <template #element>
       <slot></slot>
@@ -20,10 +32,18 @@
 </template>
 <script setup lang="ts">
 import { toRefs } from "vue";
-
+import { type MenuItem } from "maz-ui/components/MazDropdown";
 const props = defineProps<{
-  items: any[];
+  items: Array<MenuItem & { icon?: string }>;
+  fit?: boolean;
 }>();
 
-const { items } = toRefs(props);
+const { items, fit } = toRefs(props);
 </script>
+<style lang="stylus" scoped>
+.is-fit {
+  :deep(.menu) {
+    width: 100%;
+  }
+}
+</style>

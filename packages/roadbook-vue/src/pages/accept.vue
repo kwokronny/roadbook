@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-c_bg radius-b shadow-ph spac-m_a text-a_c spac-p_s4"
+    class="bg-c_bg radius-md shadow-ph spac-m_a text-a_c spac-p_s4"
     style="width: 400px"
   >
     <MazIcon name="accept" size="80px"></MazIcon>

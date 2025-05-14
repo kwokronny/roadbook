@@ -12,8 +12,10 @@
     <form class="flex-v gap-s3">
       <Upload style="align-self: center" @success="handleUploadSuccess">
         <MazAvatar
-          :src="model.avatar || '/icons/user.svg'"
+          :src="model.avatar"
+          fallback-src="/logo.png"
           :caption="model.name"
+          buttonColor="black"
           clickable
           size="3rem"
         >
@@ -25,12 +27,15 @@
       <MazInput
         v-model="model.name"
         label="昵称"
+        block
+        color="success"
         v-bind="hints.name"
         maxlength="50"
       ></MazInput>
       <MazBtn
         block
         :loading="loading"
+        color="success"
         right-icon="arrow-right"
         @click="handleSubmit"
       >
@@ -67,6 +72,7 @@ watch(
       await nextTick();
       if (userInfo.value) {
         Object.assign(model, userInfo.value);
+        model.name = userInfo.value.name || userInfo.value.username;
       }
     }
   }
@@ -83,7 +89,7 @@ const { model, handleSubmit, hints, reset } = useForm<
   },
   {
     rules: {
-      name: ruleColl.strMax(50)
+      name: ruleColl.strMax(50),
     },
     onSubmit: async (data) => {
       await userApi.update(data);
