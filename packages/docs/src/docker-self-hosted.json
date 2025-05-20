@@ -1,0 +1,1067 @@
+{
+  "pageId": "c072c0dc-d5e4-4ec5-9540-4514354f51b7",
+  "blockTree": {
+    "properties": {
+      "Created": {
+        "id": "Kr%7Bn",
+        "type": "created_time",
+        "created_time": "2024-05-11T16:28:00.000Z"
+      },
+      "slug": {
+        "id": "kkSt",
+        "type": "rich_text",
+        "rich_text": [
+          {
+            "type": "text",
+            "text": { "content": "docker-self-hosted", "link": null },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "docker-self-hosted",
+            "href": null
+          }
+        ]
+      },
+      "Name": {
+        "id": "title",
+        "type": "title",
+        "title": [
+          {
+            "type": "text",
+            "text": { "content": "自建服务", "link": null },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "自建服务",
+            "href": null
+          }
+        ]
+      }
+    },
+    "comments": [],
+    "blocks": [
+      {
+        "object": "block",
+        "id": "73045bbb-4c8b-44c6-b83a-78737f6ade37",
+        "parent": {
+          "type": "page_id",
+          "page_id": "c072c0dc-d5e4-4ec5-9540-4514354f51b7"
+        },
+        "created_time": "2024-05-23T10:53:00.000Z",
+        "last_edited_time": "2024-06-09T06:10:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "58aebc46-6775-4266-94df-4237498750c3"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "58aebc46-6775-4266-94df-4237498750c3"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "heading_2",
+        "heading_2": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": { "content": "Docker", "link": null },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Docker",
+              "href": null
+            }
+          ],
+          "is_toggleable": false,
+          "color": "default"
+        },
+        "children": [],
+        "comments": []
+      },
+      {
+        "object": "block",
+        "id": "5a35b4b9-0ed1-49b5-9372-2e87e26dca76",
+        "parent": {
+          "type": "page_id",
+          "page_id": "c072c0dc-d5e4-4ec5-9540-4514354f51b7"
+        },
+        "created_time": "2024-05-23T10:35:00.000Z",
+        "last_edited_time": "2025-05-13T11:05:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "58aebc46-6775-4266-94df-4237498750c3"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "58aebc46-6775-4266-94df-4237498750c3"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "code",
+        "code": {
+          "caption": [],
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "docker run -d \\\n  --name=roadbook-api \\\n  -e AMAP_KEY=🚨高德地图Secret \\\n  -e AMAP_SECRET=🚨高德地图Secret \\\n  -v 🚨storage挂载:/app/storage \\\n  -p 🚨端口:3000 \\\n  --restart unless-stopped \\\n  ghcr.io/kwokronny/roadbook-api",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "docker run -d \\\n  --name=roadbook-api \\\n  -e AMAP_KEY=🚨高德地图Secret \\\n  -e AMAP_SECRET=🚨高德地图Secret \\\n  -v 🚨storage挂载:/app/storage \\\n  -p 🚨端口:3000 \\\n  --restart unless-stopped \\\n  ghcr.io/kwokronny/roadbook-api",
+              "href": null
+            }
+          ],
+          "language": "bash"
+        },
+        "children": [],
+        "comments": []
+      },
+      {
+        "object": "block",
+        "id": "5b86ac33-9253-4f8d-a7e3-743a55ce43ac",
+        "parent": {
+          "type": "page_id",
+          "page_id": "c072c0dc-d5e4-4ec5-9540-4514354f51b7"
+        },
+        "created_time": "2024-05-23T10:35:00.000Z",
+        "last_edited_time": "2024-05-23T10:54:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "58aebc46-6775-4266-94df-4237498750c3"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "58aebc46-6775-4266-94df-4237498750c3"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "heading_2",
+        "heading_2": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": { "content": "环境变量", "link": null },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "环境变量",
+              "href": null
+            }
+          ],
+          "is_toggleable": false,
+          "color": "default"
+        },
+        "children": [],
+        "comments": []
+      },
+      {
+        "object": "block",
+        "id": "1a2d7db8-7241-4766-9140-dfc26171b61f",
+        "parent": {
+          "type": "page_id",
+          "page_id": "c072c0dc-d5e4-4ec5-9540-4514354f51b7"
+        },
+        "created_time": "2024-05-23T10:46:00.000Z",
+        "last_edited_time": "2025-05-13T11:05:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "58aebc46-6775-4266-94df-4237498750c3"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "58aebc46-6775-4266-94df-4237498750c3"
+        },
+        "has_children": true,
+        "archived": false,
+        "in_trash": false,
+        "type": "table",
+        "table": {
+          "table_width": 3,
+          "has_column_header": false,
+          "has_row_header": false
+        },
+        "children": [
+          {
+            "object": "block",
+            "id": "56a1345e-9d77-4985-b6e9-2ca65c7c9d85",
+            "parent": {
+              "type": "block_id",
+              "block_id": "1a2d7db8-7241-4766-9140-dfc26171b61f"
+            },
+            "created_time": "2024-05-23T10:46:00.000Z",
+            "last_edited_time": "2024-05-23T10:48:00.000Z",
+            "created_by": {
+              "object": "user",
+              "id": "58aebc46-6775-4266-94df-4237498750c3"
+            },
+            "last_edited_by": {
+              "object": "user",
+              "id": "58aebc46-6775-4266-94df-4237498750c3"
+            },
+            "has_children": false,
+            "archived": false,
+            "in_trash": false,
+            "type": "table_row",
+            "table_row": {
+              "cells": [
+                [
+                  {
+                    "type": "text",
+                    "text": { "content": "变量", "link": null },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "变量",
+                    "href": null
+                  }
+                ],
+                [
+                  {
+                    "type": "text",
+                    "text": { "content": "默认值", "link": null },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "默认值",
+                    "href": null
+                  }
+                ],
+                [
+                  {
+                    "type": "text",
+                    "text": { "content": "描述", "link": null },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "描述",
+                    "href": null
+                  }
+                ]
+              ]
+            },
+            "children": [],
+            "comments": []
+          },
+          {
+            "object": "block",
+            "id": "1f284f1f-4186-807a-96ad-ece8aa944c89",
+            "parent": {
+              "type": "block_id",
+              "block_id": "1a2d7db8-7241-4766-9140-dfc26171b61f"
+            },
+            "created_time": "2025-05-13T11:05:00.000Z",
+            "last_edited_time": "2025-05-13T11:10:00.000Z",
+            "created_by": {
+              "object": "user",
+              "id": "58aebc46-6775-4266-94df-4237498750c3"
+            },
+            "last_edited_by": {
+              "object": "user",
+              "id": "58aebc46-6775-4266-94df-4237498750c3"
+            },
+            "has_children": false,
+            "archived": false,
+            "in_trash": false,
+            "type": "table_row",
+            "table_row": {
+              "cells": [
+                [
+                  {
+                    "type": "text",
+                    "text": { "content": "AMAP_KEY", "link": null },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "AMAP_KEY",
+                    "href": null
+                  }
+                ],
+                [],
+                [
+                  {
+                    "type": "text",
+                    "text": { "content": "高德地图应用Key", "link": null },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "高德地图应用Key",
+                    "href": null
+                  }
+                ]
+              ]
+            },
+            "children": [],
+            "comments": []
+          },
+          {
+            "object": "block",
+            "id": "00b7b7de-9770-4434-a9ca-5abf7bb8a9b3",
+            "parent": {
+              "type": "block_id",
+              "block_id": "1a2d7db8-7241-4766-9140-dfc26171b61f"
+            },
+            "created_time": "2024-05-23T10:46:00.000Z",
+            "last_edited_time": "2025-05-13T11:10:00.000Z",
+            "created_by": {
+              "object": "user",
+              "id": "58aebc46-6775-4266-94df-4237498750c3"
+            },
+            "last_edited_by": {
+              "object": "user",
+              "id": "58aebc46-6775-4266-94df-4237498750c3"
+            },
+            "has_children": false,
+            "archived": false,
+            "in_trash": false,
+            "type": "table_row",
+            "table_row": {
+              "cells": [
+                [
+                  {
+                    "type": "text",
+                    "text": { "content": "AMAP_SECRET", "link": null },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "AMAP_SECRET",
+                    "href": null
+                  }
+                ],
+                [],
+                [
+                  {
+                    "type": "text",
+                    "text": { "content": "高德地图应用Secret", "link": null },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "高德地图应用Secret",
+                    "href": null
+                  }
+                ]
+              ]
+            },
+            "children": [],
+            "comments": []
+          },
+          {
+            "object": "block",
+            "id": "dc818145-4d00-4d65-837b-5c6fb8f4b339",
+            "parent": {
+              "type": "block_id",
+              "block_id": "1a2d7db8-7241-4766-9140-dfc26171b61f"
+            },
+            "created_time": "2024-05-23T10:47:00.000Z",
+            "last_edited_time": "2024-05-27T10:58:00.000Z",
+            "created_by": {
+              "object": "user",
+              "id": "58aebc46-6775-4266-94df-4237498750c3"
+            },
+            "last_edited_by": {
+              "object": "user",
+              "id": "58aebc46-6775-4266-94df-4237498750c3"
+            },
+            "has_children": false,
+            "archived": false,
+            "in_trash": false,
+            "type": "table_row",
+            "table_row": {
+              "cells": [
+                [
+                  {
+                    "type": "text",
+                    "text": { "content": "DB_DIALECT", "link": null },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "DB_DIALECT",
+                    "href": null
+                  }
+                ],
+                [
+                  {
+                    "type": "text",
+                    "text": { "content": "sqlite", "link": null },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "sqlite",
+                    "href": null
+                  }
+                ],
+                [
+                  {
+                    "type": "text",
+                    "text": { "content": "数据库驱动，", "link": null },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "数据库驱动，",
+                    "href": null
+                  },
+                  {
+                    "type": "text",
+                    "text": {
+                      "content": "参考文档",
+                      "link": {
+                        "url": "https://sequelize.org/docs/v6/other-topics/dialect-specific-things/"
+                      }
+                    },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "参考文档",
+                    "href": "https://sequelize.org/docs/v6/other-topics/dialect-specific-things/"
+                  }
+                ]
+              ]
+            },
+            "children": [],
+            "comments": []
+          },
+          {
+            "object": "block",
+            "id": "c564b578-b741-458c-9ce1-00fff8439820",
+            "parent": {
+              "type": "block_id",
+              "block_id": "1a2d7db8-7241-4766-9140-dfc26171b61f"
+            },
+            "created_time": "2024-05-23T10:46:00.000Z",
+            "last_edited_time": "2024-05-27T10:59:00.000Z",
+            "created_by": {
+              "object": "user",
+              "id": "58aebc46-6775-4266-94df-4237498750c3"
+            },
+            "last_edited_by": {
+              "object": "user",
+              "id": "58aebc46-6775-4266-94df-4237498750c3"
+            },
+            "has_children": false,
+            "archived": false,
+            "in_trash": false,
+            "type": "table_row",
+            "table_row": {
+              "cells": [
+                [
+                  {
+                    "type": "text",
+                    "text": { "content": "DB_HOSTNAME", "link": null },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "DB_HOSTNAME",
+                    "href": null
+                  }
+                ],
+                [
+                  {
+                    "type": "text",
+                    "text": { "content": "localhost", "link": null },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "localhost",
+                    "href": null
+                  }
+                ],
+                [
+                  {
+                    "type": "text",
+                    "text": {
+                      "content": "数据库host，DB_DIALECT 为 sqlite 时可不填",
+                      "link": null
+                    },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "数据库host，DB_DIALECT 为 sqlite 时可不填",
+                    "href": null
+                  }
+                ]
+              ]
+            },
+            "children": [],
+            "comments": []
+          },
+          {
+            "object": "block",
+            "id": "0a5424f3-7494-415a-8857-56916b9cf2a8",
+            "parent": {
+              "type": "block_id",
+              "block_id": "1a2d7db8-7241-4766-9140-dfc26171b61f"
+            },
+            "created_time": "2024-05-23T10:47:00.000Z",
+            "last_edited_time": "2025-05-19T02:09:00.000Z",
+            "created_by": {
+              "object": "user",
+              "id": "58aebc46-6775-4266-94df-4237498750c3"
+            },
+            "last_edited_by": {
+              "object": "user",
+              "id": "58aebc46-6775-4266-94df-4237498750c3"
+            },
+            "has_children": false,
+            "archived": false,
+            "in_trash": false,
+            "type": "table_row",
+            "table_row": {
+              "cells": [
+                [
+                  {
+                    "type": "text",
+                    "text": { "content": "DB_PORT", "link": null },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "DB_PORT",
+                    "href": null
+                  }
+                ],
+                [
+                  {
+                    "type": "text",
+                    "text": { "content": "3306", "link": null },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "3306",
+                    "href": null
+                  }
+                ],
+                [
+                  {
+                    "type": "text",
+                    "text": {
+                      "content": "数据库端口，DB_DIALECT 为 sqlite 时可不填",
+                      "link": null
+                    },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "数据库端口，DB_DIALECT 为 sqlite 时可不填",
+                    "href": null
+                  }
+                ]
+              ]
+            },
+            "children": [],
+            "comments": []
+          },
+          {
+            "object": "block",
+            "id": "5e9b17ab-ad75-42f8-977e-71b8161c80ae",
+            "parent": {
+              "type": "block_id",
+              "block_id": "1a2d7db8-7241-4766-9140-dfc26171b61f"
+            },
+            "created_time": "2024-05-23T10:47:00.000Z",
+            "last_edited_time": "2024-05-27T10:59:00.000Z",
+            "created_by": {
+              "object": "user",
+              "id": "58aebc46-6775-4266-94df-4237498750c3"
+            },
+            "last_edited_by": {
+              "object": "user",
+              "id": "58aebc46-6775-4266-94df-4237498750c3"
+            },
+            "has_children": false,
+            "archived": false,
+            "in_trash": false,
+            "type": "table_row",
+            "table_row": {
+              "cells": [
+                [
+                  {
+                    "type": "text",
+                    "text": { "content": "DB_NAME", "link": null },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "DB_NAME",
+                    "href": null
+                  }
+                ],
+                [
+                  {
+                    "type": "text",
+                    "text": { "content": "roadbook", "link": null },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "roadbook",
+                    "href": null
+                  }
+                ],
+                [
+                  {
+                    "type": "text",
+                    "text": {
+                      "content": "数据库名，DB_DIALECT 为 sqlite 时可不填",
+                      "link": null
+                    },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "数据库名，DB_DIALECT 为 sqlite 时可不填",
+                    "href": null
+                  }
+                ]
+              ]
+            },
+            "children": [],
+            "comments": []
+          },
+          {
+            "object": "block",
+            "id": "7ae53855-87a6-4486-8dbe-b64245e5e1bb",
+            "parent": {
+              "type": "block_id",
+              "block_id": "1a2d7db8-7241-4766-9140-dfc26171b61f"
+            },
+            "created_time": "2024-05-23T10:47:00.000Z",
+            "last_edited_time": "2024-05-27T10:59:00.000Z",
+            "created_by": {
+              "object": "user",
+              "id": "58aebc46-6775-4266-94df-4237498750c3"
+            },
+            "last_edited_by": {
+              "object": "user",
+              "id": "58aebc46-6775-4266-94df-4237498750c3"
+            },
+            "has_children": false,
+            "archived": false,
+            "in_trash": false,
+            "type": "table_row",
+            "table_row": {
+              "cells": [
+                [
+                  {
+                    "type": "text",
+                    "text": { "content": "DB_USERNAME", "link": null },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "DB_USERNAME",
+                    "href": null
+                  }
+                ],
+                [
+                  {
+                    "type": "text",
+                    "text": { "content": "root", "link": null },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "root",
+                    "href": null
+                  }
+                ],
+                [
+                  {
+                    "type": "text",
+                    "text": {
+                      "content": "数据库用户名，DB_DIALECT 为 sqlite 时可不填",
+                      "link": null
+                    },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "数据库用户名，DB_DIALECT 为 sqlite 时可不填",
+                    "href": null
+                  }
+                ]
+              ]
+            },
+            "children": [],
+            "comments": []
+          },
+          {
+            "object": "block",
+            "id": "fa800738-0999-46ba-85c3-dda0052c9877",
+            "parent": {
+              "type": "block_id",
+              "block_id": "1a2d7db8-7241-4766-9140-dfc26171b61f"
+            },
+            "created_time": "2024-05-23T10:47:00.000Z",
+            "last_edited_time": "2024-05-27T10:59:00.000Z",
+            "created_by": {
+              "object": "user",
+              "id": "58aebc46-6775-4266-94df-4237498750c3"
+            },
+            "last_edited_by": {
+              "object": "user",
+              "id": "58aebc46-6775-4266-94df-4237498750c3"
+            },
+            "has_children": false,
+            "archived": false,
+            "in_trash": false,
+            "type": "table_row",
+            "table_row": {
+              "cells": [
+                [
+                  {
+                    "type": "text",
+                    "text": { "content": "DB_PASSWORD", "link": null },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "DB_PASSWORD",
+                    "href": null
+                  }
+                ],
+                [],
+                [
+                  {
+                    "type": "text",
+                    "text": {
+                      "content": "数据库密码，DB_DIALECT 为 sqlite 时可不填",
+                      "link": null
+                    },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "数据库密码，DB_DIALECT 为 sqlite 时可不填",
+                    "href": null
+                  }
+                ]
+              ]
+            },
+            "children": [],
+            "comments": []
+          }
+        ],
+        "comments": []
+      },
+      {
+        "object": "block",
+        "id": "91f40813-a004-4337-9daa-b7a61318dd8f",
+        "parent": {
+          "type": "page_id",
+          "page_id": "c072c0dc-d5e4-4ec5-9540-4514354f51b7"
+        },
+        "created_time": "2024-05-11T16:29:00.000Z",
+        "last_edited_time": "2024-05-23T10:35:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "58aebc46-6775-4266-94df-4237498750c3"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "58aebc46-6775-4266-94df-4237498750c3"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "heading_2",
+        "heading_2": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": { "content": "Docker compose", "link": null },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Docker compose",
+              "href": null
+            }
+          ],
+          "is_toggleable": false,
+          "color": "default"
+        },
+        "children": [],
+        "comments": []
+      },
+      {
+        "object": "block",
+        "id": "61334b33-1c85-4cd0-8f6c-d13ec0ac8de3",
+        "parent": {
+          "type": "page_id",
+          "page_id": "c072c0dc-d5e4-4ec5-9540-4514354f51b7"
+        },
+        "created_time": "2024-05-11T16:29:00.000Z",
+        "last_edited_time": "2024-06-09T06:08:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "58aebc46-6775-4266-94df-4237498750c3"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "58aebc46-6775-4266-94df-4237498750c3"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "heading_2",
+        "heading_2": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": { "content": "mysql 示例 ", "link": null },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "mysql 示例 ",
+              "href": null
+            }
+          ],
+          "is_toggleable": false,
+          "color": "default"
+        },
+        "children": [],
+        "comments": []
+      },
+      {
+        "object": "block",
+        "id": "ed60c9b5-18ea-4bc5-8b3d-9874089a6d4f",
+        "parent": {
+          "type": "page_id",
+          "page_id": "c072c0dc-d5e4-4ec5-9540-4514354f51b7"
+        },
+        "created_time": "2024-05-11T16:28:00.000Z",
+        "last_edited_time": "2025-05-13T11:10:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "58aebc46-6775-4266-94df-4237498750c3"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "58aebc46-6775-4266-94df-4237498750c3"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "code",
+        "code": {
+          "caption": [],
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "version: \"3.5\"\nservices:\n  roadbook:\n    container_name: roadbook\n    image: ghcr.io/kwokronny/roadbook:latest\n    restart: unless-stopped\n    environment:\n\t    AMAP_KEY: 🚨高德地图Key\n      AMAP_SECRET: 🚨高德地图Secret\n      DB_DIALECT: mysql\n      DB_HOSTNAME: roadbook_db\n      DB_PORT: 3306\n      DB_NAME: roadbook\n      DB_USERNAME: root\n      DB_PASSWORD: 🚨mysql密码\n    volumes:\n      - 🚨端口:/app/storage/\n    ports:\n\t    3000\n\t    \n\troadbook_db:\n    image: mysql:5.7\n    container_name: roadbook_db\n    restart: unless-stopped\n    volumes:\n      - ./mysql:/var/lib/mysql\n    environment:\n      MYSQL_ROOT_PASSWORD: 🚨mysql密码",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "version: \"3.5\"\nservices:\n  roadbook:\n    container_name: roadbook\n    image: ghcr.io/kwokronny/roadbook:latest\n    restart: unless-stopped\n    environment:\n\t    AMAP_KEY: 🚨高德地图Key\n      AMAP_SECRET: 🚨高德地图Secret\n      DB_DIALECT: mysql\n      DB_HOSTNAME: roadbook_db\n      DB_PORT: 3306\n      DB_NAME: roadbook\n      DB_USERNAME: root\n      DB_PASSWORD: 🚨mysql密码\n    volumes:\n      - 🚨端口:/app/storage/\n    ports:\n\t    3000\n\t    \n\troadbook_db:\n    image: mysql:5.7\n    container_name: roadbook_db\n    restart: unless-stopped\n    volumes:\n      - ./mysql:/var/lib/mysql\n    environment:\n      MYSQL_ROOT_PASSWORD: 🚨mysql密码",
+              "href": null
+            }
+          ],
+          "language": "yaml"
+        },
+        "children": [],
+        "comments": []
+      },
+      {
+        "object": "block",
+        "id": "343a4bba-2666-416c-97d0-4a92ad337310",
+        "parent": {
+          "type": "page_id",
+          "page_id": "c072c0dc-d5e4-4ec5-9540-4514354f51b7"
+        },
+        "created_time": "2024-05-11T16:30:00.000Z",
+        "last_edited_time": "2024-05-11T16:30:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "58aebc46-6775-4266-94df-4237498750c3"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "58aebc46-6775-4266-94df-4237498750c3"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "paragraph",
+        "paragraph": { "rich_text": [], "color": "default" },
+        "children": [],
+        "comments": []
+      }
+    ],
+    "mediaBlockReferences": []
+  },
+  "content": "\n\n## Docker\n\n\n```bash \ndocker run -d \\\n  --name=roadbook-api \\\n  -e AMAP_KEY=🚨高德地图Secret \\\n  -e AMAP_SECRET=🚨高德地图Secret \\\n  -v 🚨storage挂载:/app/storage \\\n  -p 🚨端口:3000 \\\n  --restart unless-stopped \\\n  ghcr.io/kwokronny/roadbook-api\n```\n\n\n## 环境变量\n\n\n| Column 1 | Column 2 | Column 3 |\n| --- | --- | --- |\n| 变量 | 默认值 | 描述 |\n| AMAP_KEY |   | 高德地图应用Key |\n| AMAP_SECRET |   | 高德地图应用Secret |\n| DB_DIALECT | sqlite | 数据库驱动，[参考文档](https://sequelize.org/docs/v6/other-topics/dialect-specific-things/) |\n| DB_HOSTNAME | localhost | 数据库host，DB_DIALECT 为 sqlite 时可不填 |\n| DB_PORT | 3306 | 数据库端口，DB_DIALECT 为 sqlite 时可不填 |\n| DB_NAME | roadbook | 数据库名，DB_DIALECT 为 sqlite 时可不填 |\n| DB_USERNAME | root | 数据库用户名，DB_DIALECT 为 sqlite 时可不填 |\n| DB_PASSWORD |   | 数据库密码，DB_DIALECT 为 sqlite 时可不填 |\n\n\n## Docker compose\n\n\n## mysql 示例 \n\n\n```yaml \nversion: \"3.5\"\nservices:\n  roadbook:\n    container_name: roadbook\n    image: ghcr.io/kwokronny/roadbook:latest\n    restart: unless-stopped\n    environment:\n\t    AMAP_KEY: 🚨高德地图Key\n      AMAP_SECRET: 🚨高德地图Secret\n      DB_DIALECT: mysql\n      DB_HOSTNAME: roadbook_db\n      DB_PORT: 3306\n      DB_NAME: roadbook\n      DB_USERNAME: root\n      DB_PASSWORD: 🚨mysql密码\n    volumes:\n      - 🚨端口:/app/storage/\n    ports:\n\t    3000\n\t    \n\troadbook_db:\n    image: mysql:5.7\n    container_name: roadbook_db\n    restart: unless-stopped\n    volumes:\n      - ./mysql:/var/lib/mysql\n    environment:\n      MYSQL_ROOT_PASSWORD: 🚨mysql密码\n```\n\n",
+  "manifests": {
+    "media": {
+      "baseDir": "/Users/ronny.kwok/Documents/workSpace/roadbook/packages/docs/.notion-to-md",
+      "manifest": {
+        "pageId": "c072c0dc-d5e4-4ec5-9540-4514354f51b7",
+        "lastUpdated": "2025-05-19T10:21:58.714Z",
+        "mediaEntries": {}
+      },
+      "currentPageId": "c072c0dc-d5e4-4ec5-9540-4514354f51b7",
+      "mediaDir": "media"
+    }
+  }
+}

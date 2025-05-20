@@ -117,8 +117,12 @@ export function throttle(func: Function, timeFrame: number) {
 export function copy(text: string): Promise<void> {
   return new Promise((resolve, reject) => {
     if (window.navigator.clipboard) {
-      window.navigator.clipboard.writeText(text);
-      resolve();
+      try {
+        window.navigator.clipboard.writeText(text);
+        resolve();
+      } catch (e) {
+        reject();
+      }
     } else {
       reject();
     }
@@ -150,7 +154,7 @@ export function getPlatform(): Platform {
 
 export function parseNotes(notes: string) {
   const linkRegex = /(((http|https):\/\/)[^\s]+)/g;
-  const phoneRegex = /^[+0-9\-]{8,11}$/;
+  const phoneRegex = /([+0-9\-]{4,})/g;
   return notes
     .replace(/<[\s\S]*?>/g, "")
     .replace(

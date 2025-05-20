@@ -4,3 +4,5 @@ ignoredBuiltDependencies:
   - esbuild
   - sqlite3
   - vue-demi
+onlyBuiltDependencies:
+  - sqlite3

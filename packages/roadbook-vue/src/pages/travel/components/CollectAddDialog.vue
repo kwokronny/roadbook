@@ -16,26 +16,41 @@
         添加数据合集
       </div>
     </template>
-    <Quote color="info" icon="solar/magic" class="spac-mb_s2">
-      可通过AI 平台规划行程并让AI按固定格式返回计划，示例：<br />
-      <div class="flex-h flex-ai_c gap-s0">
-        可
+    <div class="flex-v gap-s2">
+      <MazSelect
+        label="合集数据类型"
+        color="success"
+        v-model="collectType"
+        :options="collectTypeOptions"
+      />
+      <MazTextarea
+        label="合集JSON"
+        color="success"
+        :placeholder="collectInputPlaceholder"
+        v-model="collectJSON"
+        :rows="5"
+      />
+      <Quote v-if="collectType === 'default'" color="info" icon="solar/magic">
+        可通过AI
+        平台规划行程或将收集的攻略交给AI分析，并让AI按固定格式返回计划，示例：<br />
+        可将下面的文本到Deepseek等AI平台返回（注意：AI会骗人）
+        <pre class="prompt-example">{{ aiPrompt.planning }}</pre>
         <MazBadge color="info" @click="handleCopy(aiPrompt.planning)">
           <MazIcon name="solar/copy" size="16px" class="spac-mr_s0"></MazIcon>
           复制
         </MazBadge>
-        文本到Deepseek等AI平台返回
-      </div>
-      <pre class="prompt-example">{{ aiPrompt.planning }}</pre>
-      更多合集导出方式可阅读《合集导出》
-    </Quote>
-    <MazTextarea
-      label="合集JSON"
-      color="success"
-      :placeholder="collectInputPlaceholder"
-      v-model="collectJSON"
-      :rows="5"
-    />
+      </Quote>
+      <Quote
+        v-else-if="collectType === 'dianping'"
+        color="warning"
+        icon="dianping"
+      >
+        如何获取点评的合集JSON？
+        <a href="https://roadbook.kwokronny.com/" target="_blank">
+          👉点击查看
+        </a>
+      </Quote>
+    </div>
     <!-- <MazRadioButtons color="success" v-model="tab" :options="tabs" /> -->
     <template #footer>
       <MazBtn block color="success" @click="handleAddTravel"> 添加合集 </MazBtn>
@@ -65,9 +80,9 @@
 </template>
 <script setup lang="ts">
 import { DateUtil } from "@/helper/util";
-import { ITravel, travelApi } from "@/server/travel";
+import { ISchedule, ITravel, travelApi } from "@/server/travel";
 import { useToast } from "maz-ui";
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 
 const props = defineProps<{
   modelValue: boolean;
@@ -76,10 +91,22 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "update:modelValue", arg: boolean): void;
+  (e: "saved"): void;
 }>();
 
-const collectInputPlaceholder = `[{"name":"行程名称","coordinate":"经度,纬度", "address":"行程地址","startTime":"建议行程时间，格式为：YYYY-MM-DD HH:mm:ss","notes":"推荐理由与网址"}]`;
+const collectInputPlaceholder = computed(() => {
+  if (collectType.value === "dianping") {
+    return "点评返回的合集JSON";
+  }
+  return `[{"name":"行程名称","coordinate":"经度,纬度", "address":"行程地址","startTime":"建议行程时间，格式为：YYYY-MM-DD HH:mm:ss","notes":"推荐理由与网址"}]`;
+});
 const collectJSON = ref<string>("");
+const collectType = ref<string>("default");
+
+const collectTypeOptions = ref([
+  { label: "默认", value: "default" },
+  { label: "点评", value: "dianping" },
+]);
 
 const aiPrompt = reactive({
   planning: "",
@@ -109,38 +136,43 @@ const handleAddTravel = async () => {
     name: "开始计划...",
     status: "text",
   });
+  let schedules: ISchedule[] = [];
   try {
-    const schedules = JSON.parse(collectJSON.value);
-    loader.logs.push({
-      name: `解析成功，开始添加${schedules.length}个行程...`,
-      status: "text",
-    });
-    for (const schedule of schedules) {
-      let idx = loader.logs.push({
-        name: `添加行程：${schedule.name}`,
-        status: "pending",
-      });
-      idx = idx - 1;
-      if (loader.logs[idx]?.status === "pending") {
-        try {
-          await travelApi.addSchedule(
-            Object.assign({ tId: props.detail.id, isHotel: false }, schedule)
-          );
-          loader.logs[idx].status = "success";
-        } catch (e) {
-          loader.logs[idx].status = "error";
-        }
-      }
+    if (collectType.value === "dianping") {
+      schedules = dianpingDataTransform();
+    } else {
+      schedules = JSON.parse(collectJSON.value);
     }
-    loader.logs.push({
-      name: `已添加${schedules.length}个行程，点击屏幕关闭`,
-      status: "text",
-    });
-    loader.canClose = true;
   } catch (e) {
     loader.show = false;
     return toast.error("解析失败，请检查JSON格式是否正确");
   }
+  loader.logs.push({
+    name: `解析成功，开始添加${schedules.length}个行程...`,
+    status: "text",
+  });
+  for (const schedule of schedules) {
+    let idx = loader.logs.push({
+      name: `添加行程：${schedule.name}`,
+      status: "pending",
+    });
+    idx = idx - 1;
+    if (loader.logs[idx]?.status === "pending") {
+      try {
+        await travelApi.addSchedule(
+          Object.assign({ tId: props.detail.id, isHotel: false }, schedule)
+        );
+        loader.logs[idx].status = "success";
+      } catch (e) {
+        loader.logs[idx].status = "error";
+      }
+    }
+  }
+  loader.logs.push({
+    name: `已添加${schedules.length}个行程，点击屏幕关闭`,
+    status: "text",
+  });
+  loader.canClose = true;
 };
 
 // const dianpingCollect = reactive<{
@@ -162,41 +194,25 @@ const handleAddTravel = async () => {
 //   return `https://mapi.dianping.com/mapi/collect/getfavoralbumdetail.bin?nextstart=&type=0&albumid=${albumId}&mapi_cacheType=0&`;
 // });
 
-// const handleAddDianpingTravel = async () => {
-//   resetLoader();
-//   loader.show = true;
-//   loader.logs.push("开始解析计划...");
-//   try {
-//     const dianpingResult = JSON.parse(dianpingCollect.result);
-//     if (dianpingResult.records?.[0].collectItemList?.length) {
-//       const schedules = dianpingResult.records[0].collectItemList;
-//       loader.logs.push(`解析成功，开始添加${schedules.length}个行程...`);
-//       for (const schedule of schedules) {
-//         try {
-//           loader.logs.push(`添加行程：${schedule.title}`);
-//           await travelApi.addSchedule({
-//             tId: props.detail.id,
-//             isHotel: false,
-//             name: schedule.title,
-//             cover: schedule.image,
-//             dianpingUUID: schedule.favorCore?.bizUuid || "",
-//             coordinate: `${schedule.lng},${schedule.lat}`,
-//             address: schedule.address,
-//             notes: `====大众点评====\n${schedule.collectShare.content}`,
-//           });
-//           loader.logs.push(`添加行程成功：${schedule.title}`);
-//         } catch (e) {
-//           loader.logs.push(`添加行程失败：${schedule.title}`);
-//         }
-//       }
-//       toast.success("添加行程成功");
-//     } else {
-//       toast.error("未获取到行程");
-//     }
-//   } catch (e) {
-//     return toast.error("解析失败，请检查JSON格式是否正确");
-//   }
-// };
+const dianpingDataTransform = (): ISchedule[] => {
+  const data: ISchedule[] = [];
+  const dianpingResult = JSON.parse(collectJSON.value);
+  if (dianpingResult.records?.[0].collectItemList?.length) {
+    const schedules = dianpingResult.records[0].collectItemList;
+    for (const schedule of schedules) {
+      data.push({
+        isHotel: false,
+        name: schedule.title,
+        cover: schedule.image,
+        dianpingUUID: schedule.favorCore?.bizUuid || "",
+        coordinate: `${schedule.lng},${schedule.lat}`,
+        address: schedule.address,
+        notes: `====大众点评====\n${schedule.collectShare.content}`,
+      });
+    }
+  }
+  return data;
+};
 
 interface IScheduleLog {
   name: string;
@@ -218,6 +234,7 @@ function closeLoader() {
     loader.show = false;
     collectJSON.value = "";
     emit("update:modelValue", false);
+    emit("saved");
   }
 }
 

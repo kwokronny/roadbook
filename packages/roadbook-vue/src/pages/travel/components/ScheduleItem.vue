@@ -57,7 +57,7 @@
           <template v-if="moreShow && item.notes">
             <div class="text-s_s text-c_ts spac-mb_s1">备注</div>
             <div
-              class="text-s_s text-clamp_3 spac-mb_s1"
+              class="text-s_s text-c_ts spac-mb_s1 notes"
               v-html="parseNotes(item.notes || '')"
             />
           </template>
@@ -99,7 +99,7 @@ const props = defineProps<{
 
 const { item } = toRefs(props);
 const perm = inject<Ref<roleType>>("perm");
-const canEdit = computed(() => perm?.value === "manage");
+const canEdit = computed(() => perm?.value !== "view");
 
 const emit = defineEmits<{
   (e: "action", actionType: "edit" | "clone" | "remove"): void;
@@ -147,9 +147,6 @@ const moreShow = ref(false);
   &__header{
     l-flex: h sb c;
     margin: yoz_spacing.s1
-    // svg{
-    //   cursor pointer
-    // }
   }
 }
 .schedule-item__content{
@@ -160,13 +157,15 @@ const moreShow = ref(false);
   // padding: yoz_spacing.s2;
 }
 .notes{
-  summary{
-    font-size: 14px;
-    cursor: pointer;
-  }
   white-space: pre-wrap;
   word-break: break-all;
-  color: #666
+  :deep(a){
+    text-decoration: underline;
+    color: var(--maz-color-success);
+    &:hover{
+      color: var(--maz-color-success-600);
+    }
+  }
 }
 .screenshots{
   display: grid;

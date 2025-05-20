@@ -1,5 +1,5 @@
 <template>
-  <form class="sign-up-form" @keyup.enter="handleSubmit">
+  <form class="sign-up-form">
     <MazInput
       v-model="model.username"
       left-icon="solar/user"
@@ -7,6 +7,7 @@
       color="success"
       label="用户名"
       maxlength="16"
+      autocomplete="username"
       v-bind="hints.username"
     ></MazInput>
     <MazInput

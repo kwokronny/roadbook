@@ -46,7 +46,10 @@ class TravelService {
   async setEquip(data) {
     try {
       let travel = await db.Travel.findByPk(data.id)
-      await travel.update({ equip: data.equip })
+      if (travel) {
+        if (!await travel.hasUser(uid, { through: { where: { role: "edit" } } })) throw "您无权限修改旅程信息"
+        await travel.update({ equip: data.equip })
+      }
     } catch (e) {
       throw "获取失败";
     }

@@ -1,0 +1,5 @@
+.column {
+  display: grid;
+  grid-template-columns: repeat(var(--markdown-columns), 1fr);
+  gap: 1rem;
+}

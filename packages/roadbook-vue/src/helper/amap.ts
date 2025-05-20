@@ -6,7 +6,7 @@ export namespace MapUtil {
     return new Promise((resolve, reject) => {
       if (!window.AMap) {
         AMapLoader.load({
-          key: window.roadbookConfig.aMapKey,
+          key: window.AMapKey || import.meta.env.VITE_AMAP_KEY,
           version: "2.0",
           plugins: [
             // "AMap.Driving",

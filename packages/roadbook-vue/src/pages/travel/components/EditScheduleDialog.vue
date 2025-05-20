@@ -16,7 +16,7 @@
         编辑{{ model.isHotel ? "住宿" : "行程" }}
       </div>
     </template>
-    <form class="flex-v gap-s3" @keyup.enter="handleSubmit">
+    <form class="flex-v gap-s3">
       <div class="flex-h gap-s2 flex-jc_c">
         <span>行程</span>
         <MazSwitch v-model="model.isHotel" />

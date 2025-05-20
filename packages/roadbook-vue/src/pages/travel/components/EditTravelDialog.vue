@@ -9,7 +9,7 @@
         {{ model.id ? "编辑旅程" : "创建旅程" }}
       </div>
     </template>
-    <form class="flex-v gap-s3" @keyup.enter="handleSubmit">
+    <form class="flex-v gap-s3">
       <MazInput
         v-model="model.name"
         label="旅程计划"

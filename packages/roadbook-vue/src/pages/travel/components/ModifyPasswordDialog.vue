@@ -9,7 +9,7 @@
         修改密码
       </div>
     </template>
-    <form class="flex-v gap-s3" @keyup.enter="handleSubmit">
+    <form class="flex-v gap-s3">
       <MazInput
         v-model="model.oldPassword"
         type="password"

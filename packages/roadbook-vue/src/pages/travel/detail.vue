@@ -42,7 +42,7 @@
     </Header>
     <div class="detail-row">
       <div class="map-section" v-if="width > 768 || mapMode">
-        <div class="search-bar">
+        <div class="search-bar" v-if="perm !== 'view'">
           <MazInput
             block
             v-model="search.keyword"
@@ -117,7 +117,7 @@
                 <MazIcon name="island" size="80px"></MazIcon>
                 <div class="text-c_ts spac-mv_s2">当天还没添加行程哟</div>
               </div>
-              <div class="flex-v gap-s2 spac-mt_s3" v-if="perm === 'manage'">
+              <div class="flex-v gap-s2 spac-mt_s3" v-if="perm !== 'view'">
                 <MazBtn
                   v-if="width <= 768"
                   outline
@@ -170,9 +170,13 @@
                     地图
                   </div>
                 </MazBtn>
-                <MazBtn outline color="info" @click="handleOpenEquipDrawer()">
+                <MazBtn
+                  outline
+                  color="secondary"
+                  @click="handleOpenEquipDrawer()"
+                >
                   <div class="flex-v flex-ai_c gap-s1 spac-pv_s1">
-                    <MazIcon name="solar/luggage" size="24px"></MazIcon>
+                    <MazIcon name="solar/bag" size="24px"></MazIcon>
                     行李
                   </div>
                 </MazBtn>
@@ -183,60 +187,43 @@
       </div>
     </div>
   </div>
-  <template v-if="detail && perm === 'manage'">
-    <!-- 编辑旅程弹窗 -->
-    <EditTravelDialog
-      v-if="travelEditShow"
-      v-model="travelEditShow"
-      :detail="detail"
-      @saved="getDetail"
-    />
-    <!-- 管理协作者弹窗 -->
-    <EditTravelPremDialog v-model="travelPremShow" :detail="detail" />
-    <!-- 编辑行程弹窗 -->
-    <EditScheduleDialog
-      v-model="scheduleEditDialog.show"
-      :t-id="detail.id"
-      :item="scheduleEditDialog.item"
-      :limit-date="limitDate"
-      @saved="handleSaveSchedule"
-    />
+  <template v-if="detail">
+    <template v-if="perm === 'manage'">
+      <!-- 编辑旅程弹窗 -->
+      <EditTravelDialog
+        v-if="travelEditShow"
+        v-model="travelEditShow"
+        :detail="detail"
+        @saved="getDetail"
+      />
+      <!-- 管理协作者弹窗 -->
+      <EditTravelPremDialog v-model="travelPremShow" :detail="detail" />
+    </template>
+    <template v-if="perm !== 'view'">
+      <!-- 编辑行程弹窗 -->
+      <EditScheduleDialog
+        v-model="scheduleEditDialog.show"
+        :t-id="detail.id"
+        :item="scheduleEditDialog.item"
+        :limit-date="limitDate"
+        @saved="handleSaveSchedule"
+      />
+      <!-- 添加合集弹窗 -->
+      <CollectAddDialog
+        v-model="collectAddShow"
+        :detail="detail"
+        @saved="getDetail"
+      ></CollectAddDialog>
+    </template>
     <!-- 行李弹窗 -->
     <EquipDrawer
       v-model="equipDrawer.show"
       :id="detail.id"
       :data="equipDrawer.data"
-      :can-edit="perm === 'manage'"
+      :can-edit="perm !== 'view'"
       @close="getDetail"
     />
-    <!-- 添加合集弹窗 -->
-    <CollectAddDialog
-      v-model="collectAddShow"
-      :detail="detail"
-    ></CollectAddDialog>
   </template>
-  <!-- #region 攻略弹窗 -->
-  <!-- <MazDialog v-model="noteDialog.show" max-height="50vh" scrollable>
-    <template #title>
-      <div class="spac-pv_s2 flex-h flex-ai_c">
-        <MazIcon
-          name="red-book"
-          size="24px"
-          class="spac-mr_s1 flex-shrink"
-        ></MazIcon>
-        <span class="flex-fill text-clamp_1">{{ noteDialog.title }}</span>
-      </div>
-    </template>
-    <div
-      class="text-s_m note-content"
-      style="word-wrap: break-word"
-      v-html="noteDialog.content"
-    ></div>
-    <template #footer>
-      <div class="spac-pb_s3"></div>
-    </template>
-  </MazDialog> -->
-  <!-- #endregion -->
 </template>
 <script lang="ts" setup>
 import EditTravelDialog from "./components/EditTravelDialog.vue";
@@ -248,7 +235,7 @@ import ScheduleItem from "./components/ScheduleItem.vue";
 import { ISchedule, ITravel, travelApi } from "@/server/travel";
 import { computed, onMounted, provide, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useToast, useWindowSize, throttle, useDialog } from "maz-ui";
+import { useToast, useWindowSize, throttle, useDialog, debounce } from "maz-ui";
 import dayjs from "dayjs";
 import { MapUtil } from "@/helper/amap";
 import { DateUtil, copy, share } from "@/helper/util";
@@ -709,9 +696,12 @@ function createPOIMarker(poi: AMap.PlaceSearch.PoiExt) {
       content: `${poi.name}`,
     },
   });
-  marker.on("click", () => {
-    handleAddSchedule(poi);
-  });
+  marker.on(
+    "click",
+    debounce(() => {
+      handleAddSchedule(poi);
+    }, 1000)
+  );
   markers.push(marker);
   mapInstance?.add(marker);
 
