@@ -1,6 +1,6 @@
 {
   "name": "roadbook",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "displayName": "小肥路书",
   "description": "小肥路书，基于高德+点评的方式完成行程的规划",
   "scripts": {
