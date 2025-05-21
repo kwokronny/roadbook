@@ -33,7 +33,8 @@ class TravelController {
         description: { type: "string", required: false, allowEmpty: true },
         startDate: { type: "dateTime", required: true },
         endDate: { type: "dateTime", required: true },
-        equip: { type: "string", required: false },
+        equip: { type: "string", required: false, allowEmpty: true },
+        city: { type: "string", required: false, allowEmpty: true },
         public: { type: "boolean", required: true }
       });
       ctx.body = ajaxReturn(await TravelService.save(ctx.state.user.id, ctx.request.body));
@@ -150,38 +151,38 @@ class TravelController {
         notes: { type: "string", allowEmpty: true, required: false },
       });
       ctx.body = ajaxReturn(
-        await ScheduleService.add(ctx.request.body)
+        await ScheduleService.add(ctx.state.user?.id, ctx.request.body)
       );
     } catch (e) {
       ctx.body = ajaxReturn(e, 500);
     }
   }
 
-  async pullCollect(ctx, next) {
-    try {
-      let data = ctx.request.body
-      let url = new URL(data.url.match(/(http(|s):\/\/[^\s]+)/g)[0]);
-      if (url && url.hostname.indexOf("dianping.com") > -1 && data.tId) {
-        let albumId = url.searchParams.get("albumId")
-        let res = await ScheduleService.pullDianpingCollect(data.tId, albumId, data.isSkip);
-        ctx.body = ajaxReturn(Object.assign(res))
-      } else {
-        ctx.body = ajaxReturn("URL传参错误", 500);
-      }
-    } catch (e) {
-      ctx.body = ajaxReturn("拉取失败，请再试几次", 500);
-    }
-  }
+  // async pullCollect(ctx, next) {
+  //   try {
+  //     let data = ctx.request.body
+  //     let url = new URL(data.url.match(/(http(|s):\/\/[^\s]+)/g)[0]);
+  //     if (url && url.hostname.indexOf("dianping.com") > -1 && data.tId) {
+  //       let albumId = url.searchParams.get("albumId")
+  //       let res = await ScheduleService.pullDianpingCollect(data.tId, albumId, data.isSkip);
+  //       ctx.body = ajaxReturn(Object.assign(res))
+  //     } else {
+  //       ctx.body = ajaxReturn("URL传参错误", 500);
+  //     }
+  //   } catch (e) {
+  //     ctx.body = ajaxReturn("拉取失败，请再试几次", 500);
+  //   }
+  // }
 
   async setSchedule(ctx) {
     try {
       let data = ctx.request.body
       await ctx.verifyParams({
         id: "int",
-        name: "string",
-        coordinate: "string",
+        name: { type: "string", required: false },
+        coordinate: { type: "string", required: false },
         address: { type: "string", allowEmpty: true, required: false },
-        isHotel: { type: "boolean", required: true },
+        isHotel: { type: "boolean", required: false },
         startTime: { type: "dateTime", required: false },
         endTime: { type: "dateTime", required: false },
         traffic: {
@@ -193,7 +194,7 @@ class TravelController {
         notes: { type: "string", allowEmpty: true, required: false },
       });
       ctx.body = ajaxReturn(
-        await ScheduleService.set(data)
+        await ScheduleService.set(ctx.state.user?.id, data)
       );
     } catch (e) {
       ctx.body = ajaxReturn(e, 500);
@@ -207,7 +208,7 @@ class TravelController {
         id: "int",
       });
       ctx.body = ajaxReturn(
-        await ScheduleService.clone(data.id)
+        await ScheduleService.clone(ctx.state.user?.id, data.id)
       );
     } catch (e) {
       ctx.body = ajaxReturn(e, 500);
@@ -220,7 +221,7 @@ class TravelController {
         id: "int",
       });
       ctx.body = ajaxReturn(
-        await ScheduleService.remove(ctx.request.body)
+        await ScheduleService.remove(ctx.state.user?.id, ctx.request.body)
       );
     } catch (e) {
       ctx.body = ajaxReturn(e, 500);
@@ -244,7 +245,7 @@ module.exports = (router) => {
   route.post("/schedule/clone", controller.cloneSchedule);
   route.post("/schedule/update", controller.setSchedule);
   route.post("/schedule/remove", controller.removeSchedule);
-  route.post("/schedule/pull_collect", controller.pullCollect);
+  // route.post("/schedule/pull_collect", controller.pullCollect);
 
   router.use("/travel", route.routes(), route.allowedMethods());
 };

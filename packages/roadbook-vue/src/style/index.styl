@@ -1,7 +1,9 @@
 // @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC&display=swap');
+// @import './icon.css';
 :root {
-  --maz-border-radius: 30px;
-  --maz-border-radius-lg: 50px;
+  --maz-color-border: rgb(229, 231, 235);
+  --maz-border-radius: 16px;
+  --maz-border-radius-lg: 30px;
   --bg-gradient-light: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
   --bg-gradient-dark: linear-gradient(135deg, #434343 0%, #232323 100%);
   --bg-gradient: var(--bg-gradient-light);
@@ -9,6 +11,7 @@
 
 * {
   -webkit-text-size-adjust: none;
+  box-sizing: border-box;
 }
 
 [class~=dark] {
@@ -40,7 +43,7 @@ html, body {
 }
 
 body {
-  position: relative;
+  // position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100%;
@@ -51,6 +54,9 @@ body {
   flex-direction: column;
   flex-grow: 1;
   height: 0;
+}
+
+@media screen and (max-width: 768px) {
 }
 
 a {
@@ -64,6 +70,7 @@ a {
 
 ::-webkit-scrollbar {
   width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -80,23 +87,26 @@ a {
 }
 
 .m-btn {
-  &.--is-button.--sm {
-    padding: 0.625rem 1.2rem !important;
-  }
+  // &.--is-button.--sm {
+  // padding: 0.625rem 1.2rem !important;
+  // }
 
-  .m-btn__icon, .m-btn__icon-left, .m-btn__icon-right {
-    font-size: 24px;
-  }
+  // .m-btn__icon, .m-btn__icon-left, .m-btn__icon-right {
+  // font-size: 24px;
+  // }
 
-  &.--fab svg {
-    display: block;
+  // &.--fab svg {
+  // display: block;
+  // }
+  &.--success {
+    color: white !important;
   }
 }
 
 .amap-marker-label {
   t-fl: 12px 22px;
   padding: 4px 10px;
-  border-radius: yoz_radius.m;
+  border-radius: yoz_radius.md;
   background: var(--maz-color-bg);
   border: 1px solid var(--maz-color-success);
   color: var(--maz-color-text);
@@ -150,7 +160,7 @@ for $name in 0 .. 1 {
 }
 
 .m-drawer.--bottom {
-  .m-backdrop-content {
+  .m-drawer-content-wrap {
     height: 100%;
   }
 }
@@ -162,12 +172,13 @@ for $name in 0 .. 1 {
 
 .m-avatar {
   .m-avatar__wrapper {
-    background: black;
+    background: var(--maz-color-bg) !important;
+    .m-avatar__initial {
+      color: var(--maz-color-text) !important;
+    }
   }
 }
 
-.card {
-  .blob,.fakeblob {
-    display: none!important;
-  }
+.blob, .fakeblob {
+  display: none !important;
 }

@@ -1,18 +1,17 @@
 <template>
-  <MazDrawer
+  <MazDialog
     :model-value="props.modelValue"
     @update:model-value="handleClose"
-    size="768px"
-    :variant="width > 768 ? 'right' : 'bottom'"
     backdrop-class="equip-drawer"
+    scrollable
   >
     <template #title>
       <div class="flex-h gap-s1">
-        <MazIcon name="luggage" size="24px"></MazIcon>
+        <MazIcon name="solar/bag" size="24px"></MazIcon>
         <div>行李清点</div>
       </div>
     </template>
-    <div class="equip-list flex-v gap-s3 spac-p_s3">
+    <div class="equip-list flex-v gap-s3">
       <MazCard
         v-if="props.canEdit"
         size="sm"
@@ -22,36 +21,35 @@
         <template #header>
           <div class="text-c_t">重置行李清单模板</div>
         </template>
-        <div class="flex-v gap-s3 spac-p_s3">
+        <div class="flex-h gap-s1 spac-p_s3">
           <MazSelect
+            class="flex-fill"
+            color="success"
             v-model="initEquip.equip"
-            left-icon="luggage"
-            search
-            search-placeholder="搜索行李清单"
             label="行李清单模板"
             :options="equipOptions"
-            option-input-value-key="name"
-            option-label-key="name"
-            option-value-key="list"
-          >
-          </MazSelect>
-          <MazBtn @click="handlePull()">重新拉取</MazBtn>
+          />
+          <MazBtn color="success" class="flex-shrink" @click="handlePull()">重置</MazBtn>
         </div>
       </MazCard>
       <div class="flex-h flex-ai_c flex-jc_sb spac-ph_s2">
-        <div class="text-a_c text-c_ts text-s_s">
+        <div class="text-c_ts text-s_s flex-fill">
           勾选不储存，仅用于现场确认物品是否准备
         </div>
-        <div v-if="canEdit" class="flex-h gap-s1">
+        <div v-if="canEdit" class="flex-h gap-s1 flex-shrink">
           <MazBtn
             size="sm"
             pastel
+            color="transparent"
             @click="canEdit = false"
-            left-icon="solar/close"
           >
             取消
           </MazBtn>
-          <MazBtn size="sm" @click="setEquip" left-icon="solar/check">
+          <MazBtn
+            size="sm"
+            @click="setEquip"
+            color="success"
+          >
             保存
           </MazBtn>
         </div>
@@ -59,7 +57,7 @@
           v-else-if="props.canEdit"
           size="sm"
           @click="canEdit = true"
-          left-icon="solar/edit"
+          color="success"
         >
           编辑
         </MazBtn>
@@ -75,7 +73,8 @@
           <template #header>
             <div v-if="isEdit(gidx, -2)">
               <MazInput
-                class="flex-fill"
+                block
+                color="success"
                 size="sm"
                 auto-focus
                 placeholder="请输入分组名称"
@@ -87,7 +86,7 @@
             </div>
             <h3
               v-else
-              class="spac-mv_s0 spac-ph_s1 flex-h text-c_t flex-jc_sb flex-ai_c flex-fill"
+              class="spac-mv_0 spac-ph_s1 flex-h text-c_t flex-jc_sb flex-ai_c flex-fill gap-s2"
             >
               {{ group.name }}
               <div class="flex-h flex-ai_c gap-s2" v-if="isShowOption">
@@ -107,20 +106,21 @@
           </template>
           <template #content>
             <div class="flex-v gap-s3 spac-p_s3">
-              <div class="flex-h" v-for="(item, idx) in group.list">
+              <div class="flex" v-for="(item, idx) in group.list">
                 <MazInput
                   v-if="isEdit(gidx, idx)"
-                  class="flex-fill"
+                  block
                   size="sm"
                   auto-focus
+                  color="success"
                   placeholder="请输入物品名称"
                   v-model="currEdit.name"
                   maxlength="50"
                   @blur="handleSave"
                   @keyup.enter="handleSave"
                 ></MazInput>
-                <MazCheckbox v-else class="flex-fill">
-                  <div class="flex-h flex-jc_sb flex-ai_c flex-fill">
+                <MazCheckbox v-else class="flex-fill" color="success">
+                  <div class="flex-h flex-jc_sb flex-ai_c flex-fill gap-s2">
                     <span>{{ item }}</span>
                     <div class="flex-h flex-ai_c gap-s2" v-if="isShowOption">
                       <MazIcon
@@ -141,6 +141,8 @@
               </div>
               <MazInput
                 v-if="isEdit(gidx, -1)"
+                block
+                color="success"
                 size="sm"
                 placeholder="请输入物品名称"
                 auto-focus
@@ -161,8 +163,10 @@
         </MazCard>
         <MazInput
           v-if="isEdit(-1, -2)"
+          block
           size="sm"
           auto-focus
+          color="success"
           placeholder="请输入分组名称"
           v-model="currEdit.name"
           maxlength="50"
@@ -178,15 +182,14 @@
         </div>
       </template>
     </div>
-  </MazDrawer>
+  </MazDialog>
 </template>
 <script setup lang="ts">
-import { useToast, useWindowSize } from "maz-ui";
-import { IEquip, IEquipList, equipApi } from "@/server/equip";
+import { useToast } from "maz-ui";
+import { type IEquip, equipApi } from "@/server/equip";
 import { ref, reactive, computed, watch, onMounted } from "vue";
 import { travelApi } from "@/server/travel";
-
-const { width } = useWindowSize();
+import { type MazSelectOption } from "maz-ui/components/MazSelect";
 
 interface IProp {
   modelValue: boolean;
@@ -322,21 +325,34 @@ watch(
 
 const initEquip = reactive<{
   show: boolean;
-  equip?: IEquip[];
-}>({ show: false });
-let equipOptions = ref<IEquipList[]>([]);
+  equip: string;
+}>({ show: false, equip: "" });
+let equipOptions = ref<MazSelectOption[]>([]);
 
 async function getEquipList() {
   try {
     let res = await equipApi.list();
-    equipOptions.value = res;
+    res.forEach((item) => {
+      try {
+        equipOptions.value.push({
+          label: item.name,
+          value: JSON.stringify(item.list),
+        });
+      } catch {}
+    });
   } catch {}
 }
 
 function handlePull() {
   if (initEquip.equip) {
-    equip.value = initEquip.equip;
+    equip.value = JSON.parse(initEquip.equip);
     setEquip();
   }
 }
 </script>
+
+<style lang="stylus">
+.equip-drawer .m-drawer-content-wrap{
+  height: 100%;
+}
+</style>

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -14,12 +14,13 @@
     "axios": "^1.6.2",
     "compressorjs": "^1.2.1",
     "dayjs": "^1.11.10",
-    "maz-ui": "^3.31.1",
+    "maz-ui": "^3.50.1",
     "md5": "^2.3.0",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
     "stylus-shortcut": "^1.0.2",
-    "vue": "^3.3.8",
+    "unplugin-vue-components": "^28.5.0",
+    "vue": "^3.5.13",
     "vue-router": "4"
   },
   "devDependencies": {
@@ -32,10 +33,10 @@
     "@types/amap-js-api-riding": "^1.4.4",
     "@types/amap-js-api-transfer": "^1.4.4",
     "@types/node": "^20.10.4",
-    "@vitejs/plugin-vue": "^4.5.0",
+    "@vitejs/plugin-vue": "^4.6.2",
     "stylus": "^0.62.0",
-    "typescript": "^5.2.2",
-    "vite": "^5.0.0",
-    "vue-tsc": "^1.8.22"
+    "typescript": "^5.8.3",
+    "vite": "^5.4.19",
+    "vue-tsc": "^1.8.27"
   }
 }

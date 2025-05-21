@@ -6,7 +6,6 @@ import { MapUtil } from "@/helper/amap";
 import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
 import { onMounted, ref, watch, nextTick } from "vue";
-const map = ref<AMap.Map>();
 
 const { theme } = storeToRefs(useStore());
 
@@ -16,6 +15,7 @@ interface IEmits {
 }
 const emit = defineEmits<IEmits>();
 
+const map = ref<AMap.Map>();
 const AMapContainer = ref<HTMLElement>();
 
 watch(
@@ -41,7 +41,7 @@ onMounted(async () => {
   }
 });
 </script>
-<style lang="stylus">
+<style lang="stylus" scoped>
 .amap-container{
   l-wh 100% 100%;
 }

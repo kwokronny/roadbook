@@ -1,12 +1,14 @@
 {
   "scripts": {
-    "notion": "node script/notion.mjs",
+    "notion": "node script/notion-to-md.mjs",
     "dev": "vitepress dev",
     "build": "vitepress build",
     "preview": "vitepress preview"
   },
   "devDependencies": {
-    "pinyin-pro": "^3.20.3",
+    "@notionhq/client": "^3.0.1",
+    "markdown-it-container": "^4.0.0",
+    "notion-to-md": "4.0.0-alpha.5",
     "vitepress": "^1.1.4"
   }
 }

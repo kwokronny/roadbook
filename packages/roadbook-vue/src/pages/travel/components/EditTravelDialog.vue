@@ -4,22 +4,21 @@
     @update:model-value="emit('update:model-value', $event)"
   >
     <template #title>
-      <div class="spac-pv_s2 flex-h flex-ai_c">
-        <MazIcon name="luggage" size="24px" class="spac-mr_s1"></MazIcon>
+      <div class="flex-h flex-ai_c">
+        <MazIcon name="solar/travel" size="24px" class="spac-mr_s1"></MazIcon>
         {{ model.id ? "编辑旅程" : "创建旅程" }}
       </div>
     </template>
-    <form class="flex-v gap-s3" @keyup.enter="handleSubmit">
+    <form class="flex-v gap-s3">
       <MazInput
         v-model="model.name"
-        left-icon="island"
         label="旅程计划"
         maxlength="50"
+        block
         v-bind="hints.name"
       ></MazInput>
       <MazPicker
         v-model="model.startDate"
-        left-icon="calendar"
         label="开始日期"
         auto-close
         format="YYYY-MM-DD 00:00:00"
@@ -27,21 +26,26 @@
       ></MazPicker>
       <MazPicker
         v-model="model.endDate"
-        left-icon="calendar"
         auto-close
         label="结束日期"
         format="YYYY-MM-DD 23:59:59"
         v-bind="hints.endDate"
       ></MazPicker>
       <MazSelect
+        v-model="model.city"
+        label="城市"
+        assistive-text="支持多选,用于辅助地图限制搜索范围"
+        v-bind="hints.city"
+        multiple
+        search
+        search-placeholder="搜索城市"
+        :options="options.citys"
+      ></MazSelect>
+      <MazSelect
         v-if="!model.id"
         v-model="model.equip"
-        left-icon="luggage"
         label="行李清单模板"
-        :options="equipOptions"
-        option-input-value-key="name"
-        option-label-key="name"
-        option-value-key="list"
+        :options="options.equips"
         v-bind="hints.equip"
       >
       </MazSelect>
@@ -68,16 +72,17 @@
   </MazDialog>
 </template>
 <script setup lang="ts">
-import { nextTick, ref, watch } from "vue";
+import { reactive, ref, watch } from "vue";
 import { travelApi, ITravel } from "@/server/travel";
-import { IEquipList, equipApi } from "@/server/equip";
+import { equipApi } from "@/server/equip";
 import { useForm } from "@/hook/useForm";
 import dayjs from "dayjs";
-import { objectUtil } from "@/helper/util";
+import { DateUtil, objectUtil } from "@/helper/util";
+import { type MazSelectOption } from "maz-ui/components/MazSelect";
 
 interface IProp {
   modelValue: boolean;
-  item?: ITravel;
+  detail?: ITravel;
 }
 const props = defineProps<IProp>();
 const emit = defineEmits<{
@@ -85,26 +90,13 @@ const emit = defineEmits<{
   (e: "saved", id: number): void;
 }>();
 
-watch(
-  () => props.modelValue,
-  async () => {
-    if (props.modelValue) {
-      reset();
-      getEquipList();
-      await nextTick();
-      if (props.item) {
-        Object.assign(model, objectUtil.omitEmpty(props.item));
-      }
-    }
-  }
-);
-
 const loading = ref<boolean>(false);
 
 const { model, handleSubmit, hints, reset } = useForm<ITravel>(
   {
     id: undefined,
-    name: "",
+    name: `旅程计划${DateUtil.dateFm(new Date())}`,
+    city: [],
     startDate: "",
     endDate: "",
     userIds: [],
@@ -131,20 +123,61 @@ const { model, handleSubmit, hints, reset } = useForm<ITravel>(
       ],
     },
     onSubmit: async (data) => {
-      data.equip = JSON.stringify(data.equip);
-      const res = await travelApi.save(data);
+      const res = await travelApi.save(
+        Object.assign(data, { city: (data.city || []).join(",") })
+      );
       emit("saved", res.data.id!);
       emit("update:model-value", false);
     },
   }
 );
 
-let equipOptions = ref<IEquipList[]>();
+const options = reactive<{
+  equips: MazSelectOption[];
+  citys: string[];
+}>({
+  equips: [],
+  citys: [],
+});
 
 async function getEquipList() {
   try {
     let res = await equipApi.list();
-    equipOptions.value = res;
+    res.forEach((item) => {
+      try {
+        options.equips.push({
+          label: item.name,
+          value: JSON.stringify(item.list),
+        });
+      } catch {}
+    });
   } catch {}
 }
+
+async function getCityOptions() {
+  try {
+    await fetch("/city.json").then((res) => {
+      res.json().then((data) => {
+        options.citys = data;
+      });
+    });
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+watch(
+  () => props.modelValue,
+  (val) => {
+    if (val) {
+      reset();
+      getEquipList();
+      getCityOptions();
+      if (props.detail) {
+        Object.assign(model, objectUtil.omitEmpty(props.detail));
+      }
+    }
+  },
+  { immediate: true }
+);
 </script>

@@ -2,6 +2,8 @@
   <MazBtn
     fab
     rounded
+    outline
+    size="sm"
     icon="dianping"
     color="warning"
     :href="dianpingUrl"

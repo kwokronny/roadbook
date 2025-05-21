@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     startDate: DataTypes.STRING, // 旅程起始时间
     endDate: DataTypes.STRING, // 旅程结束时间
     equip: DataTypes.TEXT, // 装备
+    city: DataTypes.STRING, // 城市
     public: DataTypes.BOOLEAN,
   }, {
     sequelize,

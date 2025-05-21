@@ -1,7 +1,7 @@
 import Axios, { AxiosInstance } from "axios";
 import router from "@/plugins/router";
 import { useStore } from "@/store";
-import { toastInstance } from "maz-ui";
+// import { toastInstance } from "maz-ui";
 
 export interface IRes<T> {
   code: number;
@@ -49,7 +49,8 @@ instance.interceptors.response.use(
       if (ret.code === 401) {
         router.push("/signin");
       }
-      toastInstance.error(ret.msg);
+      // const toast = useToast();
+      // toast.error(ret.msg);
       return Promise.reject(ret);
     }
     return ret;

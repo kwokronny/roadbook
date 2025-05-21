@@ -1,0 +1,18 @@
+{
+  "pageId": "5d81a2d7-805d-4030-b14b-7c15b801b15a",
+  "lastUpdated": "2025-05-19T10:43:45.836Z",
+  "mediaEntries": {
+    "1f584f1f-4186-80b5-aa1e-cc6efd0e4fc1": {
+      "mediaInfo": {
+        "type": "DOWNLOAD",
+        "originalUrl": "https://prod-files-secure.s3.us-west-2.amazonaws.com/c4c5f1fe-a371-4cca-add4-2df59d18e0f8/e61f0b9f-63dd-41b7-8f73-e0184102bdd5/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4667VI65M6V%2F20250519%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250519T104343Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjENL%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQCnV53SlezEsV5osTQt9jE0Oy22gmbm3HZPO2L06bVt9wIgZSnxjsJ31q0qvyH%2F75C1pcCXirY2ih0atTzgwQPi%2FBEqiAQIi%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDPi2nWCg%2FYVjnkOalSrcA1ld0lc6JhSv04E2GbZ5RVKRzS%2FPt7svxBb6V8C8jXTZse4DBYgzvocbcyWrgRtsf%2B6Epm%2BK%2BIoUOSiysWM029JXXR2X8KG4oSOzX2RSscg0FzlYyKYkrqIqUzSkCM7gYA1teGu08QUcRF8Y8b%2FqyryVpMuKfK%2FjesZxlFmnD6gtjfZgM1rZlWlkIve8%2F8PLV7P%2FV%2FEuq6qDoIkcWbcAxJtGvIygSDIrsoyY%2B4hAOUSMQg7f7I3D9zE0wnn6j%2BLWN1LkYloUcDSyqVk%2B5Nom2Rs0QGImwaP%2FILsKQuhpMhFZ2iJu2nZlKExdUjclaBoDNvtoMp5RB%2BspcSytSe5mX%2FQJZL8biC0x7w9AUeCJavqijQdsumZ3uocntzGkzB7p21HotfUUH%2FsGD1HHcNd8Txr5%2Bja8Y3q%2FrdYbWJ%2B3LQBI9rNVuWfaxyxvTuKvZNCUuoMBy%2B0wnWokIeJ8dmqNy1dLRsdKxzog3FHmU%2BXPwCS%2BJ0AUcvrlf0HLeqarlgQctzW5VIIjWSaOQPU9kBeIizlDyXEEAtV6%2BKXyy57q2%2Fw8iiZgFOQcKvr0Z80g65bTHaLm0foeFdyuinxHq%2FRd7SM3M6ERCusSCS2d0fJkrVmc8jrlQ6BPViujvKjsMJWCrMEGOqUBsqS1tXURdqVHh%2FcR6PXpvYaSDJ6%2FzKs1KRS3eXf7Y3j9QiCmZrFdZB0Jr5VUbvYMDKWOYP20jkdPrPAzKjVrwGtqcsuN8r6JYDbPSIxdiC8Y6up2qPzCOxQF60yzF4d7ruFZ6jrs%2BDOhH7wuEs%2BQs%2BPdiUbL7bM%2Bvd7xiO1w5siKyEYah6RM5jckbUaSHlkjlXSdtUT8bxtHATjXzwK91r52u8U0&X-Amz-Signature=e2fd065f5547b4532af35138ede45faab2f8cf9901dde481c48a676e679d79c1&X-Amz-SignedHeaders=host&x-id=GetObject",
+        "localPath": "src/public/images/image_1f584f1f-4186-80b5-aa1e-cc6efd0e4fc1.png",
+        "sourceType": "block",
+        "transformedPath": "/images/image_1f584f1f-4186-80b5-aa1e-cc6efd0e4fc1.png"
+      },
+      "lastEdited": "2025-05-16T11:12:00.000Z",
+      "createdAt": "2025-05-19T10:22:02.308Z",
+      "updatedAt": "2025-05-19T10:43:45.836Z"
+    }
+  }
+}

@@ -1,43 +1,25 @@
 <template>
-  <MazBtn
-    class="spac-ph_s3"
-    left-icon="solar/point"
-    size="sm"
-    color="info"
-    @click="open = true"
-  >
-    选择坐标
-  </MazBtn>
   <MazDrawer
-    v-model="open"
+    v-model="props.modelValue"
     size="768px"
     :variant="width > 768 ? 'right' : 'bottom'"
-    title="选择地点"
+    title="添加地点"
     backdrop-class="location-selector-drawer"
   >
+    <div class="abs-lt-0_0 flex-h gap-s1">
+      <MazInput
+        class="flex-fill"
+        v-model="keyword"
+        autocomplete="off"
+        placeholder="搜索地点"
+        @keyup.enter="handleSearch()"
+      />
+      <MazBtn icon="solar/search" @click="handleSearch()" fab />
+    </div>
     <AMapComponent @loaded="handleMapLoaded"></AMapComponent>
-    <div class="localtion-selector">
-      <div class="text-a_r spac-mb_s2">
-        <MazBtn
-          left-icon="solar/check"
-          :disabled="!center"
-          @click="handleConfirm"
-        >
-          确认选择
-        </MazBtn>
-      </div>
+    <!-- <div class="localtion-selector">
       <MazCardSpotlight style="width: 100%">
         <div class="spac-p_s3">
-          <div class="flex-h gap-s1">
-            <MazInput
-              class="flex-fill"
-              v-model="keyword"
-              autocomplete="off"
-              placeholder="搜索地点"
-              @change="handleSearch()"
-            ></MazInput>
-            <MazBtn icon="solar/search" @click="handleSearch()" fab></MazBtn>
-          </div>
           <MazTransitionExpand>
             <template v-if="options.length">
               <MazCarousel class="spac-mt_s1">
@@ -67,7 +49,7 @@
           </MazTransitionExpand>
         </div>
       </MazCardSpotlight>
-    </div>
+    </div> -->
   </MazDrawer>
 </template>
 <script setup lang="ts">
@@ -77,88 +59,79 @@ import { useWindowSize } from "maz-ui";
 import { MapUtil } from "@/helper/amap";
 import { throttle } from "@/helper/util";
 
+const props = defineProps<{
+  modelValue: boolean;
+  
+}>();
+
 const { width } = useWindowSize();
 
-const props = defineProps<{
-  center?: string;
-}>();
-
 const emit = defineEmits<{
-  (
-    e: "select",
-    arg: {
-      lnglat: AMap.LocationValue | null;
-      POI: AMap.Autocomplete.Tip | null;
-    }
-  ): void;
+  (e: "update:modelValue", arg: boolean): void;
 }>();
 
-const open = ref(false);
-const POI = ref<AMap.Autocomplete.Tip | null>(null);
-const center = ref<AMap.LocationValue | null>(null);
-const marker = ref<AMap.Marker>();
-
-watch(
-  () => open.value,
-  () => {
-    if (open.value && props.center) {
-      let lnglat = MapUtil.stringToLngLat(props.center);
-      if (lnglat) {
-        center.value = lnglat;
-        handleCenterChange();
-      }
-    }
-  }
-);
-
-watch(
-  () => center.value,
-  () => handleCenterChange()
-);
+const selectedPOI = ref<AMap.PlaceSearch.Poi[]>([]);
+const markers = ref<AMap.Marker[]>([]);
 
 const keyword = ref("");
-const options = ref<AMap.Autocomplete.Tip[]>([]);
+const options = ref<AMap.PlaceSearch.Poi[]>([]);
 const handleSearch = throttle(async () => {
   const res = await MapUtil.searchPleace(keyword.value);
   if (res) {
-    options.value = res.tips;
+    options.value = res.poiList.pois;
+    options.value.forEach((item) => renderMarker(item));
   }
 }, 500);
 
-function handleClick(item: AMap.Autocomplete.Tip) {
-  center.value = item.location;
-  POI.value = item;
-}
+// function handleClick(item: AMap.Autocomplete.Tip) {
+//   center.value = item.location;
+//   POI.value = item;
+// }
 
-function handleConfirm() {
-  emit("select", { lnglat: center.value, POI: POI.value });
-  open.value = false;
-}
+// function handleConfirm() {
+//   emit("select", { lnglat: center.value, POI: POI.value });
+//   open.value = false;
+// }
 
 let mapInstance: AMap.Map | null = null;
 
 function handleMapLoaded(map: AMap.Map) {
   mapInstance = map;
-  handleCenterChange();
-  mapInstance.on("click", function (e) {
-    POI.value = null;
-    center.value = e.lnglat;
-  });
+  // handleCenterChange();
+  // mapInstance.on("click", function (e) {
+  //   POI.value = null;
+  //   center.value = e.lnglat;
+  // });
 }
 
-function handleCenterChange() {
-  if (mapInstance && center.value) {
-    mapInstance.clearMap();
-    let instance = new AMap.Marker({
-      icon: "/icons/marker.svg",
-      anchor: "center",
-      position: center.value,
-    });
-    mapInstance.add(instance);
-    marker.value = instance;
-    mapInstance.setCenter(center.value);
-  }
+function renderMarker(poi: AMap.PlaceSearch.Poi) {
+  if (!mapInstance || !poi.location) return;
+  const marker = new AMap.Marker({
+    icon: "/icons/marker.svg",
+    position: poi.location,
+    anchor: "bottom-left",
+    label: {
+      offset: new AMap.Pixel(5, 0),
+      content: `${poi.name}`,
+    },
+  });
+  markers.value.push(marker);
+  mapInstance.add(marker);
 }
+
+// function removeSearchMarker() {
+//   if (mapInstance && center.value) {
+//     mapInstance.clearMap();
+//     let instance = new AMap.Marker({
+//       icon: "/icons/marker.svg",
+//       anchor: "center",
+//       position: center.value,
+//     });
+//     mapInstance.add(instance);
+//     marker.value = instance;
+//     mapInstance.setCenter(center.value);
+//   }
+// }
 </script>
 <style lang="stylus" scoped>
 .location-selector-drawer{

@@ -9,16 +9,18 @@
         修改密码
       </div>
     </template>
-    <form class="flex-v gap-s3" @keyup.enter="handleSubmit">
+    <form class="flex-v gap-s3">
       <MazInput
         v-model="model.oldPassword"
         type="password"
         label="原密码"
+        block
         maxlength="16"
         v-bind="hints.oldPassword"
       ></MazInput>
       <MazInput
         v-model="model.password"
+        block
         type="password"
         label="新密码"
         maxlength="16"
@@ -26,6 +28,7 @@
       ></MazInput>
       <MazInput
         v-model="model.confirmPassword"
+        block
         type="password"
         label="确认新密码"
         maxlength="16"
@@ -44,7 +47,7 @@
 </template>
 <script setup lang="ts">
 import md5 from "md5";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useForm } from "@/hook/useForm";
 import { IReqUserModifyPassword, userApi } from "@/server/user";
 
@@ -57,8 +60,17 @@ const emit = defineEmits<{
   (e: "saved"): void;
 }>();
 
+watch(
+  () => props.modelValue,
+  (val: boolean) => {
+    if (val) {
+      reset();
+    }
+  }
+);
+
 const loading = ref<boolean>(false);
-const { model, handleSubmit, hints } = useForm<IReqUserModifyPassword>(
+const { model, handleSubmit, hints, reset } = useForm<IReqUserModifyPassword>(
   {
     oldPassword: "",
     password: "",

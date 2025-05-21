@@ -39,10 +39,10 @@ const router = createRouter({
       path: "/travel/:id",
       component: () => import("../pages/travel/detail.vue"),
     },
-    {
-      path: "/travel/:id/batch",
-      component: () => import("../pages/travel/batchEdit.vue"),
-    },
+    // {
+    //   path: "/travel/:id/batch",
+    //   component: () => import("../pages/travel/batchEdit.vue"),
+    // },
     {
       path: "/:pathMatch(.*)*",
       redirect: "/travel",

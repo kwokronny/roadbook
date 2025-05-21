@@ -8,7 +8,7 @@ class TravelService {
     try {
       return await db.Travel.findAndCountAll({
         include: [
-          { model: db.User, attributes: ["id", "username"], where: { id: uid } },
+          { model: db.User, attributes: ["id", "username", "avatar", "name"], where: { id: uid } },
         ],
         where: {
           name: {
@@ -46,7 +46,10 @@ class TravelService {
   async setEquip(data) {
     try {
       let travel = await db.Travel.findByPk(data.id)
-      await travel.update({ equip: data.equip })
+      if (travel) {
+        if (!await travel.hasUser(uid, { through: { where: { role: "edit" } } })) throw "您无权限修改旅程信息"
+        await travel.update({ equip: data.equip })
+      }
     } catch (e) {
       throw "获取失败";
     }
