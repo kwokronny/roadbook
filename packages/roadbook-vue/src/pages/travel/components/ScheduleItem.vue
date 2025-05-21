@@ -6,13 +6,13 @@
         <MazIcon v-else size="30px" name="time"></MazIcon>
         <span> {{ title }} </span>
       </div>
-      <div class="flex-h gap-s1 flex-ai_c">
+      <div class="flex-h gap-s1 flex-ai_c" v-if="canEdit">
         <MazIcon
           name="solar/edit"
           @click="emit('action', 'edit')"
           class="text-c_ts curs-pointer"
         ></MazIcon>
-        <Dropdown v-if="canEdit" :items="dropMenu">
+        <Dropdown :items="dropMenu">
           <MazIcon name="more" class="text-c_ts curs-pointer"></MazIcon>
         </Dropdown>
       </div>

@@ -77,7 +77,6 @@ apiRouter.post(
 router.use('/api', apiRouter.routes(), apiRouter.allowedMethods())
 //#endregion
 
-
 var proxy = require('koa-better-http-proxy');
 
 router.get("/public/uploads/(.*)", (ctx) => send(ctx, '/storage' + ctx.path));
@@ -88,6 +87,10 @@ if (process.env.NODE_ENV === 'development') {
   function proxyReqPathResolver(ctx) {
     return `${ctx.url.replace('/_AMapService', '')}&jscode=${process.env.AMAP_SECRET}`
   }
+
+  router.use('/config.js', (ctx) => {
+    ctx.body = `window.AMapKey = "${process.env.AMAP_KEY}"`
+  })
 
   router.use('/_AMapService/(.*)', proxy('https://restapi.amap.com/', {
     proxyReqPathResolver

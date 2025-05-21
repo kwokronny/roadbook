@@ -17,8 +17,8 @@
           :icon="theme"
         ></MazBtn>
         <Dropdown
-          :items="avatarDropMenu"
           v-if="userInfo"
+          :items="avatarDropMenu"
           position="bottom right"
         >
           <MazAvatar
@@ -130,16 +130,19 @@ const avatarDropMenu = [
   {
     label: "编辑信息",
     icon: "solar/edit",
+    class: "text-c_t",
     action: () => (dialog.modifyInfo = true),
   },
   {
     label: "修改密码",
     icon: "solar/password",
+    class: "text-c_t",
     action: () => (dialog.modifyPassword = true),
   },
   {
     label: "退出",
     icon: "solar/signout",
+    class: "text-c_t",
     action: () => {
       store.setToken("");
       router.push("/signin");

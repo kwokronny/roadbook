@@ -1,5 +1,5 @@
 <template>
-  <form class="sign-in-form">
+  <form class="sign-in-form" @submit.prevent>
     <MazInput
       v-model="model.username"
       left-icon="solar/user"
@@ -25,6 +25,7 @@
     </MazInput>
     <MazBtn
       block
+      type="submit"
       color="success"
       :loading="loading"
       right-icon="arrow-right"
