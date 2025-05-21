@@ -73,7 +73,7 @@
 ### IOS、MacOS快捷指令获取：
 
 
-[获取点评专辑 - 快捷指令](https://www.icloud.com/shortcuts/665572fdad6a429180f1caa6481a0185)
+[获取点评专辑 - 快捷指令](https://www.icloud.com/shortcuts/1cec548e7b2c43f1b471bb820c8c9c8c)
 
 ::: column 2
 ![Image](/images/image_1f584f1f-4186-8089-940e-ea7ecc9de7fe.png)

@@ -46,7 +46,7 @@
         icon="dianping"
       >
         如何获取点评的合集JSON？
-        <a href="https://roadbook.kwokronny.com/" target="_blank">
+        <a href="https://kwokronny.github.io/roadbook/travel-planning.html#%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E7%82%B9%E8%AF%84%E4%B8%93%E8%BE%91json%E6%95%B0%E6%8D%AE" target="_blank">
           👉点击查看
         </a>
       </Quote>
