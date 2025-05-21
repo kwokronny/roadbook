@@ -1,5 +1,13 @@
 # Changelog
 
+<a name="1.0.3"></a>
+## 1.0.3 (2025-05-21)
+
+### Fixed
+
+- 🐛 修正添加点评合集的帮助链接 [[5658ee4](https://github.com/kwokronny/roadbook/commit/5658ee4e97a07acb90ca6c9cb395a22eb42a6437)] (by KwokRonny)
+
+
 <a name="1.0.2"></a>
 ## 1.0.2 (2025-05-21)
 
