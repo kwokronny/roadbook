@@ -1,1 +1,0 @@
-import{_ as e,c as a,o,a1 as r}from"./chunks/framework.NMQbgIgP.js";const m=JSON.parse('{"title":"Changelog","description":"","frontmatter":{},"headers":[],"relativePath":"CHANGELOG.md","filePath":"CHANGELOG.md"}'),t={name:"CHANGELOG.md"},n=r("",9),l=[n];function i(c,d,b,h,f,k){return o(),a("div",null,l)}const g=e(t,[["render",i]]);export{m as __pageData,g as default};
