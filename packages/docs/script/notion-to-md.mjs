@@ -2,12 +2,14 @@ import { Client } from '@notionhq/client';
 import { NotionConverter } from "notion-to-md";
 import { CustomMDXRenderer, FileSystemExporter } from './custom-render.mjs'
 import path from 'path';
+import { loadEnv } from 'vitepress';
+const env = loadEnv("", process.cwd(), "");
 
-const NOTION_API_TOKEN = "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";
+const NOTION_API_TOKEN = env.NOTION_API_TOKEN;
 
 const notion = new Client({ auth: NOTION_API_TOKEN });
 
-const databaseId = '1f884f1f41868012ac23ebc2fb6f5813';
+const databaseId = env.NOTION_DATABASE_ID;
 const response = await notion.databases.query({
   database_id: databaseId,
 })

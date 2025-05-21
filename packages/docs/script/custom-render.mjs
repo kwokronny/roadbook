@@ -17,8 +17,6 @@ export class FileSystemExporter {
     // Generate filename from page properties or ID
     const slug = properties?.slug?.rich_text?.[0]?.plain_text || '';
     const title = properties?.title?.title?.[0]?.plain_text || 'Untitled';
-    const created = properties?.created?.created_time || '';
-    const updated = properties?.last_edited?.last_edited_time || '';
     const filename = `${slug}.md`;
     await fs.writeFile(path.join(this.outputDir, `${slug}.json`), JSON.stringify(data), 'utf-8');
     if (slug === 'index') {

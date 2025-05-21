@@ -1,6 +1,4 @@
-# Untitled
-
-
+# 自建服务
 ## Docker
 
 
@@ -46,7 +44,7 @@ services:
     image: ghcr.io/kwokronny/roadbook:latest
     restart: unless-stopped
     environment:
-	    AMAP_KEY: 🚨高德地图Key
+      AMAP_KEY: 🚨高德地图Key
       AMAP_SECRET: 🚨高德地图Secret
       DB_DIALECT: mysql
       DB_HOSTNAME: roadbook_db
@@ -57,7 +55,7 @@ services:
     volumes:
       - 🚨端口:/app/storage/
     ports:
-	    3000
+      3000
 	    
 	roadbook_db:
     image: mysql:5.7

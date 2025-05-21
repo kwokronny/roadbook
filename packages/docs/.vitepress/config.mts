@@ -49,6 +49,13 @@ export default defineConfig({
         ],
       },
     ],
+    outline: {
+      level: [2, 3],
+    },
+
+    search: {
+      provider: "local",
+    },
 
     socialLinks: [
       { icon: "github", link: "https://github.com/kwokronny/roadbook" },
