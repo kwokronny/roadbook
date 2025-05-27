@@ -1,5 +1,16 @@
 # Changelog
 
+<a name="1.0.4"></a>
+## 1.0.4 (2025-05-27)
+
+### Miscellaneous
+
+-  Release 20240527 ([#3](https://github.com/kwokronny/roadbook/issues/3)) [[9d388c4](https://github.com/kwokronny/roadbook/commit/9d388c447a31b7d15254c21e020cc255be2fd51a)] (by Kwok Ronny)
+- 🔍 增加 SEO 与 OG 标签 [[17ae9a1](https://github.com/kwokronny/roadbook/commit/17ae9a183c4c37e6c0f9278518ca2d36ddaa764a)] (by KwokRonny)
+- 📝 更新city.json [[0787160](https://github.com/kwokronny/roadbook/commit/0787160988672ea43dcab8ebd9292b4a84c95374)] (by KwokRonny)
+-  👷 更新 action 流程 [[dcb043b](https://github.com/kwokronny/roadbook/commit/dcb043bc77f509db6fcce6d54089353fa73cd8f1)] (by KwokRonny)
+
+
 <a name="1.0.3"></a>
 ## 1.0.3 (2025-05-21)
 
