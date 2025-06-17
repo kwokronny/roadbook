@@ -73,7 +73,11 @@
         class="empty text-a_c text-c_ts spac-pv_m2"
         v-if="!isFetching && data?.length === 0"
       >
-        <MazIcon name="island" size="120px"></MazIcon>
+        <img
+          src="/icons/island.svg"
+          class="spac-mb_s2"
+          style="width: 120px; height: 120px"
+        />
         <div class="spac-mb_s3">还没创建旅游计划</div>
         <MazBtn
           left-icon="solar/travel"
@@ -87,7 +91,11 @@
         class="empty text-a_c text-c_ts spac-pv_s4"
         v-if="isFinished && data && data.length > 0"
       >
-        <MazIcon name="island" size="60px"></MazIcon>
+        <img
+          src="/icons/island.svg"
+          class="spac-mb_s2"
+          style="width: 60px; height: 60px"
+        />
         <div>所有计划已显示</div>
       </div>
       <div class="loading-observer"></div>

@@ -114,7 +114,11 @@
                 class="line-a_da1 radius-md spac-mt_s1 spac-p_s3 text-a_c"
                 v-if="!loading && scheduleDay[day]?.length == 0"
               >
-                <MazIcon name="island" size="80px"></MazIcon>
+                <img
+                  src="/icons/island.svg"
+                  class="spac-mb_s2"
+                  style="width: 80px; height: 80px"
+                />
                 <div class="text-c_ts spac-mv_s2">当天还没添加行程哟</div>
               </div>
               <div class="flex-v gap-s2 spac-mt_s3" v-if="perm !== 'view'">
@@ -212,7 +216,7 @@
       <CollectAddDialog
         v-model="collectAddShow"
         :detail="detail"
-        @saved="getDetail"
+        @saved="getSchedule"
       ></CollectAddDialog>
     </template>
     <!-- 行李弹窗 -->
@@ -221,7 +225,6 @@
       :id="detail.id"
       :data="equipDrawer.data"
       :can-edit="perm !== 'view'"
-      @close="getDetail"
     />
   </template>
 </template>
@@ -512,7 +515,7 @@ async function handleSaveSchedule(data: ISchedule) {
       schedules.value.push(data);
       toast.success("添加行程成功", { position: "top" });
     }
-    renderRouteMap();
+    renderRouteMap(false);
   }
 }
 
@@ -616,7 +619,7 @@ function createScheduleMarker(item: ISchedule, day: string) {
   return instance;
 }
 
-async function renderRouteMap() {
+async function renderRouteMap(fitView: boolean = true) {
   if (!mapInstance || search.keyword) return false;
   mapInstance.clearMap?.();
   let markers: AMap.Marker[] = [];
@@ -638,7 +641,7 @@ async function renderRouteMap() {
     });
   }
   mapInstance.add(markers);
-  if (markers.length) {
+  if (markers.length && fitView) {
     mapInstance?.setFitView(
       markers,
       true,
@@ -861,11 +864,22 @@ async function handleAddSchedule(poi: AMap.PlaceSearch.PoiExt) {
           appearance: none;
           background: transparent;
           padding-left: 10px;
+          padding-right: 15px;
           height: 24px;
           line-height: 24px;
           cursor: pointer;
           outline: none;
+          position: relative;
         }
+        .m-input-wrapper-left:after{
+          content: url("/icons/solar/arrow.svg");
+          display: block;
+          l-wh: 15px 15px 15px;
+          position: absolute;
+          right: 0;
+          pointer-events: none;
+        }
+
       }
     }
     .search-tip{
