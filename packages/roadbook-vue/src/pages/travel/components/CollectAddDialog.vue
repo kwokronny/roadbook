@@ -17,7 +17,7 @@
       </div>
     </template>
     <div class="flex-v gap-s2">
-      <MazSelect
+      <MazRadioButtons
         label="合集数据类型"
         color="success"
         v-model="collectType"
@@ -46,9 +46,24 @@
         icon="dianping"
       >
         如何获取点评的合集JSON？
-        <a href="https://kwokronny.github.io/roadbook/travel-planning.html#%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E7%82%B9%E8%AF%84%E4%B8%93%E8%BE%91json%E6%95%B0%E6%8D%AE" target="_blank">
-          👉点击查看
-        </a>
+        <div class="flex-h flex-ai_c">
+          <MazLink
+            href="https://kwokronny.github.io/roadbook/travel-planning.html#%E8%8E%B7%E5%8F%96%E7%82%B9%E8%AF%84%E5%90%88%E9%9B%86"
+            target="_blank"
+            auto-external
+          >
+            点击查看
+          </MazLink>
+          <MazLink
+            class="spac-ml_s1"
+            left-icon="solar/shortcut"
+            href="https://www.icloud.com/shortcuts/1cec548e7b2c43f1b471bb820c8c9c8c"
+            target="_blank"
+            auto-external
+          >
+            快捷指令
+          </MazLink>
+        </div>
       </Quote>
     </div>
     <!-- <MazRadioButtons color="success" v-model="tab" :options="tabs" /> -->
@@ -56,7 +71,14 @@
       <MazBtn block color="success" @click="handleAddTravel"> 添加合集 </MazBtn>
     </template>
   </MazDialog>
-  <MazFullscreenLoader v-if="loader.show" color="white" @click="closeLoader">
+  <div v-if="loader.show" class="fetch-loader" @click="closeLoader">
+    <MazIcon
+      v-if="loader.canClose"
+      name="solar/check"
+      size="60px"
+      class="text-c_white"
+    ></MazIcon>
+    <MazSpinner v-else color="white" size="60px"></MazSpinner>
     <div v-for="(log, idx) in loader.logs" :key="idx" class="loader-log">
       <template v-if="log.name">
         <span class="spac-mr_s1">{{ log.name }}</span>
@@ -64,11 +86,13 @@
         <MazIcon
           v-else-if="log.status === 'success'"
           name="solar/check"
+          size="24px"
           color="white"
         />
         <MazIcon
           v-else-if="log.status === 'error'"
           name="solar/close"
+          size="24px"
           color="white"
         />
       </template>
@@ -76,7 +100,7 @@
         {{ log.name }}
       </template>
     </div>
-  </MazFullscreenLoader>
+  </div>
 </template>
 <script setup lang="ts">
 import { DateUtil } from "@/helper/util";
@@ -101,7 +125,7 @@ const collectInputPlaceholder = computed(() => {
   return `[{"name":"行程名称","coordinate":"经度,纬度", "address":"行程地址","startTime":"建议行程时间，格式为：YYYY-MM-DD HH:mm:ss","notes":"推荐理由与网址"}]`;
 });
 const collectJSON = ref<string>("");
-const collectType = ref<string>("default");
+const collectType = ref<string>("dianping");
 
 const collectTypeOptions = ref([
   { label: "默认", value: "default" },
@@ -133,7 +157,7 @@ const handleAddTravel = async () => {
   resetLoader();
   loader.show = true;
   loader.logs.push({
-    name: "开始计划...",
+    name: "开始解析合集...",
     status: "text",
   });
   let schedules: ISchedule[] = [];
@@ -253,9 +277,26 @@ function resetLoader() {
   white-space: pre-wrap;
   word-break: break-all;
 }
+.fetch-loader{
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 9999;
+  background-color: var(--maz-bg-overlay);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+}
 .loader-log {
   color: white;
   font-size: 14px;
+  width: 60%;
   display: flex;
   align-items: center;
   justify-content: space-between;
