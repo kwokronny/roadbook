@@ -31,24 +31,27 @@
         format="YYYY-MM-DD 23:59:59"
         v-bind="hints.endDate"
       ></MazPicker>
-      <MazSelect
-        v-model="model.city"
-        label="城市"
-        assistive-text="支持多选,用于辅助地图限制搜索范围"
-        v-bind="hints.city"
-        multiple
-        search
-        search-placeholder="搜索城市"
-        :options="options.citys"
-      ></MazSelect>
-      <MazSelect
+      <div>
+        <MazInputTags
+          v-model="model.city"
+          label="城市"
+          placeholder="请输入前往的城市"
+          v-bind="hints.city"
+          block
+          multiple
+        ></MazInputTags>
+        <div class="text-c_ts text-s_s spac-mh_s1">
+          用于辅助地图限制搜索范围
+        </div>
+      </div>
+      <!-- <MazSelect
         v-if="!model.id"
         v-model="model.equip"
         label="行李清单模板"
         :options="options.equips"
         v-bind="hints.equip"
       >
-      </MazSelect>
+      </MazSelect> -->
       <div class="flex-v">
         <div class="flex-h flex-ai_c flex-jc_c gap-s1">
           <div class="text-c_ts">私密</div>
@@ -72,13 +75,13 @@
   </MazDialog>
 </template>
 <script setup lang="ts">
-import { reactive, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { travelApi, ITravel } from "@/server/travel";
-import { equipApi } from "@/server/equip";
+// import { equipApi } from "@/server/equip";
 import { useForm } from "@/hook/useForm";
 import dayjs from "dayjs";
 import { DateUtil, objectUtil } from "@/helper/util";
-import { type MazSelectOption } from "maz-ui/components/MazSelect";
+// import { type MazSelectOption } from "maz-ui/components/MazSelect";
 
 interface IProp {
   modelValue: boolean;
@@ -132,47 +135,47 @@ const { model, handleSubmit, hints, reset } = useForm<ITravel>(
   }
 );
 
-const options = reactive<{
-  equips: MazSelectOption[];
-  citys: string[];
-}>({
-  equips: [],
-  citys: [],
-});
+// const options = reactive<{
+// equips: MazSelectOption[];
+// citys: string[];
+// }>({
+// equips: [],
+// citys: [],
+// });
 
-async function getEquipList() {
-  try {
-    let res = await equipApi.list();
-    res.forEach((item) => {
-      try {
-        options.equips.push({
-          label: item.name,
-          value: JSON.stringify(item.list),
-        });
-      } catch {}
-    });
-  } catch {}
-}
+// async function getEquipList() {
+//   try {
+//     let res = await equipApi.list();
+//     res.forEach((item) => {
+//       try {
+//         options.equips.push({
+//           label: item.name,
+//           value: JSON.stringify(item.list),
+//         });
+//       } catch {}
+//     });
+//   } catch {}
+// }
 
-async function getCityOptions() {
-  try {
-    await fetch("/city.json").then((res) => {
-      res.json().then((data) => {
-        options.citys = data;
-      });
-    });
-  } catch (e) {
-    console.error(e);
-  }
-}
+// async function getCityOptions() {
+//   try {
+//     await fetch("/city.json").then((res) => {
+//       res.json().then((data) => {
+//         options.citys = data;
+//       });
+//     });
+//   } catch (e) {
+//     console.error(e);
+//   }
+// }
 
 watch(
   () => props.modelValue,
   (val) => {
     if (val) {
       reset();
-      getEquipList();
-      getCityOptions();
+      // getEquipList();
+      // getCityOptions();
       if (props.detail) {
         Object.assign(model, objectUtil.omitEmpty(props.detail));
       }

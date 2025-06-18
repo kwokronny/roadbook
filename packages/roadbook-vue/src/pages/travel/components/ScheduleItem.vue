@@ -2,8 +2,8 @@
   <div class="schedule-item text-c_t">
     <h2 class="schedule-item__header">
       <div class="flex-h flex-ai_c gap-s1 drag-handle" :title="title">
-        <MazIcon v-if="item.isHotel" size="30px" name="hotel"></MazIcon>
-        <MazIcon v-else size="30px" name="time"></MazIcon>
+        <img src="/icons/hotel.svg" v-if="item.isHotel" style="width: 30px; height: 30px;" />
+        <img src="/icons/time.svg" v-else style="width: 30px; height: 30px;" />
         <span> {{ title }} </span>
       </div>
       <div class="flex-h gap-s1 flex-ai_c" v-if="canEdit">
