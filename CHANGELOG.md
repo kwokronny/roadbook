@@ -1,5 +1,20 @@
 # Changelog
 
+<a name="1.0.5"></a>
+## 1.0.5 (2025-06-18)
+
+### Changed
+
+- 🚸 旅程表单优化城市字段输入操作与移除行李字段 [[b7b4056](https://github.com/kwokronny/roadbook/commit/b7b4056541a158bc2539b7e2065e8457ded258bb)] (by KwokRonny)
+- 💄 优化部分样式 [[180301b](https://github.com/kwokronny/roadbook/commit/180301b088d91dec50a94e9f33a3a9a48750b540)] (by KwokRonny)
+- 🚸 优化添加合集交互可用性 [[1a725cc](https://github.com/kwokronny/roadbook/commit/1a725cc313fc430a5059aa88f5dbb0402c426629)] (by KwokRonny)
+
+### Miscellaneous
+
+-  Merge pull request [#4](https://github.com/kwokronny/roadbook/issues/4) from kwokronny/dev [[d791360](https://github.com/kwokronny/roadbook/commit/d791360fdb50c2e6bcdc27171e8388c98795d970)] (by Kwok Ronny)
+- 🔍 SEO og:image 更新 [[69af0aa](https://github.com/kwokronny/roadbook/commit/69af0aae83317dae05cba0e516396635e9709473)] (by KwokRonny)
+
+
 <a name="1.0.4"></a>
 ## 1.0.4 (2025-05-27)
 
