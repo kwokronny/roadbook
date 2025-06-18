@@ -76,7 +76,7 @@ export class CustomMDXRenderer extends MDXRenderer {
         const text = await utils.transformRichText(block.code.rich_text);
         const caption = block.code.caption?.[0]?.plain_text || '';
         const language = block.code.language || '';
-        if (caption.trim() === 'hexo') {
+        if (caption.trim() === 'hero') {
           return `---\n${text}\n---\n`;
         }
         return `\`\`\`${language} ${caption}\n${text}\n\`\`\`\n\n`;
