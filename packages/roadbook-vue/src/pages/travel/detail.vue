@@ -18,12 +18,12 @@
         </template>
         <template v-else>
           <MazBtn
-            color="success"
             pastel
-            fab
+            color="success"
             icon="solar/share"
-            @click="handleShare"
-          ></MazBtn>
+            @click="travelPremShow = true"
+            fab
+          />
           <Dropdown
             v-if="perm === 'manage'"
             :items="travelOptionDropMenu"
@@ -295,13 +295,13 @@ const travelOptionDropMenu = [
   },
 ];
 
-async function handleShare() {
-  try {
-    await share({ title: detail.value?.name || "", url: window.location.href });
-  } catch {
-    copy(window.location.href).then(() => toast.success("分享链接复制成功"));
-  }
-}
+// async function handleShare() {
+//   try {
+//     await share({ title: detail.value?.name || "", url: window.location.href });
+//   } catch {
+//     copy(window.location.href).then(() => toast.success("分享链接复制成功"));
+//   }
+// }
 
 //#region 旅程信息
 const id: number = parseInt(route.params.id as string);
