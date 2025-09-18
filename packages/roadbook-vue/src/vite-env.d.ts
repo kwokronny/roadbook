@@ -6,6 +6,45 @@ declare module "md5";
 declare module "compressorjs";
 
 declare namespace AMap {
+  namespace ElasticMarker {
+    interface EventMap<I = Marker> {
+      click: MapsEvent<"click", I>;
+      dblclick: MapsEvent<"dblclick", I>;
+      rightclick: MapsEvent<"rightclick", I>;
+      mousemove: MapsEvent<"mousemove", I>;
+      mouseover: MapsEvent<"mouseover", I>;
+      mouseout: MapsEvent<"mouseout", I>;
+      mousedown: MapsEvent<"mousedown", I>;
+      mouseup: MapsEvent<"mouseup", I>;
+      dragstart: MapsEvent<"dragstart", I>;
+      dragging: MapsEvent<"dragging", I>;
+      dragend: MapsEvent<"dragend", I>;
+      moving: Event<"moving", { passedPath: LngLat[] }>;
+      moveend: Event<"moveend">;
+      movealong: Event<"movealong">;
+      touchstart: MapsEvent<"touchstart", I>;
+      touchmove: MapsEvent<"touchmove", I>;
+      touchend: MapsEvent<"touchend", I>;
+    }
+    interface Options {
+      position: LngLat;
+      styles: Array<{
+        icon: {
+          img: string;
+          anchor: string;
+        };
+        label: {
+          position: string;
+          content: string;
+        };
+      }>;
+      zoomStyleMapping: Record<number, number>;
+    }
+  }
+
+  class ElasticMarker<ExtraData = any> extends Overlay<ExtraData> {
+    constructor(opts: any);
+  }
   class AutoComplete extends Autocomplete {}
   namespace Walking {
     interface EventMap {

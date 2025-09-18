@@ -240,8 +240,8 @@ import { computed, onMounted, provide, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useToast, useWindowSize, throttle, useDialog, debounce } from "maz-ui";
 import dayjs from "dayjs";
-import { MapUtil } from "@/helper/amap";
-import { DateUtil, copy, share } from "@/helper/util";
+import { createScheduleMarkerIcon, MapUtil } from "@/helper/amap";
+import { DateUtil } from "@/helper/util";
 import { useStore } from "@/store";
 import { roleType } from "@/helper/enum";
 import { storeToRefs } from "pinia";
@@ -597,21 +597,75 @@ watch(
   }
 );
 
-function createScheduleMarker(item: ISchedule, day: string) {
+const dayColor = [
+  "#1f8fff",
+  "#5425c6",
+  "#c625c2",
+  "#c6255a",
+  "#348e0e",
+  "#1599a6",
+];
+
+function createScheduleMarker(item: ISchedule, idx: number, day?: string) {
   if (!mapInstance || search.keyword) return false;
   let position: AMap.LngLat = MapUtil.LngLat(item.coordinate || "");
-  const dayLabel =
-    day !== "-1"
-      ? `Day ${day} ${item.isHotel ? "" : DateUtil.timeFm(item.startTime)}`
-      : "待规划";
-  let instance = new AMap.Marker({
-    icon: "/icons/schedule.svg",
-    position,
-    anchor: "bottom-left",
-    label: {
-      offset: new AMap.Pixel(5, 0),
-      content: `${dayLabel}</br>${item.name}`,
+  // const dayLabel = day !== "-1" ? `D${day}` : "NA";
+  let icon = createScheduleMarkerIcon("H", "#544380");
+  if (!item.isHotel) {
+    if (!item.startTime) {
+      icon = createScheduleMarkerIcon("?", "#c38a1b");
+    } else {
+      icon = createScheduleMarkerIcon(
+        `${idx}`,
+        day ? dayColor[parseInt(day)] : "#1f8fff"
+      );
+    }
+  }
+  const styles = [
+    {
+      icon: {
+        img: icon,
+        size: [20, 20],
+        anchor: "bottom-center",
+        scaleFactor: 0.5,
+        minScale: 2,
+        maxScale: 4,
+      },
     },
+    {
+      icon: {
+        img: icon,
+        size: [20, 20],
+        anchor: "bottom-center",
+        scaleFactor: 0.5,
+        minScale: 2,
+        maxScale: 4,
+      },
+      label: {
+        position: "BM",
+        content: item.name,
+      },
+    },
+  ];
+  if (day && day !== "-1") {
+    styles[0].label = {
+      position: "BM",
+      content: `D${day}`,
+    };
+    styles[1].label = {
+      position: "BM",
+      content: `D${day}:${item.name}`,
+    };
+  }
+  let zoomStyleMapping: Record<number, number> = {};
+  for (let i = 2; i < 26; i++) {
+    zoomStyleMapping[i] = i > 14 ? 1 : 0;
+  }
+  let instance = new AMap.ElasticMarker({
+    position,
+    zooms: [2, 26],
+    styles,
+    zoomStyleMapping,
   });
   instance.on("click", () => {
     handleEditSchedule(item);
@@ -622,19 +676,23 @@ function createScheduleMarker(item: ISchedule, day: string) {
 async function renderRouteMap(fitView: boolean = true) {
   if (!mapInstance || search.keyword) return false;
   mapInstance.clearMap?.();
-  let markers: AMap.Marker[] = [];
+  let markers: AMap.ElasticMarker[] = [];
   if (mapMode.value) {
     Object.keys(scheduleDay.value).forEach((key) => {
+      let idx = 1;
       scheduleDay.value[key]?.forEach((item: ISchedule) => {
-        const instance = createScheduleMarker(item, key);
+        idx = item.isHotel ? 0 : idx + 1;
+        const instance = createScheduleMarker(item, idx, key);
         if (instance) {
           markers.push(instance);
         }
       });
     });
   } else {
+    let idx = 1;
     scheduleDay.value[day.value]?.forEach((item: ISchedule) => {
-      const instance = createScheduleMarker(item, day.value);
+      idx = item.isHotel ? 0 : idx + 1;
+      const instance = createScheduleMarker(item, idx);
       if (instance) {
         markers.push(instance);
       }
