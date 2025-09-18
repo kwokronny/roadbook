@@ -47,5 +47,6 @@ declare module 'vue' {
   }
   export interface ComponentCustomProperties {
     vFullscreenImg: typeof import('maz-ui')['vFullscreenImg']
+    vTooltip: typeof import('maz-ui')['vTooltip']
   }
 }

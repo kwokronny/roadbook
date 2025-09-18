@@ -104,7 +104,7 @@ const { model, handleSubmit, hints, reset } = useForm<ITravel>(
     endDate: "",
     userIds: [],
     public: false,
-    equip: "",
+    // equip: "",
   },
   {
     rules: {
@@ -127,7 +127,10 @@ const { model, handleSubmit, hints, reset } = useForm<ITravel>(
     },
     onSubmit: async (data) => {
       const res = await travelApi.save(
-        Object.assign(data, { city: (data.city || []).join(",") })
+        Object.assign(data, {
+          city: (data.city || []).join(","),
+          equip: undefined,
+        })
       );
       emit("saved", res.data.id!);
       emit("update:model-value", false);
