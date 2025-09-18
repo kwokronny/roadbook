@@ -2,18 +2,33 @@
   <div class="schedule-item text-c_t">
     <h2 class="schedule-item__header">
       <div class="flex-h flex-ai_c gap-s1 drag-handle" :title="title">
-        <img src="/icons/hotel.svg" v-if="item.isHotel" style="width: 30px; height: 30px;" />
-        <img src="/icons/time.svg" v-else style="width: 30px; height: 30px;" />
+        <img
+          src="/icons/hotel.svg"
+          v-if="item.isHotel"
+          style="width: 30px; height: 30px"
+        />
+        <img src="/icons/time.svg" v-else style="width: 30px; height: 30px" />
         <span> {{ title }} </span>
       </div>
       <div class="flex-h gap-s1 flex-ai_c" v-if="canEdit">
-        <MazIcon
-          name="solar/edit"
+        <MazBtn
+          icon="solar/edit"
           @click="emit('action', 'edit')"
-          class="text-c_ts curs-pointer"
-        ></MazIcon>
+          color="transparent"
+          no-elevation
+          size="sm"
+          rounded-size="full"
+          v-tooltip.bottom="'编辑'"
+        ></MazBtn>
         <Dropdown :items="dropMenu">
-          <MazIcon name="more" class="text-c_ts curs-pointer"></MazIcon>
+          <MazBtn
+            icon="more"
+            no-elevation
+            color="transparent"
+            size="sm"
+            rounded-size="full"
+            v-tooltip.bottom="'更多'"
+          ></MazBtn>
         </Dropdown>
       </div>
     </h2>

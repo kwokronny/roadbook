@@ -12,16 +12,25 @@
             outline
             rounded-size="full"
             @click="mapMode = false"
+            v-tooltip.bottom="'退出全览地图'"
           >
             <MazIcon name="solar/close" size="30px"></MazIcon>
           </MazBtn>
         </template>
         <template v-else>
           <MazBtn
+            fab
+            @click="store.toggleTheme"
+            color="theme"
+            :icon="theme"
+            v-tooltip.bottom="'切换主题'"
+          ></MazBtn>
+          <MazBtn
             pastel
             color="success"
-            icon="solar/share"
+            icon="solar/perm"
             @click="travelPremShow = true"
+            v-tooltip.bottom="'分享与权限设置'"
             fab
           />
           <Dropdown
@@ -29,14 +38,14 @@
             :items="travelOptionDropMenu"
             position="bottom right"
           >
-            <MazBtn pastel color="success" fab icon="solar/setting"></MazBtn>
+            <MazBtn
+              pastel
+              color="success"
+              fab
+              icon="more"
+              v-tooltip.bottom="'设置'"
+            ></MazBtn>
           </Dropdown>
-          <MazBtn
-            fab
-            @click="store.toggleTheme"
-            color="theme"
-            :icon="theme"
-          ></MazBtn>
         </template>
       </template>
     </Header>
@@ -75,7 +84,7 @@
             点击标注添加至待规划
           </div>
         </div>
-        <AMapContainer @loaded="handleMapLoaded" />
+        <AMapContainer v-if="detail && schedules" @loaded="handleMapLoaded" />
       </div>
       <div class="schedule-section" v-if="width > 768 || !mapMode">
         <div class="schedule-section__wrap">
@@ -281,12 +290,12 @@ const travelOptionDropMenu = [
     class: "text-c_t",
     action: () => (travelEditShow.value = true),
   },
-  {
-    label: "管理协作者",
-    icon: "solar/perm",
-    class: "text-c_t",
-    action: () => (travelPremShow.value = true),
-  },
+  // {
+  //   label: "管理协作者",
+  //   icon: "solar/perm",
+  //   class: "text-c_t",
+  //   action: () => (travelPremShow.value = true),
+  // },
   {
     label: "删除旅程",
     icon: "solar/close",
@@ -515,7 +524,7 @@ async function handleSaveSchedule(data: ISchedule) {
       schedules.value.push(data);
       toast.success("添加行程成功", { position: "top" });
     }
-    renderRouteMap(false);
+    renderScheduleMarkder(false);
   }
 }
 
@@ -524,7 +533,7 @@ async function handleCloneSchedule(item: ISchedule) {
     if (!item?.id) return;
     const res = await travelApi.cloneSchedule(item.id);
     schedules.value?.push(res.data);
-    renderRouteMap();
+    renderScheduleMarkder();
   } catch (e) {
     console.error(e);
   }
@@ -550,7 +559,7 @@ async function handleRemoveSchedule(item: ISchedule) {
             let index = schedules.value?.findIndex((i) => i.id === item.id);
             if (index !== undefined && index > -1) {
               schedules.value?.splice(index, 1);
-              renderRouteMap();
+              renderScheduleMarkder();
             }
           } catch (e) {
             console.error(e);
@@ -585,14 +594,13 @@ const mapMode = ref(false);
 
 function handleMapLoaded(map: AMap.Map) {
   mapInstance = map;
-  renderRouteMap();
+  renderScheduleMarkder();
 }
-
 watch(
   () => day.value,
   async () => {
     if (width.value > 768) {
-      renderRouteMap();
+      renderScheduleMarkder();
     }
   }
 );
@@ -647,19 +655,19 @@ function createScheduleMarker(item: ISchedule, idx: number, day?: string) {
       },
     },
   ];
-  if (day && day !== "-1") {
+  if (day) {
     styles[0].label = {
       position: "BM",
-      content: `D${day}`,
+      content: day === "-1" ? "待规划" : `Day ${day}`,
     };
     styles[1].label = {
       position: "BM",
-      content: `D${day}:${item.name}`,
+      content: `${day === "-1" ? "" : `Day ${day}：`}${item.name}`,
     };
   }
   let zoomStyleMapping: Record<number, number> = {};
   for (let i = 2; i < 26; i++) {
-    zoomStyleMapping[i] = i > 14 ? 1 : 0;
+    zoomStyleMapping[i] = i > 13 ? 1 : 0;
   }
   let instance = new AMap.ElasticMarker({
     position,
@@ -673,7 +681,7 @@ function createScheduleMarker(item: ISchedule, idx: number, day?: string) {
   return instance;
 }
 
-async function renderRouteMap(fitView: boolean = true) {
+async function renderScheduleMarkder(fitView: boolean = true) {
   if (!mapInstance || search.keyword) return false;
   mapInstance.clearMap?.();
   let markers: AMap.ElasticMarker[] = [];
@@ -725,11 +733,11 @@ function handleMobileOpenMap() {
 }
 
 const handleSearch = throttle(async () => {
+  if (!mapInstance) return;
   if (search.keyword === "") {
-    renderRouteMap();
+    renderScheduleMarkder();
     return;
   }
-  if (!mapInstance) return;
   mapInstance.clearMap?.();
   let markers: AMap.Marker[] = [];
   const res = await MapUtil.searchPleace(search.keyword, {
@@ -749,7 +757,7 @@ const handleSearch = throttle(async () => {
 function createPOIMarker(poi: AMap.PlaceSearch.PoiExt) {
   if (!mapInstance || !poi.location) return;
   const marker = new AMap.Marker({
-    icon: "/icons/marker.svg",
+    icon: createScheduleMarkerIcon("+", "#c38a1b"),
     position: poi.location,
     anchor: "bottom-left",
     label: {
