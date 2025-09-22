@@ -25,7 +25,7 @@ class TravelService {
     }
   }
 
-  async detail(id, uid) {
+  async detail(uid, id) {
     try {
       const travel = await db.Travel.findByPk(id, {
         include: [
@@ -43,15 +43,18 @@ class TravelService {
     }
   }
 
-  async setEquip(data) {
+  async setEquip(uid, data) {
     try {
       let travel = await db.Travel.findByPk(data.id)
       if (travel) {
-        if (!await travel.hasUser(uid, { through: { where: { role: "edit" } } })) throw "您无权限修改旅程信息"
+        if (!await travel.hasUser(uid, { through: { where: { role: { [Op.in]: ["edit", "manage"] } } } })) throw "您无权限修改旅程信息"
         await travel.update({ equip: data.equip })
+      } else {
+        throw "旅程不存在"
       }
     } catch (e) {
-      throw "获取失败";
+      console.error(e)
+      throw "设置失败";
     }
   }
 
@@ -60,7 +63,7 @@ class TravelService {
       let travel = await db.Travel.findByPk(data.id);
       // 旅程是否已存在
       if (travel) {
-        if (!await travel.hasUser(uid, { through: { where: { role: "manage" } } })) throw "您无权限修改旅程信息"
+        if (!await travel.hasUser(uid, { through: { where: { role: { [Op.in]: ["edit", "manage"] } } } })) throw "您无权限修改旅程信息"
         travel = await travel.update(data);
       } else {
         travel = await db.Travel.create(data);
@@ -79,7 +82,7 @@ class TravelService {
       let travel = await db.Travel.findByPk(data.id);
       // 旅程是否已存在
       if (travel) {
-        if (!await travel.hasUser(uid, { through: { where: { role: "manage" } } })) throw "您无权限邀请协作者"
+        if (!await travel.hasUser(uid, { through: { where: { role: { [Op.in]: ["edit", "manage"] } } } })) throw "您无权限邀请协作者"
         return JWT.sign({ id: data.id }, config.sercet, { expiresIn: '7d' })
       } else {
         throw "旅程不存在";
@@ -114,7 +117,7 @@ class TravelService {
       let travel = await db.Travel.findByPk(data.id);
       // 旅程是否已存在
       if (travel && data.uid) {
-        if (!await travel.hasUser(uid, { through: { where: { role: "manage" } } })) throw "您无权限修改旅程信息"
+        if (!await travel.hasUser(uid, { through: { where: { role: "manage" } } })) throw "您无权限修改用户角色"
         // 编辑用户权限
         let user = await travel.getUsers({ where: { id: data.uid } })
         if (user && user.id !== uid) {

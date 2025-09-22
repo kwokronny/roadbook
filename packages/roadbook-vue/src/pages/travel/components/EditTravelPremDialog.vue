@@ -6,7 +6,7 @@
     <template #title>
       <div class="spac-pv_s2 flex-h flex-ai_c">
         <MazIcon name="solar/perm" size="24px" class="spac-mr_s1"></MazIcon>
-        权限设置
+        分享与权限设置
       </div>
     </template>
     <div class="flex-v gap-s2" style="min-height: 300px">
@@ -37,11 +37,8 @@
             {{ user.name || user.username }}
           </div>
         </div>
-        <div class="shrink-0" v-if="userInfo?.id === user.id">
-          {{ roleTypeEnum.get(user.UserTravel.role).label }}
-        </div>
         <MazSelect
-          v-else
+          :disabled="userInfo?.id === user.id"
           :model-value="user.UserTravel.role"
           @update:model-value="(val) => handleSetRole(user, val as roleType)"
           :options="roleTypeEnum.getArray()"
@@ -94,7 +91,9 @@ watch(
 );
 
 async function handleCopy() {
-  copy(url.value)
+  copy(
+    `${userInfo?.name}邀请您加入他的旅程计划，点击链接接受邀请：\n${url.value}`
+  )
     .then(() => toast.success("复制成功"))
     .catch(() => toast.error("复制失败，请手动复制"));
 }

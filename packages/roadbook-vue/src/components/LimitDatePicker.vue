@@ -130,6 +130,7 @@ const days = computed(() => {
   transition: background-color 0.3s ease;
   &:hover{
     background-color: var(--maz-color-primary-50);
+    color: #333;
   }
   &.between{
     background-color: var(--maz-color-primary-50);

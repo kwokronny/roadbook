@@ -12,31 +12,40 @@
             outline
             rounded-size="full"
             @click="mapMode = false"
+            v-tooltip.bottom="'退出全览地图'"
           >
             <MazIcon name="solar/close" size="30px"></MazIcon>
           </MazBtn>
         </template>
         <template v-else>
           <MazBtn
-            color="success"
-            pastel
             fab
-            icon="solar/share"
-            @click="handleShare"
+            @click="store.toggleTheme"
+            color="theme"
+            :icon="theme"
+            v-tooltip.bottom="'切换主题'"
           ></MazBtn>
+          <MazBtn
+            pastel
+            color="success"
+            icon="solar/perm"
+            @click="travelPremShow = true"
+            v-tooltip.bottom="'分享与权限设置'"
+            fab
+          />
           <Dropdown
             v-if="perm === 'manage'"
             :items="travelOptionDropMenu"
             position="bottom right"
           >
-            <MazBtn pastel color="success" fab icon="solar/setting"></MazBtn>
+            <MazBtn
+              pastel
+              color="success"
+              fab
+              icon="more"
+              v-tooltip.bottom="'设置'"
+            ></MazBtn>
           </Dropdown>
-          <MazBtn
-            fab
-            @click="store.toggleTheme"
-            color="theme"
-            :icon="theme"
-          ></MazBtn>
         </template>
       </template>
     </Header>
@@ -67,15 +76,16 @@
               <MazIcon
                 size="1.5rem"
                 name="solar/search"
+                class="curs-pointer"
                 @click="handleSearch()"
               />
             </template>
           </MazInput>
-          <div v-if="search.keyword" class="search-tip">
-            点击标注添加至待规划
+          <div class="search-tip">
+            {{search.keyword ? '点击标注添加行程' : '点击标注编辑行程'}}
           </div>
         </div>
-        <AMapContainer @loaded="handleMapLoaded" />
+        <AMapContainer v-if="detail && schedules" @loaded="handleMapLoaded" />
       </div>
       <div class="schedule-section" v-if="width > 768 || !mapMode">
         <div class="schedule-section__wrap">
@@ -241,7 +251,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useToast, useWindowSize, throttle, useDialog, debounce } from "maz-ui";
 import dayjs from "dayjs";
 import { MapUtil } from "@/helper/amap";
-import { DateUtil, copy, share } from "@/helper/util";
+import { DateUtil } from "@/helper/util";
 import { useStore } from "@/store";
 import { roleType } from "@/helper/enum";
 import { storeToRefs } from "pinia";
@@ -281,12 +291,12 @@ const travelOptionDropMenu = [
     class: "text-c_t",
     action: () => (travelEditShow.value = true),
   },
-  {
-    label: "管理协作者",
-    icon: "solar/perm",
-    class: "text-c_t",
-    action: () => (travelPremShow.value = true),
-  },
+  // {
+  //   label: "管理协作者",
+  //   icon: "solar/perm",
+  //   class: "text-c_t",
+  //   action: () => (travelPremShow.value = true),
+  // },
   {
     label: "删除旅程",
     icon: "solar/close",
@@ -295,13 +305,13 @@ const travelOptionDropMenu = [
   },
 ];
 
-async function handleShare() {
-  try {
-    await share({ title: detail.value?.name || "", url: window.location.href });
-  } catch {
-    copy(window.location.href).then(() => toast.success("分享链接复制成功"));
-  }
-}
+// async function handleShare() {
+//   try {
+//     await share({ title: detail.value?.name || "", url: window.location.href });
+//   } catch {
+//     copy(window.location.href).then(() => toast.success("分享链接复制成功"));
+//   }
+// }
 
 //#region 旅程信息
 const id: number = parseInt(route.params.id as string);
@@ -334,6 +344,7 @@ async function getDetail() {
       let res = await travelApi.detail(id);
       detail.value = res.data;
       detail.value.city = res.data.city?.split(",") || [];
+      search.city = detail.value.city?.[0] || "全国";
     }
     loading.value = false;
   } catch {
@@ -515,7 +526,7 @@ async function handleSaveSchedule(data: ISchedule) {
       schedules.value.push(data);
       toast.success("添加行程成功", { position: "top" });
     }
-    renderRouteMap(false);
+    renderScheduleMarkder(false);
   }
 }
 
@@ -524,7 +535,7 @@ async function handleCloneSchedule(item: ISchedule) {
     if (!item?.id) return;
     const res = await travelApi.cloneSchedule(item.id);
     schedules.value?.push(res.data);
-    renderRouteMap();
+    renderScheduleMarkder();
   } catch (e) {
     console.error(e);
   }
@@ -550,7 +561,7 @@ async function handleRemoveSchedule(item: ISchedule) {
             let index = schedules.value?.findIndex((i) => i.id === item.id);
             if (index !== undefined && index > -1) {
               schedules.value?.splice(index, 1);
-              renderRouteMap();
+              renderScheduleMarkder();
             }
           } catch (e) {
             console.error(e);
@@ -580,61 +591,70 @@ async function handleOpenEquipDrawer() {
 
 //#region 地图渲染
 let mapInstance: AMap.Map | null = null;
-let markers: AMap.Marker[] = [];
 const mapMode = ref(false);
 
 function handleMapLoaded(map: AMap.Map) {
   mapInstance = map;
-  renderRouteMap();
+  renderScheduleMarkder();
 }
-
 watch(
   () => day.value,
   async () => {
     if (width.value > 768) {
-      renderRouteMap();
+      renderScheduleMarkder();
     }
   }
 );
 
-function createScheduleMarker(item: ISchedule, day: string) {
-  if (!mapInstance || search.keyword) return false;
-  let position: AMap.LngLat = MapUtil.LngLat(item.coordinate || "");
-  const dayLabel =
-    day !== "-1"
-      ? `Day ${day} ${item.isHotel ? "" : DateUtil.timeFm(item.startTime)}`
-      : "待规划";
-  let instance = new AMap.Marker({
-    icon: "/icons/schedule.svg",
-    position,
-    anchor: "bottom-left",
-    label: {
-      offset: new AMap.Pixel(5, 0),
-      content: `${dayLabel}</br>${item.name}`,
-    },
-  });
-  instance.on("click", () => {
-    handleEditSchedule(item);
-  });
-  return instance;
-}
-
-async function renderRouteMap(fitView: boolean = true) {
+async function renderScheduleMarkder(fitView: boolean = true) {
   if (!mapInstance || search.keyword) return false;
   mapInstance.clearMap?.();
-  let markers: AMap.Marker[] = [];
+  const markers: AMap.ElasticMarker[] = [];
   if (mapMode.value) {
     Object.keys(scheduleDay.value).forEach((key) => {
+      let idx = 1;
       scheduleDay.value[key]?.forEach((item: ISchedule) => {
-        const instance = createScheduleMarker(item, key);
+        idx = item.isHotel ? 0 : idx + 1;
+        let type: MapUtil.MarkerType = "schedule";
+        if (key === "-1") {
+          type = "todo";
+        } else if (item.isHotel) {
+          type = "hotel";
+        }
+        const instance = MapUtil.createElasticMarker({
+          position: MapUtil.LngLat(item.coordinate || ""),
+          type,
+          idx: idx.toString(),
+          day: key,
+          label: item.name,
+          click: () => {
+            handleEditSchedule(item);
+          },
+        });
         if (instance) {
           markers.push(instance);
         }
       });
     });
   } else {
+    let idx = 1;
     scheduleDay.value[day.value]?.forEach((item: ISchedule) => {
-      const instance = createScheduleMarker(item, day.value);
+      idx = item.isHotel ? 0 : idx + 1;
+      let type: MapUtil.MarkerType = "schedule";
+      if (item.isHotel) {
+        type = "hotel";
+      } else if (day.value === "-1") {
+        type = "todo";
+      }
+      const instance = MapUtil.createElasticMarker({
+        position: MapUtil.LngLat(item.coordinate || ""),
+        type,
+        idx: idx.toString(),
+        label: item.name,
+        click: () => {
+          handleEditSchedule(item);
+        },
+      });
       if (instance) {
         markers.push(instance);
       }
@@ -667,53 +687,65 @@ function handleMobileOpenMap() {
 }
 
 const handleSearch = throttle(async () => {
+  if (!mapInstance) return;
   if (search.keyword === "") {
-    renderRouteMap();
+    renderScheduleMarkder();
     return;
   }
-  if (!mapInstance) return;
   mapInstance.clearMap?.();
-  let markers: AMap.Marker[] = [];
   const res = await MapUtil.searchPleace(search.keyword, {
     city: search.city,
     extensions: "all",
+    pageSize: 50,
   });
   if (res) {
-    res.poiList?.pois?.forEach((item) =>
-      createPOIMarker(item as AMap.PlaceSearch.PoiExt)
+    const markers = res.poiList?.pois?.map((item) =>
+      MapUtil.createElasticMarker({
+        position: item.location!,
+        type: "poi",
+        label: item.name,
+        click: debounce(() => {
+          handleAddSchedule(item as AMap.PlaceSearch.PoiExt);
+        }, 1000),
+      })
     );
     if (markers.length) {
       mapInstance.add(markers);
+      mapInstance.setFitView(
+        markers,
+        true,
+        [150, 60, 60, 150] // 周围边距，上、下、左、右
+      );
     }
   }
 }, 500);
 
-function createPOIMarker(poi: AMap.PlaceSearch.PoiExt) {
-  if (!mapInstance || !poi.location) return;
-  const marker = new AMap.Marker({
-    icon: "/icons/marker.svg",
-    position: poi.location,
-    anchor: "bottom-left",
-    label: {
-      offset: new AMap.Pixel(5, 0),
-      content: `${poi.name}`,
-    },
-  });
-  marker.on(
-    "click",
-    debounce(() => {
-      handleAddSchedule(poi);
-    }, 1000)
-  );
-  markers.push(marker);
-  mapInstance?.add(marker);
+// function createPOIMarker(poi: AMap.PlaceSearch.PoiExt) {
+//   if (!mapInstance || !poi.location) return;
+//   const marker = new AMap.ElasticMarker({
+//     position: poi.location,
+//     icon: createScheduleMarkerIcon("+", "#c38a1b"),
+//     anchor: "bottom-left",
+//     label: {
+//       offset: new AMap.Pixel(5, 0),
+//       content: `${poi.name}`,
+//     },
+//   });
+//   marker.on(
+//     "click",
+//     debounce(() => {
+//       handleAddSchedule(poi);
+//     }, 1000)
+//   );
+//   markers.push(marker);
+//   mapInstance?.add(marker);
 
-  mapInstance.setFitView(
-    markers,
-    true,
-    [150, 60, 60, 150] // 周围边距，上、下、左、右
-  );
-}
+//   mapInstance.setFitView(
+//     markers,
+//     true,
+//     [150, 60, 60, 150] // 周围边距，上、下、左、右
+//   );
+// }
 
 async function handleAddSchedule(poi: AMap.PlaceSearch.PoiExt) {
   try {

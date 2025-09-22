@@ -46,15 +46,19 @@ const hourCls = (num: number) => {
 .hour-wrap{
   display: grid;
   grid-template-columns: repeat(12, 1fr);
+  @media screen and (max-width: 768px) {
+    grid-template-columns: repeat(6, 1fr);
+  }
 }
 .hour {
   l-flex: v c c;
-  flex: 0 0 30px;
+  flex: 0 0 40px;
   cursor: pointer;
-  height: 30px;
+  height: 40px;
   border-radius: 8px;
   &:hover{
     background-color: var(--maz-color-primary-50);
+    color: #888;
   }
   &.active {
     background-color: var(--maz-color-primary);

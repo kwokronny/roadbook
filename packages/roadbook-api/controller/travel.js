@@ -59,7 +59,7 @@ class TravelController {
       await ctx.verifyParams({
         id: "int",
       });
-      let travel = await TravelService.detail(ctx.request.body.id, ctx.state.user?.id);
+      let travel = await TravelService.detail(ctx.state.user?.id, ctx.request.body.id);
       ctx.body = ajaxReturn(travel);
     } catch (e) {
       ctx.body = ajaxReturn(e, 500);
@@ -72,7 +72,7 @@ class TravelController {
         id: "int",
         equip: "string"
       });
-      ctx.body = ajaxReturn(await TravelService.setEquip(ctx.request.body));
+      ctx.body = ajaxReturn(await TravelService.setEquip(ctx.state.user.id, ctx.request.body));
     } catch (e) {
       ctx.body = ajaxReturn(e, 500);
     }
@@ -122,7 +122,7 @@ class TravelController {
       await ctx.verifyParams({
         id: "int",
       });
-      let travel = await TravelService.detail(ctx.request.body.id, ctx.state.user?.id)
+      let travel = await TravelService.detail(ctx.state.user?.id, ctx.request.body.id)
       if (travel) {
         let schedule = await ScheduleService.list(ctx.request.body.id);
         ctx.body = ajaxReturn(schedule);

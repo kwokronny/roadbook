@@ -5,24 +5,20 @@
     trigger="click"
     :class="[{ 'is-fit': fit }]"
   >
-    <template #menuitem="{ item: menuItem }">
+    <template #menuitem="{ item }">
       <component
-        :is="menuItem.href ? 'a' : 'div'"
+        :is="item.href ? 'a' : 'div'"
         tabindex="-1"
-        :href="menuItem.href"
+        :href="item.href"
         target="_blank"
         rel="noreferrer noopener"
-        :class="[
-          'menuitem',
-          menuItem.class,
-          'flex-h flex-ai_c gap-s1 text-s_s',
-        ]"
+        :class="['menuitem', item.class, 'flex-h flex-ai_c gap-s1 text-s_s']"
         v-on="{
-          click: menuItem.action,
+          click: item.action,
         }"
       >
-        <MazIcon v-if="menuItem.icon" :name="menuItem.icon || ''" size="18px" />
-        <span> {{ menuItem.label }} </span>
+        <MazIcon v-if="item.icon" :name="item.icon" size="18px" />
+        <span> {{ item.label }} </span>
       </component>
     </template>
     <template #element>

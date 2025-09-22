@@ -2,12 +2,12 @@
   <header class="flex-h flex-ai_c flex-jc_sb">
     <div class="flex-h flex-ai_c text-c_t flex-fill" style="gap: 8px">
       <MazBtn
+        v-if="props.back"
         fab
         icon="back"
-        no-elevation
         color="transparent"
-        v-if="props.back"
         @click="router.push('/travel')"
+        v-tooltip.bottom="'返回'"
       ></MazBtn>
       <h2 class="spac-mv_0 flex-fill" style="width: 0">
         <slot name="title">小肥路书</slot>

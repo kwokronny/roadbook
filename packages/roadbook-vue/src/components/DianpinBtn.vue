@@ -8,6 +8,7 @@
     color="warning"
     :href="dianpingUrl"
     target="_blank"
+    v-tooltip.bottom="'跳到点评链接'"
   >
   </MazBtn>
 </template>

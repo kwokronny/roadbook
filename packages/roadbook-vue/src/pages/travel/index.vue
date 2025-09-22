@@ -9,12 +9,14 @@
           color="info"
           pastel
           icon="solar/help"
+          v-tooltip.bottom="'帮助文档'"
         ></MazBtn>
         <MazBtn
           fab
           @click="store.toggleTheme"
           color="theme"
           :icon="theme"
+          v-tooltip.bottom="'切换主题'"
         ></MazBtn>
         <Dropdown
           v-if="userInfo"
@@ -25,6 +27,7 @@
             :src="userInfo.avatar"
             fallback-src="/logo.png"
             buttonColor="success"
+            class="curs-pointer"
             imageHeightFull
             :caption="userInfo.name || userInfo.username"
           ></MazAvatar>
