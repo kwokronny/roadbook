@@ -58,6 +58,7 @@ const hourCls = (num: number) => {
   border-radius: 8px;
   &:hover{
     background-color: var(--maz-color-primary-50);
+    color: #888;
   }
   &.active {
     background-color: var(--maz-color-primary);

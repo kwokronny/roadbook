@@ -30,6 +30,7 @@ declare module 'vue' {
     MazInputTags: typeof import('maz-ui/components/MazInputTags')['default']
     MazLink: typeof import('maz-ui/components/MazLink')['default']
     MazPicker: typeof import('maz-ui/components/MazPicker')['default']
+    MazPopover: typeof import('maz-ui/components/MazPopover')['default']
     MazRadioButtons: typeof import('maz-ui/components/MazRadioButtons')['default']
     MazSelect: typeof import('maz-ui/components/MazSelect')['default']
     MazSpinner: typeof import('maz-ui/components/MazSpinner')['default']

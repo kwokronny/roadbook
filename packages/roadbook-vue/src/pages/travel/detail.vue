@@ -76,12 +76,13 @@
               <MazIcon
                 size="1.5rem"
                 name="solar/search"
+                class="curs-pointer"
                 @click="handleSearch()"
               />
             </template>
           </MazInput>
-          <div v-if="search.keyword" class="search-tip">
-            点击标注添加至待规划
+          <div class="search-tip">
+            {{search.keyword ? '点击标注添加行程' : '点击标注编辑行程'}}
           </div>
         </div>
         <AMapContainer v-if="detail && schedules" @loaded="handleMapLoaded" />
@@ -249,7 +250,7 @@ import { computed, onMounted, provide, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useToast, useWindowSize, throttle, useDialog, debounce } from "maz-ui";
 import dayjs from "dayjs";
-import { createScheduleMarkerIcon, MapUtil } from "@/helper/amap";
+import { MapUtil } from "@/helper/amap";
 import { DateUtil } from "@/helper/util";
 import { useStore } from "@/store";
 import { roleType } from "@/helper/enum";
@@ -343,6 +344,7 @@ async function getDetail() {
       let res = await travelApi.detail(id);
       detail.value = res.data;
       detail.value.city = res.data.city?.split(",") || [];
+      search.city = detail.value.city?.[0] || "全国";
     }
     loading.value = false;
   } catch {
@@ -589,7 +591,6 @@ async function handleOpenEquipDrawer() {
 
 //#region 地图渲染
 let mapInstance: AMap.Map | null = null;
-let markers: AMap.Marker[] = [];
 const mapMode = ref(false);
 
 function handleMapLoaded(map: AMap.Map) {
@@ -605,92 +606,31 @@ watch(
   }
 );
 
-const dayColor = [
-  "#1f8fff",
-  "#5425c6",
-  "#c625c2",
-  "#c6255a",
-  "#348e0e",
-  "#1599a6",
-];
-
-function createScheduleMarker(item: ISchedule, idx: number, day?: string) {
-  if (!mapInstance || search.keyword) return false;
-  let position: AMap.LngLat = MapUtil.LngLat(item.coordinate || "");
-  // const dayLabel = day !== "-1" ? `D${day}` : "NA";
-  let icon = createScheduleMarkerIcon("H", "#544380");
-  if (!item.isHotel) {
-    if (!item.startTime) {
-      icon = createScheduleMarkerIcon("?", "#c38a1b");
-    } else {
-      icon = createScheduleMarkerIcon(
-        `${idx}`,
-        day ? dayColor[parseInt(day)] : "#1f8fff"
-      );
-    }
-  }
-  const styles = [
-    {
-      icon: {
-        img: icon,
-        size: [20, 20],
-        anchor: "bottom-center",
-        scaleFactor: 0.5,
-        minScale: 2,
-        maxScale: 4,
-      },
-    },
-    {
-      icon: {
-        img: icon,
-        size: [20, 20],
-        anchor: "bottom-center",
-        scaleFactor: 0.5,
-        minScale: 2,
-        maxScale: 4,
-      },
-      label: {
-        position: "BM",
-        content: item.name,
-      },
-    },
-  ];
-  if (day) {
-    styles[0].label = {
-      position: "BM",
-      content: day === "-1" ? "待规划" : `Day ${day}`,
-    };
-    styles[1].label = {
-      position: "BM",
-      content: `${day === "-1" ? "" : `Day ${day}：`}${item.name}`,
-    };
-  }
-  let zoomStyleMapping: Record<number, number> = {};
-  for (let i = 2; i < 26; i++) {
-    zoomStyleMapping[i] = i > 13 ? 1 : 0;
-  }
-  let instance = new AMap.ElasticMarker({
-    position,
-    zooms: [2, 26],
-    styles,
-    zoomStyleMapping,
-  });
-  instance.on("click", () => {
-    handleEditSchedule(item);
-  });
-  return instance;
-}
-
 async function renderScheduleMarkder(fitView: boolean = true) {
   if (!mapInstance || search.keyword) return false;
   mapInstance.clearMap?.();
-  let markers: AMap.ElasticMarker[] = [];
+  const markers: AMap.ElasticMarker[] = [];
   if (mapMode.value) {
     Object.keys(scheduleDay.value).forEach((key) => {
       let idx = 1;
       scheduleDay.value[key]?.forEach((item: ISchedule) => {
         idx = item.isHotel ? 0 : idx + 1;
-        const instance = createScheduleMarker(item, idx, key);
+        let type: MapUtil.MarkerType = "schedule";
+        if (key === "-1") {
+          type = "todo";
+        } else if (item.isHotel) {
+          type = "hotel";
+        }
+        const instance = MapUtil.createElasticMarker({
+          position: MapUtil.LngLat(item.coordinate || ""),
+          type,
+          idx: idx.toString(),
+          day: key,
+          label: item.name,
+          click: () => {
+            handleEditSchedule(item);
+          },
+        });
         if (instance) {
           markers.push(instance);
         }
@@ -700,7 +640,21 @@ async function renderScheduleMarkder(fitView: boolean = true) {
     let idx = 1;
     scheduleDay.value[day.value]?.forEach((item: ISchedule) => {
       idx = item.isHotel ? 0 : idx + 1;
-      const instance = createScheduleMarker(item, idx);
+      let type: MapUtil.MarkerType = "schedule";
+      if (item.isHotel) {
+        type = "hotel";
+      } else if (day.value === "-1") {
+        type = "todo";
+      }
+      const instance = MapUtil.createElasticMarker({
+        position: MapUtil.LngLat(item.coordinate || ""),
+        type,
+        idx: idx.toString(),
+        label: item.name,
+        click: () => {
+          handleEditSchedule(item);
+        },
+      });
       if (instance) {
         markers.push(instance);
       }
@@ -739,47 +693,59 @@ const handleSearch = throttle(async () => {
     return;
   }
   mapInstance.clearMap?.();
-  let markers: AMap.Marker[] = [];
   const res = await MapUtil.searchPleace(search.keyword, {
     city: search.city,
     extensions: "all",
+    pageSize: 50,
   });
   if (res) {
-    res.poiList?.pois?.forEach((item) =>
-      createPOIMarker(item as AMap.PlaceSearch.PoiExt)
+    const markers = res.poiList?.pois?.map((item) =>
+      MapUtil.createElasticMarker({
+        position: item.location!,
+        type: "poi",
+        label: item.name,
+        click: debounce(() => {
+          handleAddSchedule(item as AMap.PlaceSearch.PoiExt);
+        }, 1000),
+      })
     );
     if (markers.length) {
       mapInstance.add(markers);
+      mapInstance.setFitView(
+        markers,
+        true,
+        [150, 60, 60, 150] // 周围边距，上、下、左、右
+      );
     }
   }
 }, 500);
 
-function createPOIMarker(poi: AMap.PlaceSearch.PoiExt) {
-  if (!mapInstance || !poi.location) return;
-  const marker = new AMap.Marker({
-    icon: createScheduleMarkerIcon("+", "#c38a1b"),
-    position: poi.location,
-    anchor: "bottom-left",
-    label: {
-      offset: new AMap.Pixel(5, 0),
-      content: `${poi.name}`,
-    },
-  });
-  marker.on(
-    "click",
-    debounce(() => {
-      handleAddSchedule(poi);
-    }, 1000)
-  );
-  markers.push(marker);
-  mapInstance?.add(marker);
+// function createPOIMarker(poi: AMap.PlaceSearch.PoiExt) {
+//   if (!mapInstance || !poi.location) return;
+//   const marker = new AMap.ElasticMarker({
+//     position: poi.location,
+//     icon: createScheduleMarkerIcon("+", "#c38a1b"),
+//     anchor: "bottom-left",
+//     label: {
+//       offset: new AMap.Pixel(5, 0),
+//       content: `${poi.name}`,
+//     },
+//   });
+//   marker.on(
+//     "click",
+//     debounce(() => {
+//       handleAddSchedule(poi);
+//     }, 1000)
+//   );
+//   markers.push(marker);
+//   mapInstance?.add(marker);
 
-  mapInstance.setFitView(
-    markers,
-    true,
-    [150, 60, 60, 150] // 周围边距，上、下、左、右
-  );
-}
+//   mapInstance.setFitView(
+//     markers,
+//     true,
+//     [150, 60, 60, 150] // 周围边距，上、下、左、右
+//   );
+// }
 
 async function handleAddSchedule(poi: AMap.PlaceSearch.PoiExt) {
   try {
