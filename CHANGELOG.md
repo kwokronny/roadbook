@@ -1,5 +1,25 @@
 # Changelog
 
+<a name="1.0.6"></a>
+## 1.0.6 (2025-09-22)
+
+### Changed
+
+- 💄 优化移动端地图模式标注及优化代码结构 [[d3b2e75](https://github.com/kwokronny/roadbook/commit/d3b2e752047b4daa4e91e38521302d8b4f0db42c)] (by KwokRonny)
+- 💄 增加按钮交互提示 [[fb2b97f](https://github.com/kwokronny/roadbook/commit/fb2b97f9d9228c442d652e84062d7e8688d65013)] (by KwokRonny)
+- 💄 优化地图标记交互显示 [[a706b85](https://github.com/kwokronny/roadbook/commit/a706b85f7d7c2185b15520d1c04df727b3c1d753)] (by KwokRonny)
+- 💄 优化分享与权限设置交互与复制增加链接描述 [[1a6b5af](https://github.com/kwokronny/roadbook/commit/1a6b5af96455f237cae0227d0789ec55ea9338e9)] (by KwokRonny)
+
+### Fixed
+
+- 🐛 修复旅程行李数据丢失 [[b06cbed](https://github.com/kwokronny/roadbook/commit/b06cbed2db47b51b6a99f5b39ea0376242f386b8)] (by KwokRonny)
+
+### Miscellaneous
+
+-  Merge pull request [#5](https://github.com/kwokronny/roadbook/issues/5) from kwokronny/dev [[20b57c7](https://github.com/kwokronny/roadbook/commit/20b57c738baeed25e5d89a09c888a25f8bb6c6a4)] (by Kwok Ronny)
+- 📝 更新文档 [[d563246](https://github.com/kwokronny/roadbook/commit/d563246d62eaca4e2c1eed8c035125d039e996d4)] (by KwokRonny)
+
+
 <a name="1.0.5"></a>
 ## 1.0.5 (2025-06-18)
 
