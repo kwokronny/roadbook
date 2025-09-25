@@ -1,4 +1,4 @@
-# Changelog
+# Changelog 
 
 <a name="1.0.6"></a>
 ## 1.0.6 (2025-09-22)
