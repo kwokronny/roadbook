@@ -1,1 +1,0 @@
-import{_ as e,c as o,o as r,ag as n}from"./chunks/framework.BMYkDUOS.js";const f=JSON.parse('{"title":"Changelog","description":"","frontmatter":{},"headers":[],"relativePath":"CHANGELOG.md","filePath":"CHANGELOG.md"}'),t={name:"CHANGELOG.md"};function l(i,a,b,c,h,d){return r(),o("div",null,a[0]||(a[0]=[n("",27)]))}const m=e(t,[["render",l]]);export{f as __pageData,m as default};
