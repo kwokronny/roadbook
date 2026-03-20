@@ -162,13 +162,32 @@ lib/
 - 左侧固定天数数字竖栏（含「?」待排项）；当前选中天高亮
 - 右侧当前天的行程列表，按 startTime 排序
 - 酒店跨天处理：跨天酒店在每个覆盖的天中都显示
-- 每个行程卡片：时间、名称、地址、交通方式图标、Dianping 按钮（有 dianpingUUID 时显示）
+- 每个行程卡片：时间、名称、地址、Dianping 按钮（有 dianpingUUID 时显示）；**无交通方式显示**
 - 长按或更多菜单：编辑、克隆、删除
 - 点击行程卡片 → 打开**编辑底部面板**
 
 **编辑行程底部面板（`schedule_edit_sheet.dart`）：**
-- 字段：名称、地址、是否酒店切换、日期选择（限旅程日期范围）、开始/结束时间、交通方式、备注、截图上传（多张，点击可删除）
-- 保存调用 `schedule/update` 或 `schedule/add`（从待规划转正式时填充天和时间）
+
+普通地点字段：
+- 名称（文本输入）
+- 备注（文本输入，可选）
+- **天选择**：日历宫格（3列），每格显示「第N天 + 星期几」；末尾加「待规划」格；单选，选中格橙棕色高亮
+- **时间选择**（可选）：24格小时宫格（6列），点击选择出发小时；可不选（待排）
+- 截图上传（多张，点击可删除）
+
+酒店字段（isHotel = true 时）：
+- 名称（文本输入）
+- 备注（文本输入，可选）
+- **入住/退房天**：同一日历宫格，第一次点击选入住天，第二次点击选退房天；两端橙棕高亮，中间天浅橙填充，角落显示「入住」/「退房」标签；自动计算晚数
+- 截图上传（多张，点击可删除）
+- **无时间选择、无交通方式选择**
+
+天 → startTime/endTime 转换规则：
+- 普通地点：`startTime = travelStart + (day-1) days + selectedHour`；无时间时存 null
+- 酒店：`startTime = travelStart + (checkInDay-1) days + "12:00:00"`，`endTime = travelStart + (checkOutDay-1) days + "12:00:00"`
+- 待规划：startTime = null
+
+保存调用 `schedule/update` 或 `schedule/add`（从待规划转正式时填充天和时间）
 
 ### 5.4 协作者管理页（底部面板）
 
@@ -215,7 +234,7 @@ class Schedule {
   final bool isHotel;
   final DateTime? startTime;
   final DateTime? endTime;
-  final TrafficType? traffic;
+  // traffic 字段由后端保留但 Flutter 端不展示也不编辑
   // API 返回逗号分隔字符串，e.g. "url1,url2"
   // 序列化：List<String> -> join(',')；反序列化：split(',').where(isNotEmpty)
   final String? screenshots;
@@ -230,7 +249,8 @@ class UserWithRole {
 }
 
 enum RoleType { manage, edit, view }
-enum TrafficType { car, taxi, ride, walk, bus }
+// TrafficType 不在 Flutter 端使用，保留注释供将来参考
+// enum TrafficType { car, taxi, ride, walk, bus }
 ```
 
 ---
@@ -302,11 +322,66 @@ AppBar 操作按钮、行程卡片操作菜单均根据 `perm` 值决定是否�
 
 ---
 
-## 10. 主题
+## 10. 视觉设计规范
 
-支持亮色/暗色切换，状态持久化。高德地图同步切换样式：
+**风格定位：** 暖调手账风（Warm Journal）— 米白底色、橙棕主色、圆角卡片、轻投影，整体质感温暖，呼应"路书"纸质手账的意象。
+
+### 10.1 色彩体系
+
+| Token | 色值 | 用途 |
+|---|---|---|
+| `colorBackground` | `#F5EFE6` | 页面背景 |
+| `colorSurface` | `#FFFFFF` | 卡片/面板背景 |
+| `colorBorder` | `#EDE5D8` | 分割线、边框 |
+| `colorPrimary` | `#C4713A` | 主色调（按钮、选中态、高亮） |
+| `colorPrimaryLight` | `#E8A87C44` | 范围选择浅色填充 |
+| `colorTextPrimary` | `#3D2B1F` | 主文字 |
+| `colorTextSecondary` | `#A0998F` | 辅助文字、标签、占位符 |
+| `colorTextDisabled` | `#C4B49E` | 禁用态、虚线边框色 |
+| `colorSuccess` | `#4A7C59` | 待出发状态、住宿标签 |
+| `colorWarning` | `#9B6B3A` | 旅行中状态 |
+| `colorNeutral` | `#A0998F` | 已结束状态 |
+
+### 10.2 字体规范
+
+- **中文**：系统字体（iOS: PingFang SC，Android: 思源黑体 Noto Sans SC）
+- **数字 / 英文**：DM Sans（Google Fonts）
+- **字号层级**：
+  - 页面标题：18sp Bold
+  - 卡片主标题：14sp SemiBold
+  - 正文：12sp Regular
+  - 辅助说明：10sp Regular
+
+### 10.3 圆角与间距
+
+- 卡片圆角：`16dp`
+- 输入框/宫格圆角：`8dp`
+- 按钮圆角：`10dp`
+- 状态徽章圆角：`20dp`（胶囊形）
+- 页面水平内边距：`16dp`
+- 卡片内边距：`14dp`
+- 卡片间距：`10dp`
+
+### 10.4 投影
+
+卡片使用轻投影：`BoxShadow(color: #3D2B1F18, blurRadius: 12, offset: Offset(0, 2))`
+
+### 10.5 主题切换
+
+支持亮色/暗色切换，状态持久化到 SharedPreferences。
+
+暗色模式下色彩体系对应调整（背景转深棕，文字转米白），高德地图同步切换样式：
 - 亮色：`amap://styles/fresh`
 - 暗色：`amap://styles/grey`
+
+### 10.6 状态徽章
+
+| 状态 | 背景色 | 文字色 | 文案 |
+|---|---|---|---|
+| 待出发 | `#4A7C5918` | `#4A7C59` | 待出发 |
+| 旅行中 | `#9B6B3A18` | `#9B6B3A` | 旅行中 |
+| 已结束 | `#A0998F18` | `#A0998F` | 已结束 |
+| 住宿标签 | `#4A7C5918` | `#4A7C59` | 住宿 |
 
 ---
 
