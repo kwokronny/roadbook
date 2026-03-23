@@ -18,3 +18,5 @@ packages/roadbook-flutter/android/app/release/
 packages/roadbook-flutter/ios/Flutter/.last_build_id
 packages/roadbook-flutter/app.*.symbols
 packages/roadbook-flutter/app.*.map.json
+# Git worktrees
+.worktrees/
