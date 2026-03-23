@@ -308,15 +308,13 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
     switch (status) {
       case _ItemStatus.pending:
         return const SizedBox(
-          width: 20,
-          height: 20,
+          width: 20, height: 20,
           child: Icon(Icons.circle_outlined,
               size: 18, color: AppColors.textDisabled),
         );
       case _ItemStatus.loading:
         return const SizedBox(
-          width: 20,
-          height: 20,
+          width: 20, height: 20,
           child: CircularProgressIndicator(
               strokeWidth: 2, color: AppColors.primary),
         );
