@@ -1,7 +1,11 @@
 // lib/features/schedule/data/schedule_repository.dart
 import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
 import '../../../shared/api/api_endpoints.dart';
 import '../../../shared/models/schedule.dart';
+
+// Backend requires "YYYY-MM-DD HH:mm:ss" (parameter@2.x dateTime format)
+final _dateTimeFmt = DateFormat('yyyy-MM-dd HH:mm:ss');
 
 class ScheduleFormData {
   const ScheduleFormData({
@@ -38,8 +42,8 @@ class ScheduleFormData {
         'coordinate': coordinate,
         'address': address,
         'isHotel': isHotel,
-        if (startTime != null) 'startTime': startTime!.toIso8601String(),
-        if (endTime != null) 'endTime': endTime!.toIso8601String(),
+        if (startTime != null) 'startTime': _dateTimeFmt.format(startTime!),
+        if (endTime != null) 'endTime': _dateTimeFmt.format(endTime!),
         if (cover != null) 'cover': cover,
         if (dianpingUUID != null) 'dianpingUUID': dianpingUUID,
         if (notes != null) 'notes': notes,
@@ -52,8 +56,8 @@ class ScheduleFormData {
         'coordinate': coordinate,
         'address': address,
         'isHotel': isHotel,
-        'startTime': startTime?.toIso8601String(),
-        'endTime': endTime?.toIso8601String(),
+        'startTime': startTime != null ? _dateTimeFmt.format(startTime!) : null,
+        'endTime': endTime != null ? _dateTimeFmt.format(endTime!) : null,
         'cover': cover,
         'dianpingUUID': dianpingUUID,
         'notes': notes,

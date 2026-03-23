@@ -70,6 +70,57 @@ void main() {
       expect(s.id, 99);
     });
 
+    test('add formats startTime as "YYYY-MM-DD HH:mm:ss" for backend', () async {
+      String? capturedStartTime;
+      dio.interceptors.add(InterceptorsWrapper(
+        onRequest: (options, handler) {
+          capturedStartTime = (options.data as Map)['startTime'] as String?;
+          handler.resolve(Response(
+            requestOptions: options,
+            statusCode: 200,
+            data: _schedJson(),
+          ));
+        },
+      ));
+
+      final form = ScheduleFormData(
+        tId: 10,
+        name: 'X',
+        coordinate: '0,0',
+        address: '',
+        isHotel: false,
+        startTime: DateTime(2024, 6, 1, 9, 0, 0),
+      );
+      await repo.add(form);
+      expect(capturedStartTime, '2024-06-01 09:00:00');
+    });
+
+    test('update formats startTime as "YYYY-MM-DD HH:mm:ss" for backend', () async {
+      String? capturedStartTime;
+      dio.interceptors.add(InterceptorsWrapper(
+        onRequest: (options, handler) {
+          capturedStartTime = (options.data as Map)['startTime'] as String?;
+          handler.resolve(Response(
+            requestOptions: options,
+            statusCode: 200,
+            data: _schedJson(id: 5),
+          ));
+        },
+      ));
+
+      final form = ScheduleFormData(
+        id: 5,
+        tId: 10,
+        name: 'X',
+        coordinate: '0,0',
+        address: '',
+        isHotel: false,
+        startTime: DateTime(2024, 6, 1, 9, 0, 0),
+      );
+      await repo.update(form);
+      expect(capturedStartTime, '2024-06-01 09:00:00');
+    });
+
     test('update sends id and returns updated schedule', () async {
       int? capturedId;
       dio.interceptors.add(InterceptorsWrapper(
