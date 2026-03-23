@@ -26,6 +26,7 @@
 | `analysis_options.yaml` | Dart 静态分析配置 |
 | `devtools_options.yaml` | DevTools 配置 |
 | `README.md` | 项目说明 |
+| `.metadata` | Flutter 项目元数据，Flutter 工具链需要此文件进行版本升级和能力检测 |
 
 ### 排除的内容
 
@@ -61,7 +62,9 @@
 
 ## 5. `.gitignore` 更新
 
-在根 `.gitignore` 末尾追加 Flutter 相关忽略项：
+`packages/roadbook-flutter/` 会保留 Flutter 项目自带的 `.gitignore`，Git 会自动识别子目录中的 `.gitignore`，大部分忽略规则已由其覆盖。
+
+在根 `.gitignore` 末尾追加以下内容，确保在根目录级别也能正确忽略：
 
 ```gitignore
 # Flutter (packages/roadbook-flutter)
@@ -69,6 +72,17 @@ packages/roadbook-flutter/build/
 packages/roadbook-flutter/.dart_tool/
 packages/roadbook-flutter/.flutter-plugins
 packages/roadbook-flutter/.flutter-plugins-dependencies
+packages/roadbook-flutter/*.iml
+packages/roadbook-flutter/.pub-cache/
+packages/roadbook-flutter/.pub/
+packages/roadbook-flutter/coverage/
+packages/roadbook-flutter/.idea/
+packages/roadbook-flutter/android/app/debug/
+packages/roadbook-flutter/android/app/profile/
+packages/roadbook-flutter/android/app/release/
+packages/roadbook-flutter/ios/Flutter/.last_build_id
+packages/roadbook-flutter/app.*.symbols
+packages/roadbook-flutter/app.*.map.json
 ```
 
 ---
