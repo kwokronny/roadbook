@@ -9,7 +9,10 @@
     "dev-web": "pnpm -F ./packages/roadbook-vue dev",
     "build-web": "pnpm -F ./packages/roadbook-vue build",
     "dev-doc": "pnpm -F ./packages/docs dev",
-    "build-doc": "pnpm -F ./packages/docs build"
+    "build-doc": "pnpm -F ./packages/docs build",
+    "dev-flutter": "cd packages/roadbook-flutter && flutter run",
+    "build-flutter-ios": "cd packages/roadbook-flutter && flutter build ios --release",
+    "build-flutter-android": "cd packages/roadbook-flutter && flutter build apk --release"
   },
   "keywords": [
     "roadbook"
