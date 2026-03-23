@@ -1,3 +1,20 @@
 node_modules
 .DS_Store
 dist
+
+# Flutter (packages/roadbook-flutter)
+packages/roadbook-flutter/build/
+packages/roadbook-flutter/.dart_tool/
+packages/roadbook-flutter/.flutter-plugins
+packages/roadbook-flutter/.flutter-plugins-dependencies
+packages/roadbook-flutter/*.iml
+packages/roadbook-flutter/.pub-cache/
+packages/roadbook-flutter/.pub/
+packages/roadbook-flutter/coverage/
+packages/roadbook-flutter/.idea/
+packages/roadbook-flutter/android/app/debug/
+packages/roadbook-flutter/android/app/profile/
+packages/roadbook-flutter/android/app/release/
+packages/roadbook-flutter/ios/Flutter/.last_build_id
+packages/roadbook-flutter/app.*.symbols
+packages/roadbook-flutter/app.*.map.json
