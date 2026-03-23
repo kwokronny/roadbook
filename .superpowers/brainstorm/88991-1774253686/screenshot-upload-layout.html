@@ -1,0 +1,76 @@
+<h2>截图上传区域 — 编辑面板布局</h2>
+<p class="subtitle">在行程编辑底部面板中，截图上传区域应该长什么样？</p>
+
+<div class="cards">
+
+  <!-- Option A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#fafafa;padding:16px;">
+      <div style="font-size:11px;color:#999;margin-bottom:8px;font-weight:600;letter-spacing:0.5px;">截图</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <!-- existing thumbnails -->
+        <div style="width:64px;height:64px;border-radius:8px;background:#f0ebe3;position:relative;flex-shrink:0;overflow:hidden;">
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#fed7aa,#fbbf24);display:flex;align-items:center;justify-content:center;font-size:20px;">🖼</div>
+          <div style="position:absolute;top:2px;right:2px;width:16px;height:16px;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:10px;">×</div>
+        </div>
+        <div style="width:64px;height:64px;border-radius:8px;background:#f0ebe3;position:relative;flex-shrink:0;overflow:hidden;">
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#c4b5fd,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:20px;">🖼</div>
+          <div style="position:absolute;top:2px;right:2px;width:16px;height:16px;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:10px;">×</div>
+        </div>
+        <!-- add button -->
+        <div style="width:64px;height:64px;border-radius:8px;border:1.5px dashed #d6cfc7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0;">
+          <span style="font-size:20px;color:#a8a29e;">+</span>
+          <span style="font-size:9px;color:#a8a29e;">添加</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — 横向滚动行</h3>
+      <p>64×64 缩略图横排，末尾虚线框"+"按钮，超出可左右滑动，叉号删除</p>
+    </div>
+  </div>
+
+  <!-- Option B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#fafafa;padding:16px;">
+      <div style="font-size:11px;color:#999;margin-bottom:8px;font-weight:600;letter-spacing:0.5px;">截图</div>
+      <!-- upload button full width -->
+      <div style="border:1.5px dashed #d6cfc7;border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <div style="width:32px;height:32px;border-radius:8px;background:#fff7ed;display:flex;align-items:center;justify-content:center;font-size:16px;">📷</div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:#1c1917;">上传截图</div>
+          <div style="font-size:10px;color:#a8a29e;">从相册选取，最多 9 张</div>
+        </div>
+      </div>
+      <!-- thumbnails below -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <div style="width:56px;height:56px;border-radius:8px;background:linear-gradient(135deg,#fed7aa,#fbbf24);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:18px;">🖼
+          <div style="position:absolute;top:2px;right:2px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:9px;">×</div>
+        </div>
+        <div style="width:56px;height:56px;border-radius:8px;background:linear-gradient(135deg,#c4b5fd,#8b5cf6);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:18px;">🖼
+          <div style="position:absolute;top:2px;right:2px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:9px;">×</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — 按钮 + 缩略图分区</h3>
+      <p>顶部完整宽度上传按钮，下方展示已选图片（wrap 换行），叉号删除</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="section" style="margin-top:16px;">
+  <h3>卡片缩略图（只读展示，两种方案一致）</h3>
+  <p class="subtitle">行程卡片底部最多展示 4 张，42×42dp，多余显示 +N</p>
+  <div style="background:#fff;border:1px solid #f0ebe3;border-radius:14px;padding:14px;max-width:340px;">
+    <div style="font-size:13px;font-weight:600;color:#1c1917;margin-bottom:4px;">咖啡馆小憩</div>
+    <div style="font-size:11px;color:#a8a29e;margin-bottom:8px;">📍 三里屯太古里</div>
+    <div style="display:flex;gap:6px;margin-top:4px;">
+      <div style="width:42px;height:42px;border-radius:8px;background:linear-gradient(135deg,#fed7aa,#fbbf24);"></div>
+      <div style="width:42px;height:42px;border-radius:8px;background:linear-gradient(135deg,#c4b5fd,#8b5cf6);"></div>
+      <div style="width:42px;height:42px;border-radius:8px;background:linear-gradient(135deg,#6ee7b7,#34d399);"></div>
+      <div style="width:42px;height:42px;border-radius:8px;background:#f0ebe3;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#a8a29e;">+2</div>
+    </div>
+  </div>
+</div>

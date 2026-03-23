@@ -1,0 +1,164 @@
+<h2>暖调手账风 — 细化方案</h2>
+<p class="subtitle">配色体系 + 旅程详情页核心交互预览</p>
+
+<div class="section">
+  <span class="label">色彩体系</span>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+    <div style="text-align:center">
+      <div style="width:52px;height:52px;border-radius:10px;background:#F5EFE6;border:1px solid #e0d5c5"></div>
+      <div style="font-size:9px;color:#888;margin-top:4px">背景</div>
+      <div style="font-size:9px;color:#555">#F5EFE6</div>
+    </div>
+    <div style="text-align:center">
+      <div style="width:52px;height:52px;border-radius:10px;background:#FFFFFF;border:1px solid #e8ddd0"></div>
+      <div style="font-size:9px;color:#888;margin-top:4px">卡片</div>
+      <div style="font-size:9px;color:#555">#FFFFFF</div>
+    </div>
+    <div style="text-align:center">
+      <div style="width:52px;height:52px;border-radius:10px;background:#3D2B1F"></div>
+      <div style="font-size:9px;color:#888;margin-top:4px">主文字</div>
+      <div style="font-size:9px;color:#555">#3D2B1F</div>
+    </div>
+    <div style="text-align:center">
+      <div style="width:52px;height:52px;border-radius:10px;background:#C4713A"></div>
+      <div style="font-size:9px;color:#888;margin-top:4px">主色调</div>
+      <div style="font-size:9px;color:#555">#C4713A</div>
+    </div>
+    <div style="text-align:center">
+      <div style="width:52px;height:52px;border-radius:10px;background:#E8A87C"></div>
+      <div style="font-size:9px;color:#888;margin-top:4px">次强调</div>
+      <div style="font-size:9px;color:#555">#E8A87C</div>
+    </div>
+    <div style="text-align:center">
+      <div style="width:52px;height:52px;border-radius:10px;background:#4A7C59"></div>
+      <div style="font-size:9px;color:#888;margin-top:4px">成功/待出发</div>
+      <div style="font-size:9px;color:#555">#4A7C59</div>
+    </div>
+    <div style="text-align:center">
+      <div style="width:52px;height:52px;border-radius:10px;background:#9B6B3A"></div>
+      <div style="font-size:9px;color:#888;margin-top:4px">旅行中</div>
+      <div style="font-size:9px;color:#555">#9B6B3A</div>
+    </div>
+    <div style="text-align:center">
+      <div style="width:52px;height:52px;border-radius:10px;background:#A0998F"></div>
+      <div style="font-size:9px;color:#888;margin-top:4px">已结束</div>
+      <div style="font-size:9px;color:#555">#A0998F</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <span class="label">旅程详情页 — 行程 Tab</span>
+  <div style="margin-top:10px;display:flex;gap:16px;flex-wrap:wrap">
+
+    <!-- 手机框 -->
+    <div style="background:#F5EFE6;border-radius:20px;overflow:hidden;width:220px;border:1px solid #d4c4b0;box-shadow:0 4px 20px #3d2b1f18">
+      <!-- AppBar -->
+      <div style="background:#fff;padding:10px 14px;border-bottom:1px solid #ede5d8;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:11px;color:#3d2b1f">←</div>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:#3d2b1f">北京三日游</div>
+          <div style="font-size:9px;color:#a0998f;text-align:center">10月1日 — 10月3日</div>
+        </div>
+        <div style="font-size:11px;color:#c4713a">⋯</div>
+      </div>
+      <!-- Tabs -->
+      <div style="background:#fff;display:flex;border-bottom:2px solid #ede5d8">
+        <div style="flex:1;padding:7px 0;text-align:center;font-size:10px;color:#a0998f">🗺 地图</div>
+        <div style="flex:1;padding:7px 0;text-align:center;font-size:10px;font-weight:700;color:#c4713a;border-bottom:2px solid #c4713a;margin-bottom:-2px">📋 行程</div>
+      </div>
+      <!-- Content: day sidebar + list -->
+      <div style="display:flex;height:310px">
+        <!-- Day sidebar -->
+        <div style="width:38px;background:#fff;border-right:1px solid #ede5d8;padding:8px 4px;display:flex;flex-direction:column;gap:5px;align-items:center">
+          <div style="width:28px;height:28px;background:#C4713A;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">1</div>
+          <div style="width:28px;height:28px;background:#f5efe6;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#a0998f;border:1px solid #e0d5c5">2</div>
+          <div style="width:28px;height:28px;background:#f5efe6;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#a0998f;border:1px solid #e0d5c5">3</div>
+          <div style="width:28px;height:28px;background:#f5efe6;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#a0998f;border:1px dashed #c4b49e">?</div>
+        </div>
+        <!-- Schedule list -->
+        <div style="flex:1;padding:8px;overflow:hidden;display:flex;flex-direction:column;gap:6px">
+          <div style="font-size:9px;color:#a0998f;margin-bottom:2px">10月1日 · 周三</div>
+          <!-- Item 1 -->
+          <div style="background:#fff;border-radius:10px;padding:9px;border:1px solid #ede5d8;position:relative">
+            <div style="display:flex;align-items:flex-start;gap:6px">
+              <div style="width:26px;height:26px;border-radius:6px;background:#fff3e8;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">📍</div>
+              <div style="flex:1">
+                <div style="font-size:10px;font-weight:600;color:#3d2b1f">故宫博物院</div>
+                <div style="font-size:8px;color:#a0998f;margin-top:1px">09:00 — 12:00</div>
+                <div style="font-size:8px;color:#c4b49e;margin-top:2px">东城区景山前街4号</div>
+              </div>
+            </div>
+            <div style="position:absolute;top:7px;right:7px;width:4px;height:4px;border-radius:50%;background:#C4713A"></div>
+          </div>
+          <!-- Item 2 (hotel) -->
+          <div style="background:#fff;border-radius:10px;padding:9px;border:1px solid #ede5d8;position:relative">
+            <div style="display:flex;align-items:flex-start;gap:6px">
+              <div style="width:26px;height:26px;border-radius:6px;background:#f0f7f3;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">🏨</div>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;gap:4px">
+                  <div style="font-size:10px;font-weight:600;color:#3d2b1f">北京饭店</div>
+                  <div style="background:#4a7c5920;border:1px solid #4a7c5960;border-radius:4px;padding:0 4px;font-size:7px;color:#4a7c59">住宿</div>
+                </div>
+                <div style="font-size:8px;color:#a0998f;margin-top:1px">全天 · 共2晚</div>
+                <div style="font-size:8px;color:#c4b49e;margin-top:2px">东长安街33号</div>
+              </div>
+            </div>
+          </div>
+          <!-- Item 3 -->
+          <div style="background:#fff;border-radius:10px;padding:9px;border:1px solid #ede5d8">
+            <div style="display:flex;align-items:flex-start;gap:6px">
+              <div style="width:26px;height:26px;border-radius:6px;background:#fff3e8;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">🍜</div>
+              <div style="flex:1">
+                <div style="font-size:10px;font-weight:600;color:#3d2b1f">全聚德烤鸭店</div>
+                <div style="font-size:8px;color:#a0998f;margin-top:1px">12:30 — 14:00</div>
+                <div style="font-size:8px;color:#c4b49e;margin-top:2px">前门大街30号</div>
+              </div>
+            </div>
+          </div>
+          <!-- Add button -->
+          <div style="border:1.5px dashed #c4b49e;border-radius:10px;padding:7px;text-align:center;font-size:9px;color:#c4b49e">＋ 添加地点</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 编辑底部面板预览 -->
+    <div style="background:#F5EFE6;border-radius:20px;overflow:hidden;width:220px;border:1px solid #d4c4b0;box-shadow:0 4px 20px #3d2b1f18;position:relative">
+      <!-- 背景（模拟列表页暗淡） -->
+      <div style="height:120px;background:#e8ddd0;display:flex;align-items:center;justify-content:center">
+        <div style="font-size:9px;color:#a0998f">行程列表（已遮罩）</div>
+      </div>
+      <!-- Bottom sheet -->
+      <div style="background:#fff;border-radius:18px 18px 0 0;padding:14px;border-top:1px solid #ede5d8">
+        <div style="width:36px;height:3px;background:#ddd;border-radius:2px;margin:0 auto 12px"></div>
+        <div style="font-size:12px;font-weight:700;color:#3d2b1f;margin-bottom:12px">编辑地点</div>
+        <div style="background:#f5efe6;border-radius:8px;padding:8px 10px;margin-bottom:7px;font-size:10px;color:#3d2b1f;border:1px solid #e0d5c5">故宫博物院</div>
+        <div style="background:#f5efe6;border-radius:8px;padding:8px 10px;margin-bottom:7px;font-size:10px;color:#a0998f;border:1px solid #e0d5c5">东城区景山前街4号</div>
+        <div style="display:flex;gap:6px;margin-bottom:7px">
+          <div style="flex:1;background:#f5efe6;border-radius:8px;padding:8px 10px;font-size:10px;color:#3d2b1f;border:1px solid #e0d5c5">09:00</div>
+          <div style="flex:1;background:#f5efe6;border-radius:8px;padding:8px 10px;font-size:10px;color:#3d2b1f;border:1px solid #e0d5c5">12:00</div>
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:12px">
+          <div style="padding:5px 10px;border-radius:6px;background:#c4713a;font-size:9px;color:#fff">🚗 自驾</div>
+          <div style="padding:5px 10px;border-radius:6px;background:#f5efe6;border:1px solid #e0d5c5;font-size:9px;color:#a0998f">🚇 地铁</div>
+          <div style="padding:5px 10px;border-radius:6px;background:#f5efe6;border:1px solid #e0d5c5;font-size:9px;color:#a0998f">🚶 步行</div>
+        </div>
+        <div style="background:#c4713a;border-radius:10px;padding:9px;text-align:center;font-size:11px;font-weight:600;color:#fff">保存</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section">
+  <span class="label">字体规范</span>
+  <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #ede5d8;margin-top:8px">
+    <div style="font-size:18px;font-weight:700;color:#3d2b1f;margin-bottom:4px">北京三日游 <span style="font-size:11px;color:#a0998f;font-weight:400">— 页面标题 18sp Bold</span></div>
+    <div style="font-size:14px;font-weight:600;color:#3d2b1f;margin-bottom:4px">故宫博物院 <span style="font-size:11px;color:#a0998f;font-weight:400">— 卡片主标题 14sp SemiBold</span></div>
+    <div style="font-size:12px;color:#3d2b1f;margin-bottom:4px">10月1日 — 10月3日 <span style="font-size:11px;color:#a0998f">— 正文 12sp Regular</span></div>
+    <div style="font-size:10px;color:#a0998f;margin-bottom:4px">东城区景山前街4号 <span style="font-size:11px;color:#c4b49e">— 辅助说明 10sp</span></div>
+    <div style="margin-top:8px;font-size:10px;color:#888">中文使用系统字体（iOS: PingFang SC，Android: 思源黑体），数字与英文使用 DM Sans 或 SF Pro</div>
+  </div>
+</div>
+
+<p style="color:#666;font-size:12px;margin-top:4px">这个方向是否符合预期？可以告诉我需要调整的地方（颜色深浅、圆角大小、整体氛围等）</p>

@@ -154,9 +154,11 @@ lib/
 - 高德地图全屏展示
 - 顶部搜索栏 + 城市下拉选择
 - 已排行程：数字圆形标记（颜色按天区分），酒店显示「H」，待排显示「?」
-- 搜索结果：「+」标记；**点击立即加入待规划**，自动填充 POI 数据（名称、地址、坐标、isHotel、封面、dianpingUUID）
+- **切换天数 → 地图自动 fitBounds**：左侧天数栏切换时，地图 camera 动画飞到当天所有行程标记的边界范围内，确保当天行程全部可见
+- **点击地图标记 → 直接打开编辑底部面板**：点击已排行程的标记，立即弹出该行程的编辑面板（`schedule_edit_sheet.dart`），与行程 Tab 中点击卡片行为一致
+- **全览模式浮层按钮**：地图右上角悬浮小圆按钮切换全览/当天模式；全览模式下所有天标记同时可见，当天模式下仅高亮当天标记、其余天半透明
+- 搜索结果：「+」标记；**点击立即加入待规划**，自动填充 POI 数据（名称、地址、坐标、isHotel、封面、dianpingUUID），标记样式切换为「?」，同时显示 Toast「已加入待规划」，不打断用户继续搜索
 - isHotel 判断：`poi.type.contains("住宿服务")` 为 true（高德 POI 分类的精确字符串，避免误判）
-- **全览模式**：搜索栏清空时，地图展示当前旅程所有天的行程标记（含待排），切换 Tab 选天后地图仅高亮当天；AppBar 有「全览」切换按钮，全览模式下所有天标记同时可见
 
 **行程 Tab：**
 - 左侧固定天数数字竖栏（含「?」待排项）；当前选中天高亮
@@ -324,64 +326,87 @@ AppBar 操作按钮、行程卡片操作菜单均根据 `perm` 值决定是否�
 
 ## 10. 视觉设计规范
 
-**风格定位：** 暖调手账风（Warm Journal）— 米白底色、橙棕主色、圆角卡片、轻投影，整体质感温暖，呼应"路书"纸质手账的意象。
+**风格定位：** 暖橙舒适风（Warm Comfort）— 参考 Headspace × Notion 暖色调。米白底色、暖橙主色渐变、圆润卡片、轻投影，整体传递温暖舒适的旅行情绪感。
+
+**参考 App：** Headspace、Notion（暖色主题）
 
 ### 10.1 色彩体系
 
 | Token | 色值 | 用途 |
 |---|---|---|
-| `colorBackground` | `#F5EFE6` | 页面背景 |
-| `colorSurface` | `#FFFFFF` | 卡片/面板背景 |
-| `colorBorder` | `#EDE5D8` | 分割线、边框 |
-| `colorPrimary` | `#C4713A` | 主色调（按钮、选中态、高亮） |
-| `colorPrimaryLight` | `#E8A87C44` | 范围选择浅色填充 |
-| `colorTextPrimary` | `#3D2B1F` | 主文字 |
-| `colorTextSecondary` | `#A0998F` | 辅助文字、标签、占位符 |
-| `colorTextDisabled` | `#C4B49E` | 禁用态、虚线边框色 |
-| `colorSuccess` | `#4A7C59` | 待出发状态、住宿标签 |
-| `colorWarning` | `#9B6B3A` | 旅行中状态 |
-| `colorNeutral` | `#A0998F` | 已结束状态 |
+| `colorBackground` | `#FDFAF6` | 页面背景（米白） |
+| `colorSurface` | `#FFFFFF` | 卡片/面板/底部面板背景 |
+| `colorBorder` | `#F0EBE3` | 分割线、边框 |
+| `colorPrimary` | `#F97316` | 主色调（按钮、选中态、高亮） |
+| `colorPrimaryGradient` | `#F97316 → #FBBF24` | 渐变色（FAB、保存按钮、旅行中横幅） |
+| `colorPrimaryLight` | `#FFF7ED` | 主色浅背景（待出发徽章底色、宫格选中填充） |
+| `colorPrimaryBorder` | `#FED7AA` | 主色浅边框（徽章边框、宫格选中边框） |
+| `colorHotel` | `#8B5CF6` | 住宿色（紫色） |
+| `colorHotelLight` | `#F5F3FF` | 住宿浅背景 |
+| `colorHotelBorder` | `#DDD6FE` | 住宿浅边框 |
+| `colorSuccess` | `#16A34A` | 旅行中状态 |
+| `colorSuccessLight` | `#F0FDF4` | 旅行中浅背景 |
+| `colorNeutral` | `#A8A29E` | 已结束状态、辅助文字 |
+| `colorTextPrimary` | `#1C1917` | 主文字 |
+| `colorTextSecondary` | `#A8A29E` | 辅助文字、标签、占位符 |
+| `colorTextDisabled` | `#C4B8B0` | 禁用态文字 |
 
-### 10.2 字体规范
+### 10.2 行程卡片视觉规范
 
-- **中文**：系统字体（iOS: PingFang SC，Android: 思源黑体 Noto Sans SC）
+- **封面图**：顶部全宽展示，高度 `90–120dp`，`object-fit: cover`
+- **无封面图 fallback**：高度 `72dp` 的彩色色块 + 居中 emoji 图标，色块背景色取对应类型的浅色（`colorPrimaryLight` / `colorHotelLight`）
+- **左侧色条**：宽 `3dp`，普通行程用 `colorPrimary`，住宿用 `colorHotel`
+- **时间/住宿天数角标**：叠在封面图左上角，`background: rgba(0,0,0,0.38)`，白色文字，`blur(4dp)`
+- **截图缩略图**：有截图时在卡片底部展示，尺寸 `42×42dp`，`8dp` 圆角，最多展示 4 张
+- **导航按钮**：卡片底部全宽，点击唤起系统导航选择器（高德/百度/Apple Maps）
+
+### 10.3 字体规范
+
+- **中文**：系统字体（iOS: PingFang SC，Android: Noto Sans SC）
 - **数字 / 英文**：DM Sans（Google Fonts）
 - **字号层级**：
-  - 页面标题：18sp Bold
+  - 页面大标题：20sp ExtraBold（旅程列表顶部）
+  - 页面标题：17sp Bold（AppBar）
   - 卡片主标题：14sp SemiBold
   - 正文：12sp Regular
-  - 辅助说明：10sp Regular
+  - 辅助说明：11sp Regular
+  - 微标签：10sp Medium
 
-### 10.3 圆角与间距
+### 10.4 圆角与间距
 
-- 卡片圆角：`16dp`
+- 卡片圆角：`14dp`
+- 底部面板圆角：`24dp`（顶部两角）
 - 输入框/宫格圆角：`8dp`
-- 按钮圆角：`10dp`
+- 时间宫格圆角：`6dp`
 - 状态徽章圆角：`20dp`（胶囊形）
 - 页面水平内边距：`16dp`
 - 卡片内边距：`14dp`
 - 卡片间距：`10dp`
 
-### 10.4 投影
+### 10.5 投影
 
-卡片使用轻投影：`BoxShadow(color: #3D2B1F18, blurRadius: 12, offset: Offset(0, 2))`
+- 普通行程卡：`BoxShadow(color: #F9731614, blurRadius: 8, offset: Offset(0, 2))`
+- 住宿卡：`BoxShadow(color: #8B5CF614, blurRadius: 8, offset: Offset(0, 2))`
+- 旅程列表卡：`BoxShadow(color: #1C191708, blurRadius: 12, offset: Offset(0, 2))`
 
-### 10.5 主题切换
+### 10.6 主题切换
 
-支持亮色/暗色切换，状态持久化到 SharedPreferences。
+仅支持亮色模式（暗色模式留待后续迭代）。高德地图使用亮色样式：`amap://styles/fresh`
 
-暗色模式下色彩体系对应调整（背景转深棕，文字转米白），高德地图同步切换样式：
-- 亮色：`amap://styles/fresh`
-- 暗色：`amap://styles/grey`
+### 10.7 状态徽章
 
-### 10.6 状态徽章
+| 状态 | 背景色 | 文字色 | 边框色 | 文案 |
+|---|---|---|---|---|
+| 待出发 | `#FFF7ED` | `#F97316` | `#FED7AA` | 待出发 |
+| 旅行中 | `#F0FDF4` | `#16A34A` | `#A7F3D0` | 旅行中 |
+| 已结束 | `#F5F5F4` | `#A8A29E` | transparent | 已结束 |
+| 住宿标签 | `#F5F3FF` | `#8B5CF6` | `#DDD6FE` | 住宿 |
 
-| 状态 | 背景色 | 文字色 | 文案 |
-|---|---|---|---|
-| 待出发 | `#4A7C5918` | `#4A7C59` | 待出发 |
-| 旅行中 | `#9B6B3A18` | `#9B6B3A` | 旅行中 |
-| 已结束 | `#A0998F18` | `#A0998F` | 已结束 |
-| 住宿标签 | `#4A7C5918` | `#4A7C59` | 住宿 |
+### 10.8 旅程列表页特殊组件
+
+- **进行中横幅**：渐变背景 `#F97316 → #FB923C`，白色文字，`14dp` 圆角，展示在列表顶部
+- **用户头像**：渐变背景 `#F97316 → #FBBF24`，`12dp` 圆角方块
+- **FAB**：渐变背景 `#F97316 → #FBBF24`，`14dp` 圆角，白色 `＋`
 
 ---
 

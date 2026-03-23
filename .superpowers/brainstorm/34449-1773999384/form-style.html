@@ -1,0 +1,74 @@
+<h2>新建 / 编辑行程 — 表单展示方式</h2>
+<p class="subtitle">用户点击"添加地点"或编辑某个行程时，表单如何出现？</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>底部弹出面板（推荐）</h3>
+      <p>Modal Bottom Sheet 从底部滑出，可滚动，背景地图/列表仍隐约可见。符合 Material 3 规范。</p>
+      <div style="margin-top:12px;background:#1e1e2e;border-radius:8px;overflow:hidden;width:160px;height:230px;position:relative;border:1px solid #313244">
+        <div style="background:#264653;height:100px;display:flex;align-items:center;justify-content:center;color:#585b70;font-size:10px">背景内容（半透明遮罩）</div>
+        <div style="background:#1e1e2e;position:absolute;bottom:0;left:0;right:0;border-radius:16px 16px 0 0;border-top:1px solid #313244;padding:12px">
+          <div style="width:32px;height:3px;background:#585b70;border-radius:2px;margin:0 auto 10px"></div>
+          <div style="font-size:11px;font-weight:600;color:#cdd6f4;margin-bottom:8px">添加地点</div>
+          <div style="background:#313244;border-radius:6px;padding:6px 8px;margin-bottom:5px;font-size:10px;color:#585b70">地点名称</div>
+          <div style="background:#313244;border-radius:6px;padding:6px 8px;margin-bottom:5px;font-size:10px;color:#585b70">地址</div>
+          <div style="display:flex;gap:5px">
+            <div style="background:#313244;border-radius:6px;padding:6px 8px;flex:1;font-size:10px;color:#585b70">开始时间</div>
+            <div style="background:#313244;border-radius:6px;padding:6px 8px;flex:1;font-size:10px;color:#585b70">结束时间</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#a6e3a1">✓ 手机原生感强 · 不打断导航</div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>全屏页面</h3>
+      <p>导航到新页面 /travel/:id/schedule/edit，AppBar 有返回和保存按钮。</p>
+      <div style="margin-top:12px;background:#1e1e2e;border-radius:8px;overflow:hidden;width:160px;height:230px;border:1px solid #313244">
+        <div style="background:#181825;padding:8px 10px;display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:10px;color:#89b4fa">← 返回</div>
+          <div style="font-size:10px;font-weight:600;color:#cdd6f4">添加地点</div>
+          <div style="font-size:10px;color:#a6e3a1">保存</div>
+        </div>
+        <div style="padding:10px;display:flex;flex-direction:column;gap:6px">
+          <div style="background:#313244;border-radius:6px;padding:7px 8px;font-size:10px;color:#585b70">地点名称</div>
+          <div style="background:#313244;border-radius:6px;padding:7px 8px;font-size:10px;color:#585b70">地址</div>
+          <div style="background:#313244;border-radius:6px;padding:7px 8px;font-size:10px;color:#585b70">日期</div>
+          <div style="background:#313244;border-radius:6px;padding:7px 8px;font-size:10px;color:#585b70">开始时间</div>
+          <div style="background:#313244;border-radius:6px;padding:7px 8px;font-size:10px;color:#585b70">备注</div>
+        </div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#fab387">△ 表单字段多时更舒展</div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>对话框（Dialog）</h3>
+      <p>居中弹出的 AlertDialog / Dialog，四周有遮罩。</p>
+      <div style="margin-top:12px;background:#1e1e2e;border-radius:8px;overflow:hidden;width:160px;height:230px;position:relative;border:1px solid #313244">
+        <div style="background:#264653;height:230px;display:flex;align-items:center;justify-content:center">
+          <div style="background:#1e1e2e;border-radius:10px;padding:12px;width:120px;border:1px solid #313244">
+            <div style="font-size:11px;font-weight:600;color:#cdd6f4;margin-bottom:8px">添加地点</div>
+            <div style="background:#313244;border-radius:5px;padding:5px 7px;margin-bottom:4px;font-size:9px;color:#585b70">地点名称</div>
+            <div style="background:#313244;border-radius:5px;padding:5px 7px;margin-bottom:4px;font-size:9px;color:#585b70">地址</div>
+            <div style="background:#313244;border-radius:5px;padding:5px 7px;margin-bottom:8px;font-size:9px;color:#585b70">时间</div>
+            <div style="display:flex;gap:5px;justify-content:flex-end">
+              <div style="font-size:9px;color:#585b70">取消</div>
+              <div style="background:#89b4fa;border-radius:4px;padding:3px 7px;font-size:9px;color:#1e1e2e">保存</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#f38ba8">✗ 手机屏幕小，Dialog 局促</div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,78 @@
+<h2>行程列表 — 天数导航样式</h2>
+<p class="subtitle">用户如何在"第1天、第2天…"之间切换？</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>顶部横向滚动 Chips（推荐）</h3>
+      <p>行程 Tab 内顶部固定一排可滚动的天数标签，当前天高亮。</p>
+      <div style="margin-top:12px;background:#1e1e2e;border-radius:8px;overflow:hidden;width:200px;border:1px solid #313244">
+        <div style="background:#181825;padding:8px 10px;display:flex;gap:6px;overflow:hidden">
+          <div style="background:#89b4fa;color:#1e1e2e;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:600;white-space:nowrap">第1天</div>
+          <div style="background:#313244;color:#cdd6f4;padding:3px 10px;border-radius:12px;font-size:10px;white-space:nowrap">第2天</div>
+          <div style="background:#313244;color:#cdd6f4;padding:3px 10px;border-radius:12px;font-size:10px;white-space:nowrap">第3天</div>
+          <div style="background:#313244;color:#585b70;padding:3px 10px;border-radius:12px;font-size:10px;white-space:nowrap">待排</div>
+        </div>
+        <div style="padding:10px">
+          <div style="font-size:10px;color:#585b70;margin-bottom:6px">2025年10月1日（周三）</div>
+          <div style="background:#313244;border-radius:6px;padding:8px;margin-bottom:6px">
+            <div style="font-size:10px;color:#89b4fa">09:00</div>
+            <div style="font-size:11px;color:#cdd6f4">故宫博物院</div>
+          </div>
+          <div style="background:#313244;border-radius:6px;padding:8px">
+            <div style="font-size:10px;color:#89b4fa">13:00</div>
+            <div style="font-size:11px;color:#cdd6f4">全聚德烤鸭</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#a6e3a1">✓ 拇指可及 · 天数多时可滑动</div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>左侧固定数字竖栏</h3>
+      <p>类似 Vue 桌面版侧边栏，左边一列天数数字，点击切换。</p>
+      <div style="margin-top:12px;background:#1e1e2e;border-radius:8px;overflow:hidden;width:200px;border:1px solid #313244;display:flex">
+        <div style="width:36px;background:#181825;padding:8px 0;display:flex;flex-direction:column;gap:4px;align-items:center">
+          <div style="width:28px;height:28px;background:#89b4fa;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#1e1e2e">1</div>
+          <div style="width:28px;height:28px;background:#313244;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#cdd6f4">2</div>
+          <div style="width:28px;height:28px;background:#313244;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#cdd6f4">3</div>
+          <div style="width:28px;height:28px;background:#313244;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#585b70">?</div>
+        </div>
+        <div style="flex:1;padding:8px">
+          <div style="font-size:10px;color:#585b70;margin-bottom:6px">第1天</div>
+          <div style="background:#313244;border-radius:5px;padding:7px;margin-bottom:5px;font-size:10px;color:#cdd6f4">故宫博物院</div>
+          <div style="background:#313244;border-radius:5px;padding:7px;font-size:10px;color:#cdd6f4">全聚德烤鸭</div>
+        </div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#fab387">△ 天数多时竖栏会很长</div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>全部展开 + 锚点跳转</h3>
+      <p>所有天数内容垂直排列，顶部 chips 点击后滚动定位到对应天。</p>
+      <div style="margin-top:12px;background:#1e1e2e;border-radius:8px;overflow:hidden;width:200px;border:1px solid #313244">
+        <div style="background:#181825;padding:8px 10px;display:flex;gap:6px">
+          <div style="background:#89b4fa;color:#1e1e2e;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:600">第1天</div>
+          <div style="background:#313244;color:#cdd6f4;padding:3px 10px;border-radius:12px;font-size:10px">第2天</div>
+          <div style="background:#313244;color:#cdd6f4;padding:3px 10px;border-radius:12px;font-size:10px">第3天</div>
+        </div>
+        <div style="padding:10px;max-height:130px;overflow:hidden">
+          <div style="font-size:10px;color:#89b4fa;font-weight:600;margin-bottom:5px">— 第1天 —</div>
+          <div style="background:#313244;border-radius:5px;padding:6px;margin-bottom:4px;font-size:10px;color:#cdd6f4">故宫博物院</div>
+          <div style="font-size:10px;color:#89b4fa;font-weight:600;margin:8px 0 5px">— 第2天 —</div>
+          <div style="background:#313244;border-radius:5px;padding:6px;font-size:10px;color:#cdd6f4">颐和园</div>
+        </div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#fab387">△ 行程长时滚动距离大</div>
+    </div>
+  </div>
+
+</div>
