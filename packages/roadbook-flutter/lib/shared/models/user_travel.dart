@@ -17,7 +17,7 @@ class UserWithRole {
   factory UserWithRole.fromJson(Map<String, dynamic> json) => UserWithRole(
         user: User.fromJson(json),
         role: roleTypeFromString(
-          (json['UserTravel'] as Map<String, dynamic>)['role'] as String,
+          ((json['UserTravel'] as Map<String, dynamic>?)??{})['role'] as String? ?? 'view',
         ),
       );
 }
