@@ -79,12 +79,12 @@ class AppTheme {
         ),
         fontFamily: 'PingFang SC',
         dividerColor: AppColors.border,
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.background,
           elevation: 0,
           scrolledUnderElevation: 0,
           titleTextStyle: AppTextStyles.appBarTitle,
-          iconTheme: const IconThemeData(color: AppColors.textPrimary),
+          iconTheme: IconThemeData(color: AppColors.textPrimary),
         ),
       );
 }

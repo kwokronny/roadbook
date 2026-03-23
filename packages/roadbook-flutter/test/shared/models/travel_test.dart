@@ -4,32 +4,45 @@ import 'package:roadbook_flutter/shared/models/travel.dart';
 
 void main() {
   group('Travel', () {
-    final json = {
-      'id': 10,
-      'name': '上海之旅',
-      'startDate': '2026-04-10',
-      'endDate': '2026-04-14',
-      'isPublic': false,
-      'cities': '上海',
-      'collaborators': [],
-      'schedules': [],
-      'equip': null,
-    };
-
     test('fromJson parses cities string to list', () {
-      final travel = Travel.fromJson(json);
-      expect(travel.cities, ['上海']);
+      final travel = Travel.fromJson({
+        'id': 1,
+        'name': 'Trip A',
+        'startDate': '2024-06-01',
+        'endDate': '2024-06-05',
+        'public': false,
+        'city': '北京',
+        'Users': [],
+        'Schedules': [],
+      });
+      expect(travel.cities, ['北京']);
     });
 
     test('fromJson parses multi-city string', () {
-      final j = Map<String, dynamic>.from(json)..['cities'] = '北京,上海';
-      final travel = Travel.fromJson(j);
-      expect(travel.cities, ['北京', '上海']);
+      final travel = Travel.fromJson({
+        'id': 2,
+        'name': 'Trip B',
+        'startDate': '2024-07-01',
+        'endDate': '2024-07-10',
+        'public': true,
+        'city': '北京,上海,成都',
+        'Users': [],
+        'Schedules': [],
+      });
+      expect(travel.cities, ['北京', '上海', '成都']);
     });
 
     test('fromJson handles empty cities', () {
-      final j = Map<String, dynamic>.from(json)..['cities'] = '';
-      final travel = Travel.fromJson(j);
+      final travel = Travel.fromJson({
+        'id': 3,
+        'name': 'Trip C',
+        'startDate': '2024-08-01',
+        'endDate': '2024-08-03',
+        'public': false,
+        'city': '',
+        'Users': [],
+        'Schedules': [],
+      });
       expect(travel.cities, isEmpty);
     });
   });
