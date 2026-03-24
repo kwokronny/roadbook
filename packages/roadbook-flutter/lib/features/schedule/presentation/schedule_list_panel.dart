@@ -6,6 +6,7 @@ import '../../../core/theme.dart';
 import '../../../shared/models/travel.dart';
 import '../../../shared/models/schedule.dart';
 import '../../../shared/models/user_travel.dart';
+import '../../../shared/utils/schedule_day_helper.dart';
 import '../domain/schedule_provider.dart';
 import 'widgets/day_sidebar.dart';
 import 'widgets/schedule_item.dart';
@@ -26,22 +27,8 @@ class ScheduleListPanel extends ConsumerWidget {
 
   bool get _canEdit => perm == RoleType.manage || perm == RoleType.edit;
 
-  List<Schedule> _schedulesForDay(int day, List<Schedule> all) {
-    if (day == 0) {
-      return all.where((s) => s.startTime == null).toList();
-    }
-    return all.where((s) {
-      if (s.startTime == null) return false;
-      final startDay = s.startTime!.toLocal().difference(travel.startDate).inDays + 1;
-      if (s.isHotel && s.endTime != null) {
-        final endDay = s.endTime!.toLocal().difference(travel.startDate).inDays + 1;
-        return day >= startDay && day <= endDay;
-      }
-      return startDay == day;
-    }).toList()
-      ..sort((a, b) =>
-          (a.startTime ?? DateTime(0)).compareTo(b.startTime ?? DateTime(0)));
-  }
+  List<Schedule> _schedulesForDay(int day, List<Schedule> all) =>
+      schedulesForDay(day, all, travel.startDate);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
