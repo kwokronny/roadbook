@@ -78,6 +78,7 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
     // ── 逐条导入 ─────────────────────────────────────────────────────────────
     final repo = ref.read(scheduleRepositoryProvider);
     for (int i = 0; i < _items.length; i++) {
+      if (!mounted) break;
       setState(() => _items[i].status = _ItemStatus.loading);
       try {
         await repo.add(_items[i].formData);
@@ -203,7 +204,7 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
               borderRadius: BorderRadius.circular(AppRadius.fab),
             ),
             child: TextButton(
-              onPressed: _startImport,
+              onPressed: _phase == _Phase.input ? _startImport : null,
               child: const Text(
                 '开始导入',
                 style: TextStyle(
