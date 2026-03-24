@@ -18,7 +18,14 @@ class MapDaySelectorBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedDay = ref.watch(selectedDayProvider(travelId));
+    final rawDay = ref.watch(selectedDayProvider(travelId));
+    // day=0 is "待规划" (unplanned) — not meaningful on map; default to day 1
+    final selectedDay = rawDay < 1 ? 1 : rawDay;
+    if (rawDay < 1) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(selectedDayProvider(travelId).notifier).state = 1;
+      });
+    }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
