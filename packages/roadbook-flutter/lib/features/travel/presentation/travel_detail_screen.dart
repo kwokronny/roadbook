@@ -12,6 +12,7 @@ import '../../../features/schedule/presentation/schedule_list_panel.dart';
 import '../../../features/schedule/presentation/schedule_edit_sheet.dart';
 import '../../../features/schedule/domain/schedule_provider.dart';
 import '../../schedule/presentation/collect_import_sheet.dart';
+import 'map/map_tab_view.dart';
 
 class TravelDetailScreen extends ConsumerStatefulWidget {
   const TravelDetailScreen({super.key, required this.travelId});
@@ -110,17 +111,8 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen>
         body: TabBarView(
           controller: _tabCtrl,
           children: [
-            // ── 地图 Tab（占位符，Plan 5 实现）
-            Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.map, size: 48, color: AppColors.textSecondary),
-                  const SizedBox(height: 12),
-                  Text('地图功能将在 Plan 5 实现', style: AppTextStyles.caption),
-                ],
-              ),
-            ),
+            // ── 地图 Tab
+            MapTabView(travelId: widget.travelId),
             // ── 行程 Tab（无 Scaffold）
             ScheduleListPanel(travel: travel, perm: perm),
           ],
