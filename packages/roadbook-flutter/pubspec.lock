@@ -9,6 +9,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "85.0.0"
+  amap_flutter_base:
+    dependency: "direct main"
+    description:
+      name: amap_flutter_base
+      sha256: "9ef2439b8de7100cdd1b4357701b8ca8c059c0f2d9d0257b81750bbf0c6f53bb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
+  amap_flutter_map:
+    dependency: "direct main"
+    description:
+      name: amap_flutter_map
+      sha256: "9cebb0b2f5fc7d3ae0427e99c41edc883e8f5459f6a28bc850f0f9e16918cf2f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   analyzer:
     dependency: transitive
     description:

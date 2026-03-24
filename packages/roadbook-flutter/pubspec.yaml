@@ -34,6 +34,10 @@ dependencies:
   # 字体
   google_fonts: ^6.2.1
 
+  # 高德地图
+  amap_flutter_map: ^3.0.0
+  amap_flutter_base: ^3.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
