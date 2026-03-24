@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:roadbook_flutter/features/travel/presentation/map/map_state_notifier.dart';
-import 'package:roadbook_flutter/features/schedule/domain/schedule_provider.dart';
 import 'package:roadbook_flutter/shared/providers/dio_provider.dart';
 import 'package:dio/dio.dart';
 
