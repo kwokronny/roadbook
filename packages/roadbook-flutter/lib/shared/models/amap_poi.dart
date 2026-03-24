@@ -17,7 +17,18 @@ class AmapPoi {
   final String? type;
 
   factory AmapPoi.fromJson(Map<String, dynamic> json) {
-    final parts = (json['location'] as String).split(',');
+    final rawLocation = json['location'];
+    if (rawLocation == null || rawLocation is! String) {
+      throw FormatException(
+        'AmapPoi.fromJson: missing or non-String "location" field (got $rawLocation)',
+      );
+    }
+    final parts = rawLocation.split(',');
+    if (parts.length < 2) {
+      throw FormatException(
+        'AmapPoi.fromJson: "location" must be "lng,lat" but got "$rawLocation"',
+      );
+    }
     return AmapPoi(
       id: json['id'] as String,
       name: json['name'] as String,
@@ -27,4 +38,12 @@ class AmapPoi {
       type: json['type'] as String?,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'address': address,
+        'location': '$longitude,$latitude',
+        'type': type,
+      };
 }
