@@ -149,6 +149,7 @@ class _MapTabViewState extends ConsumerState<MapTabView> {
         points: points,
         color: AppColors.primary,
         width: 2,
+        dashLineType: DashLineType.square,
       ));
     }
 
