@@ -30,6 +30,7 @@ dependencies:
   # 工具
   intl: ^0.19.0
   crypto: ^3.0.3
+  url_launcher: ^6.3.0
 
   # 字体
   google_fonts: ^6.2.1
@@ -45,6 +46,12 @@ dev_dependencies:
   build_runner: ^2.4.11
   flutter_lints: ^4.0.0
   mocktail: ^1.0.4
+
+dependency_overrides:
+  amap_flutter_map:
+    path: patches/amap_flutter_map
+  amap_flutter_base:
+    path: patches/amap_flutter_base
 
 flutter:
   uses-material-design: true
