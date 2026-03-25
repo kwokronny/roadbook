@@ -45,6 +45,7 @@ class ScheduleListPanel extends ConsumerWidget {
           child: DaySidebar(
             totalDays: _totalDays,
             selectedDay: selectedDay,
+            travelStartDate: travel.startDate,
             onDaySelected: (d) =>
                 ref.read(selectedDayProvider(travel.id!).notifier).state = d,
           ),
