@@ -17,6 +17,10 @@ abstract class AppColors {
   static const Color hotelLight    = Color(0xFFF5F3FF);
   static const Color hotelBorder   = Color(0xFFDDD6FE);
 
+  // 待规划色（灰）
+  static const Color unplanned      = Color(0xFFD4C8BF); // 圆点边框 / 封面轮廓
+  static const Color unplannedLight = Color(0xFFEDE8E3); // 封面背景
+
   // 状态色
   static const Color success       = Color(0xFF16A34A);
   static const Color successLight  = Color(0xFFF0FDF4);
