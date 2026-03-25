@@ -114,5 +114,58 @@ void main() {
       expect(items.length, 2);
       expect(items.last.id, 55);
     });
+
+    test('quickEditTime optimistically updates then rolls back on error', () async {
+      final original = _make(1); // startTime = null
+      when(() => mockRepo.list(10)).thenAnswer((_) async => [original]);
+      when(() => mockRepo.update(any())).thenThrow('网络错误');
+
+      final container = makeContainer();
+      addTearDown(container.dispose);
+      container.listen(scheduleProvider(10), (_, __) {});
+      await container.read(scheduleProvider(10).future);
+
+      final newTime = DateTime(2026, 3, 25, 9, 0);
+      await expectLater(
+        container.read(scheduleProvider(10).notifier).quickEditTime(
+          schedule: original,
+          travelId: 10,
+          newStartTime: newTime,
+          newEndTime: null,
+        ),
+        throwsA(isA<String>()),
+      );
+
+      // After rollback, the original schedule is restored
+      final items = container.read(scheduleProvider(10)).value!;
+      expect(items.first.startTime, isNull);
+    });
+
+    test('quickEditTime updates list on success', () async {
+      final original = _make(1);
+      when(() => mockRepo.list(10)).thenAnswer((_) async => [original]);
+      final newTime = DateTime(2026, 3, 25, 9, 0);
+      final updated = Schedule(
+        id: 1, tId: 10, name: 'Place 1',
+        coordinate: '116.4,39.9', address: '北京',
+        isHotel: false, startTime: newTime,
+      );
+      when(() => mockRepo.update(any())).thenAnswer((_) async => updated);
+
+      final container = makeContainer();
+      addTearDown(container.dispose);
+      container.listen(scheduleProvider(10), (_, __) {});
+      await container.read(scheduleProvider(10).future);
+
+      await container.read(scheduleProvider(10).notifier).quickEditTime(
+        schedule: original,
+        travelId: 10,
+        newStartTime: newTime,
+        newEndTime: null,
+      );
+
+      final items = container.read(scheduleProvider(10)).value!;
+      expect(items.first.startTime, newTime);
+    });
   });
 }

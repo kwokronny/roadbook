@@ -44,6 +44,58 @@ class ScheduleNotifier extends AutoDisposeFamilyAsyncNotifier<List<Schedule>, in
     final current = state.valueOrNull ?? [];
     state = AsyncData([...current, cloned]);
   }
+
+  /// 快捷时间修改：乐观更新，失败时回滚。
+  /// 调用方负责关闭弹窗，此方法会 throw 错误供调用方显示 SnackBar。
+  Future<void> quickEditTime({
+    required Schedule schedule,
+    required int travelId,
+    required DateTime? newStartTime,
+    required DateTime? newEndTime,
+  }) async {
+    final current = state.valueOrNull ?? [];
+    final snapshot = List<Schedule>.from(current); // rollback snapshot
+
+    // Optimistic update
+    final optimistic = Schedule(
+      id: schedule.id,
+      tId: schedule.tId,
+      name: schedule.name,
+      coordinate: schedule.coordinate,
+      address: schedule.address,
+      cover: schedule.cover,
+      dianpingUUID: schedule.dianpingUUID,
+      isHotel: schedule.isHotel,
+      startTime: newStartTime,
+      endTime: newEndTime,
+      screenshots: schedule.screenshots,
+      notes: schedule.notes,
+    );
+    state = AsyncData(current.map((s) => s.id == schedule.id ? optimistic : s).toList());
+
+    try {
+      final form = ScheduleFormData(
+        id: schedule.id,
+        tId: travelId,
+        name: schedule.name,
+        coordinate: schedule.coordinate,
+        address: schedule.address,
+        isHotel: schedule.isHotel,
+        startTime: newStartTime,
+        endTime: newEndTime,
+        cover: schedule.cover,
+        dianpingUUID: schedule.dianpingUUID,
+        notes: schedule.notes,
+        screenshots: schedule.screenshots,
+      );
+      final server = await ref.read(scheduleRepositoryProvider).update(form);
+      state = AsyncData(
+          (state.valueOrNull ?? []).map((s) => s.id == server.id ? server : s).toList());
+    } catch (e) {
+      state = AsyncData(snapshot); // rollback
+      rethrow;
+    }
+  }
 }
 
 // ─── Selected Day Provider (family by travelId) ───────────────────────────────
