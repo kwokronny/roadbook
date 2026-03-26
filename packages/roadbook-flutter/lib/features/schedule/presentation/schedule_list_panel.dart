@@ -82,16 +82,18 @@ class ScheduleListPanel extends ConsumerWidget {
                     final s = items[i];
                     return Stack(
                       children: [
-                        // Vertical timeline line
-                        Positioned(
-                          left: 19, // center of 40px cover image
-                          top: i == 0 ? 20 : 0,
-                          bottom: i == items.length - 1 ? 20 : 0,
-                          child: Container(
-                            width: 2,
-                            color: AppColors.border,
+                        // Vertical timeline line（单条目或最后一条不画节点以下的线）
+                        if (items.length > 1)
+                          Positioned(
+                            left: 19, // center of 40px cover image
+                            top: i == 0 ? 20 : 0,
+                            bottom: i < items.length - 1 ? 0 : null,
+                            height: i == items.length - 1 ? 20 : null,
+                            child: Container(
+                              width: 2,
+                              color: AppColors.border,
+                            ),
                           ),
-                        ),
                         ScheduleTimelineItem(
                           schedule: s,
                           travelStartDate: travel.startDate,
