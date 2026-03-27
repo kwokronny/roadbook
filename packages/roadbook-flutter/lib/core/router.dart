@@ -7,6 +7,9 @@ import '../features/auth/presentation/sign_in_screen.dart';
 import '../features/auth/presentation/sign_up_screen.dart';
 import '../features/travel/presentation/travel_list_screen.dart';
 import '../features/travel/presentation/travel_detail_screen.dart';
+import '../features/main/presentation/main_shell.dart';
+import '../features/discover/presentation/discover_screen.dart';
+import '../features/profile/presentation/profile_screen.dart';
 
 const _publicRoutes = {'/signin', '/signup', '/accept'};
 
@@ -45,17 +48,37 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
           path: '/accept',
           builder: (_, __) => const _PlaceholderScreen(label: 'Accept')),
-      GoRoute(
-        path: '/travel',
-        builder: (_, __) => const TravelListScreen(),
-        routes: [
-          GoRoute(
-            path: ':id',
-            builder: (_, state) {
-              final id = int.parse(state.pathParameters['id']!);
-              return TravelDetailScreen(travelId: id);
-            },
-          ),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            MainShell(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: '/travel',
+              builder: (_, __) => const TravelListScreen(),
+              routes: [
+                GoRoute(
+                  path: ':id',
+                  builder: (_, state) {
+                    final id = int.parse(state.pathParameters['id']!);
+                    return TravelDetailScreen(travelId: id);
+                  },
+                ),
+              ],
+            ),
+          ]),
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: '/discover',
+              builder: (_, __) => const DiscoverScreen(),
+            ),
+          ]),
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: '/profile',
+              builder: (_, __) => const ProfileScreen(),
+            ),
+          ]),
         ],
       ),
     ],
@@ -68,7 +91,6 @@ class _PlaceholderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: Center(
-            child: Text(label, style: const TextStyle(fontSize: 18))),
+        body: Center(child: Text(label, style: const TextStyle(fontSize: 20))),
       );
 }
