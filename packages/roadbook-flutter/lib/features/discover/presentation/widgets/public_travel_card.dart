@@ -21,10 +21,13 @@ class PublicTravelCard extends StatelessWidget {
         begin: Alignment.topLeft, end: Alignment.bottomRight),
   ];
 
-  String _formatViewCount(int count) {
+  static String _formatViewCount(int count) {
     if (count >= 1000) {
-      final k = count / 1000;
-      return '${k.toStringAsFixed(k.truncateToDouble() == k ? 0 : 1)}k';
+      final tenth = count ~/ 100; // e.g. 1200 → 12, 1050 → 10, 2000 → 20
+      if (tenth % 10 == 0) {
+        return '${tenth ~/ 10}k'; // whole number: 2000 → "2k"
+      }
+      return '${(tenth / 10).toStringAsFixed(1)}k'; // 1200 → "1.2k"
     }
     return '$count';
   }

@@ -22,11 +22,11 @@ void main() {
     expect(find.text('东京7日游'), findsOneWidget);
   });
 
-  testWidgets('renders city label', (tester) async {
+  testWidgets('renders city label and days', (tester) async {
     await tester.pumpWidget(MaterialApp(
       home: Scaffold(body: PublicTravelCard(travel: _travel)),
     ));
-    expect(find.textContaining('东京'), findsWidgets);
+    expect(find.text('东京 · 大阪 · 7天'), findsOneWidget);
   });
 
   testWidgets('renders owner name', (tester) async {
