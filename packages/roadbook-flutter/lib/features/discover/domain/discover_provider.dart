@@ -75,8 +75,11 @@ class DiscoverNotifier extends AutoDisposeAsyncNotifier<DiscoverState> {
   }
 
   Future<void> selectCity(String? city) async {
+    final currentKeyword = state.valueOrNull?.keyword ?? '';
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() => _load(page: 1, city: city));
+    state = await AsyncValue.guard(
+      () => _load(page: 1, city: city, keyword: currentKeyword.isEmpty ? null : currentKeyword),
+    );
   }
 
   Future<void> search(String keyword) async {
@@ -97,14 +100,19 @@ class DiscoverNotifier extends AutoDisposeAsyncNotifier<DiscoverState> {
         city: current.keyword.isEmpty ? current.selectedCity : null,
         keyword: current.keyword.isEmpty ? null : current.keyword,
       );
+      // Guard: discard if state changed during the await
+      final afterAwait = state.valueOrNull;
+      if (afterAwait == null || afterAwait.page != current.page || afterAwait.keyword != current.keyword) return;
       state = AsyncData(current.copyWith(
         travels: [...current.travels, ...result.travels],
         hasMore: result.hasMore,
         isLoadingMore: false,
         page: nextPage,
       ));
-    } catch (e) {
+    } catch (e, st) {
       state = AsyncData(current.copyWith(isLoadingMore: false));
+      // ignore: use_rethrow_when_possible
+      Error.throwWithStackTrace(e, st);
     }
   }
 }

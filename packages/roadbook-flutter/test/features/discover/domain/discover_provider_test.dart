@@ -92,4 +92,39 @@ void main() {
     expect(state.travels.first.id, 3);
     expect(state.keyword, '东京');
   });
+
+  test('loadMore resets isLoadingMore on error', () async {
+    when(() => mockRepo.discover(page: 1, city: null, keyword: null))
+        .thenAnswer((_) async => DiscoverPage(travels: [_makeTravel(1)], hasMore: true));
+    when(() => mockRepo.discover(page: 2, city: null, keyword: null))
+        .thenThrow(Exception('network error'));
+
+    final container = makeContainer();
+    addTearDown(container.dispose);
+    await container.read(discoverProvider.future);
+
+    await expectLater(
+      () => container.read(discoverProvider.notifier).loadMore(),
+      throwsA(isA<Exception>()),
+    );
+
+    final state = container.read(discoverProvider).value!;
+    expect(state.isLoadingMore, isFalse);
+    expect(state.travels.length, 1); // original list unchanged
+  });
+
+  test('search with empty string passes null keyword', () async {
+    when(() => mockRepo.discover(page: 1, city: null, keyword: null))
+        .thenAnswer((_) async => DiscoverPage(travels: [_makeTravel(1)], hasMore: false));
+
+    final container = makeContainer();
+    addTearDown(container.dispose);
+    await container.read(discoverProvider.future);
+    await container.read(discoverProvider.notifier).search('');
+
+    final state = container.read(discoverProvider).value!;
+    expect(state.keyword, '');
+    // Verify discover was called twice with keyword: null (initial + search(''))
+    verify(() => mockRepo.discover(page: 1, city: null, keyword: null)).called(2);
+  });
 }
