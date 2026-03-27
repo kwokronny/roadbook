@@ -2,72 +2,107 @@
 import 'package:flutter/material.dart';
 
 abstract class AppColors {
-  // 背景 & 表面
-  static const Color background    = Color(0xFFFDFAF6);
-  static const Color surface       = Color(0xFFFFFFFF);
-  static const Color border        = Color(0xFFF0EBE3);
+  // ─── Brand ───────────────────────────────────────────────────────────────
+  static const Color primary      = Color(0xFFFF5B2E); // coral orange
+  static const Color primaryLight = Color(0xFFFFEFEB); // light tint for bg/selections
+  static const Color primaryBorder = Color(0xFFFFCBBD); // matching border
 
-  // 主色（暖橙）
-  static const Color primary       = Color(0xFFF97316);
-  static const Color primaryLight  = Color(0xFFFFF7ED);
-  static const Color primaryBorder = Color(0xFFFED7AA);
+  // ─── Backgrounds ─────────────────────────────────────────────────────────
+  static const Color background = Color(0xFFF2F2F7); // iOS system gray
+  static const Color surface    = Color(0xFFFFFFFF);
 
-  // 住宿色（紫）
-  static const Color hotel         = Color(0xFF8B5CF6);
-  static const Color hotelLight    = Color(0xFFF5F3FF);
-  static const Color hotelBorder   = Color(0xFFDDD6FE);
+  // ─── Text ────────────────────────────────────────────────────────────────
+  static const Color textPrimary   = Color(0xFF1C1C1E);
+  static const Color textSecondary = Color(0xFF8E8E93);
+  static const Color textTertiary  = Color(0xFFC7C7CC);
+  static const Color textDisabled  = Color(0xFFC7C7CC); // alias
 
-  // 待规划色（灰）
-  static const Color unplanned      = Color(0xFFD4C8BF); // 圆点边框 / 封面轮廓
-  static const Color unplannedLight = Color(0xFFEDE8E3); // 封面背景
+  // ─── Borders & Separators ────────────────────────────────────────────────
+  static const Color border    = Color(0xFFE5E5EA); // iOS gray5 — used by preserved sheets
+  static const Color separator = Color(0x1A3C3C43); // rgba(60,60,67,0.1) for 0.5px dividers
 
-  // 状态色
-  static const Color success       = Color(0xFF16A34A);
-  static const Color successLight  = Color(0xFFF0FDF4);
-  static const Color neutral       = Color(0xFFA8A29E);
+  // ─── Semantic ────────────────────────────────────────────────────────────
+  static const Color destructive  = Color(0xFFFF3B30);
+  static const Color success      = Color(0xFF34C759);
+  static const Color successLight = Color(0xFFEAFFF0);
+  static const Color neutral      = Color(0xFF8E8E93);
 
-  // 文字
-  static const Color textPrimary   = Color(0xFF1C1917);
-  static const Color textSecondary = Color(0xFFA8A29E);
-  static const Color textDisabled  = Color(0xFFC4B8B0);
+  // ─── Hotel (preserved) ───────────────────────────────────────────────────
+  static const Color hotel       = Color(0xFF8B5CF6);
+  static const Color hotelLight  = Color(0xFFF5F3FF);
+  static const Color hotelBorder = Color(0xFFDDD6FE);
 
-  // 渐变（FAB、保存按钮、旅行中横幅）
+  // ─── Schedule "unplanned" dot (preserved) ────────────────────────────────
+  static const Color unplanned      = Color(0xFFD4C8BF);
+  static const Color unplannedLight = Color(0xFFEDE8E3);
+
+  // ─── Travel status gradients (cards only) ────────────────────────────────
+  static const LinearGradient ongoingGradient = LinearGradient(
+    colors: [Color(0xFFFF5B2E), Color(0xFFFF8C42)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  static const LinearGradient upcomingGradient = LinearGradient(
+    colors: [Color(0xFFF59E0B), Color(0xFFD97706)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  static const LinearGradient planningGradient = LinearGradient(
+    colors: [Color(0xFF6366F1), Color(0xFF4F46E5)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  static const LinearGradient endedGradient = LinearGradient(
+    colors: [Color(0xFF14B8A6), Color(0xFF0D9488)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  // ─── Primary gradient (main buttons / FABs) ──────────────────────────────
+  // Same colors as ongoingGradient by design — these may diverge if brand/status colors change.
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [Color(0xFFF97316), Color(0xFFFBBF24)],
+    colors: [Color(0xFFFF5B2E), Color(0xFFFF8C42)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 }
 
 abstract class AppTextStyles {
-  static const TextStyle pageHeroTitle = TextStyle(
-        fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textPrimary, letterSpacing: -0.3);
-  // TODO: restore GoogleFonts.dmSans once null-cast root cause is identified
+  // iOS-spec sizes
+  static const TextStyle largeTitle = TextStyle(
+      fontSize: 34, fontWeight: FontWeight.w800, color: AppColors.textPrimary, letterSpacing: -0.5);
   static const TextStyle appBarTitle = TextStyle(
-        fontSize: 17, fontWeight: FontWeight.w700, color: AppColors.textPrimary);
-  static TextStyle get cardTitle => const TextStyle(
-        fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary);
+      fontSize: 20, fontWeight: FontWeight.w700, color: AppColors.textPrimary);
+  static TextStyle get subheadline => const TextStyle(
+      fontSize: 15, fontWeight: FontWeight.w400, color: AppColors.textPrimary);
   static TextStyle get body => const TextStyle(
-        fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.textPrimary);
+      fontSize: 17, fontWeight: FontWeight.w400, color: AppColors.textPrimary);
   static TextStyle get caption => const TextStyle(
-        fontSize: 11, fontWeight: FontWeight.w400, color: AppColors.textSecondary);
+      fontSize: 13, fontWeight: FontWeight.w400, color: AppColors.textSecondary);
   static TextStyle get micro => const TextStyle(
-        fontSize: 10, fontWeight: FontWeight.w500, color: AppColors.textSecondary);
+      fontSize: 11, fontWeight: FontWeight.w400, color: AppColors.textSecondary);
+
+  // Aliases kept for preserved components
+  static TextStyle get pageHeroTitle => largeTitle;
+  static TextStyle get cardTitle => const TextStyle(
+      fontSize: 17, fontWeight: FontWeight.w600, color: AppColors.textPrimary);
 }
 
 abstract class AppRadius {
-  static const double card        = 14;
+  static const double card        = 14; // status gradient cards
+  static const double contentCard = 12; // white content cards (discover, profile menus)
   static const double sheet       = 24;
-  static const double input       = 8;
-  static const double timeCell    = 6;
-  static const double badge       = 20;
-  static const double fab         = 14;
+  static const double input       = 10;
+  static const double badge       =  6;
+  static const double iconBox     =  6;
+  static const double fab         = 14; // kept for preserved sheets that use gradient FAB containers
+  static const double timeCell    =  6; // kept for schedule_timeline_item
 }
 
 abstract class AppSpacing {
   static const double pageHorizontal = 16;
-  static const double cardPadding    = 14;
-  static const double cardGap        = 10;
+  static const double cardPadding    = 12;
+  static const double cardGap        =  8;
 }
 
 class AppTheme {
@@ -79,10 +114,9 @@ class AppTheme {
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppColors.primary,
           surface: AppColors.surface,
-          // background 在 Flutter 3.18+ 已废弃，统一用 surface
         ),
         fontFamily: 'PingFang SC',
-        dividerColor: AppColors.border,
+        dividerColor: AppColors.separator,
         appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.background,
           elevation: 0,

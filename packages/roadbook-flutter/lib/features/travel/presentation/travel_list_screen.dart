@@ -102,7 +102,7 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Text('我的旅程', style: AppTextStyles.pageHeroTitle),
                   ),
                   // User avatar menu
@@ -145,10 +145,7 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
                                 (userInfo?.username ?? '?')
                                     .substring(0, 1)
                                     .toUpperCase(),
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700),
+                                style: AppTextStyles.appBarTitle.copyWith(color: Colors.white),
                               ),
                             )
                           : null,
@@ -324,7 +321,7 @@ class _OngoingBanner extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.card),
       ),
       child: Row(
         children: [
@@ -333,10 +330,7 @@ class _OngoingBanner extends StatelessWidget {
           Expanded(
             child: Text(
               '旅行中：$names',
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600),
+              style: AppTextStyles.cardTitle.copyWith(color: Colors.white),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
