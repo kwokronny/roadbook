@@ -38,6 +38,15 @@ class AuthStateNotifier extends AsyncNotifier<AuthState> {
     await prefs.remove(_userKey);
     state = const AsyncData(AuthState());
   }
+
+  /// 更新内存和持久化的 user 信息（头像、昵称更新后调用）
+  Future<void> updateUser(User user) async {
+    final current = state.valueOrNull;
+    if (current == null || current.token == null) return;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_userKey, jsonEncode(user.toJson()));
+    state = AsyncData(AuthState(token: current.token, user: user));
+  }
 }
 
 final authStateProvider =
