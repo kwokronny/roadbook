@@ -25,15 +25,19 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
   void initState() {
     super.initState();
     _scrollCtrl.addListener(_onScroll);
+    _searchCtrl.addListener(_onSearchTextChanged);
   }
 
   @override
   void dispose() {
+    _searchCtrl.removeListener(_onSearchTextChanged);
     _searchCtrl.dispose();
     _scrollCtrl.dispose();
     _debounce?.cancel();
     super.dispose();
   }
+
+  void _onSearchTextChanged() => setState(() {});
 
   void _onScroll() {
     if (_scrollCtrl.position.pixels >=
