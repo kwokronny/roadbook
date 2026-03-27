@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme.dart';
-import '../../../shared/models/travel.dart';
-import '../../../shared/providers/auth_state_provider.dart';
 import '../domain/travel_list_provider.dart';
 import 'widgets/travel_card.dart';
 import 'widgets/travel_form_sheet.dart';
@@ -64,7 +62,8 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
               child: const Text('取消')),
           TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('删除', style: TextStyle(color: Colors.red))),
+              child: const Text('删除',
+                  style: TextStyle(color: AppColors.destructive))),
         ],
       ),
     );
@@ -83,11 +82,7 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authAsync = ref.watch(authStateProvider);
     final listAsync = ref.watch(travelListProvider);
-
-    final userInfo = authAsync.valueOrNull?.user;
-    final avatar = userInfo?.avatar;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -95,108 +90,27 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ─── Header ───────────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
+            // ── Large Title ───────────────────────────────────────────────
+            const Padding(
+              padding: EdgeInsets.fromLTRB(
                   AppSpacing.pageHorizontal, 20, AppSpacing.pageHorizontal, 0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Text('我的旅程', style: AppTextStyles.pageHeroTitle),
-                  ),
-                  // User avatar menu
-                  PopupMenuButton<String>(
-                    offset: const Offset(0, 48),
-                    onSelected: (value) async {
-                      if (value == 'logout') {
-                        await ref.read(authStateProvider.notifier).logout();
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('功能开发中')));
-                      }
-                    },
-                    itemBuilder: (_) => const [
-                      PopupMenuItem(value: 'profile', child: Text('编辑资料')),
-                      PopupMenuItem(value: 'password', child: Text('修改密码')),
-                      PopupMenuDivider(),
-                      PopupMenuItem(
-                          value: 'logout',
-                          child: Text('退出登录',
-                              style: TextStyle(color: Colors.red))),
-                    ],
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        gradient:
-                            avatar == null ? AppColors.primaryGradient : null,
-                        borderRadius: BorderRadius.circular(12),
-                        image: avatar != null
-                            ? DecorationImage(
-                                image: NetworkImage(avatar),
-                                fit: BoxFit.cover,
-                              )
-                            : null,
-                      ),
-                      child: avatar == null
-                          ? Center(
-                              child: Text(
-                                (userInfo?.username ?? '?')
-                                    .substring(0, 1)
-                                    .toUpperCase(),
-                                style: AppTextStyles.appBarTitle.copyWith(color: Colors.white),
-                              ),
-                            )
-                          : null,
-                    ),
-                  ),
-                ],
-              ),
+              child: Text('我的旅程', style: AppTextStyles.largeTitle),
             ),
-            const SizedBox(height: 16),
-            // ─── Search bar ───────────────────────────────────────────
+            const SizedBox(height: 12),
+
+            // ── iOS-style search bar ──────────────────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.pageHorizontal),
-              child: TextField(
+              // ignore: prefer_const_constructors — controller is not const
+              child: _IosSearchBar(
                 controller: _searchCtrl,
                 onChanged: _onSearchChanged,
-                decoration: InputDecoration(
-                  hintText: '搜索旅程名称…',
-                  prefixIcon: const Icon(Icons.search,
-                      size: 18, color: AppColors.textSecondary),
-                  suffixIcon: _searchCtrl.text.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear,
-                              size: 16, color: AppColors.textSecondary),
-                          onPressed: () {
-                            _searchCtrl.clear();
-                            _onSearchChanged('');
-                          },
-                        )
-                      : null,
-                  filled: true,
-                  fillColor: AppColors.surface,
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.input),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.input),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.input),
-                    borderSide: const BorderSide(color: AppColors.primary),
-                  ),
-                ),
               ),
             ),
             const SizedBox(height: 12),
-            // ─── Travel list ─────────────────────────────────────────
+
+            // ── Travel list ───────────────────────────────────────────────
             Expanded(
               child: listAsync.when(
                 loading: () => const Center(
@@ -208,6 +122,8 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
                       Text(e.toString(), style: AppTextStyles.caption),
                       const SizedBox(height: 12),
                       FilledButton(
+                        style: FilledButton.styleFrom(
+                            backgroundColor: AppColors.primary),
                         onPressed: () =>
                             ref.read(travelListProvider.notifier).refresh(),
                         child: const Text('重试'),
@@ -222,7 +138,7 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(Icons.map_outlined,
-                              size: 48, color: AppColors.textSecondary),
+                              size: 48, color: AppColors.textTertiary),
                           const SizedBox(height: 12),
                           Text('暂无旅程，点击 ＋ 开始规划',
                               style: AppTextStyles.caption),
@@ -230,13 +146,6 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
                       ),
                     );
                   }
-
-                  // Check for ongoing travels
-                  final ongoingTravels = state.items
-                      .where((t) =>
-                          computeTravelStatus(t.startDate, t.endDate) ==
-                          TravelStatus.ongoing)
-                      .toList();
 
                   return RefreshIndicator(
                     color: AppColors.primary,
@@ -246,19 +155,10 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
                       controller: _scrollCtrl,
                       padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.pageHorizontal, vertical: 4),
-                      // +1 for ongoing banner, +1 for loading indicator
-                      itemCount: (ongoingTravels.isNotEmpty ? 1 : 0) +
-                          state.items.length +
+                      itemCount: state.items.length +
                           (state.isLoadingMore ? 1 : 0),
                       itemBuilder: (context, index) {
-                        // Ongoing banner always at top
-                        if (ongoingTravels.isNotEmpty && index == 0) {
-                          return _OngoingBanner(travels: ongoingTravels);
-                        }
-                        final adjustedIndex =
-                            index - (ongoingTravels.isNotEmpty ? 1 : 0);
-
-                        if (adjustedIndex == state.items.length) {
+                        if (index == state.items.length) {
                           return const Padding(
                             padding: EdgeInsets.all(16),
                             child: Center(
@@ -266,8 +166,7 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
                                     color: AppColors.primary)),
                           );
                         }
-
-                        final travel = state.items[adjustedIndex];
+                        final travel = state.items[index];
                         return TravelCard(
                           travel: travel,
                           onTap: () => context.go('/travel/${travel.id}'),
@@ -286,53 +185,74 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
           ],
         ),
       ),
-      // FAB (gradient background)
-      floatingActionButton: Container(
-        decoration: BoxDecoration(
-          gradient: AppColors.primaryGradient,
-          borderRadius: BorderRadius.circular(AppRadius.fab),
-        ),
-        child: FloatingActionButton(
-          onPressed: () => TravelFormSheet.show(context),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          child: const Icon(Icons.add, color: Colors.white),
-        ),
+
+      // ── Circle FAB ─────────────────────────────────────────────────────
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => TravelFormSheet.show(context),
+        backgroundColor: AppColors.primary,
+        shape: const CircleBorder(),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
 }
 
-// ─── Ongoing banner (§10.8) ──────────────────────────────────────────────────
+// ─── iOS-style capsule search bar ────────────────────────────────────────────
 
-class _OngoingBanner extends StatelessWidget {
-  const _OngoingBanner({required this.travels});
-  final List<Travel> travels;
+class _IosSearchBar extends StatelessWidget {
+  const _IosSearchBar({required this.controller, required this.onChanged});
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
 
   @override
   Widget build(BuildContext context) {
-    final names = travels.map((t) => t.name).join('、');
     return Container(
-      margin: const EdgeInsets.only(bottom: AppSpacing.cardGap),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      height: 36,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFF97316), Color(0xFFFB923C)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(AppRadius.card),
+        color: const Color(0x1E767680), // rgba(118,118,128,0.12)
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         children: [
-          const Icon(Icons.flight_takeoff, color: Colors.white, size: 18),
-          const SizedBox(width: 8),
+          const Padding(
+            padding: EdgeInsets.only(left: 8),
+            child: Icon(Icons.search,
+                size: 16, color: AppColors.textSecondary),
+          ),
+          const SizedBox(width: 4),
           Expanded(
-            child: Text(
-              '旅行中：$names',
-              style: AppTextStyles.cardTitle.copyWith(color: Colors.white),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+            child: TextField(
+              controller: controller,
+              onChanged: onChanged,
+              style: const TextStyle(
+                  fontSize: 15, color: AppColors.textPrimary),
+              decoration: const InputDecoration(
+                hintText: '搜索',
+                hintStyle: TextStyle(
+                    color: AppColors.textSecondary, fontSize: 15),
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.symmetric(vertical: 8),
+              ),
+            ),
+          ),
+          // Cancel button — reactive via ValueListenableBuilder
+          ValueListenableBuilder<TextEditingValue>(
+            valueListenable: controller,
+            builder: (_, value, __) => AnimatedOpacity(
+              opacity: value.text.isNotEmpty ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 150),
+              child: GestureDetector(
+                onTap: () {
+                  controller.clear();
+                  onChanged('');
+                },
+                child: const Padding(
+                  padding: EdgeInsets.only(right: 8),
+                  child: Icon(Icons.cancel,
+                      size: 16, color: AppColors.textSecondary),
+                ),
+              ),
             ),
           ),
         ],
