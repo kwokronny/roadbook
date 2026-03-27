@@ -1,5 +1,4 @@
 // lib/features/travel/presentation/travel_detail_screen.dart
-// ConsumerStatefulWidget with TabController — FAB 托管在此 Scaffold，避免嵌套 Scaffold 问题
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme.dart';
@@ -9,10 +8,10 @@ import '../domain/travel_detail_provider.dart';
 import 'widgets/travel_form_sheet.dart';
 import 'widgets/collaborator_sheet.dart';
 import '../../../features/schedule/presentation/schedule_list_panel.dart';
-import '../../../features/schedule/presentation/schedule_edit_sheet.dart';
 import '../../../features/schedule/domain/schedule_provider.dart';
 import '../../schedule/presentation/collect_import_sheet.dart';
 import 'map/map_tab_view.dart';
+import 'map/map_state_notifier.dart';
 
 class TravelDetailScreen extends ConsumerStatefulWidget {
   const TravelDetailScreen({super.key, required this.travelId});
@@ -22,27 +21,8 @@ class TravelDetailScreen extends ConsumerStatefulWidget {
   ConsumerState<TravelDetailScreen> createState() => _TravelDetailScreenState();
 }
 
-class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabCtrl;
+class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
   int _currentTab = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabCtrl = TabController(length: 2, vsync: this);
-    _tabCtrl.addListener(() {
-      if (!_tabCtrl.indexIsChanging && mounted) {
-        setState(() => _currentTab = _tabCtrl.index);
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _tabCtrl.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,70 +54,141 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen>
             ],
           ),
           actions: [
-            if (canManage)
-              IconButton(
-                icon: const Icon(Icons.edit_outlined, size: 20),
-                tooltip: '编辑旅程信息',
-                onPressed: () => TravelFormSheet.show(context, travel: travel),
-              ),
-            if (canManage)
-              IconButton(
-                icon: const Icon(Icons.group_outlined, size: 20),
-                tooltip: '协作者管理',
-                onPressed: () => CollaboratorSheet.show(context, widget.travelId),
-              ),
+            _buildViewToggle(),
             if (canEdit)
-              IconButton(
-                icon: const Icon(Icons.download_outlined, size: 20),
-                tooltip: '批量导入',
-                onPressed: () => CollectImportSheet.show(context, widget.travelId),
-              ),
+              _buildMoreMenu(context, travel: travel, canManage: canManage),
           ],
-          bottom: TabBar(
-            controller: _tabCtrl,
-            tabs: const [
-              Tab(icon: Icon(Icons.map_outlined), text: '地图'),
-              Tab(icon: Icon(Icons.format_list_bulleted), text: '行程'),
-            ],
-            labelColor: AppColors.primary,
-            unselectedLabelColor: AppColors.textSecondary,
-            indicatorColor: AppColors.primary,
-          ),
         ),
-        // FAB 仅在行程 Tab（index=1）且有编辑权限时显示
-        floatingActionButton: (_currentTab == 1 && canEdit)
+        floatingActionButton: (_currentTab == 0 && canEdit)
             ? _buildFab(context, travel)
             : null,
-        body: TabBarView(
-          controller: _tabCtrl,
+        body: IndexedStack(
+          index: _currentTab,
           children: [
-            // ── 地图 Tab
-            MapTabView(travelId: widget.travelId),
-            // ── 行程 Tab（无 Scaffold）
             ScheduleListPanel(travel: travel, perm: perm),
+            MapTabView(travelId: widget.travelId),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildFab(BuildContext context, Travel travel) {
-    final selectedDay = ref.watch(selectedDayProvider(widget.travelId));
+  Widget _buildViewToggle() {
     return Container(
+      margin: const EdgeInsets.only(right: 4),
       decoration: BoxDecoration(
-        gradient: AppColors.primaryGradient,
-        borderRadius: BorderRadius.circular(AppRadius.fab),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border),
       ),
-      child: FloatingActionButton(
-        onPressed: () => ScheduleEditSheet.show(
-          context,
-          travel: travel,
-          initialDay: selectedDay == 0 ? null : selectedDay,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _toggleIcon(Icons.format_list_bulleted, 0),
+          _toggleIcon(Icons.map_outlined, 1),
+        ],
+      ),
+    );
+  }
+
+  Widget _toggleIcon(IconData icon, int index) {
+    final selected = _currentTab == index;
+    return GestureDetector(
+      onTap: () => setState(() => _currentTab = index),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.primary : Colors.transparent,
+          borderRadius: BorderRadius.circular(18),
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        child: const Icon(Icons.add, color: Colors.white),
+        child: Icon(
+          icon,
+          size: 22,
+          color: selected ? Colors.white : AppColors.textSecondary,
+        ),
       ),
+    );
+  }
+
+  Widget _buildMoreMenu(BuildContext context, {required Travel travel, required bool canManage}) {
+    return PopupMenuButton<String>(
+      icon: const Icon(Icons.more_vert, size: 22),
+      offset: const Offset(0, 44),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.card),
+      ),
+      color: AppColors.surface,
+      elevation: 4,
+      onSelected: (value) {
+        switch (value) {
+          case 'edit':
+            TravelFormSheet.show(context, travel: travel);
+          case 'collaborator':
+            CollaboratorSheet.show(context, widget.travelId);
+          case 'import':
+            CollectImportSheet.show(context, widget.travelId);
+          case 'luggage':
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('行李清单 — 即将推出')),
+            );
+        }
+      },
+      itemBuilder: (_) => [
+        if (canManage)
+          const PopupMenuItem(
+            value: 'edit',
+            height: 44,
+            child: Row(children: [
+              Icon(Icons.edit_outlined, size: 18, color: AppColors.textPrimary),
+              SizedBox(width: 10),
+              Text('编辑旅程'),
+            ]),
+          ),
+        if (canManage)
+          const PopupMenuItem(
+            value: 'collaborator',
+            height: 44,
+            child: Row(children: [
+              Icon(Icons.group_outlined, size: 18, color: AppColors.textPrimary),
+              SizedBox(width: 10),
+              Text('协作者管理'),
+            ]),
+          ),
+        const PopupMenuItem(
+          value: 'import',
+          height: 44,
+          child: Row(children: [
+            Icon(Icons.download_outlined, size: 18, color: AppColors.textPrimary),
+            SizedBox(width: 10),
+            Text('批量导入'),
+          ]),
+        ),
+        const PopupMenuItem(
+          value: 'luggage',
+          height: 44,
+          child: Row(children: [
+            Icon(Icons.luggage_outlined,
+                size: 18, color: AppColors.textPrimary),
+            SizedBox(width: 10),
+            Text('行李清单'),
+          ]),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFab(BuildContext context, Travel travel) {
+    return FloatingActionButton(
+      onPressed: () {
+        setState(() => _currentTab = 1);
+        ref
+            .read(mapStateProvider(widget.travelId).notifier)
+            .enterSearchMode();
+      },
+      backgroundColor: AppColors.primary,
+      shape: const CircleBorder(),
+      child: const Icon(Icons.add, color: Colors.white),
     );
   }
 }
