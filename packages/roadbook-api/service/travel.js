@@ -4,6 +4,50 @@ const { Op } = require("sequelize");
 const config = require("../config/config");
 
 class TravelService {
+  async discover(data) {
+    try {
+      const where = { public: true };
+      if (data.keyword) {
+        where.name = { [Op.like]: `%${data.keyword}%` };
+      } else if (data.city) {
+        where.city = { [Op.like]: `%${data.city}%` };
+      }
+      const pageSize = data.pageSize || 20;
+      const page = data.page || 1;
+      const result = await db.Travel.findAndCountAll({
+        where,
+        include: [
+          {
+            model: db.User,
+            attributes: ['id', 'username', 'name', 'avatar'],
+            through: { where: { role: 'manage' }, attributes: [] },
+            required: true,
+          },
+        ],
+        order: [['id', 'DESC']],
+        limit: pageSize,
+        offset: (page - 1) * pageSize,
+      });
+      return {
+        total: result.count,
+        list: result.rows.map((t) => ({
+          id: t.id,
+          name: t.name,
+          city: t.city,
+          startDate: t.startDate,
+          endDate: t.endDate,
+          viewCount: t.viewCount,
+          owner: t.Users && t.Users[0]
+            ? { id: t.Users[0].id, username: t.Users[0].username, name: t.Users[0].name, avatar: t.Users[0].avatar }
+            : null,
+        })),
+      };
+    } catch (e) {
+      console.error('[travel.discover]', e);
+      throw '获取失败';
+    }
+  }
+
   async page(uid, data) {
     try {
       return await db.Travel.findAndCountAll({
@@ -35,6 +79,9 @@ class TravelService {
           },
         ],
       })
+      if (travel && travel.public && !uid) {
+        travel.increment('viewCount').catch(() => {});
+      }
       if (travel && (travel.public || (uid && travel.hasUser(uid)))) return travel
       else throw "旅程不存在";
     } catch (e) {
@@ -63,17 +110,22 @@ class TravelService {
       let travel = await db.Travel.findByPk(data.id);
       // 旅程是否已存在
       if (travel) {
-        if (!await travel.hasUser(uid, { through: { where: { role: { [Op.in]: ["edit", "manage"] } } } })) throw "您无权限修改旅程信息"
+        const authorized = await travel.getUsers({
+          where: { id: uid },
+          through: { where: { role: { [Op.in]: ["edit", "manage"] } } },
+        });
+        if (!authorized.length) throw "您无权限修改旅程信息";
         travel = await travel.update(data);
       } else {
         travel = await db.Travel.create(data);
+        // 将当前uid添加为旅程管理者（仅创建时）
+        let user = await db.User.findByPk(uid);
+        await travel.addUser(user, { through: { role: "manage" } });
       }
-      // 将当前uid添加为旅程管理者
-      let user = await db.User.findByPk(uid);
-      await travel.addUser(user, { through: { role: "manage" } });
       return travel
     } catch (e) {
-      throw e || "保存失败";
+      console.error('[travel.save]', e);
+      throw typeof e === 'string' ? e : "保存失败";
     }
   }
 

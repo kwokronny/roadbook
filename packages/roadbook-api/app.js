@@ -29,7 +29,7 @@ apiRouter
   .use(bodyparser({ enableTypes: ["json"] }))
   .use(jwt({ secret: config.sercet, passthrough: true }))
   .use(function (ctx, next) {
-    if (ctx.url.match(/^\/api\/(user\/(login|register)|travel\/(detail|schedule\/list))$/)) {
+    if (ctx.url.match(/^\/api\/(user\/(login|register)|travel\/(detail|discover|schedule\/list))$/)) {
       return next()
     }
     if (ctx.state.user === undefined) {
