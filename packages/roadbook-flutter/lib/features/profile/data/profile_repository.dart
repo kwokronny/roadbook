@@ -34,8 +34,11 @@ class ProfileRepository {
         data: form,
         options: Options(contentType: 'multipart/form-data'),
       );
-      final urls = uploadRes.data!['data'] as List<dynamic>;
-      final avatarUrl = urls.first as String;
+      final rawData = uploadRes.data!['data'];
+      if (rawData is! List || rawData.isEmpty) {
+        throw '上传失败：服务器响应格式错误';
+      }
+      final avatarUrl = rawData.first as String;
 
       // Step 2: 将 URL 写入 user 记录
       final updateRes = await _dio.post<Map<String, dynamic>>(

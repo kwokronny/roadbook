@@ -51,7 +51,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     int total = 0;
     if (dir.existsSync()) {
       dir.listSync(recursive: true).forEach((e) {
-        if (e is File) total += e.lengthSync();
+        if (e is File) {
+          try {
+            total += e.lengthSync();
+          } catch (_) {
+            // file may have been deleted between listing and sizing
+          }
+        }
       });
     }
     return total;
@@ -66,7 +72,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _clearCache() async {
     try {
       final dir = await getTemporaryDirectory();
-      if (dir.existsSync()) dir.deleteSync(recursive: true);
+      if (dir.existsSync()) {
+        for (final entity in dir.listSync()) {
+          entity.deleteSync(recursive: true);
+        }
+      }
       await _calcCacheSize();
       if (mounted) {
         ScaffoldMessenger.of(context)
