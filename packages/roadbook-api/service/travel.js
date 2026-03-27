@@ -12,10 +12,11 @@ class TravelService {
       } else if (data.city) {
         where.city = { [Op.like]: `%${data.city}%` };
       }
-      const pageSize = data.pageSize || 20;
+      const pageSize = Math.min(data.pageSize || 20, 100);
       const page = data.page || 1;
       const result = await db.Travel.findAndCountAll({
         where,
+        distinct: true,
         include: [
           {
             model: db.User,

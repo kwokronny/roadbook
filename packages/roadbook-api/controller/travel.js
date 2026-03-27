@@ -217,7 +217,7 @@ class TravelController {
     }
   }
 
-  async discover(ctx, next) {
+  async discover(ctx) {
     try {
       await ctx.verifyParams({
         page:     { type: 'int', required: false },
