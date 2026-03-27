@@ -4,17 +4,25 @@ import 'package:intl/intl.dart';
 import '../../../../core/theme.dart';
 import '../../../../shared/models/travel.dart';
 
-enum TravelStatus { upcoming, ongoing, ended }
+// ─── Status enum (4 states) ──────────────────────────────────────────────────
+
+enum TravelStatus { ongoing, upcoming, planning, ended }
 
 TravelStatus computeTravelStatus(DateTime start, DateTime end) {
   final now = DateTime.now();
   final startDay = DateTime(start.year, start.month, start.day);
-  final endDay = DateTime(end.year, end.month, end.day);
-  final today = DateTime(now.year, now.month, now.day);
-  if (today.isBefore(startDay)) return TravelStatus.upcoming;
-  if (today.isAfter(endDay)) return TravelStatus.ended;
-  return TravelStatus.ongoing;
+  final endDay   = DateTime(end.year,   end.month,   end.day);
+  final today    = DateTime(now.year,   now.month,   now.day);
+
+  // startDay ≤ today ≤ endDay
+  if (!today.isBefore(startDay) && !today.isAfter(endDay)) return TravelStatus.ongoing;
+  if (today.isAfter(endDay))                                return TravelStatus.ended;
+  // today < startDay
+  final daysUntil = startDay.difference(today).inDays;
+  return daysUntil <= 7 ? TravelStatus.upcoming : TravelStatus.planning;
 }
+
+// ─── TravelCard ──────────────────────────────────────────────────────────────
 
 class TravelCard extends StatelessWidget {
   const TravelCard({
@@ -32,142 +40,136 @@ class TravelCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final status = computeTravelStatus(travel.startDate, travel.endDate);
-    final days = travel.endDate.difference(travel.startDate).inDays + 1;
-    final fmt = DateFormat('MM/dd');
+    final status   = computeTravelStatus(travel.startDate, travel.endDate);
+    final gradient = _gradientFor(status);
+    final days     = travel.endDate.difference(travel.startDate).inDays + 1;
+    final fmt      = DateFormat('MM/dd');
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: AppSpacing.cardGap / 2),
+        margin: const EdgeInsets.only(bottom: AppSpacing.cardGap),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          gradient: gradient,
           borderRadius: BorderRadius.circular(AppRadius.card),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x081C1917),
-              blurRadius: 12,
-              offset: Offset(0, 2),
-            ),
-          ],
         ),
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.cardPadding),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              // Top row: name + actions menu
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
+              // ── Left icon box ──────────────────────────────────────────
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(_iconFor(status), color: Colors.white, size: 20),
+              ),
+              const SizedBox(width: 12),
+
+              // ── Content ───────────────────────────────────────────────
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
                       travel.name,
-                      style: AppTextStyles.cardTitle,
+                      style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  if (onEdit != null || onDelete != null)
-                    PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_horiz,
-                          size: 18, color: AppColors.textSecondary),
-                      padding: EdgeInsets.zero,
-                      itemBuilder: (_) => [
-                        if (onEdit != null)
-                          const PopupMenuItem(value: 'edit', child: Text('编辑')),
-                        if (onDelete != null)
-                          const PopupMenuItem(
-                              value: 'delete',
-                              child: Text('删除',
-                                  style: TextStyle(color: Colors.red))),
-                      ],
-                      onSelected: (value) {
-                        if (value == 'edit') onEdit?.call();
-                        if (value == 'delete') onDelete?.call();
-                      },
-                    ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              // Date range + days
-              Row(
-                children: [
-                  const Icon(Icons.calendar_today_outlined,
-                      size: 12, color: AppColors.textSecondary),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${fmt.format(travel.startDate)} — ${fmt.format(travel.endDate)}  ·  $days 天',
-                    style: AppTextStyles.caption,
-                  ),
-                ],
-              ),
-              // Cities
-              if (travel.cities.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Icon(Icons.location_on_outlined,
-                        size: 12, color: AppColors.textSecondary),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
+                    const SizedBox(height: 2),
+                    if (travel.cities.isNotEmpty)
+                      Text(
                         travel.cities.join(' · '),
-                        style: AppTextStyles.caption,
+                        style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.white.withValues(alpha: 0.75)),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Text(
+                          '${fmt.format(travel.startDate)} — ${fmt.format(travel.endDate)}  ·  $days 天',
+                          style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.white.withValues(alpha: 0.9)),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.25),
+                            borderRadius:
+                                BorderRadius.circular(AppRadius.badge),
+                          ),
+                          child: Text(
+                            _labelFor(status),
+                            style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-              const SizedBox(height: 10),
-              // Status badge
-              _StatusBadge(status: status),
+              ),
+
+              // ── More menu ─────────────────────────────────────────────
+              if (onEdit != null || onDelete != null)
+                PopupMenuButton<String>(
+                  icon: Icon(Icons.more_vert,
+                      size: 18, color: Colors.white.withValues(alpha: 0.8)),
+                  padding: EdgeInsets.zero,
+                  itemBuilder: (_) => [
+                    if (onEdit != null)
+                      const PopupMenuItem(value: 'edit', child: Text('编辑')),
+                    if (onDelete != null)
+                      const PopupMenuItem(
+                          value: 'delete',
+                          child: Text('删除',
+                              style: TextStyle(color: Colors.red))),
+                  ],
+                  onSelected: (value) {
+                    if (value == 'edit') onEdit?.call();
+                    if (value == 'delete') onDelete?.call();
+                  },
+                ),
             ],
           ),
         ),
       ),
     );
   }
-}
 
-class _StatusBadge extends StatelessWidget {
-  const _StatusBadge({required this.status});
-  final TravelStatus status;
+  static LinearGradient _gradientFor(TravelStatus status) => switch (status) {
+        TravelStatus.ongoing   => AppColors.ongoingGradient,
+        TravelStatus.upcoming  => AppColors.upcomingGradient,
+        TravelStatus.planning  => AppColors.planningGradient,
+        TravelStatus.ended     => AppColors.endedGradient,
+      };
 
-  @override
-  Widget build(BuildContext context) {
-    late String label;
-    late Color bg;
-    late Color textColor;
-    late Color borderColor;
+  static IconData _iconFor(TravelStatus status) => switch (status) {
+        TravelStatus.ongoing   => Icons.flight_takeoff_outlined,
+        TravelStatus.upcoming  => Icons.access_time_outlined,
+        TravelStatus.planning  => Icons.map_outlined,
+        TravelStatus.ended     => Icons.check_circle_outline,
+      };
 
-    switch (status) {
-      case TravelStatus.upcoming:
-        label = '待出发';
-        bg = AppColors.primaryLight;
-        textColor = AppColors.primary;
-        borderColor = AppColors.primaryBorder;
-      case TravelStatus.ongoing:
-        label = '旅行中';
-        bg = AppColors.successLight;
-        textColor = AppColors.success;
-        borderColor = const Color(0xFFA7F3D0);
-      case TravelStatus.ended:
-        label = '已结束';
-        bg = const Color(0xFFF5F5F4);
-        textColor = AppColors.neutral;
-        borderColor = Colors.transparent;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(AppRadius.badge),
-        border: Border.all(color: borderColor),
-      ),
-      child: Text(label, style: AppTextStyles.micro.copyWith(color: textColor)),
-    );
-  }
+  static String _labelFor(TravelStatus status) => switch (status) {
+        TravelStatus.ongoing   => '旅行中',
+        TravelStatus.upcoming  => '即将出发',
+        TravelStatus.planning  => '规划中',
+        TravelStatus.ended     => '已结束',
+      };
 }
