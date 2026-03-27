@@ -15,6 +15,7 @@ abstract class ApiEndpoints {
   static const String travelInvite  = '/api/travel/invite';
   static const String travelAccept  = '/api/travel/accept';
   static const String travelSetRole = '/api/travel/set_role';
+  static const String travelDiscover = '/api/travel/discover';
 
   // Schedule
   static const String scheduleList   = '/api/travel/schedule/list';
