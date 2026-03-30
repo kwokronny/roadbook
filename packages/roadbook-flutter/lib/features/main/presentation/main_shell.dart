@@ -7,18 +7,24 @@ class MainShell extends StatelessWidget {
   const MainShell({super.key, required this.navigationShell});
   final StatefulNavigationShell navigationShell;
 
+  static final _hideNavPattern = RegExp(r'^/travel/\d+');
+
   @override
   Widget build(BuildContext context) {
+    final location = GoRouterState.of(context).uri.path;
+    final hideNav = _hideNavPattern.hasMatch(location);
     return Scaffold(
       backgroundColor: AppColors.background,
       body: navigationShell,
-      bottomNavigationBar: _BottomNav(
-        currentIndex: navigationShell.currentIndex,
-        onTap: (index) => navigationShell.goBranch(
-          index,
-          initialLocation: index == navigationShell.currentIndex,
-        ),
-      ),
+      bottomNavigationBar: hideNav
+          ? null
+          : _BottomNav(
+              currentIndex: navigationShell.currentIndex,
+              onTap: (index) => navigationShell.goBranch(
+                index,
+                initialLocation: index == navigationShell.currentIndex,
+              ),
+            ),
     );
   }
 }
