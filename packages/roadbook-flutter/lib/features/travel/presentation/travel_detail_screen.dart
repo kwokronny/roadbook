@@ -1,6 +1,7 @@
 // lib/features/travel/presentation/travel_detail_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme.dart';
 import '../../../shared/models/travel.dart';
 import '../../../shared/models/user_travel.dart';
@@ -8,7 +9,6 @@ import '../domain/travel_detail_provider.dart';
 import 'widgets/travel_form_sheet.dart';
 import 'widgets/collaborator_sheet.dart';
 import '../../../features/schedule/presentation/schedule_list_panel.dart';
-import '../../../features/schedule/domain/schedule_provider.dart';
 import '../../schedule/presentation/collect_import_sheet.dart';
 import 'map/map_tab_view.dart';
 import 'map/map_state_notifier.dart';
@@ -129,9 +129,7 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
           case 'import':
             CollectImportSheet.show(context, widget.travelId);
           case 'luggage':
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('行李清单 — 即将推出')),
-            );
+            context.push('/travel/${widget.travelId}/luggage');
         }
       },
       itemBuilder: (_) => [

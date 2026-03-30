@@ -12,6 +12,7 @@ import '../features/discover/presentation/discover_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/profile/presentation/edit_profile_screen.dart';
 import '../features/profile/presentation/settings_screen.dart';
+import '../features/luggage/presentation/luggage_screen.dart';
 
 const _publicRoutes = {'/signin', '/signup', '/accept'};
 
@@ -65,6 +66,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                     final id = int.parse(state.pathParameters['id']!);
                     return TravelDetailScreen(travelId: id);
                   },
+                  routes: [
+                    GoRoute(
+                      path: 'luggage',
+                      builder: (_, state) {
+                        final id =
+                            int.parse(state.pathParameters['id']!);
+                        return LuggageScreen(travelId: id);
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
