@@ -48,15 +48,19 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
   final _searchCtrl = TextEditingController();
   final Set<String> _selected = {};
   String _query = '';
+  late final Set<String> _existingTexts;
+
+  @override
+  void initState() {
+    super.initState();
+    _existingTexts = widget.existingItems.map((i) => i.text).toSet();
+  }
 
   @override
   void dispose() {
     _searchCtrl.dispose();
     super.dispose();
   }
-
-  Set<String> get _existingTexts =>
-      widget.existingItems.map((i) => i.text).toSet();
 
   List<String> get _categoryPresets => presetItemsFor(widget.categoryName);
 
@@ -70,7 +74,8 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
   bool get _queryIsNew =>
       _query.isNotEmpty &&
       _searchResults.isEmpty &&
-      !_existingTexts.contains(_query);
+      !_existingTexts.contains(_query) &&
+      !_selected.contains(_query);
 
   @override
   Widget build(BuildContext context) {
@@ -269,28 +274,32 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
 
   Future<void> _showCustomInput() async {
     final ctrl = TextEditingController();
-    final text = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('自定义物品'),
-        content: TextField(
-          controller: ctrl,
-          autofocus: true,
-          decoration: const InputDecoration(hintText: '物品名称'),
-        ),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('取消')),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
-            child: const Text('添加'),
+    try {
+      final text = await showDialog<String>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('自定义物品'),
+          content: TextField(
+            controller: ctrl,
+            autofocus: true,
+            decoration: const InputDecoration(hintText: '物品名称'),
           ),
-        ],
-      ),
-    );
-    if (text != null && text.isNotEmpty && !_existingTexts.contains(text)) {
-      setState(() => _selected.add(text));
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('取消')),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
+              child: const Text('添加'),
+            ),
+          ],
+        ),
+      );
+      if (text != null && text.isNotEmpty && !_existingTexts.contains(text)) {
+        setState(() => _selected.add(text));
+      }
+    } finally {
+      ctrl.dispose();
     }
   }
 
