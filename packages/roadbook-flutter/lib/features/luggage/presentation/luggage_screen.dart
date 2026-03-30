@@ -16,9 +16,13 @@ class LuggageScreen extends ConsumerWidget {
     ref.listen<AsyncValue<LuggageState>>(luggageProvider(travelId), (_, next) {
       final msg = next.valueOrNull?.errorMessage;
       if (msg != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('保存失败：$msg')),
-        );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('保存失败：$msg')),
+            );
+          }
+        });
       }
     });
 
