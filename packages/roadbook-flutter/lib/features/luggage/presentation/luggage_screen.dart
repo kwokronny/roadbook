@@ -45,7 +45,7 @@ class LuggageScreen extends ConsumerWidget {
         floatingActionButton: state.canEdit
             ? FloatingActionButton(
                 onPressed: () =>
-                    _showAddCategorySheet(context, ref, state.canEdit),
+                    _showAddCategorySheet(context, state.canEdit),
                 backgroundColor: AppColors.primary,
                 shape: const CircleBorder(),
                 child: const Icon(Icons.add, color: Colors.white),
@@ -112,98 +112,111 @@ class LuggageScreen extends ConsumerWidget {
     );
   }
 
-  void _showAddCategorySheet(
-      BuildContext context, WidgetRef ref, bool canEdit) {
+  void _showAddCategorySheet(BuildContext context, bool canEdit) {
     if (!canEdit) return;
-    final ctrl = TextEditingController();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.only(
-            bottom: MediaQuery.of(ctx).viewInsets.bottom),
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-          decoration: const BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.vertical(
-                top: Radius.circular(AppRadius.sheet)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
-                child: Container(
-                  width: 36,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: AppColors.textTertiary,
-                    borderRadius: BorderRadius.circular(2),
+      builder: (_) => _AddCategorySheet(travelId: travelId),
+    );
+  }
+}
+
+class _AddCategorySheet extends StatefulWidget {
+  const _AddCategorySheet({required this.travelId});
+  final int travelId;
+
+  @override
+  State<_AddCategorySheet> createState() => _AddCategorySheetState();
+}
+
+class _AddCategorySheetState extends State<_AddCategorySheet> {
+  final _ctrl = TextEditingController();
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+        decoration: const BoxDecoration(
+          color: AppColors.surface,
+          borderRadius:
+              BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: AppColors.textTertiary,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const Text('添加分类',
+                style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary)),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _ctrl,
+              autofocus: true,
+              onChanged: (_) => setState(() {}),
+              decoration: InputDecoration(
+                hintText: '分类名称',
+                filled: true,
+                fillColor: AppColors.background,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.input),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Consumer(
+              builder: (_, ref, __) => SizedBox(
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: _ctrl.text.trim().isEmpty
+                      ? null
+                      : () async {
+                          final name = _ctrl.text.trim();
+                          Navigator.pop(context);
+                          await ref
+                              .read(luggageProvider(widget.travelId).notifier)
+                              .addCategory(name);
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    disabledBackgroundColor: AppColors.textTertiary,
+                    shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(AppRadius.input)),
                   ),
+                  child: const Text('添加',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600)),
                 ),
               ),
-              const Text('添加分类',
-                  style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary)),
-              const SizedBox(height: 12),
-              StatefulBuilder(
-                builder: (_, setS) => Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    TextField(
-                      controller: ctrl,
-                      autofocus: true,
-                      onChanged: (_) => setS(() {}),
-                      decoration: InputDecoration(
-                        hintText: '分类名称',
-                        filled: true,
-                        fillColor: AppColors.background,
-                        border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(AppRadius.input),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      height: 48,
-                      child: ElevatedButton(
-                        onPressed: ctrl.text.trim().isEmpty
-                            ? null
-                            : () async {
-                                final name = ctrl.text.trim();
-                                Navigator.pop(ctx);
-                                await ref
-                                    .read(luggageProvider(travelId)
-                                        .notifier)
-                                    .addCategory(name);
-                              },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          disabledBackgroundColor:
-                              AppColors.textTertiary,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  AppRadius.input)),
-                        ),
-                        child: const Text('添加',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600)),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
