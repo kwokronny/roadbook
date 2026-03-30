@@ -35,7 +35,7 @@ void main() {
     expect((captured[1] as Map)['equip'], '[{"id":"c1"}]');
   });
 
-  test('setEquip throws String on DioException', () async {
+  test('setEquip throws the DioException message as a String', () async {
     when(() => mockDio.post<dynamic>(any(), data: any(named: 'data')))
         .thenThrow(DioException(
       requestOptions: RequestOptions(path: ''),
@@ -43,6 +43,17 @@ void main() {
     ));
 
     await expectLater(
-        repo.setEquip(travelId: 1, equip: '[]'), throwsA(isA<String>()));
+        repo.setEquip(travelId: 1, equip: '[]'), throwsA('网络错误'));
+  });
+
+  test('setEquip throws fallback message when DioException has no message', () async {
+    when(() => mockDio.post<dynamic>(any(), data: any(named: 'data')))
+        .thenThrow(DioException(
+      requestOptions: RequestOptions(path: ''),
+      // message is null
+    ));
+
+    await expectLater(
+        repo.setEquip(travelId: 1, equip: '[]'), throwsA('保存行李清单失败'));
   });
 }

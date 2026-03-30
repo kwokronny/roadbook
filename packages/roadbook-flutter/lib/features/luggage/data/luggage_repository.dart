@@ -12,7 +12,11 @@ class LuggageRepository {
         data: {'id': travelId, 'equip': equip},
       );
     } on DioException catch (e) {
-      throw e.message ?? '保存行李清单失败';
+      final msg = (e.response?.data as Map?)?['msg'] as String? ??
+          (e.response?.data as Map?)?['message'] as String? ??
+          e.message ??
+          '保存行李清单失败';
+      throw msg;
     }
   }
 }
