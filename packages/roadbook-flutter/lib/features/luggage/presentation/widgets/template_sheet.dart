@@ -108,10 +108,9 @@ class _SeasonCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       onTap: () async {
+        final notifier = ref.read(luggageProvider(travelId).notifier);
         Navigator.pop(context);
-        final added = await ref
-            .read(luggageProvider(travelId).notifier)
-            .importTemplate(season);
+        final added = await notifier.importTemplate(season);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('已导入$label模板，新增 $added 项')),
