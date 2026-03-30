@@ -27,12 +27,14 @@ class LuggageState {
     required this.checkedIds,
     required this.isSaving,
     required this.canEdit,
+    this.errorMessage,
   });
 
   final List<LuggageCategory> categories;
   final Set<String> checkedIds;
   final bool isSaving;
   final bool canEdit;
+  final String? errorMessage;
 
   int get totalItems => categories.fold(0, (s, c) => s + c.items.length);
   int get checkedCount => checkedIds.length;
@@ -42,14 +44,20 @@ class LuggageState {
     Set<String>? checkedIds,
     bool? isSaving,
     bool? canEdit,
+    Object? errorMessage = _sentinel,
   }) =>
       LuggageState(
         categories: categories ?? this.categories,
         checkedIds: checkedIds ?? this.checkedIds,
         isSaving: isSaving ?? this.isSaving,
         canEdit: canEdit ?? this.canEdit,
+        errorMessage: errorMessage == _sentinel
+            ? this.errorMessage
+            : errorMessage as String?,
       );
 }
+
+const _sentinel = Object();
 
 // ─── Notifier ─────────────────────────────────────────────────────────────────
 
@@ -113,6 +121,7 @@ class LuggageNotifier
   Future<void> addCategory(String name) async {
     final current = state.valueOrNull;
     if (current == null) return;
+    final previous = current.categories;
     final newCat = LuggageCategory(
       id: _uuid.v4(),
       name: name,
@@ -121,21 +130,23 @@ class LuggageNotifier
     );
     final updated = [...current.categories, newCat];
     state = AsyncData(current.copyWith(categories: updated));
-    await _save(updated);
+    await _save(updated, previous);
   }
 
   Future<void> deleteCategory(String catId) async {
     final current = state.valueOrNull;
     if (current == null) return;
+    final previous = current.categories;
     final updated =
         current.categories.where((c) => c.id != catId).toList();
     state = AsyncData(current.copyWith(categories: updated));
-    await _save(updated);
+    await _save(updated, previous);
   }
 
   Future<void> addItems(String catId, List<String> texts) async {
     final current = state.valueOrNull;
     if (current == null) return;
+    final previous = current.categories;
     final updated = current.categories.map((c) {
       if (c.id != catId) return c;
       final newItems =
@@ -143,19 +154,20 @@ class LuggageNotifier
       return c.copyWith(items: [...c.items, ...newItems]);
     }).toList();
     state = AsyncData(current.copyWith(categories: updated));
-    await _save(updated);
+    await _save(updated, previous);
   }
 
   Future<void> deleteItem(String catId, String itemId) async {
     final current = state.valueOrNull;
     if (current == null) return;
+    final previous = current.categories;
     final updated = current.categories.map((c) {
       if (c.id != catId) return c;
       return c.copyWith(
           items: c.items.where((i) => i.id != itemId).toList());
     }).toList();
     state = AsyncData(current.copyWith(categories: updated));
-    await _save(updated);
+    await _save(updated, previous);
   }
 
   /// Merges season template into current categories.
@@ -164,6 +176,7 @@ class LuggageNotifier
     final current = state.valueOrNull;
     if (current == null) return 0;
 
+    final previous = current.categories;
     final template = seasonTemplate(season);
     final cats = List<LuggageCategory>.from(current.categories);
     int addedCount = 0;
@@ -187,27 +200,39 @@ class LuggageNotifier
     }
 
     state = AsyncData(current.copyWith(categories: cats));
-    await _save(cats);
+    await _save(cats, previous);
     return addedCount;
   }
 
   // ── Internal ──────────────────────────────────────────────────────────────
 
-  Future<void> _save(List<LuggageCategory> categories) async {
+  Future<void> _save(
+      List<LuggageCategory> categories,
+      List<LuggageCategory> previousCategories,
+  ) async {
     final current = state.valueOrNull;
     if (current == null) return;
-    state = AsyncData(current.copyWith(isSaving: true));
+    state = AsyncData(current.copyWith(isSaving: true, errorMessage: null));
     try {
       final json =
           jsonEncode(categories.map((c) => c.toJson()).toList());
       await ref
           .read(luggageRepositoryProvider)
           .setEquip(travelId: arg, equip: json);
-    } finally {
       final after = state.valueOrNull;
       if (after != null) {
         state = AsyncData(after.copyWith(isSaving: false));
       }
+    } catch (e) {
+      final after = state.valueOrNull;
+      if (after != null) {
+        state = AsyncData(after.copyWith(
+          categories: previousCategories,
+          isSaving: false,
+          errorMessage: e.toString(),
+        ));
+      }
+      rethrow;
     }
   }
 }

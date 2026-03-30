@@ -55,8 +55,7 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
           ),
           actions: [
             _buildViewToggle(),
-            if (canEdit)
-              _buildMoreMenu(context, travel: travel, canManage: canManage),
+            _buildMoreMenu(context, travel: travel, canEdit: canEdit, canManage: canManage),
           ],
         ),
         floatingActionButton: (_currentTab == 0 && canEdit)
@@ -111,7 +110,7 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
     );
   }
 
-  Widget _buildMoreMenu(BuildContext context, {required Travel travel, required bool canManage}) {
+  Widget _buildMoreMenu(BuildContext context, {required Travel travel, required bool canEdit, required bool canManage}) {
     return PopupMenuButton<String>(
       icon: const Icon(Icons.more_vert, size: 22),
       offset: const Offset(0, 44),
@@ -153,15 +152,16 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
               Text('协作者管理'),
             ]),
           ),
-        const PopupMenuItem(
-          value: 'import',
-          height: 44,
-          child: Row(children: [
-            Icon(Icons.download_outlined, size: 18, color: AppColors.textPrimary),
-            SizedBox(width: 10),
-            Text('批量导入'),
-          ]),
-        ),
+        if (canEdit)
+          const PopupMenuItem(
+            value: 'import',
+            height: 44,
+            child: Row(children: [
+              Icon(Icons.download_outlined, size: 18, color: AppColors.textPrimary),
+              SizedBox(width: 10),
+              Text('批量导入'),
+            ]),
+          ),
         const PopupMenuItem(
           value: 'luggage',
           height: 44,
