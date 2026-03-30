@@ -55,15 +55,6 @@ class LuggageScreen extends ConsumerWidget {
               ),
           ],
         ),
-        floatingActionButton: state.canEdit
-            ? FloatingActionButton(
-                onPressed: () =>
-                    _showAddCategorySheet(context, state.canEdit),
-                backgroundColor: AppColors.primary,
-                shape: const CircleBorder(),
-                child: const Icon(Icons.add, color: Colors.white),
-              )
-            : null,
         body: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(child: _buildProgress(state)),
@@ -88,7 +79,27 @@ class LuggageScreen extends ConsumerWidget {
                 childCount: state.categories.length,
               ),
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 80)),
+            if (state.canEdit)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.pageHorizontal, 8, AppSpacing.pageHorizontal, 24),
+                  child: OutlinedButton.icon(
+                    onPressed: () => _showAddCategorySheet(context, state.canEdit),
+                    icon: const Icon(Icons.add),
+                    label: const Text('添加分类'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.primary,
+                      side: const BorderSide(color: AppColors.primary),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AppRadius.input)),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                  ),
+                ),
+              ),
+            if (!state.canEdit)
+              const SliverToBoxAdapter(child: SizedBox(height: 24)),
           ],
         ),
       ),

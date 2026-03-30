@@ -55,16 +55,17 @@ void main() {
     expect(find.text('0 / 1 已打包'), findsOneWidget);
   });
 
-  testWidgets('FAB visible when canEdit=true', (tester) async {
+  testWidgets('添加分类 button visible when canEdit=true', (tester) async {
     await tester.pumpWidget(_wrap(_state(canEdit: true)));
     await tester.pump();
-    expect(find.byType(FloatingActionButton), findsOneWidget);
+    expect(find.text('添加分类'), findsOneWidget);
+    expect(find.byType(FloatingActionButton), findsNothing);
   });
 
-  testWidgets('FAB hidden when canEdit=false', (tester) async {
+  testWidgets('添加分类 button hidden when canEdit=false', (tester) async {
     await tester.pumpWidget(_wrap(_state(canEdit: false)));
     await tester.pump();
-    expect(find.byType(FloatingActionButton), findsNothing);
+    expect(find.text('添加分类'), findsNothing);
   });
 
   testWidgets('导入模板 button visible when canEdit=true', (tester) async {
