@@ -26,4 +26,7 @@ abstract class ApiEndpoints {
 
   // Upload
   static const String upload = '/upload';
+
+  // Equip (Luggage)
+  static const String equipSet = '/api/travel/equip/set';
 }
