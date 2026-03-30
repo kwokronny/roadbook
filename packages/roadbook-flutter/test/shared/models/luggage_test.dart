@@ -45,9 +45,13 @@ void main() {
         items: [const LuggageItem(id: 'i1', text: '护照')],
       );
       final json = cat.toJson();
+      expect(json['id'], 'c1');
       expect(json['name'], '证件');
       expect(json['emoji'], '📋');
-      expect((json['items'] as List).length, 1);
+      final itemsList = json['items'] as List;
+      expect(itemsList.length, 1);
+      expect(itemsList.first['id'], 'i1');
+      expect(itemsList.first['text'], '护照');
     });
 
     test('copyWith replaces name and items independently', () {

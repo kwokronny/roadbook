@@ -9,6 +9,16 @@ class LuggageItem {
       LuggageItem(id: json['id'] as String, text: json['text'] as String);
 
   Map<String, dynamic> toJson() => {'id': id, 'text': text};
+
+  LuggageItem copyWith({String? text}) =>
+      LuggageItem(id: id, text: text ?? this.text);
+
+  @override
+  bool operator ==(Object other) =>
+      other is LuggageItem && other.id == id && other.text == text;
+
+  @override
+  int get hashCode => Object.hash(id, text);
 }
 
 class LuggageCategory {
@@ -47,4 +57,23 @@ class LuggageCategory {
         emoji: emoji,
         items: items ?? this.items,
       );
+
+  @override
+  bool operator ==(Object other) =>
+      other is LuggageCategory &&
+      other.id == id &&
+      other.name == name &&
+      other.emoji == emoji &&
+      _listEquals(other.items, items);
+
+  @override
+  int get hashCode => Object.hash(id, name, emoji, Object.hashAll(items));
+}
+
+bool _listEquals<T>(List<T> a, List<T> b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    if (a[i] != b[i]) return false;
+  }
+  return true;
 }
