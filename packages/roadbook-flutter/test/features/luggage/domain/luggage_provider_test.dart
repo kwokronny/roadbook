@@ -84,6 +84,8 @@ void main() {
     final container =
         _makeContainer(travel: travel, mockRepo: mockRepo);
     addTearDown(container.dispose);
+    // Ensure auth state is resolved before luggage provider reads it synchronously
+    await container.read(authStateProvider.future);
     container.listen(luggageProvider(10), (_, __) {});
 
     final state = await container.read(luggageProvider(10).future);
@@ -99,6 +101,8 @@ void main() {
     final container =
         _makeContainer(travel: travel, mockRepo: mockRepo, userId: 99);
     addTearDown(container.dispose);
+    // Ensure auth state is resolved before luggage provider reads it synchronously
+    await container.read(authStateProvider.future);
     container.listen(luggageProvider(10), (_, __) {});
 
     final state = await container.read(luggageProvider(10).future);

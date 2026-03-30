@@ -61,8 +61,7 @@ class LuggageNotifier
   @override
   Future<LuggageState> build(int arg) async {
     final travel = await ref.watch(travelDetailProvider(arg).future);
-    final authState = await ref.read(authStateProvider.future);
-    final authUser = authState.user;
+    final authUser = ref.read(authStateProvider).valueOrNull?.user;
 
     final role = () {
       if (authUser == null) return RoleType.view;
