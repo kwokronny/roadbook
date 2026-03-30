@@ -79,24 +79,35 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height * 0.8;
-    return Container(
-      height: height,
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius:
-            BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-      ),
-      child: Column(
-        children: [
-          _buildHandle(),
-          _buildTitleBar(),
-          _buildSearchBar(),
-          const Divider(
-              height: 0.5, thickness: 0.5, color: AppColors.separator),
-          Expanded(child: _query.isNotEmpty ? _buildSearchView() : _buildPresetView()),
-          _buildAddButton(),
-        ],
+    final maxHeight = MediaQuery.of(context).size.height * 0.8;
+    return Padding(
+      padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: Container(
+        constraints: BoxConstraints(maxHeight: maxHeight),
+        decoration: const BoxDecoration(
+          color: AppColors.surface,
+          borderRadius:
+              BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildHandle(),
+              _buildTitleBar(),
+              _buildSearchBar(),
+              const Divider(
+                  height: 0.5, thickness: 0.5, color: AppColors.separator),
+              Flexible(
+                  child: _query.isNotEmpty
+                      ? _buildSearchView()
+                      : _buildPresetView()),
+              _buildAddButton(),
+            ],
+          ),
+        ),
       ),
     );
   }
