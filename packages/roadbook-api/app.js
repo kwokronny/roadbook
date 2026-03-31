@@ -27,6 +27,26 @@ let router = new Router();
 let apiRouter = new Router();
 apiRouter
   .use(bodyparser({ enableTypes: ["json"] }))
+  .use(async function (ctx, next) {
+    const auth = ctx.headers['authorization'];
+    if (auth && auth.startsWith('Bearer rb_')) {
+      const key = auth.slice(7);
+      const ApiKeyService = require('./service/apikey');
+      const apiKey = await ApiKeyService.findByKey(key);
+      if (apiKey && apiKey.User) {
+        ctx.state.user = {
+          id: apiKey.User.id,
+          username: apiKey.User.username,
+          name: apiKey.User.name,
+          avatar: apiKey.User.avatar,
+        };
+        apiKey.lastUsedAt = new Date();
+        await apiKey.save();
+        return next();
+      }
+    }
+    return next();
+  })
   .use(jwt({ secret: config.sercet, passthrough: true }))
   .use(function (ctx, next) {
     if (ctx.url.match(/^\/api\/(user\/(login|register)|travel\/(detail|discover|schedule\/list))$/)) {
