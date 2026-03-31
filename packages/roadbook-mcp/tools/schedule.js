@@ -14,7 +14,7 @@ const listSchedules = {
     },
   },
   async handler(params) {
-    const data = await request('/api/travel/schedule/list', { tId: params.travelId });
+    const data = await request('/api/travel/schedule/list', { id: params.travelId });
     if (!data || data.length === 0) {
       return '该行程暂无日程项。';
     }

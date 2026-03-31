@@ -1,6 +1,12 @@
 // packages/roadbook-mcp/tools/travel.js
 const { request } = require('../client');
 
+// API validates startDate/endDate as dateTime — append time if only date given
+function toDateTime(dateStr) {
+  if (!dateStr) return dateStr;
+  return dateStr.length === 10 ? dateStr + ' 00:00:00' : dateStr;
+}
+
 const listTravels = {
   definition: {
     name: 'list_travels',
@@ -18,7 +24,7 @@ const listTravels = {
     const data = await request('/api/travel/page', {
       page: params.page || 1,
       pageSize: params.pageSize || 20,
-      name: params.name,
+      name: params.name || '',
     });
     if (!data.record || data.record.length === 0) {
       return '当前没有行程。';
@@ -49,8 +55,8 @@ const createTravel = {
   async handler(params) {
     const data = await request('/api/travel/save', {
       name: params.name,
-      startDate: params.startDate,
-      endDate: params.endDate,
+      startDate: toDateTime(params.startDate),
+      endDate: toDateTime(params.endDate),
       city: params.city,
       public: params.public || false,
     });
@@ -75,11 +81,16 @@ const updateTravel = {
     },
   },
   async handler(params) {
-    const body = { id: params.id };
-    if (params.name !== undefined) body.name = params.name;
-    if (params.startDate !== undefined) body.startDate = params.startDate;
-    if (params.endDate !== undefined) body.endDate = params.endDate;
-    if (params.city !== undefined) body.city = params.city;
+    // Fetch current travel to fill required fields for controller validation
+    const current = await request('/api/travel/detail', { id: params.id });
+    const body = {
+      id: params.id,
+      name: params.name !== undefined ? params.name : current.name,
+      startDate: toDateTime(params.startDate !== undefined ? params.startDate : current.startDate),
+      endDate: toDateTime(params.endDate !== undefined ? params.endDate : current.endDate),
+      city: params.city !== undefined ? params.city : (current.city || ''),
+      public: current.public || false,
+    };
     await request('/api/travel/save', body);
     return `已更新行程 (ID: ${params.id})。`;
   },
@@ -99,11 +110,13 @@ const getTravelDetail = {
   },
   async handler(params) {
     const data = await request('/api/travel/detail', { id: params.id });
+    // Schedules are not included in detail response — fetch separately
+    const schedules = await request('/api/travel/schedule/list', { id: params.id });
     let result = `行程「${data.name}」(ID: ${data.id})\n日期: ${data.startDate} ~ ${data.endDate}`;
     if (data.city) result += `\n城市: ${data.city}`;
-    if (data.Schedules && data.Schedules.length > 0) {
-      result += `\n\n共 ${data.Schedules.length} 个日程项:`;
-      data.Schedules.forEach(s => {
+    if (schedules && schedules.length > 0) {
+      result += `\n\n共 ${schedules.length} 个日程项:`;
+      schedules.forEach(s => {
         result += `\n- 「${s.name}」(ID: ${s.id})`;
         if (s.startTime) result += ` | ${s.startTime}`;
         if (s.endTime) result += ` ~ ${s.endTime}`;
