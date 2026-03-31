@@ -12,6 +12,7 @@ import '../features/discover/presentation/discover_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/profile/presentation/edit_profile_screen.dart';
 import '../features/profile/presentation/settings_screen.dart';
+import '../features/profile/presentation/api_keys_screen.dart';
 import '../features/luggage/presentation/luggage_screen.dart';
 
 const _publicRoutes = {'/signin', '/signup', '/accept'};
@@ -98,6 +99,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                 GoRoute(
                   path: 'settings',
                   builder: (_, __) => const SettingsScreen(),
+                ),
+                GoRoute(
+                  path: 'api-keys',
+                  builder: (_, __) => const ApiKeysScreen(),
                 ),
               ],
             ),

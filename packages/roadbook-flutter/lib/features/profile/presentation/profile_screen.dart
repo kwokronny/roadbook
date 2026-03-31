@@ -72,6 +72,12 @@ class ProfileScreen extends ConsumerWidget {
                 label: '设置',
                 onTap: () => context.push('/profile/settings'),
               ),
+              _MenuItem(
+                icon: Icons.key_outlined,
+                iconBg: AppColors.hotel,
+                label: 'API Key 管理',
+                onTap: () => context.push('/profile/api-keys'),
+              ),
             ]),
             const SizedBox(height: 8),
             // 退出登录

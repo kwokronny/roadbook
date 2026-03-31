@@ -24,6 +24,11 @@ abstract class ApiEndpoints {
   static const String scheduleRemove = '/api/travel/schedule/remove';
   static const String scheduleClone  = '/api/travel/schedule/clone';
 
+  // API Key
+  static const String apiKeyCreate = '/api/user/apikey/create';
+  static const String apiKeyList   = '/api/user/apikey/list';
+  static const String apiKeyRemove = '/api/user/apikey/remove';
+
   // Upload
   static const String upload = '/upload';
 
