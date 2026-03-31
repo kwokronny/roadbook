@@ -103,3 +103,7 @@ class ScheduleNotifier extends AutoDisposeFamilyAsyncNotifier<List<Schedule>, in
 /// 0 = 待规划，1-N = 第 N 天
 final selectedDayProvider =
     StateProvider.autoDispose.family<int, int>((ref, travelId) => 1);
+
+/// Map tab day selector: -1 = 全部，1-N = 第 N 天
+final mapSelectedDayProvider =
+    StateProvider.autoDispose.family<int, int>((ref, travelId) => 1);

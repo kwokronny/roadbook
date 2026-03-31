@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/theme.dart';
 import '../../../../shared/models/schedule.dart';
 import '../schedule_photo_viewer.dart';
+import 'schedule_nav_button.dart';
 
 class ScheduleTimelineItem extends StatelessWidget {
   const ScheduleTimelineItem({
@@ -11,25 +12,55 @@ class ScheduleTimelineItem extends StatelessWidget {
     required this.schedule,
     required this.travelStartDate,
     required this.canEdit,
+    this.displayDay,
     this.onEditTimeTap,
-    this.onMoreTap,
+    this.onEdit,
+    this.onClone,
+    this.onDelete,
   });
 
   final Schedule schedule;
   final DateTime travelStartDate;
   final bool canEdit;
+  final int? displayDay;  // 当前显示的天（0=待规划, 1-N=第N天）
   final VoidCallback? onEditTimeTap;
-  final VoidCallback? onMoreTap;
+  final VoidCallback? onEdit;
+  final VoidCallback? onClone;
+  final VoidCallback? onDelete;
 
   static const _maxThumbs = 4;
+  static final _timeFmt = DateFormat('HH:mm');
+
+  int? get _checkInDay {
+    if (!schedule.isHotel || schedule.startTime == null) return null;
+    return schedule.startTime!.toLocal().difference(travelStartDate).inDays + 1;
+  }
+
+  int? get _checkOutDay {
+    if (!schedule.isHotel || schedule.endTime == null) return null;
+    return schedule.endTime!.toLocal().difference(travelStartDate).inDays + 1;
+  }
 
   String get _timeLabel {
-    if (schedule.isHotel) return '住宿';
+    if (displayDay == 0) return '待规划';
+    if (schedule.isHotel) {
+      final d = displayDay;
+      if (d != null && d > 0) {
+        if (d == _checkInDay && schedule.startTime != null) {
+          return '入住 ${_timeFmt.format(schedule.startTime!.toLocal())}';
+        }
+        if (d == _checkOutDay && schedule.endTime != null) {
+          return '退房 ${_timeFmt.format(schedule.endTime!.toLocal())}';
+        }
+      }
+      return '住宿';
+    }
     if (schedule.startTime == null) return '待规划';
-    return DateFormat('HH:mm').format(schedule.startTime!.toLocal());
+    return _timeFmt.format(schedule.startTime!.toLocal());
   }
 
   Color get _accentColor {
+    if (displayDay == 0) return AppColors.textSecondary;
     if (schedule.isHotel) return AppColors.hotel;
     if (schedule.startTime == null) return AppColors.textSecondary;
     return AppColors.primary;
@@ -38,39 +69,52 @@ class ScheduleTimelineItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 18),
+      padding: const EdgeInsets.only(bottom: 28),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Cover image (replaces dot)
           _CoverImage(schedule: schedule),
           const SizedBox(width: 10),
-          // ── Content
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Time row
                 _buildTimeRow(context),
-                const SizedBox(height: 3),
-                // Name
-                Text(
-                  schedule.name,
-                  style: AppTextStyles.cardTitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                const SizedBox(height: 8),
+                // ── 名称+地址 与 导航按钮 同一容器
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            schedule.name,
+                            style: AppTextStyles.appBarTitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (schedule.address.isNotEmpty) ...[
+                            const SizedBox(height: 1),
+                            Text(
+                              schedule.address,
+                              style: AppTextStyles.caption,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    ScheduleNavButton(
+                      coordinate: schedule.coordinate,
+                      name: schedule.name,
+                      isHotel: schedule.isHotel,
+                    ),
+                  ],
                 ),
-                // Address
-                if (schedule.address.isNotEmpty) ...[
-                  const SizedBox(height: 1),
-                  Text(
-                    schedule.address,
-                    style: AppTextStyles.caption,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-                // Screenshots
                 if (schedule.screenshotList.isNotEmpty) ...[
                   const SizedBox(height: 6),
                   _buildScreenshots(context),
@@ -86,7 +130,7 @@ class ScheduleTimelineItem extends StatelessWidget {
   Widget _buildTimeRow(BuildContext context) {
     return Row(
       children: [
-        // Time + edit icon (tappable area)
+        // Time label + edit icon
         GestureDetector(
           onTap: canEdit ? onEditTimeTap : null,
           child: Row(
@@ -95,7 +139,7 @@ class ScheduleTimelineItem extends StatelessWidget {
               Text(
                 _timeLabel,
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 26,
                   fontWeight: FontWeight.w700,
                   color: _accentColor,
                   height: 1,
@@ -105,8 +149,8 @@ class ScheduleTimelineItem extends StatelessWidget {
                 const SizedBox(width: 5),
                 Container(
                   key: const Key('editIcon'),
-                  width: 18,
-                  height: 18,
+                  width: 22,
+                  height: 22,
                   decoration: BoxDecoration(
                     color: schedule.isHotel
                         ? AppColors.hotelLight
@@ -122,37 +166,22 @@ class ScheduleTimelineItem extends StatelessWidget {
                               : AppColors.primaryBorder,
                     ),
                   ),
-                  child: Icon(
-                    Icons.edit_outlined,
-                    size: 10,
-                    color: _accentColor,
-                  ),
+                  child: Icon(Icons.edit_outlined, size: 12, color: _accentColor),
                 ),
               ],
             ],
           ),
         ),
         const Spacer(),
-        if (onMoreTap != null)
-          GestureDetector(
-            onTap: onMoreTap,
-            child: Container(
-              width: 26,
-              height: 26,
-              decoration: BoxDecoration(
-                color: schedule.isHotel
-                    ? AppColors.hotelLight
-                    : AppColors.primaryLight,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: schedule.isHotel
-                      ? AppColors.hotelBorder
-                      : AppColors.primaryBorder,
-                ),
-              ),
-              child: Icon(Icons.more_horiz,
-                  size: 14, color: _accentColor),
-            ),
+        // More dropdown (only when canEdit)
+        if (canEdit)
+          _MoreMenu(
+            accentColor: _accentColor,
+            isHotel: schedule.isHotel,
+            hasStartTime: schedule.startTime != null,
+            onEdit: onEdit,
+            onClone: onClone,
+            onDelete: onDelete,
           ),
       ],
     );
@@ -178,7 +207,7 @@ class ScheduleTimelineItem extends StatelessWidget {
               width: 36,
               height: 36,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(AppRadius.timeCell),
                 child: Image.network(
                   visible[i],
                   width: 36,
@@ -203,15 +232,93 @@ class ScheduleTimelineItem extends StatelessWidget {
             height: 36,
             decoration: BoxDecoration(
               color: AppColors.border,
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(AppRadius.timeCell),
             ),
             child: Center(
               child: Text('+$overflow',
-                  style: AppTextStyles.micro
-                      .copyWith(fontWeight: FontWeight.w700)),
+                  style: AppTextStyles.micro.copyWith(fontWeight: FontWeight.w700)),
             ),
           ),
       ],
+    );
+  }
+}
+
+// ─── More Dropdown ────────────────────────────────────────────────────────────
+
+enum _MenuAction { edit, clone, delete }
+
+class _MoreMenu extends StatelessWidget {
+  const _MoreMenu({
+    required this.accentColor,
+    required this.isHotel,
+    required this.hasStartTime,
+    this.onEdit,
+    this.onClone,
+    this.onDelete,
+  });
+
+  final Color accentColor;
+  final bool isHotel;
+  final bool hasStartTime;
+  final VoidCallback? onEdit;
+  final VoidCallback? onClone;
+  final VoidCallback? onDelete;
+
+  Color get _bgColor => isHotel ? AppColors.hotelLight : AppColors.primaryLight;
+  Color get _borderColor => isHotel ? AppColors.hotelBorder : AppColors.primaryBorder;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<_MenuAction>(
+      onSelected: (action) {
+        switch (action) {
+          case _MenuAction.edit:   onEdit?.call();
+          case _MenuAction.clone:  onClone?.call();
+          case _MenuAction.delete: onDelete?.call();
+        }
+      },
+      offset: const Offset(0, 28),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.card),
+      ),
+      color: AppColors.surface,
+      elevation: 4,
+      itemBuilder: (_) => [
+        PopupMenuItem(
+          value: _MenuAction.edit,
+          height: 40,
+          child: Row(children: [
+            const Icon(Icons.edit_outlined, size: 16, color: AppColors.textPrimary),
+            const SizedBox(width: 10),
+            Text('编辑', style: AppTextStyles.cardTitle.copyWith(fontWeight: FontWeight.w400)),
+          ]),
+        ),
+        PopupMenuItem(
+          value: _MenuAction.clone,
+          height: 40,
+          child: Row(children: [
+            const Icon(Icons.copy_outlined, size: 16, color: AppColors.textPrimary),
+            const SizedBox(width: 10),
+            Text('克隆', style: AppTextStyles.cardTitle.copyWith(fontWeight: FontWeight.w400)),
+          ]),
+        ),
+        const PopupMenuDivider(height: 1),
+        PopupMenuItem(
+          value: _MenuAction.delete,
+          height: 40,
+          child: Row(children: [
+            const Icon(Icons.delete_outline, size: 16, color: Colors.red),
+            const SizedBox(width: 10),
+            Text('删除', style: AppTextStyles.cardTitle.copyWith(fontWeight: FontWeight.w400, color: Colors.red)),
+          ]),
+        ),
+      ],
+      child: SizedBox(
+        width: 32,
+        height: 32,
+        child: Icon(Icons.more_horiz, size: 18, color: accentColor),
+      ),
     );
   }
 }
@@ -269,7 +376,7 @@ class _DefaultIcon extends StatelessWidget {
     return Center(
       child: Text(
         schedule.isHotel ? '🏨' : '📍',
-        style: const TextStyle(fontSize: 20),
+        style: const TextStyle(fontSize: 24),
       ),
     );
   }

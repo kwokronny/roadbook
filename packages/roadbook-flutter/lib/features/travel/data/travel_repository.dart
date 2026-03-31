@@ -71,8 +71,10 @@ class TravelRepository {
       );
       return Travel.fromJson(res.data!);
     } on DioException catch (e) {
-      final msg = (e.response?.data as Map?)?['message'] as String?;
-      throw msg ?? '保存旅程失败';
+      final msg = e.message ??
+          (e.response?.data as Map?)?['msg'] as String? ??
+          '保存旅程失败';
+      throw msg;
     }
   }
 

@@ -36,12 +36,9 @@ class HotelHourRangeState {
           phase: HotelHourPhase.awaitingCheckOut,
         );
       case HotelHourPhase.awaitingCheckOut:
-        final ci = checkInHour!;
-        final inH = hour < ci ? hour : ci;
-        final outH = hour < ci ? ci : hour;
         return HotelHourRangeState(
-          checkInHour: inH,
-          checkOutHour: outH,
+          checkInHour: checkInHour,
+          checkOutHour: hour,
           phase: HotelHourPhase.complete,
         );
       case HotelHourPhase.complete:
@@ -178,13 +175,7 @@ class _ScheduleQuickTimeSheetState
         _checkOutDay = null;
         _hotelDayIsCheckIn = false;
       } else {
-        final ci = _checkInDay!;
-        if (day < ci) {
-          _checkInDay = day;
-          _checkOutDay = ci;
-        } else {
-          _checkOutDay = day;
-        }
+        _checkOutDay = day;
         _hotelDayIsCheckIn = true;
       }
     });
@@ -275,6 +266,7 @@ class _ScheduleQuickTimeSheetState
         const SizedBox(height: 8),
         _DayScrollRow(
           totalDays: _totalDays,
+          travelStartDate: widget.travel.startDate,
           selectedDay: _selectedDay,
           isHotel: false,
           checkInDay: null,
@@ -350,6 +342,7 @@ class _ScheduleQuickTimeSheetState
         const SizedBox(height: 8),
         _DayScrollRow(
           totalDays: _totalDays,
+          travelStartDate: widget.travel.startDate,
           selectedDay: null,
           isHotel: true,
           checkInDay: _checkInDay,
@@ -372,16 +365,14 @@ class _ScheduleQuickTimeSheetState
           hourRange: _hourRange,
           onTap: (h) => setState(() => _hourRange = _hourRange.tap(h)),
         ),
-        if (_checkInDay != null && _checkOutDay != null) ...[
-          const SizedBox(height: 12),
-          _HotelSummaryBar(
-            checkInDay: _checkInDay!,
-            checkOutDay: _checkOutDay!,
-            checkInHour: _hourRange.checkInHour,
-            checkOutHour: _hourRange.checkOutHour,
-            nightsLabel: nightsLabel!,
-          ),
-        ],
+        const SizedBox(height: 12),
+        _HotelSummaryBar(
+          checkInDay: _checkInDay,
+          checkOutDay: _checkOutDay,
+          checkInHour: _hourRange.checkInHour,
+          checkOutHour: _hourRange.checkOutHour,
+          nightsLabel: nightsLabel,
+        ),
         const SizedBox(height: 20),
         _ConfirmButton(isHotel: true, saving: _saving, onTap: _submit),
       ],
@@ -421,6 +412,7 @@ class _SheetHeader extends StatelessWidget {
 class _DayScrollRow extends StatelessWidget {
   const _DayScrollRow({
     required this.totalDays,
+    required this.travelStartDate,
     required this.selectedDay,
     required this.isHotel,
     required this.checkInDay,
@@ -429,11 +421,19 @@ class _DayScrollRow extends StatelessWidget {
   });
 
   final int totalDays;
+  final DateTime travelStartDate;
   final int? selectedDay;
   final bool isHotel;
   final int? checkInDay;
   final int? checkOutDay;
   final ValueChanged<int> onTap;
+
+  static const _weekLabels = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+
+  String _weekLabel(int day) {
+    final date = travelStartDate.add(Duration(days: day - 1));
+    return _weekLabels[date.weekday - 1];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -443,83 +443,73 @@ class _DayScrollRow extends StatelessWidget {
       child: Row(
         children: days.map((day) {
           bool isSelected = false;
-          bool isRange = false;
           String? tag;
 
           if (isHotel) {
             if (day == checkInDay) { isSelected = true; tag = '入住'; }
             else if (day == checkOutDay) { isSelected = true; tag = '退房'; }
-            else if (checkInDay != null && checkOutDay != null &&
-                day > checkInDay! && day < checkOutDay!) {
-              isRange = true;
-            }
           } else {
             isSelected = day == selectedDay;
           }
 
           final bg = isSelected
               ? (isHotel ? AppColors.hotelLight : AppColors.primaryLight)
-              : isRange
-                  ? (isHotel ? AppColors.hotelLight : const Color(0xFFFFF7ED))
-                  : const Color(0xFFF5F5F4);
+              : const Color(0xFFF5F5F4);
           final border = isSelected
               ? (isHotel ? AppColors.hotelBorder : AppColors.primaryBorder)
               : Colors.transparent;
-          final textColor = isSelected || isRange
+          final textColor = isSelected
               ? (isHotel ? AppColors.hotel : AppColors.primary)
               : AppColors.textSecondary;
 
           return GestureDetector(
             onTap: () => onTap(day),
             child: Container(
-              margin: const EdgeInsets.only(right: 5),
-              width: day == 0 ? 64 : 48,
-              height: 40,
+              margin: const EdgeInsets.only(right: 6),
+              width: day == 0 ? 72 : 58,
+              height: 72,
               decoration: BoxDecoration(
                 color: bg,
                 borderRadius: BorderRadius.circular(AppRadius.input),
                 border: Border.all(color: border),
               ),
-              child: Stack(
-                children: [
-                  Center(
-                    child: day == 0
-                        ? Text('待规划',
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: day == 0
+                    ? [
+                        Text('待规划',
                             style: TextStyle(
-                                fontSize: 10,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: textColor))
-                        : Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text('DAY',
-                                  style: TextStyle(
-                                      fontSize: 7,
-                                      fontWeight: FontWeight.w500,
-                                      color: textColor,
-                                      height: 1.1)),
-                              Text('$day',
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w800,
-                                      color: textColor,
-                                      height: 1.1)),
-                            ],
-                          ),
-                  ),
-                  if (tag != null)
-                    Positioned(
-                      bottom: 1,
-                      left: 0,
-                      right: 0,
-                      child: Text(tag,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 7,
-                              fontWeight: FontWeight.w600,
-                              color: textColor)),
-                    ),
-                ],
+                                color: textColor)),
+                      ]
+                    : [
+                        Text('DAY',
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: textColor,
+                                height: 1.1)),
+                        Text('$day',
+                            style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w800,
+                                color: textColor,
+                                height: 1.0)),
+                        Text(_weekLabel(day),
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                color: textColor.withValues(alpha: 0.8),
+                                height: 1.2)),
+                        // 始终占位，避免 tag 出现时引起格子内容位移
+                        Text(tag ?? '',
+                            style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: textColor,
+                                height: 1.1)),
+                      ],
               ),
             ),
           );
@@ -556,27 +546,21 @@ class _HourGrid extends StatelessWidget {
       itemCount: 24,
       itemBuilder: (_, h) {
         bool isSelected = false;
-        bool isRange = false;
 
         if (!isHotel) {
           isSelected = h == selectedHour;
         } else {
           final r = hourRange!;
           isSelected = h == r.checkInHour || h == r.checkOutHour;
-          isRange = r.isInRange(h);
         }
 
         final bg = isSelected
             ? (isHotel ? AppColors.hotelLight : AppColors.primaryLight)
-            : isRange
-                ? (isHotel ? AppColors.hotelLight : AppColors.primaryLight)
-                : const Color(0xFFF5F5F4);
+            : const Color(0xFFF5F5F4);
         final border = isSelected
             ? (isHotel ? AppColors.hotelBorder : AppColors.primaryBorder)
-            : isRange
-                ? (isHotel ? AppColors.hotelBorder : AppColors.primaryBorder)
-                : Colors.transparent;
-        final textColor = isSelected || isRange
+            : Colors.transparent;
+        final textColor = isSelected
             ? (isHotel ? AppColors.hotel : AppColors.primary)
             : AppColors.textSecondary;
 
@@ -592,7 +576,7 @@ class _HourGrid extends StatelessWidget {
               child: Text(
                 '$h',
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 16,
                   fontWeight:
                       isSelected ? FontWeight.w700 : FontWeight.w500,
                   color: textColor,
@@ -615,13 +599,14 @@ class _HotelSummaryBar extends StatelessWidget {
     required this.nightsLabel,
   });
 
-  final int checkInDay;
-  final int checkOutDay;
+  final int? checkInDay;
+  final int? checkOutDay;
   final int? checkInHour;
   final int? checkOutHour;
-  final String nightsLabel;
+  final String? nightsLabel;
 
-  String _hourStr(int? h) => h != null ? '${h.toString().padLeft(2, '0')}:00' : '--';
+  String _dayStr(int? d) => d != null ? 'Day$d' : 'Day--';
+  String _hourStr(int? h) => h != null ? '${h.toString().padLeft(2, '0')}:00' : '--:--';
 
   @override
   Widget build(BuildContext context) {
@@ -629,21 +614,22 @@ class _HotelSummaryBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.hotelLight,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.input),
       ),
       child: Row(children: [
-        Text('Day$checkInDay 入住 ${_hourStr(checkInHour)}',
+        Text('${_dayStr(checkInDay)} 入住 ${_hourStr(checkInHour)}',
             style: AppTextStyles.caption
                 .copyWith(color: AppColors.hotel, fontWeight: FontWeight.w600)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6),
           child: Text('→', style: AppTextStyles.caption),
         ),
-        Text('Day$checkOutDay 退房 ${_hourStr(checkOutHour)}',
+        Text('${_dayStr(checkOutDay)} 退房 ${_hourStr(checkOutHour)}',
             style: AppTextStyles.caption
                 .copyWith(color: AppColors.hotel, fontWeight: FontWeight.w600)),
         const Spacer(),
-        Text('· $nightsLabel', style: AppTextStyles.caption),
+        if (nightsLabel != null)
+          Text('· $nightsLabel', style: AppTextStyles.caption),
       ]),
     );
   }
@@ -680,7 +666,7 @@ class _ConfirmButton extends StatelessWidget {
             : const Text('确认修改',
                 style: TextStyle(
                     color: Colors.white,
-                    fontSize: 14,
+                    fontSize: 18,
                     fontWeight: FontWeight.w700)),
       ),
     );

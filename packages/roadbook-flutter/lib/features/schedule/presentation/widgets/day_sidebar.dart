@@ -28,7 +28,7 @@ class DaySidebar extends StatelessWidget {
     final days = [for (int d = 1; d <= totalDays; d++) d, 0];
 
     return SizedBox(
-      width: 56,
+      width: 66,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 10),
         itemCount: days.length,
@@ -39,7 +39,7 @@ class DaySidebar extends StatelessWidget {
             onTap: () => onDaySelected(day),
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
-              height: 58,
+              height: 68,
               decoration: BoxDecoration(
                 color: isSelected ? AppColors.primaryLight : Colors.transparent,
                 borderRadius: BorderRadius.circular(AppRadius.input),
@@ -52,7 +52,7 @@ class DaySidebar extends StatelessWidget {
                     ? Text(
                         '待规划',
                         style: TextStyle(
-                          fontSize: 7,
+                          fontSize: 13,
                           fontWeight: FontWeight.w600,
                           color: isSelected ? AppColors.primary : AppColors.textSecondary,
                         ),
@@ -63,7 +63,7 @@ class DaySidebar extends StatelessWidget {
                           Text(
                             'DAY',
                             style: TextStyle(
-                              fontSize: 7,
+                              fontSize: 13,
                               fontWeight: FontWeight.w600,
                               color: isSelected ? AppColors.primary : AppColors.textDisabled,
                               letterSpacing: 0.5,
@@ -72,7 +72,7 @@ class DaySidebar extends StatelessWidget {
                           Text(
                             '$day',
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 26,
                               fontWeight: FontWeight.w900,
                               color: isSelected ? AppColors.primary : AppColors.textDisabled,
                               height: 1,
@@ -81,7 +81,7 @@ class DaySidebar extends StatelessWidget {
                           Text(
                             _weekLabel(day),
                             style: TextStyle(
-                              fontSize: 8,
+                              fontSize: 14,
                               color: isSelected
                                   ? AppColors.primary.withValues(alpha: 0.7)
                                   : AppColors.textDisabled,

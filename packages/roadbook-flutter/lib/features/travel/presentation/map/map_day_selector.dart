@@ -18,42 +18,39 @@ class MapDaySelectorBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final rawDay = ref.watch(selectedDayProvider(travelId));
-    // day=0 is "待规划" (unplanned) — not meaningful on map; default to day 1
-    final selectedDay = rawDay < 1 ? 1 : rawDay;
-    if (rawDay < 1) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(selectedDayProvider(travelId).notifier).state = 1;
-      });
-    }
+    final selectedDay = ref.watch(mapSelectedDayProvider(travelId));
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  for (int day = 1; day <= totalDays; day++)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 6),
-                      child: _DayChip(
-                        day: day,
-                        selected: selectedDay == day,
-                        onTap: () => ref
-                            .read(selectedDayProvider(travelId).notifier)
-                            .state = day,
-                      ),
-                    ),
-                ],
-              ),
+    return SingleChildScrollView(
+      child: IntrinsicWidth(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+          _SearchButton(onTap: onSearchTap),
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: _DayChip(
+              label: '全部',
+              selected: selectedDay == -1,
+              onTap: () => ref
+                  .read(mapSelectedDayProvider(travelId).notifier)
+                  .state = -1,
             ),
           ),
-          const SizedBox(width: 8),
-          _SearchButton(onTap: onSearchTap),
+          for (int day = 1; day <= totalDays; day++)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: _DayChip(
+                label: 'Day $day',
+                selected: selectedDay == day,
+                onTap: () => ref
+                    .read(mapSelectedDayProvider(travelId).notifier)
+                    .state = day,
+              ),
+            ),
         ],
+        ),
       ),
     );
   }
@@ -61,12 +58,12 @@ class MapDaySelectorBar extends ConsumerWidget {
 
 class _DayChip extends StatelessWidget {
   const _DayChip({
-    required this.day,
+    required this.label,
     required this.selected,
     required this.onTap,
   });
 
-  final int day;
+  final String label;
   final bool selected;
   final VoidCallback onTap;
 
@@ -79,7 +76,7 @@ class _DayChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         decoration: BoxDecoration(
           color: selected ? AppColors.primary : Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(99),
           boxShadow: [
             BoxShadow(
               color: selected
@@ -91,10 +88,10 @@ class _DayChip extends StatelessWidget {
           ],
         ),
         child: Text(
-          'Day $day',
-          style: TextStyle(
+          label,
+          textAlign: TextAlign.center,
+          style: AppTextStyles.body.copyWith(
             color: selected ? Colors.white : AppColors.textSecondary,
-            fontSize: 11,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -112,11 +109,10 @@ class _SearchButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 36,
-        height: 36,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(99),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.1),
@@ -125,7 +121,7 @@ class _SearchButton extends StatelessWidget {
             ),
           ],
         ),
-        child: const Icon(Icons.search, size: 18, color: AppColors.textSecondary),
+        child: const Center(child: Icon(Icons.search, size: 20, color: AppColors.textSecondary)),
       ),
     );
   }

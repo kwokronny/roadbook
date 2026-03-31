@@ -40,26 +40,31 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
   _ImportMode _mode = _ImportMode.ai;
   _Phase _phase = _Phase.input;
   final _jsonCtrl = TextEditingController();
+  final _urlCtrl = TextEditingController();
   String? _parseError;
   List<_ImportItem> _items = [];
 
   @override
   void dispose() {
     _jsonCtrl.dispose();
+    _urlCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _startImport() async {
     setState(() => _parseError = null);
 
-    // ── 解析 JSON ────────────────────────────────────────────────────────────
+    // ── 解析数据 ─────────────────────────────────────────────────────────────
     List<ScheduleFormData> forms;
     try {
-      forms = _mode == _ImportMode.ai
-          ? CollectImportService.parseAiJson(_jsonCtrl.text.trim(),
-              tId: widget.travelId)
-          : CollectImportService.parseDianpingJson(_jsonCtrl.text.trim(),
-              tId: widget.travelId);
+      if (_mode == _ImportMode.ai) {
+        forms = CollectImportService.parseAiJson(_jsonCtrl.text.trim(),
+            tId: widget.travelId);
+      } else {
+        forms = await CollectImportService.fetchDianpingAlbum(
+            _urlCtrl.text.trim(),
+            tId: widget.travelId);
+      }
     } on CollectImportException catch (e) {
       setState(() => _parseError = e.message);
       return;
@@ -93,7 +98,10 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
       }
     }
 
-    if (mounted) setState(() => _phase = _Phase.done);
+    if (mounted) {
+      ref.invalidate(scheduleProvider(widget.travelId));
+      setState(() => _phase = _Phase.done);
+    }
   }
 
   @override
@@ -175,26 +183,43 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
           Text(
             _mode == _ImportMode.ai
                 ? 'AI 采集：粘贴行程 JSON 数组（包含 name / coordinate / address 字段）'
-                : '点评收藏：粘贴大众点评导出的完整 JSON（含 records[0].collectItemList）',
+                : '点评收藏：粘贴大众点评收藏夹的分享链接',
             style: AppTextStyles.caption,
           ),
           const SizedBox(height: 10),
-          // ── JSON 输入框
-          TextField(
-            controller: _jsonCtrl,
-            maxLines: 10,
-            style: const TextStyle(fontSize: 12, fontFamily: 'monospace'),
-            decoration: InputDecoration(
-              hintText: '在此粘贴 JSON…',
-              filled: true,
-              fillColor: const Color(0xFFF5F5F4),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(AppRadius.input),
-                borderSide: BorderSide.none,
+          // ── 输入框
+          if (_mode == _ImportMode.ai)
+            TextField(
+              controller: _jsonCtrl,
+              maxLines: 10,
+              style: const TextStyle(fontSize: 16, fontFamily: 'monospace'),
+              decoration: InputDecoration(
+                hintText: '在此粘贴 JSON…',
+                filled: true,
+                fillColor: const Color(0xFFF5F5F4),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.input),
+                  borderSide: BorderSide.none,
+                ),
+                errorText: _parseError,
               ),
-              errorText: _parseError,
+            )
+          else
+            TextField(
+              controller: _urlCtrl,
+              maxLines: 3,
+              style: const TextStyle(fontSize: 16),
+              decoration: InputDecoration(
+                hintText: '粘贴点评收藏分享链接…',
+                filled: true,
+                fillColor: const Color(0xFFF5F5F4),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.input),
+                  borderSide: BorderSide.none,
+                ),
+                errorText: _parseError,
+              ),
             ),
-          ),
           const SizedBox(height: 16),
           // ── 导入按钮
           Container(
@@ -209,7 +234,7 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
                 '开始导入',
                 style: TextStyle(
                     color: Colors.white,
-                    fontSize: 15,
+                    fontSize: 19,
                     fontWeight: FontWeight.w600),
               ),
             ),

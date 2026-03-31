@@ -96,7 +96,7 @@ class _SchedulePhotoViewerState extends State<SchedulePhotoViewer> {
                       widget.scheduleName,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 14,
+                        fontSize: 18,
                         fontWeight: FontWeight.w600,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -104,7 +104,7 @@ class _SchedulePhotoViewerState extends State<SchedulePhotoViewer> {
                   ),
                   Text(
                     '${_current + 1} / ${widget.urls.length}',
-                    style: const TextStyle(color: Colors.white60, fontSize: 12),
+                    style: const TextStyle(color: Colors.white60, fontSize: 16),
                   ),
                 ],
               ),

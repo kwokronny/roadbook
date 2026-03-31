@@ -45,107 +45,111 @@ class TravelCard extends StatelessWidget {
     final days     = travel.endDate.difference(travel.startDate).inDays + 1;
     final fmt      = DateFormat('MM/dd');
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: AppSpacing.cardGap),
-        decoration: BoxDecoration(
-          gradient: gradient,
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.cardGap),
+      decoration: BoxDecoration(
+        gradient: gradient,
+        borderRadius: BorderRadius.circular(AppRadius.card),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
           borderRadius: BorderRadius.circular(AppRadius.card),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.cardPadding),
-          child: Row(
-            children: [
-              // ── Left icon box ──────────────────────────────────────────
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(10),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.cardPadding),
+            child: Row(
+              children: [
+                // ── Left icon box ──────────────────────────────────────────
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(_iconFor(status), color: Colors.white, size: 20),
                 ),
-                child: Icon(_iconFor(status), color: Colors.white, size: 20),
-              ),
-              const SizedBox(width: 12),
+                const SizedBox(width: 12),
 
-              // ── Content ───────────────────────────────────────────────
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      travel.name,
-                      style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    if (travel.cities.isNotEmpty)
+                // ── Content ───────────────────────────────────────────────
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        travel.cities.join(' · '),
-                        style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.white.withValues(alpha: 0.75)),
+                        travel.name,
+                        style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
+                      const SizedBox(height: 2),
+                      if (travel.cities.isNotEmpty)
                         Text(
-                          '${fmt.format(travel.startDate)} — ${fmt.format(travel.endDate)}  ·  $days 天',
+                          travel.cities.join(' · '),
                           style: TextStyle(
                               fontSize: 11,
-                              color: Colors.white.withValues(alpha: 0.9)),
+                              color: Colors.white.withValues(alpha: 0.75)),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.25),
-                            borderRadius:
-                                BorderRadius.circular(AppRadius.badge),
-                          ),
-                          child: Text(
-                            _labelFor(status),
-                            style: const TextStyle(
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Text(
+                            '${fmt.format(travel.startDate)} — ${fmt.format(travel.endDate)}  ·  $days 天',
+                            style: TextStyle(
                                 fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white),
+                                color: Colors.white.withValues(alpha: 0.9)),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.25),
+                              borderRadius:
+                                  BorderRadius.circular(AppRadius.badge),
+                            ),
+                            child: Text(
+                              _labelFor(status),
+                              style: const TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
 
-              // ── More menu ─────────────────────────────────────────────
-              if (onEdit != null || onDelete != null)
-                PopupMenuButton<String>(
-                  icon: Icon(Icons.more_vert,
-                      size: 18, color: Colors.white.withValues(alpha: 0.8)),
-                  padding: EdgeInsets.zero,
-                  itemBuilder: (_) => [
-                    if (onEdit != null)
-                      const PopupMenuItem(value: 'edit', child: Text('编辑')),
-                    if (onDelete != null)
-                      const PopupMenuItem(
-                          value: 'delete',
-                          child: Text('删除',
-                              style: TextStyle(color: Colors.red))),
-                  ],
-                  onSelected: (value) {
-                    if (value == 'edit') onEdit?.call();
-                    if (value == 'delete') onDelete?.call();
-                  },
-                ),
-            ],
+                // ── More menu ─────────────────────────────────────────────
+                if (onEdit != null || onDelete != null)
+                  PopupMenuButton<String>(
+                    icon: Icon(Icons.more_vert,
+                        size: 18, color: Colors.white.withValues(alpha: 0.8)),
+                    padding: EdgeInsets.zero,
+                    itemBuilder: (_) => [
+                      if (onEdit != null)
+                        const PopupMenuItem(value: 'edit', child: Text('编辑')),
+                      if (onDelete != null)
+                        const PopupMenuItem(
+                            value: 'delete',
+                            child: Text('删除',
+                                style: TextStyle(color: Colors.red))),
+                    ],
+                    onSelected: (value) {
+                      if (value == 'edit') onEdit?.call();
+                      if (value == 'delete') onDelete?.call();
+                    },
+                  ),
+              ],
+            ),
           ),
         ),
       ),

@@ -9,6 +9,7 @@ import '../domain/travel_detail_provider.dart';
 import 'widgets/travel_form_sheet.dart';
 import 'widgets/collaborator_sheet.dart';
 import '../../../features/schedule/presentation/schedule_list_panel.dart';
+import '../../../features/schedule/domain/schedule_provider.dart';
 import '../../schedule/presentation/collect_import_sheet.dart';
 import 'map/map_tab_view.dart';
 import 'map/map_state_notifier.dart';
@@ -23,6 +24,27 @@ class TravelDetailScreen extends ConsumerStatefulWidget {
 
 class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
   int _currentTab = 0;
+  bool _initialDaySet = false;
+
+  void _setInitialDay(Travel travel) {
+    if (_initialDaySet) return;
+    _initialDaySet = true;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final start = DateTime(
+        travel.startDate.year, travel.startDate.month, travel.startDate.day);
+    final end = DateTime(
+        travel.endDate.year, travel.endDate.month, travel.endDate.day);
+    if (!today.isBefore(start) && !today.isAfter(end)) {
+      final day = today.difference(start).inDays + 1;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ref.read(selectedDayProvider(widget.travelId).notifier).state = day;
+          ref.read(mapSelectedDayProvider(widget.travelId).notifier).state = day;
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +61,9 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
         appBar: AppBar(),
         body: Center(child: Text(e.toString(), style: AppTextStyles.caption)),
       ),
-      data: (travel) => Scaffold(
+      data: (travel) {
+        _setInitialDay(travel);
+        return Scaffold(
         backgroundColor: AppColors.background,
         appBar: AppBar(
           title: Column(
@@ -68,7 +92,8 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
             MapTabView(travelId: widget.travelId),
           ],
         ),
-      ),
+      );
+      },
     );
   }
 

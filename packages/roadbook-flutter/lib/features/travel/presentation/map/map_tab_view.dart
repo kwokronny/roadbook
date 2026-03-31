@@ -1,14 +1,17 @@
 // lib/features/travel/presentation/map/map_tab_view.dart
 import 'dart:async';
+import 'dart:math' show min, max;
 import 'dart:ui' as ui;
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:amap_flutter_map/amap_flutter_map.dart';
 import 'package:amap_flutter_base/amap_flutter_base.dart';
 import '../../../../core/theme.dart';
+import '../../../../shared/models/travel.dart';
 import '../../../../shared/models/schedule.dart';
-import '../../../../shared/models/amap_poi.dart';
 import '../../../../shared/utils/schedule_day_helper.dart';
+import '../../../../shared/utils/platform_util.dart';
 import '../../../../features/schedule/domain/schedule_provider.dart';
 import '../../../../features/travel/domain/travel_detail_provider.dart';
 import '../../../../features/schedule/presentation/schedule_edit_sheet.dart';
@@ -21,7 +24,7 @@ import 'map_info_bar.dart';
 Future<BitmapDescriptor> _buildMarkerBitmap({
   required Color color,
   required String label,
-  double size = 36,
+  double size = 52,
 }) async {
   final recorder = ui.PictureRecorder();
   final canvas = ui.Canvas(recorder);
@@ -29,14 +32,14 @@ Future<BitmapDescriptor> _buildMarkerBitmap({
   final paint = ui.Paint()..color = color;
   final rrect = ui.RRect.fromRectAndRadius(
     ui.Rect.fromLTWH(2, 2, size - 4, size - 4),
-    const ui.Radius.circular(8),
+    const ui.Radius.circular(10),
   );
   canvas.drawRRect(rrect, paint);
 
   final borderPaint = ui.Paint()
     ..color = const Color(0xFFFFFFFF)
     ..style = ui.PaintingStyle.stroke
-    ..strokeWidth = 2;
+    ..strokeWidth = 2.5;
   canvas.drawRRect(rrect, borderPaint);
 
   final paragraphBuilder = ui.ParagraphBuilder(
@@ -44,7 +47,7 @@ Future<BitmapDescriptor> _buildMarkerBitmap({
   )
     ..pushStyle(ui.TextStyle(
       color: const Color(0xFFFFFFFF),
-      fontSize: label.length == 1 ? 14 : 11,
+      fontSize: label.length == 1 ? 20 : 15,
       fontWeight: ui.FontWeight.w800,
     ))
     ..addText(label);
@@ -70,15 +73,81 @@ class MapTabView extends ConsumerStatefulWidget {
 }
 
 class _MapTabViewState extends ConsumerState<MapTabView> {
-  // ignore: unused_field
   AMapController? _mapController;
   final Map<String, BitmapDescriptor> _iconCache = {};
+  final TextEditingController _searchCtrl = TextEditingController();
   bool _iconsReady = false;
+  bool _platformChecked = false;
+  bool _isSimulator = false;
 
   @override
   void initState() {
     super.initState();
+    _checkSimulator();
     _preloadIcons();
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  void _fitToPoints(List<LatLng> points) {
+    final ctrl = _mapController;
+    if (ctrl == null || points.isEmpty) return;
+    if (points.length == 1) {
+      ctrl.moveCamera(CameraUpdate.newLatLngZoom(points.first, 14), animated: true);
+      return;
+    }
+    final minLat = points.map((p) => p.latitude).reduce(min);
+    final maxLat = points.map((p) => p.latitude).reduce(max);
+    final minLng = points.map((p) => p.longitude).reduce(min);
+    final maxLng = points.map((p) => p.longitude).reduce(max);
+    ctrl.moveCamera(
+      CameraUpdate.newLatLngBounds(
+        LatLngBounds(
+          southwest: LatLng(minLat, minLng),
+          northeast: LatLng(maxLat, maxLng),
+        ),
+        60,
+      ),
+      animated: true,
+    );
+  }
+
+  void _fitToCurrentDaySchedules() {
+    final schedules = ref.read(scheduleProvider(widget.travelId)).valueOrNull ?? [];
+    final travel = ref.read(travelDetailProvider(widget.travelId)).valueOrNull;
+    if (travel == null) return;
+    final selectedDay = ref.read(mapSelectedDayProvider(widget.travelId));
+    final daySchedules = selectedDay == -1
+        ? schedules.where((s) => s.startTime != null).toList()
+        : schedulesForDay(selectedDay, schedules, travel.startDate);
+    final points = daySchedules
+        .where((s) => s.coordinate.isNotEmpty && s.coordinate != '0,0')
+        .map((s) {
+          final p = s.coordinate.split(',');
+          if (p.length != 2) return null;
+          try {
+            return LatLng(double.parse(p[1]), double.parse(p[0]));
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<LatLng>()
+        .toList();
+    _fitToPoints(points);
+  }
+
+  Future<void> _checkSimulator() async {
+    final result = await PlatformUtil.isSimulator;
+    if (mounted) {
+      setState(() {
+        _isSimulator = result;
+        _platformChecked = true;
+      });
+    }
   }
 
   Future<void> _preloadIcons() async {
@@ -86,6 +155,11 @@ class _MapTabViewState extends ConsumerState<MapTabView> {
       _iconCache['day_$i'] = await _buildMarkerBitmap(
         color: AppColors.primary,
         label: '$i',
+      );
+      _iconCache['day_large_$i'] = await _buildMarkerBitmap(
+        color: AppColors.primary,
+        label: '$i',
+        size: 104,
       );
       _iconCache['poi_$i'] = await _buildMarkerBitmap(
         color: AppColors.textSecondary,
@@ -107,13 +181,49 @@ class _MapTabViewState extends ConsumerState<MapTabView> {
     final mapState = ref.watch(mapStateProvider(widget.travelId));
     final schedulesAsync = ref.watch(scheduleProvider(widget.travelId));
     final travelAsync = ref.watch(travelDetailProvider(widget.travelId));
-    final selectedDay = ref.watch(selectedDayProvider(widget.travelId));
+    final selectedDay = ref.watch(mapSelectedDayProvider(widget.travelId));
+
+    // Fly to fit markers when day changes
+    ref.listen<int>(mapSelectedDayProvider(widget.travelId), (prev, next) {
+      if (prev != next) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => _fitToCurrentDaySchedules());
+      }
+    });
+
+    // Fly to fit POI markers when search results arrive; center on selected POI; fly back on exit
+    ref.listen<MapState>(mapStateProvider(widget.travelId), (prev, next) {
+      if (next.mode == MapMode.search &&
+          next.poiResults.isNotEmpty &&
+          prev?.poiResults != next.poiResults) {
+        final points = next.poiResults
+            .map((p) => LatLng(p.latitude, p.longitude))
+            .toList();
+        WidgetsBinding.instance.addPostFrameCallback((_) => _fitToPoints(points));
+      }
+      if (next.selectedPoiId != null && prev?.selectedPoiId != next.selectedPoiId) {
+        final poi = next.poiResults
+            .where((p) => p.id == next.selectedPoiId)
+            .firstOrNull;
+        if (poi != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) =>
+              _mapController?.moveCamera(
+                CameraUpdate.newLatLng(LatLng(poi.latitude, poi.longitude)),
+                animated: true,
+              ));
+        }
+      }
+      if (prev?.mode == MapMode.search && next.mode == MapMode.day) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => _fitToCurrentDaySchedules());
+      }
+    });
 
     final travel = travelAsync.valueOrNull;
     final schedules = schedulesAsync.valueOrNull ?? [];
 
     final daySchedules = travel != null
-        ? schedulesForDay(selectedDay, schedules, travel.startDate)
+        ? (selectedDay == -1
+            ? schedules.where((s) => s.startTime != null).toList()
+            : schedulesForDay(selectedDay, schedules, travel.startDate))
         : <Schedule>[];
 
     final validSchedules = daySchedules
@@ -138,9 +248,9 @@ class _MapTabViewState extends ConsumerState<MapTabView> {
       ));
     }
 
-    // ── Polyline (path between day stops)
+    // ── Polyline (path between day stops, skip in "all" mode)
     final Set<Polyline> polylines = {};
-    if (validSchedules.length > 1) {
+    if (selectedDay != -1 && validSchedules.length > 1) {
       final points = validSchedules.map((s) {
         final p = s.coordinate.split(',');
         return LatLng(double.parse(p[1]), double.parse(p[0]));
@@ -159,7 +269,7 @@ class _MapTabViewState extends ConsumerState<MapTabView> {
       for (int i = 0; i < mapState.poiResults.length; i++) {
         final poi = mapState.poiResults[i];
         final selected = poi.id == mapState.selectedPoiId;
-        final iconKey = selected ? 'day_${i + 1}' : 'poi_${i + 1}';
+        final iconKey = selected ? 'day_large_${i + 1}' : 'poi_${i + 1}';
         poiMarkers.add(Marker(
           position: LatLng(poi.latitude, poi.longitude),
           icon: _iconsReady ? _icon(iconKey) : BitmapDescriptor.defaultMarker,
@@ -178,152 +288,318 @@ class _MapTabViewState extends ConsumerState<MapTabView> {
             .firstOrNull
         : null;
 
-    final AmapPoi? selectedPoi = mapState.selectedPoiId != null
-        ? mapState.poiResults
-            .where((p) => p.id == mapState.selectedPoiId)
-            .firstOrNull
-        : null;
-
-    final bool showInfoBar = selectedSchedule != null || selectedPoi != null;
-
     return Stack(
       children: [
         // ── Base map layer
-        AMapWidget(
-          privacyStatement: const AMapPrivacyStatement(
-            hasContains: true,
-            hasShow: true,
-            hasAgree: true,
+        if (!_platformChecked)
+          const ColoredBox(
+            color: Color(0xFFF5F5F5),
+            child: SizedBox.expand(),
+          )
+        else if (_isSimulator)
+          Container(
+            color: const Color(0xFFE8E8E8),
+            child: const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.map_outlined, size: 48, color: Color(0xFFAAAAAA)),
+                  SizedBox(height: 8),
+                  Text(
+                    '地图在模拟器上不可用',
+                    style: TextStyle(color: Color(0xFF888888), fontSize: 18),
+                  ),
+                ],
+              ),
+            ),
+          )
+        else
+          AMapWidget(
+            privacyStatement: const AMapPrivacyStatement(
+              hasContains: true,
+              hasShow: true,
+              hasAgree: true,
+            ),
+            onMapCreated: (ctrl) {
+              _mapController = ctrl;
+              WidgetsBinding.instance.addPostFrameCallback(
+                (_) => _fitToCurrentDaySchedules(),
+              );
+            },
+            markers: mapState.mode == MapMode.day ? scheduleMarkers : poiMarkers,
+            polylines: mapState.mode == MapMode.day ? polylines : {},
+            onTap: (_) {
+              final notifier = ref.read(mapStateProvider(widget.travelId).notifier);
+              if (mapState.mode == MapMode.search &&
+                  _searchCtrl.text.trim().isEmpty) {
+                notifier.exitSearchMode();
+              } else {
+                notifier.clearMarker();
+              }
+            },
           ),
-          onMapCreated: (ctrl) => _mapController = ctrl,
-          markers: mapState.mode == MapMode.day ? scheduleMarkers : poiMarkers,
-          polylines: mapState.mode == MapMode.day ? polylines : {},
-          onTap: (_) {
-            ref
-                .read(mapStateProvider(widget.travelId).notifier)
-                .clearMarker();
-          },
-        ),
 
         // ── Top floating UI (Day selector OR Search bar)
-        Positioned(
-          top: MediaQuery.of(context).padding.top + 8,
-          left: 0,
-          right: 0,
-          child: mapState.mode == MapMode.day
-              ? MapDaySelectorBar(
-                  travelId: widget.travelId,
-                  totalDays: travel != null
-                      ? travel.endDate
-                              .difference(travel.startDate)
-                              .inDays +
-                          1
-                      : 1,
-                  onSearchTap: () => ref
-                      .read(mapStateProvider(widget.travelId).notifier)
-                      .enterSearchMode(),
-                )
-              : MapSearchBar(
-                  cities: travel?.cities ?? [],
-                  selectedCity: mapState.searchCity,
-                  onCityChanged: (city) => ref
-                      .read(mapStateProvider(widget.travelId).notifier)
-                      .setSearchCity(city),
-                  onSearch: (keyword) => ref
-                      .read(mapStateProvider(widget.travelId).notifier)
-                      .searchPoi(keyword),
-                  onClose: () => ref
-                      .read(mapStateProvider(widget.travelId).notifier)
-                      .exitSearchMode(),
-                ),
-        ),
-
-        // ── Bottom info bar (AnimatedSlide)
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: AnimatedSlide(
-            offset: showInfoBar ? Offset.zero : const Offset(0, 1),
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.easeOut,
-            child: AnimatedOpacity(
-              opacity: showInfoBar ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 200),
-              child: showInfoBar
-                  ? (selectedSchedule != null
-                      ? MapInfoBar.schedule(
-                          schedule: selectedSchedule,
-                          onTap: () {
-                            if (travel != null) {
-                              ScheduleEditSheet.show(
-                                context,
-                                travel: travel,
-                                schedule: selectedSchedule,
-                              );
-                            }
-                          },
-                        )
-                      : MapInfoBar.poi(
-                          poi: selectedPoi!,
-                          isAdding: false,
-                          onAdd: () async {
-                            try {
-                              await ref
-                                  .read(mapStateProvider(widget.travelId)
-                                      .notifier)
-                                  .quickAddSchedule(selectedPoi);
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text('已加入待规划')),
-                                );
-                              }
-                            } catch (_) {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text('添加失败，请重试')),
-                                );
-                              }
-                            }
-                          },
-                        ))
-                  : const SizedBox.shrink(),
+        if (mapState.mode == MapMode.day)
+          Positioned(
+            top: 12,
+            right: 12,
+            child: MapDaySelectorBar(
+              travelId: widget.travelId,
+              totalDays: travel != null
+                  ? travel.endDate.difference(travel.startDate).inDays + 1
+                  : 1,
+              onSearchTap: () => ref
+                  .read(mapStateProvider(widget.travelId).notifier)
+                  .enterSearchMode(),
             ),
-          ),
-        ),
-
-        // ── Search-in-progress indicator
-        if (mapState.isSearching)
-          const Positioned(
-            top: 100,
+          )
+        else
+          Positioned(
+            top: 0,
             left: 0,
             right: 0,
-            child: Center(
-              child: Card(
-                child: Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Text('搜索中...', style: TextStyle(fontSize: 12)),
-                    ],
-                  ),
+            child: MapSearchBar(
+              cities: travel?.cities ?? [],
+              selectedCity: mapState.searchCity,
+              controller: _searchCtrl,
+              onCityChanged: (city) => ref
+                  .read(mapStateProvider(widget.travelId).notifier)
+                  .setSearchCity(city),
+              onSearch: (keyword) => ref
+                  .read(mapStateProvider(widget.travelId).notifier)
+                  .searchPoi(keyword),
+              onClose: () {
+                _searchCtrl.clear();
+                ref
+                    .read(mapStateProvider(widget.travelId).notifier)
+                    .exitSearchMode();
+              },
+            ),
+          ),
+
+        // ── Search results bottom panel (search mode)
+        if (mapState.mode == MapMode.search &&
+            (mapState.isSearching ||
+                mapState.poiResults.isNotEmpty ||
+                mapState.searchError != null))
+          Positioned.fill(
+            child: DraggableScrollableSheet(
+              initialChildSize: 0.35,
+              minChildSize: 0.1,
+              maxChildSize: 0.75,
+              snap: true,
+              snapSizes: const [0.1, 0.35, 0.75],
+              builder: (context, scrollController) => Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x18000000),
+                      blurRadius: 12,
+                      offset: Offset(0, -2),
+                    ),
+                  ],
                 ),
+                child: _buildSearchResults(
+                    context, mapState, travel, scrollController),
+              ),
+            ),
+          ),
+
+        // ── Bottom info bar (day mode only)
+        if (mapState.mode == MapMode.day)
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: AnimatedSlide(
+              offset: selectedSchedule != null
+                  ? Offset.zero
+                  : const Offset(0, 1),
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOut,
+              child: AnimatedOpacity(
+                opacity: selectedSchedule != null ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 200),
+                child: selectedSchedule != null
+                    ? MapInfoBar.schedule(
+                        schedule: selectedSchedule,
+                        onTap: () {
+                          if (travel != null) {
+                            ScheduleEditSheet.show(
+                              context,
+                              travel: travel,
+                              schedule: selectedSchedule,
+                            );
+                          }
+                        },
+                      )
+                    : const SizedBox.shrink(),
               ),
             ),
           ),
       ],
+    );
+  }
+
+  Widget _buildSearchResults(
+    BuildContext context,
+    MapState mapState,
+    Travel? travel,
+    ScrollController scrollController,
+  ) {
+    if (mapState.isSearching) {
+      return Column(
+        children: [
+          _dragHandle(),
+          const Expanded(
+            child: Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (mapState.searchError != null && mapState.poiResults.isEmpty) {
+      return Column(
+        children: [
+          _dragHandle(),
+          Expanded(
+            child: Center(
+              child: Text(
+                mapState.searchError!,
+                style: const TextStyle(
+                    fontSize: 18, color: AppColors.textSecondary),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return ListView.separated(
+      controller: scrollController,
+      padding: const EdgeInsets.only(bottom: 20),
+      itemCount: mapState.poiResults.length + 1,
+      separatorBuilder: (_, index) => index == 0
+          ? const SizedBox.shrink()
+          : const Divider(height: 1, indent: 16, endIndent: 16),
+      itemBuilder: (context, index) {
+        if (index == 0) return _dragHandle();
+        final poi = mapState.poiResults[index - 1];
+        final poiIndex = index - 1;
+        final selected = poi.id == mapState.selectedPoiId;
+        return ListTile(
+          dense: true,
+          selected: selected,
+          selectedTileColor: AppColors.primaryLight,
+          leading: Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              color: selected ? AppColors.primary : AppColors.textSecondary,
+              borderRadius: BorderRadius.circular(AppRadius.timeCell),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              '${poiIndex + 1}',
+              style: AppTextStyles.cardTitle.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          title: Text(
+            poi.name,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: poi.address.isNotEmpty
+              ? Text(
+                  poi.address,
+                  style: const TextStyle(
+                      fontSize: 16, color: AppColors.textSecondary),
+                  overflow: TextOverflow.ellipsis,
+                )
+              : null,
+          trailing: GestureDetector(
+            onTap: () async {
+              try {
+                await ref
+                    .read(mapStateProvider(widget.travelId).notifier)
+                    .quickAddSchedule(poi);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('已加入待规划')),
+                  );
+                }
+              } catch (e, st) {
+                debugPrint('=== quickAddSchedule error ===');
+                debugPrint('type: ${e.runtimeType}');
+                debugPrint('error: $e');
+                if (e is DioException) {
+                  debugPrint('dio.message: ${e.message}');
+                  debugPrint('dio.response.statusCode: ${e.response?.statusCode}');
+                  debugPrint('dio.response.data: ${e.response?.data}');
+                }
+                debugPrint('stackTrace: $st');
+                if (context.mounted) {
+                  String msg;
+                  if (e is DioException) {
+                    msg = e.message ?? e.response?.data?.toString() ?? '添加失败';
+                  } else {
+                    msg = e.toString();
+                  }
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(msg),
+                      duration: const Duration(seconds: 6),
+                    ),
+                  );
+                }
+              }
+            },
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.primaryLight,
+                borderRadius: BorderRadius.circular(AppRadius.card),
+              ),
+              child: const Text(
+                '+ 加入',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+          onTap: () {
+            ref
+                .read(mapStateProvider(widget.travelId).notifier)
+                .selectPoi(poi.id);
+          },
+        );
+      },
+    );
+  }
+
+  Widget _dragHandle() {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        width: 36,
+        height: 4,
+        decoration: BoxDecoration(
+          color: AppColors.border,
+          borderRadius: BorderRadius.circular(2),
+        ),
+      ),
     );
   }
 }

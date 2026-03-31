@@ -1,7 +1,10 @@
 // lib/features/travel/presentation/map/map_state_notifier.dart
+import 'package:dio/dio.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/constants.dart';
 import '../../../../shared/models/amap_poi.dart';
-import '../../../../shared/providers/dio_provider.dart';
+import '../../../../shared/utils/platform_util.dart';
 import '../../../../features/schedule/domain/schedule_provider.dart';
 import '../../../../features/schedule/data/schedule_repository.dart';
 
@@ -15,6 +18,7 @@ class MapState {
     this.poiResults = const [],
     this.selectedPoiId,
     this.isSearching = false,
+    this.searchError,
   });
 
   final MapMode mode;
@@ -23,6 +27,7 @@ class MapState {
   final List<AmapPoi> poiResults;
   final String? selectedPoiId;
   final bool isSearching;
+  final String? searchError;
 
   MapState copyWith({
     MapMode? mode,
@@ -31,6 +36,7 @@ class MapState {
     List<AmapPoi>? poiResults,
     Object? selectedPoiId = _sentinel,
     bool? isSearching,
+    Object? searchError = _sentinel,
   }) =>
       MapState(
         mode: mode ?? this.mode,
@@ -43,6 +49,9 @@ class MapState {
             ? this.selectedPoiId
             : selectedPoiId as String?,
         isSearching: isSearching ?? this.isSearching,
+        searchError: searchError == _sentinel
+            ? this.searchError
+            : searchError as String?,
       );
 }
 
@@ -90,28 +99,85 @@ class MapStateNotifier extends AutoDisposeFamilyNotifier<MapState, int> {
     state = state.copyWith(searchCity: city);
   }
 
+  static const _searchChannel = MethodChannel('com.roadbook/amap_search');
+
+  static final _amapDio = Dio(BaseOptions(
+    baseUrl: 'https://restapi.amap.com',
+    connectTimeout: const Duration(seconds: 10),
+    receiveTimeout: const Duration(seconds: 10),
+  ));
+
   Future<void> searchPoi(String keyword) async {
-    state = state.copyWith(isSearching: true, poiResults: []);
+    state = state.copyWith(isSearching: true, poiResults: [], searchError: null);
     try {
-      final dio = ref.read(dioProvider);
-      final resp = await dio.get<Map<String, dynamic>>(
-        '/_AMapService/v3/place/text',
-        queryParameters: {
-          'keywords': keyword,
-          'city': state.searchCity,
-          'output': 'json',
-          'pageSize': '20',
-        },
+      final isSimulator = await PlatformUtil.isSimulator;
+      final List<AmapPoi> pois;
+      if (isSimulator) {
+        pois = await _searchViaRestApi(keyword);
+      } else {
+        pois = await _searchViaNativeSdk(keyword);
+      }
+      state = state.copyWith(
+        isSearching: false,
+        poiResults: pois,
+        searchError: pois.isEmpty ? '未找到相关结果' : null,
       );
-      final data = resp.data ?? {};
-      final pois = ((data['pois'] as List?) ?? [])
-          .map((e) => AmapPoi.fromJson(e as Map<String, dynamic>))
-          .toList();
-      state = state.copyWith(isSearching: false, poiResults: pois);
-    } catch (_) {
-      state = state.copyWith(isSearching: false);
-      rethrow;
+    } catch (e) {
+      state = state.copyWith(
+        isSearching: false,
+        searchError: '搜索失败：${e.toString().split('\n').first}',
+      );
     }
+  }
+
+  Future<List<AmapPoi>> _searchViaNativeSdk(String keyword) async {
+    final result = await _searchChannel.invokeMethod('searchPOI', {
+      'keyword': keyword,
+      'city': state.searchCity,
+    });
+    if (result is! List) return [];
+    return result
+        .whereType<Map>()
+        .map((e) {
+          try {
+            return AmapPoi.fromJson(Map<String, dynamic>.from(e));
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<AmapPoi>()
+        .toList();
+  }
+
+  Future<List<AmapPoi>> _searchViaRestApi(String keyword) async {
+    final resp = await _amapDio.get(
+      '/v3/place/text',
+      queryParameters: {
+        'key': AppConstants.amapWebKey,
+        'keywords': keyword,
+        'city': state.searchCity,
+        'output': 'json',
+        'offset': '20',
+      },
+    );
+    final raw = resp.data;
+    if (raw is! Map<String, dynamic>) return [];
+    if (raw['status'] != '1') {
+      throw Exception(raw['info'] as String? ?? '搜索失败');
+    }
+    final rawPois = raw['pois'];
+    if (rawPois is! List) return [];
+    return rawPois
+        .whereType<Map<String, dynamic>>()
+        .map((e) {
+          try {
+            return AmapPoi.fromJson(e);
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<AmapPoi>()
+        .toList();
   }
 
   Future<void> quickAddSchedule(AmapPoi poi) async {
@@ -120,7 +186,7 @@ class MapStateNotifier extends AutoDisposeFamilyNotifier<MapState, int> {
       name: poi.name,
       coordinate: '${poi.longitude},${poi.latitude}',
       address: poi.address,
-      isHotel: false,
+      isHotel: poi.type?.contains('住宿服务') ?? false,
     );
     await ref.read(scheduleProvider(arg).notifier).add(form);
     exitSearchMode();

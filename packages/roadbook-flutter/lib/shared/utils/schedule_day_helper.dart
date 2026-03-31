@@ -7,10 +7,17 @@ import '../models/schedule.dart';
 List<Schedule> schedulesForDay(
   int day,
   List<Schedule> all,
-  DateTime travelStart,
-) {
+  DateTime travelStart, {
+  int? totalDays,
+}) {
   if (day == 0) {
-    return all.where((s) => s.startTime == null).toList();
+    return all.where((s) {
+      if (s.startTime == null) return true;
+      if (totalDays == null) return false;
+      final startDay =
+          s.startTime!.toLocal().difference(travelStart).inDays + 1;
+      return startDay < 1 || startDay > totalDays;
+    }).toList();
   }
   return all.where((s) {
     if (s.startTime == null) return false;

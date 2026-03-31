@@ -48,10 +48,25 @@ class _AuthInterceptor extends Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    // 解包 { code, data, message } 结构
     final data = response.data;
-    if (data is Map<String, dynamic> && data.containsKey('data')) {
-      response.data = data['data'];
+    if (data is Map<String, dynamic>) {
+      final code = data['code'];
+      if (code != null && code != 200) {
+        if (code == 401) onUnauthorized?.call();
+        final msg = (data['msg'] ?? data['message'] ?? '请求失败').toString();
+        handler.reject(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.badResponse,
+            message: msg,
+          ),
+        );
+        return;
+      }
+      if (data.containsKey('data')) {
+        response.data = data['data'];
+      }
     }
     handler.next(response);
   }

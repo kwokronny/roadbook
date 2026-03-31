@@ -53,15 +53,16 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
   Future<void> _confirmDelete(int travelId, String name) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
+      useRootNavigator: true,
+      builder: (ctx) => AlertDialog(
         title: const Text('删除旅程'),
         content: Text('确定删除「$name」？此操作无法撤销。'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
+              onPressed: () => Navigator.of(ctx).pop(false),
               child: const Text('取消')),
           TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
+              onPressed: () => Navigator.of(ctx).pop(true),
               child: const Text('删除',
                   style: TextStyle(color: AppColors.destructive))),
         ],

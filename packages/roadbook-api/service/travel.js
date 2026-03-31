@@ -188,7 +188,7 @@ class TravelService {
 
   async remove(uid, id) {
     try {
-      await db.Travel.destroy({
+      const travel = await db.Travel.findOne({
         where: { id },
         include: [
           {
@@ -198,9 +198,11 @@ class TravelService {
           },
         ],
       });
+      if (!travel) throw "无权删除或旅程不存在";
+      await travel.destroy();
     } catch (e) {
       console.error(e);
-      throw "删除失败";
+      throw e || "删除失败";
     }
   }
 }

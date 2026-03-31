@@ -100,7 +100,7 @@ class _CollaboratorSheetState extends ConsumerState<CollaboratorSheet> {
                         child: CircularProgressIndicator(strokeWidth: 2))
                     : const Icon(Icons.link, size: 16),
                 label:
-                    const Text('复制邀请链接', style: TextStyle(fontSize: 13)),
+                    const Text('复制邀请链接', style: TextStyle(fontSize: 17)),
               ),
               const SizedBox(height: 16),
               // ── 协作者列表
@@ -128,14 +128,14 @@ class _CollaboratorSheetState extends ConsumerState<CollaboratorSheet> {
                             height: 32,
                             decoration: BoxDecoration(
                               gradient: AppColors.primaryGradient,
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(AppRadius.input),
                             ),
                             child: Center(
                               child: Text(
                                 (c.user.username).substring(0, 1).toUpperCase(),
                                 style: const TextStyle(
                                     color: Colors.white,
-                                    fontSize: 14,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.w700),
                               ),
                             ),
@@ -150,7 +150,7 @@ class _CollaboratorSheetState extends ConsumerState<CollaboratorSheet> {
                                       horizontal: 8, vertical: 4),
                                   decoration: BoxDecoration(
                                     color: AppColors.primaryLight,
-                                    borderRadius: BorderRadius.circular(8),
+                                    borderRadius: BorderRadius.circular(AppRadius.input),
                                   ),
                                   child: Text(
                                     _roleLabel(c.role),
@@ -164,7 +164,7 @@ class _CollaboratorSheetState extends ConsumerState<CollaboratorSheet> {
                                         horizontal: 8, vertical: 4),
                                     decoration: BoxDecoration(
                                       color: const Color(0xFFF5F5F4),
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(AppRadius.input),
                                     ),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,

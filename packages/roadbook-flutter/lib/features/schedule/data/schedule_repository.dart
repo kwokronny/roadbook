@@ -56,12 +56,13 @@ class ScheduleFormData {
         'coordinate': coordinate,
         'address': address,
         'isHotel': isHotel,
+        // Explicitly send null to clear the field in DB when time is removed
         'startTime': startTime != null ? _dateTimeFmt.format(startTime!) : null,
         'endTime': endTime != null ? _dateTimeFmt.format(endTime!) : null,
-        'cover': cover,
-        'dianpingUUID': dianpingUUID,
-        'notes': notes,
-        'screenshots': screenshots,
+        if (cover != null) 'cover': cover,
+        if (dianpingUUID != null) 'dianpingUUID': dianpingUUID,
+        if (notes != null) 'notes': notes,
+        if (screenshots != null) 'screenshots': screenshots,
       };
 }
 
@@ -90,10 +91,15 @@ class ScheduleRepository {
         ApiEndpoints.scheduleAdd,
         data: form.toAddJson(),
       );
-      return Schedule.fromJson(res.data!);
+      final data = Map<String, dynamic>.from(res.data as Map);
+      // Backend creates the record with omit(tId), so tId may be missing in response
+      data['tId'] ??= form.tId;
+      return Schedule.fromJson(data);
     } on DioException catch (e) {
-      final msg = (e.response?.data as Map?)?['message'] as String?;
-      throw msg ?? '添加行程失败';
+      final msg = e.message ??
+          (e.response?.data as Map?)?['msg'] as String? ??
+          '添加行程失败';
+      throw msg;
     }
   }
 
@@ -103,10 +109,14 @@ class ScheduleRepository {
         ApiEndpoints.scheduleUpdate,
         data: form.toUpdateJson(),
       );
-      return Schedule.fromJson(res.data!);
+      final data = Map<String, dynamic>.from(res.data as Map);
+      data['tId'] ??= form.tId;
+      return Schedule.fromJson(data);
     } on DioException catch (e) {
-      final msg = (e.response?.data as Map?)?['message'] as String?;
-      throw msg ?? '更新行程失败';
+      final msg = e.message ??
+          (e.response?.data as Map?)?['msg'] as String? ??
+          '更新行程失败';
+      throw msg;
     }
   }
 
@@ -114,8 +124,10 @@ class ScheduleRepository {
     try {
       await _dio.post<dynamic>(ApiEndpoints.scheduleRemove, data: {'id': id});
     } on DioException catch (e) {
-      final msg = (e.response?.data as Map?)?['message'] as String?;
-      throw msg ?? '删除行程失败';
+      final msg = e.message ??
+          (e.response?.data as Map?)?['msg'] as String? ??
+          '删除行程失败';
+      throw msg;
     }
   }
 
@@ -125,10 +137,13 @@ class ScheduleRepository {
         ApiEndpoints.scheduleClone,
         data: {'id': id},
       );
-      return Schedule.fromJson(res.data!);
+      final data = Map<String, dynamic>.from(res.data as Map);
+      return Schedule.fromJson(data);
     } on DioException catch (e) {
-      final msg = (e.response?.data as Map?)?['message'] as String?;
-      throw msg ?? '克隆行程失败';
+      final msg = e.message ??
+          (e.response?.data as Map?)?['msg'] as String? ??
+          '克隆行程失败';
+      throw msg;
     }
   }
 }

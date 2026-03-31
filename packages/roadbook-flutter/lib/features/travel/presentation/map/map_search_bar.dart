@@ -10,6 +10,7 @@ class MapSearchBar extends StatefulWidget {
     required this.onCityChanged,
     required this.onSearch,
     required this.onClose,
+    this.controller,
   });
 
   final List<String> cities;
@@ -17,6 +18,7 @@ class MapSearchBar extends StatefulWidget {
   final ValueChanged<String> onCityChanged;
   final ValueChanged<String> onSearch;
   final VoidCallback onClose;
+  final TextEditingController? controller;
 
   @override
   State<MapSearchBar> createState() => _MapSearchBarState();
@@ -24,17 +26,28 @@ class MapSearchBar extends StatefulWidget {
 
 class _MapSearchBarState extends State<MapSearchBar> {
   late final TextEditingController _ctrl;
+  bool _ownsCtrl = false;
 
   @override
   void initState() {
     super.initState();
-    _ctrl = TextEditingController();
+    if (widget.controller != null) {
+      _ctrl = widget.controller!;
+    } else {
+      _ctrl = TextEditingController();
+      _ownsCtrl = true;
+    }
   }
 
   @override
   void dispose() {
-    _ctrl.dispose();
+    if (_ownsCtrl) _ctrl.dispose();
     super.dispose();
+  }
+
+  void _doSearch() {
+    final text = _ctrl.text.trim();
+    if (text.isNotEmpty) widget.onSearch(text);
   }
 
   @override
@@ -54,55 +67,71 @@ class _MapSearchBarState extends State<MapSearchBar> {
       ),
       child: Row(
         children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back, size: 20),
-            onPressed: widget.onClose,
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-          ),
-          DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: widget.selectedCity,
-              items: allCities
-                  .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                  .toList(),
-              onChanged: (v) {
-                if (v != null) widget.onCityChanged(v);
-              },
-              style: AppTextStyles.caption.copyWith(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w700,
-              ),
-              icon: const Icon(Icons.expand_more,
-                  size: 16, color: AppColors.primary),
-            ),
-          ),
-          const SizedBox(width: 4),
           Expanded(
             child: TextField(
               controller: _ctrl,
               textInputAction: TextInputAction.search,
+              autofocus: true,
               decoration: InputDecoration(
                 hintText: '搜索地点、景区、餐厅...',
-                hintStyle: AppTextStyles.caption
-                    .copyWith(color: AppColors.textSecondary),
+                hintStyle: const TextStyle(
+                  fontSize: 18,
+                  color: AppColors.textSecondary,
+                ),
+                prefixIcon: _buildCityPrefix(allCities),
+                prefixIconConstraints:
+                    const BoxConstraints(minWidth: 0, minHeight: 0),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.search, size: 20),
+                  color: AppColors.primary,
+                  onPressed: _doSearch,
+                  padding: EdgeInsets.zero,
+                  constraints:
+                      const BoxConstraints(minWidth: 36, minHeight: 36),
+                ),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppRadius.input),
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
                 fillColor: AppColors.background,
                 contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                 isDense: true,
               ),
-              style: AppTextStyles.caption,
-              onSubmitted: (v) {
-                if (v.trim().isNotEmpty) widget.onSearch(v.trim());
-              },
+              style: const TextStyle(fontSize: 18),
+              onSubmitted: (_) => _doSearch(),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCityPrefix(List<String> cities) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: widget.selectedCity,
+          items: cities
+              .map((c) => DropdownMenuItem(
+                    value: c,
+                    child: Text(c, style: const TextStyle(fontSize: 18)),
+                  ))
+              .toList(),
+          onChanged: (v) {
+            if (v != null) widget.onCityChanged(v);
+          },
+          style: const TextStyle(
+            fontSize: 18,
+            color: AppColors.primary,
+            fontWeight: FontWeight.w600,
+          ),
+          icon: const Icon(Icons.expand_more,
+              size: 14, color: AppColors.primary),
+          isDense: true,
+        ),
       ),
     );
   }
