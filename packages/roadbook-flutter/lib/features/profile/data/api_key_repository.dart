@@ -16,6 +16,8 @@ class ApiKeyRepository {
           .toList();
     } on DioException catch (e) {
       throw e.message ?? '获取 API Key 列表失败';
+    } catch (e) {
+      throw '获取 API Key 列表失败: $e';
     }
   }
 
@@ -29,6 +31,8 @@ class ApiKeyRepository {
       return ApiKey.fromJson(res.data!);
     } on DioException catch (e) {
       throw e.message ?? '创建 API Key 失败';
+    } catch (e) {
+      throw '创建 API Key 失败: $e';
     }
   }
 
@@ -37,6 +41,8 @@ class ApiKeyRepository {
       await _dio.post(ApiEndpoints.apiKeyRemove, data: {'id': id});
     } on DioException catch (e) {
       throw e.message ?? '删除 API Key 失败';
+    } catch (e) {
+      throw '删除 API Key 失败: $e';
     }
   }
 }

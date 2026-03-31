@@ -18,6 +18,7 @@ class ApiKeyService {
       });
       return { id: apiKey.id, key, name: apiKey.name, createdAt: apiKey.createdAt };
     } catch (e) {
+      console.error('[apikey.create]', e);
       throw '创建 API Key 失败';
     }
   }
@@ -35,6 +36,7 @@ class ApiKeyService {
         return plain;
       });
     } catch (e) {
+      console.error('[apikey.list]', e);
       throw '获取 API Key 列表失败';
     }
   }
