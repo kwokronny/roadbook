@@ -205,17 +205,21 @@ class ScheduleTimelineItem extends StatelessWidget {
                                     ),
                                   ],
                                   // Nav button below address
-                                  if (!isSelectionMode) ...[
-                                    const SizedBox(height: 8),
-                                    _GlassNavButton(
-                                      coordinate: schedule.coordinate,
-                                      name: schedule.name,
-                                      isHotel: schedule.isHotel,
-                                      bgColor: _navBg,
-                                      borderColor: _navBorder,
-                                      iconColor: _navIcon,
+                                  const SizedBox(height: 8),
+                                  IgnorePointer(
+                                    ignoring: isSelectionMode,
+                                    child: Opacity(
+                                      opacity: isSelectionMode ? 0.35 : 1.0,
+                                      child: _GlassNavButton(
+                                        coordinate: schedule.coordinate,
+                                        name: schedule.name,
+                                        isHotel: schedule.isHotel,
+                                        bgColor: _navBg,
+                                        borderColor: _navBorder,
+                                        iconColor: _navIcon,
+                                      ),
                                     ),
-                                  ],
+                                  ),
                                 ],
                               ),
                             ),
@@ -281,17 +285,23 @@ class ScheduleTimelineItem extends StatelessWidget {
               ),
             ),
             // ── More button (top-right, with concave mask cutout)
-            if (canEdit && !isSelectionMode)
+            if (canEdit)
               Positioned(
                 top: -4,
                 right: -4,
-                child: _ConcaveMoreButton(
-                  accentColor: _accentColor,
-                  isHotel: schedule.isHotel,
-                  hasStartTime: schedule.startTime != null,
-                  onEdit: onEdit,
-                  onClone: onClone,
-                  onDelete: onDelete,
+                child: IgnorePointer(
+                  ignoring: isSelectionMode,
+                  child: Opacity(
+                    opacity: isSelectionMode ? 0.35 : 1.0,
+                    child: _ConcaveMoreButton(
+                      accentColor: _accentColor,
+                      isHotel: schedule.isHotel,
+                      hasStartTime: schedule.startTime != null,
+                      onEdit: onEdit,
+                      onClone: onClone,
+                      onDelete: onDelete,
+                    ),
+                  ),
                 ),
               ),
           ],
