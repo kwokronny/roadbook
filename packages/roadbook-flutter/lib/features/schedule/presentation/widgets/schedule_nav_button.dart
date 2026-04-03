@@ -99,11 +99,10 @@ class ScheduleNavButton extends StatelessWidget {
                 width: 38,
                 height: 38,
                 decoration: BoxDecoration(
-                  color: _bgColor,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: _borderColor),
+                  color: _iconColor,
+                  shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.navigation_rounded, size: 18, color: _iconColor),
+                child: const Icon(Icons.navigation_rounded, size: 18, color: Colors.white),
               )
             : Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
