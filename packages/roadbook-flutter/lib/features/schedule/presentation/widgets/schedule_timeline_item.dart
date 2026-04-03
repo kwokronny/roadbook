@@ -441,8 +441,8 @@ class _ConcaveMoreButton extends StatelessWidget {
       child: CustomPaint(
         painter: _ConcaveMaskPainter(),
         child: const SizedBox(
-          width: 38,
-          height: 38,
+          width: 36,
+          height: 36,
           child: Center(
             child: Icon(Icons.more_horiz, size: 16, color: AppColors.textSecondary),
           ),
@@ -526,7 +526,7 @@ class _ConcaveCutoutClipper extends CustomClipper<Path> {
   static const double _cardRadius = AppRadius.card;
   // Button 30x30, positioned at top:-4 right:-4
   // Gap around button: 8px each side → total cutout = 30 + 16 = 46
-  static const double _buttonSize = 30.0;
+  static const double _buttonSize = 36.0;
   static const double _gap = 10.0;
   static const double _cutoutSize = _buttonSize + _gap * 2; // 50
   // Inner corner radius matches card corner radius (AppRadius.card = 20)
