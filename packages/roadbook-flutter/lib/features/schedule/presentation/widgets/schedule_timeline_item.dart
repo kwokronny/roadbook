@@ -74,11 +74,6 @@ class ScheduleTimelineItem extends StatelessWidget {
     return AppColors.primary;
   }
 
-  Color get _tintBg {
-    if (schedule.isHotel) return const Color(0x0D8B5CF6); // lavender tint
-    return const Color(0x0DFF5B2E); // coral tint
-  }
-
   Color get _navBg {
     if (schedule.isHotel) return AppColors.hotelLight;
     return AppColors.primaryLight;
@@ -233,22 +228,19 @@ class ScheduleTimelineItem extends StatelessWidget {
                       ),
                       // ── Lower section: dashed divider + notes/screenshots
                       if (_hasExtras) ...[
-                        // Dashed divider
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: CustomPaint(
-                            painter: _DashedLinePainter(
-                              color: AppColors.border,
-                            ),
-                            size: const Size(double.infinity, 1),
+                        // Dashed divider (full width)
+                        CustomPaint(
+                          painter: _DashedLinePainter(
+                            color: const Color(0x1A1E243C),
                           ),
+                          size: const Size(double.infinity, 1),
                         ),
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
-                          decoration: BoxDecoration(
-                            color: _tintBg,
-                            borderRadius: const BorderRadius.only(
+                          decoration: const BoxDecoration(
+                            color: Color(0x08000000), // same subtle tint with transparency
+                            borderRadius: BorderRadius.only(
                               bottomLeft: Radius.circular(AppRadius.card),
                               bottomRight: Radius.circular(AppRadius.card),
                             ),
@@ -506,8 +498,15 @@ class _GlassNavButton extends StatelessWidget {
   final Color borderColor;
   final Color iconColor;
 
+  bool get _isEnabled {
+    if (coordinate.isEmpty || coordinate == '0,0') return false;
+    return coordinate.split(',').length >= 2;
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (!_isEnabled) return const SizedBox.shrink();
+    // Icon-only 38x38 button that wraps ScheduleNavButton for its popup menu
     return SizedBox(
       width: 38,
       height: 38,
@@ -515,6 +514,7 @@ class _GlassNavButton extends StatelessWidget {
         coordinate: coordinate,
         name: name,
         isHotel: isHotel,
+        compact: true,
       ),
     );
   }

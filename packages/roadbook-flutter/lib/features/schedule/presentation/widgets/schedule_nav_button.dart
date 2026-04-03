@@ -10,11 +10,13 @@ class ScheduleNavButton extends StatelessWidget {
     required this.coordinate,
     required this.name,
     required this.isHotel,
+    this.compact = false,
   });
 
   final String coordinate;
   final String name;
   final bool isHotel;
+  final bool compact;
 
   bool get _isEnabled {
     if (coordinate.isEmpty) return false;
@@ -92,22 +94,33 @@ class ScheduleNavButton extends StatelessWidget {
             ]),
           );
         }).toList(),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          decoration: BoxDecoration(
-            color: _bgColor,
-            borderRadius: BorderRadius.circular(AppRadius.input),
-            border: Border.all(color: _borderColor),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.navigation_rounded, size: 18, color: _iconColor),
-              const SizedBox(width: 4),
-              Text('导航', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _iconColor)),
-            ],
-          ),
-        ),
+        child: compact
+            ? Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: _bgColor,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: _borderColor),
+                ),
+                child: Icon(Icons.navigation_rounded, size: 18, color: _iconColor),
+              )
+            : Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                decoration: BoxDecoration(
+                  color: _bgColor,
+                  borderRadius: BorderRadius.circular(AppRadius.input),
+                  border: Border.all(color: _borderColor),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.navigation_rounded, size: 18, color: _iconColor),
+                    const SizedBox(width: 4),
+                    Text('导航', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _iconColor)),
+                  ],
+                ),
+              ),
       ),
     );
   }

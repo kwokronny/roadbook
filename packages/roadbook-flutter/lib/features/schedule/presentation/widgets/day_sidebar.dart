@@ -60,52 +60,52 @@ class _DayChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final content = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+      decoration: BoxDecoration(
+        color: isSelected ? const Color(0x99FFFFFF) : Colors.transparent,
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+        border: Border.all(
+          color: isSelected ? const Color(0xE6FFFFFF) : Colors.transparent,
+        ),
+        boxShadow: isSelected
+            ? const [BoxShadow(color: Color(0x1A6478B4), blurRadius: 12, offset: Offset(0, 2))]
+            : null,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            day == 0 ? '待规划' : 'Day $day',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: isSelected ? AppColors.primary : const Color(0x4D1E243C),
+            ),
+          ),
+          if (weekLabel != null)
+            Text(
+              weekLabel!,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w400,
+                color: isSelected
+                    ? AppColors.primary.withValues(alpha: 0.55)
+                    : const Color(0x381E243C),
+              ),
+            ),
+        ],
+      ),
+    );
+
+    if (!isSelected) return content;
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppRadius.pill),
       child: BackdropFilter(
-        filter: isSelected
-            ? ImageFilter.blur(sigmaX: 16, sigmaY: 16)
-            : ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-          decoration: BoxDecoration(
-            color: isSelected ? const Color(0x99FFFFFF) : Colors.transparent,
-            borderRadius: BorderRadius.circular(AppRadius.pill),
-            border: Border.all(
-              color: isSelected ? const Color(0xE6FFFFFF) : Colors.transparent,
-            ),
-            boxShadow: isSelected
-                ? const [
-                    BoxShadow(color: Color(0x1A6478B4), blurRadius: 12, offset: Offset(0, 2)),
-                  ]
-                : null,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                day == 0 ? '待规划' : 'Day $day',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: isSelected ? AppColors.primary : const Color(0x4D1E243C),
-                ),
-              ),
-              if (weekLabel != null)
-                Text(
-                  weekLabel!,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w400,
-                    color: isSelected
-                        ? AppColors.primary.withValues(alpha: 0.55)
-                        : const Color(0x381E243C),
-                  ),
-                ),
-            ],
-          ),
-        ),
+        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+        child: content,
       ),
     );
   }
