@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme.dart';
 import '../../../shared/models/user.dart';
+import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/providers/auth_state_provider.dart';
 import '../../../features/travel/domain/travel_list_provider.dart';
 
@@ -136,55 +137,37 @@ class _UserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return GlassCard(
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.pageHorizontal),
+      padding: const EdgeInsets.all(AppSpacing.cardPadding),
       onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.pageHorizontal),
-        padding: const EdgeInsets.all(AppSpacing.cardPadding),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppRadius.contentCard),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 4,
-                offset: const Offset(0, 1)),
-          ],
-        ),
-        child: Row(
-          children: [
-            // 头像
-            _Avatar(avatarUrl: user?.avatar),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    user?.name ?? user?.username ?? '未登录',
-                    style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary),
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      _Stat(value: travelCount, label: '旅程'),
-                      const SizedBox(width: 16),
-                      _Stat(value: cityCount, label: '城市'),
-                      const SizedBox(width: 16),
-                      _Stat(value: totalDays, label: '天数'),
-                    ],
-                  ),
-                ],
-              ),
+      child: Row(
+        children: [
+          _Avatar(avatarUrl: user?.avatar),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  user?.name ?? user?.username ?? '未登录',
+                  style: AppTextStyles.headline,
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    _Stat(value: travelCount, label: '旅程'),
+                    const SizedBox(width: 16),
+                    _Stat(value: cityCount, label: '城市'),
+                    const SizedBox(width: 16),
+                    _Stat(value: totalDays, label: '天数'),
+                  ],
+                ),
+              ],
             ),
-            const Icon(Icons.chevron_right,
-                color: AppColors.textTertiary, size: 20),
-          ],
-        ),
+          ),
+          const Icon(Icons.chevron_right, color: AppColors.textTertiary, size: 20),
+        ],
       ),
     );
   }
@@ -209,8 +192,20 @@ class _Avatar extends StatelessWidget {
   }
 
   Widget _placeholder() => Container(
-        decoration: const BoxDecoration(gradient: AppColors.primaryGradient),
-      );
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.lavender.withValues(alpha: 0.3),
+            AppColors.skyBlue.withValues(alpha: 0.3),
+          ],
+        ),
+      ),
+      child: const Center(
+        child: Icon(Icons.person, color: Colors.white70, size: 24),
+      ),
+    );
 }
 
 class _Stat extends StatelessWidget {
@@ -224,7 +219,7 @@ class _Stat extends StatelessWidget {
           Text('$value',
               style: const TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary)),
           Text(label,
               style: const TextStyle(
@@ -239,29 +234,19 @@ class _MenuGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.pageHorizontal),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.contentCard),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 4,
-              offset: const Offset(0, 1)),
-        ],
-      ),
+    return GlassCard(
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.pageHorizontal),
+      padding: EdgeInsets.zero,
       child: Column(
         children: [
           for (int i = 0; i < items.length; i++) ...[
             items[i],
             if (i < items.length - 1)
-              const Divider(
+              Divider(
                   height: 0.5,
                   thickness: 0.5,
                   indent: 44,
-                  color: AppColors.separator),
+                  color: AppColors.textPrimary.withValues(alpha: 0.06)),
           ],
         ],
       ),
@@ -300,13 +285,13 @@ class _MenuItem extends StatelessWidget {
             children: [
               if (icon != null) ...[
                 Container(
-                  width: 22,
-                  height: 22,
+                  width: 26,
+                  height: 26,
                   decoration: BoxDecoration(
-                    color: iconBg,
-                    borderRadius: BorderRadius.circular(AppRadius.iconBox),
+                    color: iconBg?.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(icon, color: Colors.white, size: 14),
+                  child: Icon(icon, color: iconBg, size: 15),
                 ),
                 const SizedBox(width: 10),
               ],
@@ -339,16 +324,16 @@ class _ComingSoonBadge extends StatelessWidget {
   const _ComingSoonBadge();
   @override
   Widget build(BuildContext context) => Container(
-        padding:
-            const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
         decoration: BoxDecoration(
-          color: AppColors.destructive,
-          borderRadius: BorderRadius.circular(10),
+          color: AppColors.petalPink.withValues(alpha: 0.10),
+          borderRadius: BorderRadius.circular(AppRadius.pill),
+          border: Border.all(color: AppColors.petalPink.withValues(alpha: 0.22), width: 1),
         ),
         child: const Text('即将推出',
             style: TextStyle(
-                color: Colors.white,
+                color: Color(0xFFC02060),
                 fontSize: 9,
-                fontWeight: FontWeight.w700)),
+                fontWeight: FontWeight.w500)),
       );
 }
