@@ -1,4 +1,5 @@
 // lib/features/travel/presentation/widgets/travel_form_sheet.dart
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -109,62 +110,75 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
     return Padding(
       padding:
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: Container(
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          borderRadius:
-              BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-        ),
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.pageHorizontal, 16, AppSpacing.pageHorizontal, 24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // ── Drag handle ───────────────────────────────────────
-                  Center(
-                    child: Container(
-                      width: 36, height: 4,
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: const Color(0x1E1E243C),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  // ── Title bar ─────────────────────────────────────────
-                  Row(
+      child: ClipRRect(
+        borderRadius:
+            const BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Color(0xB8FFFFFF), // rgba(255,255,255,0.72)
+              borderRadius:
+                  BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+              border: Border(
+                top: BorderSide(color: Color(0xE6FFFFFF), width: 1),
+              ),
+              boxShadow: [
+                BoxShadow(color: Color(0x1A6478B4), blurRadius: 24, offset: Offset(0, -4)),
+              ],
+            ),
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.pageHorizontal, 16, AppSpacing.pageHorizontal, 24),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(isEdit ? '编辑旅程' : '新建旅程',
-                          style: AppTextStyles.title2),
-                      const Spacer(),
-                      GestureDetector(
-                        onTap: () => Navigator.of(context).pop(),
+                      // ── Drag handle ───────────────────────────────────────
+                      Center(
                         child: Container(
-                          width: 28, height: 28,
-                          decoration: const BoxDecoration(
-                            color: Color(0x0D1E243C),
-                            shape: BoxShape.circle,
+                          width: 36, height: 4,
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: const Color(0x281E243C),
+                            borderRadius: BorderRadius.circular(2),
                           ),
-                          child: const Icon(Icons.close, size: 16,
-                              color: AppColors.textSecondary),
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
+                      // ── Title bar ─────────────────────────────────────────
+                      Row(
+                        children: [
+                          Text(isEdit ? '编辑旅程' : '新建旅程',
+                              style: AppTextStyles.title2),
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: () => Navigator.of(context).pop(),
+                            child: Container(
+                              width: 28, height: 28,
+                              decoration: BoxDecoration(
+                                color: const Color(0x141E243C),
+                                shape: BoxShape.circle,
+                                border: Border.all(color: const Color(0x0A1E243C)),
+                              ),
+                              child: const Icon(Icons.close, size: 16,
+                                  color: AppColors.textSecondary),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
 
-                  // ── Grouped form card ─────────────────────────────────
-                  Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0x0D1E243C), // subtle fill
-                      borderRadius: BorderRadius.circular(AppRadius.cardSm),
-                    ),
+                      // ── Grouped form card ─────────────────────────────────
+                      Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0x0D1E243C), // subtle fill on glass
+                          borderRadius: BorderRadius.circular(AppRadius.cardSm),
+                          border: Border.all(color: const Color(0x0A1E243C)),
+                        ),
                     child: Column(
                       children: [
                         // 旅程名称
@@ -307,7 +321,9 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                             ),
                     ),
                   ),
-                ],
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
