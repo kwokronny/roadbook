@@ -1,5 +1,6 @@
 // lib/features/travel/presentation/travel_list_screen.dart
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -59,12 +60,14 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
         content: Text('确定删除「$name」？此操作无法撤销。'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              child: const Text('取消')),
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('取消'),
+          ),
           TextButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
-              child: const Text('删除',
-                  style: TextStyle(color: AppColors.destructive))),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('删除',
+                style: TextStyle(color: AppColors.destructive)),
+          ),
         ],
       ),
     );
@@ -86,32 +89,57 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
     final listAsync = ref.watch(travelListProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Large Title ───────────────────────────────────────────────
-            const Padding(
-              padding: EdgeInsets.fromLTRB(
+            // ── Large Title + Add button ──────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
                   AppSpacing.pageHorizontal, 20, AppSpacing.pageHorizontal, 0),
-              child: Text('我的旅程', style: AppTextStyles.largeTitle),
+              child: Row(
+                children: [
+                  const Text('旅程', style: AppTextStyles.largeTitle),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () => TravelFormSheet.show(context),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: GlassSpec.cardBg,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: const Color(0xD9FFFFFF), width: 1),
+                            boxShadow: const [
+                              BoxShadow(color: Color(0x146478B4), blurRadius: 8, offset: Offset(0, 2)),
+                            ],
+                          ),
+                          child: const Icon(Icons.add, size: 20, color: AppColors.textPrimary),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 12),
 
-            // ── iOS-style search bar ──────────────────────────────────────
+            // ── Glass search bar ─────────────────────────────────────────
             Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.pageHorizontal),
-              // ignore: prefer_const_constructors — controller is not const
-              child: _IosSearchBar(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.pageHorizontal),
+              child: _GlassSearchBar(
                 controller: _searchCtrl,
                 onChanged: _onSearchChanged,
               ),
             ),
             const SizedBox(height: 12),
 
-            // ── Travel list ───────────────────────────────────────────────
+            // ── Travel list ──────────────────────────────────────────────
             Expanded(
               child: listAsync.when(
                 loading: () => const Center(
@@ -123,10 +151,8 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
                       Text(e.toString(), style: AppTextStyles.caption),
                       const SizedBox(height: 12),
                       FilledButton(
-                        style: FilledButton.styleFrom(
-                            backgroundColor: AppColors.primary),
-                        onPressed: () =>
-                            ref.read(travelListProvider.notifier).refresh(),
+                        style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
+                        onPressed: () => ref.read(travelListProvider.notifier).refresh(),
                         child: const Text('重试'),
                       ),
                     ],
@@ -134,13 +160,13 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
                 ),
                 data: (state) {
                   if (state.items.isEmpty) {
-                    return Center(
+                    return const Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.map_outlined,
-                              size: 48, color: AppColors.textTertiary),
-                          const SizedBox(height: 12),
+                          Icon(Icons.map_outlined, size: 48,
+                              color: AppColors.textTertiary),
+                          SizedBox(height: 12),
                           Text('暂无旅程，点击 ＋ 开始规划',
                               style: AppTextStyles.caption),
                         ],
@@ -150,29 +176,26 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
 
                   return RefreshIndicator(
                     color: AppColors.primary,
-                    onRefresh: () =>
-                        ref.read(travelListProvider.notifier).refresh(),
+                    onRefresh: () => ref.read(travelListProvider.notifier).refresh(),
                     child: ListView.builder(
                       controller: _scrollCtrl,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.pageHorizontal, vertical: 4),
-                      itemCount: state.items.length +
-                          (state.isLoadingMore ? 1 : 0),
+                      padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.pageHorizontal, 4,
+                          AppSpacing.pageHorizontal, 100),
+                      itemCount: state.items.length + (state.isLoadingMore ? 1 : 0),
                       itemBuilder: (context, index) {
                         if (index == state.items.length) {
                           return const Padding(
                             padding: EdgeInsets.all(16),
                             child: Center(
-                                child: CircularProgressIndicator(
-                                    color: AppColors.primary)),
+                                child: CircularProgressIndicator(color: AppColors.primary)),
                           );
                         }
                         final travel = state.items[index];
                         return TravelCard(
                           travel: travel,
                           onTap: () => context.go('/travel/${travel.id}'),
-                          onEdit: () =>
-                              TravelFormSheet.show(context, travel: travel),
+                          onEdit: () => TravelFormSheet.show(context, travel: travel),
                           onDelete: travel.id != null
                               ? () => _confirmDelete(travel.id!, travel.name)
                               : null,
@@ -186,77 +209,77 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
           ],
         ),
       ),
-
-      // ── Circle FAB ─────────────────────────────────────────────────────
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => TravelFormSheet.show(context),
-        backgroundColor: AppColors.primary,
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
     );
   }
 }
 
-// ─── iOS-style capsule search bar ────────────────────────────────────────────
+// ─── Glass search bar ───────────────────────────────────────────────────────
 
-class _IosSearchBar extends StatelessWidget {
-  const _IosSearchBar({required this.controller, required this.onChanged});
+class _GlassSearchBar extends StatelessWidget {
+  const _GlassSearchBar({required this.controller, required this.onChanged});
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 36,
-      decoration: BoxDecoration(
-        color: const Color(0x1E767680), // rgba(118,118,128,0.12)
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 8),
-            child: Icon(Icons.search,
-                size: 16, color: AppColors.textSecondary),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppRadius.cardSm),
+      child: BackdropFilter(
+        filter: GlassSpec.inputBlur,
+        child: Container(
+          height: 40,
+          decoration: BoxDecoration(
+            color: GlassSpec.inputBg,
+            borderRadius: BorderRadius.circular(AppRadius.cardSm),
+            border: Border.all(color: GlassSpec.inputBorder, width: 1),
+            boxShadow: const [
+              BoxShadow(color: Color(0x0F6478B4), blurRadius: 3, offset: Offset(0, 1)),
+            ],
           ),
-          const SizedBox(width: 4),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              onChanged: onChanged,
-              style: const TextStyle(
-                  fontSize: 15, color: AppColors.textPrimary),
-              decoration: const InputDecoration(
-                hintText: '搜索',
-                hintStyle: TextStyle(
-                    color: AppColors.textSecondary, fontSize: 15),
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(left: 12),
+                child: Icon(Icons.search, size: 18, color: AppColors.textTertiary),
               ),
-            ),
-          ),
-          // Cancel button — reactive via ValueListenableBuilder
-          ValueListenableBuilder<TextEditingValue>(
-            valueListenable: controller,
-            builder: (_, value, __) => AnimatedOpacity(
-              opacity: value.text.isNotEmpty ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 150),
-              child: GestureDetector(
-                onTap: () {
-                  controller.clear();
-                  onChanged('');
-                },
-                child: const Padding(
-                  padding: EdgeInsets.only(right: 8),
-                  child: Icon(Icons.cancel,
-                      size: 16, color: AppColors.textSecondary),
+              const SizedBox(width: 6),
+              Expanded(
+                child: TextField(
+                  controller: controller,
+                  onChanged: onChanged,
+                  style: const TextStyle(
+                    fontSize: 15, fontWeight: FontWeight.w400,
+                    color: AppColors.textPrimary,
+                  ),
+                  decoration: const InputDecoration(
+                    hintText: '搜索旅行计划...',
+                    hintStyle: TextStyle(color: AppColors.textTertiary, fontSize: 14),
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(vertical: 9),
+                  ),
                 ),
               ),
-            ),
+              ValueListenableBuilder<TextEditingValue>(
+                valueListenable: controller,
+                builder: (_, value, __) => AnimatedOpacity(
+                  opacity: value.text.isNotEmpty ? 1.0 : 0.0,
+                  duration: AppAnimations.fast,
+                  child: GestureDetector(
+                    onTap: () {
+                      controller.clear();
+                      onChanged('');
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.only(right: 10),
+                      child: Icon(Icons.cancel, size: 16, color: AppColors.textTertiary),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
