@@ -175,9 +175,8 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                       // ── Grouped form card ─────────────────────────────────
                       Container(
                         decoration: BoxDecoration(
-                          color: const Color(0x0D1E243C), // subtle fill on glass
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(AppRadius.cardSm),
-                          border: Border.all(color: const Color(0x0A1E243C)),
                         ),
                     child: Column(
                       children: [
