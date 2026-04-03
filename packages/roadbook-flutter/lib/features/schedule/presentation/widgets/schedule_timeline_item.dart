@@ -205,21 +205,6 @@ class ScheduleTimelineItem extends StatelessWidget {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ],
-                                  // More button below address
-                                  if (canEdit) ...[
-                                    const SizedBox(height: 8),
-                                    IgnorePointer(
-                                      ignoring: isSelectionMode,
-                                      child: Opacity(
-                                        opacity: isSelectionMode ? 0.35 : 1.0,
-                                        child: _InlineMoreButton(
-                                          onEdit: onEdit,
-                                          onClone: onClone,
-                                          onDelete: onDelete,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
                                 ],
                               ),
                             ),
@@ -259,21 +244,11 @@ class ScheduleTimelineItem extends StatelessWidget {
                               // Notes
                               if (schedule.notes != null &&
                                   schedule.notes!.isNotEmpty)
-                                Row(
-                                  children: [
-                                    const Icon(Icons.notes,
-                                        size: 14,
-                                        color: AppColors.textSecondary),
-                                    const SizedBox(width: 4),
-                                    Expanded(
-                                      child: Text(
-                                        schedule.notes!,
-                                        style: AppTextStyles.caption,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
+                                Text(
+                                  schedule.notes!,
+                                  style: AppTextStyles.caption,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                             ],
                           ),
@@ -612,7 +587,7 @@ class _ConcaveCutoutClipper extends CustomClipper<Path> {
   static const double _cardRadius = AppRadius.card;
   // Button 40x40, positioned at top:-4 right:-4
   static const double _buttonSize = 36.0;
-  static const double _gap = 8.0;
+  static const double _gap = 10.0;
   static const double _cutoutSize = _buttonSize + _gap * 2; // 50
   // Inner corner radius matches card corner radius (AppRadius.card = 20)
   static const double _innerRadius = _cardRadius;
