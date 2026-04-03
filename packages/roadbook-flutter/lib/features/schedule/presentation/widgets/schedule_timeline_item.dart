@@ -105,19 +105,14 @@ class ScheduleTimelineItem extends StatelessWidget {
           children: [
             // ── Glass card with concave cutout for more button
             ClipPath(
-              clipper: const _ConcaveCutoutClipper(
-                radius: AppRadius.card,
-                cutoutRadius: 19, // button 30/2 + 4px gap
-                cutoutCenter: Offset(-11, 11), // button center relative to top-right
-              ),
+              clipper: const _ConcaveCutoutClipper(),
               child: BackdropFilter(
                 filter: GlassSpec.cardBlur,
                 child: Container(
                   decoration: BoxDecoration(
                     color: schedule.isHotel
-                        ? const Color(0x80F5F3FF) // lavender tint overlay
-                        : GlassSpec.cardBg,
-                    // No borderRadius here — ClipPath handles the shape including concave cutout
+                        ? const Color(0xFFF5F3FF) // lavender tint on white
+                        : Colors.white,
                     boxShadow: GlassSpec.cardShadow,
                   ),
                   child: Column(
@@ -527,37 +522,49 @@ class _GlassNavButton extends StatelessWidget {
 
 class _ConcaveCutoutClipper extends CustomClipper<Path> {
   const _ConcaveCutoutClipper({
-    required this.radius,
-    required this.cutoutRadius,
-    required this.cutoutCenter,
+    this.cardRadius = AppRadius.card,
+    this.buttonSize = 30.0,
+    this.gap = 5.0,
+    this.cutoutCornerRadius = 8.0,
   });
 
-  final double radius;       // card corner radius
-  final double cutoutRadius; // circular cutout radius
-  final Offset cutoutCenter; // offset from top-right corner
+  final double cardRadius;
+  final double buttonSize;
+  final double gap;            // space between button and card edge
+  final double cutoutCornerRadius;
 
   @override
   Path getClip(Size size) {
     final path = Path();
-    // Rounded rect for the card
+    // Card rounded rect
     path.addRRect(RRect.fromRectAndRadius(
       Rect.fromLTWH(0, 0, size.width, size.height),
-      Radius.circular(radius),
+      Radius.circular(cardRadius),
     ));
-    // Subtract a circle at top-right
-    final circlePath = Path()
-      ..addOval(Rect.fromCircle(
-        center: Offset(size.width + cutoutCenter.dx, cutoutCenter.dy),
-        radius: cutoutRadius,
+
+    // Cutout: rounded square centered on the more button
+    // Button is positioned at top: -4, right: -4, so its top-left in card coords:
+    // x = size.width - buttonSize + 4, y = -4
+    // We expand by `gap` on each side for spacing
+    final cutoutSize = buttonSize + gap * 2;
+    final cutoutLeft = size.width - buttonSize + 4 - gap;
+    final cutoutTop = -4.0 - gap;
+
+    final cutoutPath = Path()
+      ..addRRect(RRect.fromRectAndRadius(
+        Rect.fromLTWH(cutoutLeft, cutoutTop, cutoutSize, cutoutSize),
+        Radius.circular(cutoutCornerRadius),
       ));
-    return Path.combine(PathOperation.difference, path, circlePath);
+
+    return Path.combine(PathOperation.difference, path, cutoutPath);
   }
 
   @override
   bool shouldReclip(covariant _ConcaveCutoutClipper old) =>
-      old.radius != radius ||
-      old.cutoutRadius != cutoutRadius ||
-      old.cutoutCenter != cutoutCenter;
+      old.cardRadius != cardRadius ||
+      old.buttonSize != buttonSize ||
+      old.gap != gap ||
+      old.cutoutCornerRadius != cutoutCornerRadius;
 }
 
 // ─── Dashed Line Painter ─────────────────────────────────────────────────────
