@@ -75,6 +75,8 @@ class UploadRepository {
       final data = e.response?.data;
       final msg = data is Map ? (data['message'] ?? data['msg']) as String? : null;
       throw msg ?? e.message ?? '上传失败';
+    } catch (e) {
+      throw '上传失败: $e';
     }
   }
 }
