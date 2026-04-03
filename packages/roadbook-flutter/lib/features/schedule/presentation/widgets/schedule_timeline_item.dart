@@ -527,7 +527,7 @@ class _ConcaveCutoutClipper extends CustomClipper<Path> {
   // Button 30x30, positioned at top:-4 right:-4
   // Gap around button: 8px each side → total cutout = 30 + 16 = 46
   static const double _buttonSize = 30.0;
-  static const double _gap = 8.0;
+  static const double _gap = 12.0;
   static const double _cutoutSize = _buttonSize + _gap * 2; // 46
   // Inner corner radius where card meets cutout
   static const double _innerRadius = 14.0;
