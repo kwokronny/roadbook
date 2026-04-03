@@ -99,7 +99,7 @@ class ScheduleTimelineItem extends StatelessWidget {
       onTap: isSelectionMode ? onToggleSelect : null,
       onLongPress: canEdit && !isSelectionMode ? onLongPress : null,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.only(bottom: 16),
         child: Stack(
           clipBehavior: Clip.none,
           children: [
@@ -247,14 +247,10 @@ class ScheduleTimelineItem extends StatelessWidget {
                               if (schedule.notes != null &&
                                   schedule.notes!.isNotEmpty)
                                 Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Padding(
-                                      padding: EdgeInsets.only(top: 2),
-                                      child: Icon(Icons.notes,
-                                          size: 14,
-                                          color: AppColors.textSecondary),
-                                    ),
+                                    const Icon(Icons.notes,
+                                        size: 14,
+                                        color: AppColors.textSecondary),
                                     const SizedBox(width: 4),
                                     Expanded(
                                       child: Text(
@@ -387,7 +383,7 @@ class _ConcaveMoreButton extends StatelessWidget {
             onDelete?.call();
         }
       },
-      offset: const Offset(0, 30),
+      offset: const Offset(0, 36),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.card),
       ),
@@ -434,8 +430,8 @@ class _ConcaveMoreButton extends StatelessWidget {
       child: CustomPaint(
         painter: _ConcaveMaskPainter(),
         child: const SizedBox(
-          width: 40,
-          height: 40,
+          width: 41,
+          height: 41,
           child: Center(
             child: Icon(Icons.more_horiz, size: 20, color: AppColors.textSecondary),
           ),
@@ -450,7 +446,7 @@ class _ConcaveMaskPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    const radius = 15.0;
+    const radius = 17.0;
 
     // Circle fill
     final fillPaint = Paint()
