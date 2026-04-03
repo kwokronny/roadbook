@@ -111,8 +111,8 @@ class ScheduleTimelineItem extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     color: schedule.isHotel
-                        ? const Color(0xFFF5F3FF) // lavender tint on white
-                        : Colors.white,
+                        ? const Color(0xE6F5F3FF) // lavender tint, 90% opacity
+                        : const Color(0xE6FFFFFF), // white, 90% opacity
                     boxShadow: GlassSpec.cardShadow,
                   ),
                   child: Column(
@@ -521,50 +521,66 @@ class _GlassNavButton extends StatelessWidget {
 // ─── Concave Cutout Clipper ──────────────────────────────────────────────────
 
 class _ConcaveCutoutClipper extends CustomClipper<Path> {
-  const _ConcaveCutoutClipper({
-    this.cardRadius = AppRadius.card,
-    this.buttonSize = 30.0,
-    this.gap = 5.0,
-    this.cutoutCornerRadius = 8.0,
-  });
+  const _ConcaveCutoutClipper();
 
-  final double cardRadius;
-  final double buttonSize;
-  final double gap;            // space between button and card edge
-  final double cutoutCornerRadius;
+  static const double _cardRadius = AppRadius.card;
+  // Button 30x30, positioned at top:-4 right:-4
+  // Gap around button: 8px each side → total cutout = 30 + 16 = 46
+  static const double _buttonSize = 30.0;
+  static const double _gap = 8.0;
+  static const double _cutoutSize = _buttonSize + _gap * 2; // 46
+  // Inner corner radius where card meets cutout
+  static const double _innerRadius = 10.0;
 
   @override
   Path getClip(Size size) {
+    final w = size.width;
+    final h = size.height;
+    final r = _cardRadius;
+    final ir = _innerRadius;
+
+    // Cutout rect position (top-left of cutout square in card coords)
+    final cx = w - _buttonSize + 4 - _gap; // left edge of cutout
+    final cy = -4.0 - _gap;                // top edge of cutout
+    final cb = cy + _cutoutSize;            // bottom edge of cutout
+    // cr = cx + _cutoutSize extends beyond card, not needed for path
+
+    // Build the card outline with a concave notch at top-right
     final path = Path();
-    // Card rounded rect
-    path.addRRect(RRect.fromRectAndRadius(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      Radius.circular(cardRadius),
-    ));
 
-    // Cutout: rounded square centered on the more button
-    // Button is positioned at top: -4, right: -4, so its top-left in card coords:
-    // x = size.width - buttonSize + 4, y = -4
-    // We expand by `gap` on each side for spacing
-    final cutoutSize = buttonSize + gap * 2;
-    final cutoutLeft = size.width - buttonSize + 4 - gap;
-    final cutoutTop = -4.0 - gap;
+    // Start at top-left after corner radius
+    path.moveTo(r, 0);
 
-    final cutoutPath = Path()
-      ..addRRect(RRect.fromRectAndRadius(
-        Rect.fromLTWH(cutoutLeft, cutoutTop, cutoutSize, cutoutSize),
-        Radius.circular(cutoutCornerRadius),
-      ));
+    // Top edge → stop before cutout, add inner radius curve into cutout
+    path.lineTo(cx - ir, 0);
+    // Inner radius: curve from card top edge down into cutout left edge
+    path.quadraticBezierTo(cx, 0, cx, ir);
+    // Cutout left edge going down
+    path.lineTo(cx, cb - ir);
+    // Inner radius: curve from cutout left edge back to card right direction
+    path.quadraticBezierTo(cx, cb, cx + ir, cb);
+    // Cutout bottom edge going right (to card right edge or beyond)
+    path.lineTo(w, cb);
 
-    return Path.combine(PathOperation.difference, path, cutoutPath);
+    // Right edge down
+    path.lineTo(w, h - r);
+    // Bottom-right corner
+    path.quadraticBezierTo(w, h, w - r, h);
+    // Bottom edge
+    path.lineTo(r, h);
+    // Bottom-left corner
+    path.quadraticBezierTo(0, h, 0, h - r);
+    // Left edge up
+    path.lineTo(0, r);
+    // Top-left corner
+    path.quadraticBezierTo(0, 0, r, 0);
+
+    path.close();
+    return path;
   }
 
   @override
-  bool shouldReclip(covariant _ConcaveCutoutClipper old) =>
-      old.cardRadius != cardRadius ||
-      old.buttonSize != buttonSize ||
-      old.gap != gap ||
-      old.cutoutCornerRadius != cutoutCornerRadius;
+  bool shouldReclip(covariant _ConcaveCutoutClipper old) => false;
 }
 
 // ─── Dashed Line Painter ─────────────────────────────────────────────────────
