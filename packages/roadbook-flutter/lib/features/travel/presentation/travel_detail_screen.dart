@@ -130,7 +130,7 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
       onTap: () => setState(() => _currentTab = index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: selected ? AppColors.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(AppRadius.pill),
@@ -207,8 +207,8 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
         ),
       ],
       child: Container(
-        width: 38,
-        height: 38,
+        width: 36,
+        height: 36,
         margin: const EdgeInsets.only(right: 8),
         decoration: BoxDecoration(
           shape: BoxShape.circle,

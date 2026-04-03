@@ -89,6 +89,9 @@ class ScheduleTimelineItem extends StatelessWidget {
     return AppColors.primary;
   }
 
+  bool get _hasCoordinate =>
+      schedule.coordinate.isNotEmpty && schedule.coordinate != '0,0';
+
   bool get _hasExtras =>
       (schedule.notes != null && schedule.notes!.isNotEmpty) ||
       schedule.screenshotList.isNotEmpty;
@@ -204,22 +207,21 @@ class ScheduleTimelineItem extends StatelessWidget {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ],
-                                  // Nav button below address
-                                  const SizedBox(height: 8),
-                                  IgnorePointer(
-                                    ignoring: isSelectionMode,
-                                    child: Opacity(
-                                      opacity: isSelectionMode ? 0.35 : 1.0,
-                                      child: _GlassNavButton(
-                                        coordinate: schedule.coordinate,
-                                        name: schedule.name,
-                                        isHotel: schedule.isHotel,
-                                        bgColor: _navBg,
-                                        borderColor: _navBorder,
-                                        iconColor: _navIcon,
+                                  // More button below address
+                                  if (canEdit) ...[
+                                    const SizedBox(height: 8),
+                                    IgnorePointer(
+                                      ignoring: isSelectionMode,
+                                      child: Opacity(
+                                        opacity: isSelectionMode ? 0.35 : 1.0,
+                                        child: _InlineMoreButton(
+                                          onEdit: onEdit,
+                                          onClone: onClone,
+                                          onDelete: onDelete,
+                                        ),
                                       ),
                                     ),
-                                  ),
+                                  ],
                                 ],
                               ),
                             ),
@@ -284,8 +286,8 @@ class ScheduleTimelineItem extends StatelessWidget {
                 ),
               ),
             ),
-            // ── More button (top-right, with concave mask cutout)
-            if (canEdit)
+            // ── Nav button (top-right, with concave mask cutout)
+            if (_hasCoordinate)
               Positioned(
                 top: -4,
                 right: -4,
@@ -293,13 +295,11 @@ class ScheduleTimelineItem extends StatelessWidget {
                   ignoring: isSelectionMode,
                   child: Opacity(
                     opacity: isSelectionMode ? 0.35 : 1.0,
-                    child: _ConcaveMoreButton(
-                      accentColor: _accentColor,
+                    child: _ConcaveNavButton(
+                      coordinate: schedule.coordinate,
+                      name: schedule.name,
                       isHotel: schedule.isHotel,
-                      hasStartTime: schedule.startTime != null,
-                      onEdit: onEdit,
-                      onClone: onClone,
-                      onDelete: onDelete,
+                      iconColor: _navIcon,
                     ),
                   ),
                 ),
@@ -371,6 +371,91 @@ class ScheduleTimelineItem extends StatelessWidget {
 // ─── Concave More Button ─────────────────────────────────────────────────────
 
 enum _MenuAction { edit, clone, delete }
+
+// ─── Inline More Button (pill, below address) ──────────────────────────────
+
+class _InlineMoreButton extends StatelessWidget {
+  const _InlineMoreButton({this.onEdit, this.onClone, this.onDelete});
+  final VoidCallback? onEdit;
+  final VoidCallback? onClone;
+  final VoidCallback? onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<_MenuAction>(
+      onSelected: (a) {
+        switch (a) {
+          case _MenuAction.edit:   onEdit?.call();
+          case _MenuAction.clone:  onClone?.call();
+          case _MenuAction.delete: onDelete?.call();
+        }
+      },
+      offset: const Offset(0, 36),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.card)),
+      color: AppColors.surface,
+      elevation: 4,
+      itemBuilder: (_) => [
+        PopupMenuItem(value: _MenuAction.edit, height: 40, child: Row(children: [
+          const Icon(Icons.edit_outlined, size: 16, color: AppColors.textPrimary),
+          const SizedBox(width: 10), Text('编辑', style: AppTextStyles.cardTitle.copyWith(fontWeight: FontWeight.w400)),
+        ])),
+        PopupMenuItem(value: _MenuAction.clone, height: 40, child: Row(children: [
+          const Icon(Icons.copy_outlined, size: 16, color: AppColors.textPrimary),
+          const SizedBox(width: 10), Text('克隆', style: AppTextStyles.cardTitle.copyWith(fontWeight: FontWeight.w400)),
+        ])),
+        const PopupMenuDivider(height: 1),
+        PopupMenuItem(value: _MenuAction.delete, height: 40, child: Row(children: [
+          const Icon(Icons.delete_outline, size: 16, color: Colors.red),
+          const SizedBox(width: 10), Text('删除', style: AppTextStyles.cardTitle.copyWith(fontWeight: FontWeight.w400, color: Colors.red)),
+        ])),
+      ],
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        decoration: BoxDecoration(
+          color: const Color(0x0D1E243C),
+          borderRadius: BorderRadius.circular(AppRadius.pill),
+        ),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.more_horiz, size: 15, color: AppColors.textSecondary),
+            SizedBox(width: 4),
+            Text('更多', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textSecondary)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Concave Nav Button (top-right corner) ──────────────────────────────────
+
+class _ConcaveNavButton extends StatelessWidget {
+  const _ConcaveNavButton({
+    required this.coordinate,
+    required this.name,
+    required this.isHotel,
+    required this.iconColor,
+  });
+  final String coordinate;
+  final String name;
+  final bool isHotel;
+  final Color iconColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 41,
+      height: 41,
+      child: ScheduleNavButton(
+        coordinate: coordinate,
+        name: name,
+        isHotel: isHotel,
+        compact: true,
+      ),
+    );
+  }
+}
 
 class _ConcaveMoreButton extends StatelessWidget {
   const _ConcaveMoreButton({

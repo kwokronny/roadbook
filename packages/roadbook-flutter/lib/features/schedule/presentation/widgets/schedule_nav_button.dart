@@ -96,21 +96,13 @@ class ScheduleNavButton extends StatelessWidget {
         }).toList(),
         child: compact
             ? Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                width: 36,
+                height: 36,
                 decoration: BoxDecoration(
                   color: _iconColor,
-                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                  shape: BoxShape.circle,
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.navigation_rounded, size: 15, color: Colors.white),
-                    const SizedBox(width: 4),
-                    Text('导航', style: const TextStyle(
-                      fontSize: 13, fontWeight: FontWeight.w500, color: Colors.white,
-                    )),
-                  ],
-                ),
+                child: const Icon(Icons.navigation_rounded, size: 17, color: Colors.white),
               )
             : Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
