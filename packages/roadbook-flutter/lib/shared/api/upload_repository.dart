@@ -66,7 +66,16 @@ class UploadRepository {
         ));
       }
       final res = await _dio.post<dynamic>(ApiEndpoints.upload, data: formData);
-      final relativePaths = (res.data as List<dynamic>).cast<String>();
+      final resData = res.data;
+      final List<dynamic> rawPaths;
+      if (resData is List) {
+        rawPaths = resData;
+      } else if (resData is String) {
+        rawPaths = [resData];
+      } else {
+        throw '上传返回格式异常: ${resData.runtimeType}';
+      }
+      final relativePaths = rawPaths.cast<String>();
       final base = _dio.options.baseUrl.endsWith('/')
           ? _dio.options.baseUrl.substring(0, _dio.options.baseUrl.length - 1)
           : _dio.options.baseUrl;
