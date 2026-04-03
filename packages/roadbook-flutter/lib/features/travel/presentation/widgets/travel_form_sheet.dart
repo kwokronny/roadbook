@@ -119,73 +119,136 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
           top: false,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(
-                AppSpacing.pageHorizontal, 20, AppSpacing.pageHorizontal, 24),
+                AppSpacing.pageHorizontal, 16, AppSpacing.pageHorizontal, 24),
             child: Form(
               key: _formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Title bar
+                  // ── Drag handle ───────────────────────────────────────
+                  Center(
+                    child: Container(
+                      width: 36, height: 4,
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: const Color(0x1E1E243C),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  // ── Title bar ─────────────────────────────────────────
                   Row(
                     children: [
                       Text(isEdit ? '编辑旅程' : '新建旅程',
                           style: AppTextStyles.title2),
                       const Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () => Navigator.of(context).pop(),
+                      GestureDetector(
+                        onTap: () => Navigator.of(context).pop(),
+                        child: Container(
+                          width: 28, height: 28,
+                          decoration: const BoxDecoration(
+                            color: Color(0x0D1E243C),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.close, size: 16,
+                              color: AppColors.textSecondary),
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  // Name
-                  TextFormField(
-                    controller: _nameCtrl,
-                    decoration: const InputDecoration(labelText: '旅程名称'),
-                    textInputAction: TextInputAction.next,
-                    validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? '请输入旅程名称' : null,
-                  ),
-                  const SizedBox(height: 12),
-                  // Cities
-                  _CityMultiSelectField(
-                    selectedCities: _selectedCities,
-                    onChanged: (v) => setState(() => _selectedCities = v),
-                  ),
-                  const SizedBox(height: 12),
-                  // Date range
-                  InkWell(
-                    onTap: _pickDateRange,
-                    borderRadius: BorderRadius.circular(AppRadius.input),
-                    child: InputDecorator(
-                      decoration: const InputDecoration(
-                        labelText: '出行日期',
-                        suffixIcon:
-                            Icon(Icons.calendar_month_outlined, size: 18),
-                      ),
-                      child: Text(
-                        '${fmt.format(_startDate)}  →  ${fmt.format(_endDate)}',
-                        style: AppTextStyles.body,
-                      ),
+                  const SizedBox(height: 20),
+
+                  // ── Grouped form card ─────────────────────────────────
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0x0D1E243C), // subtle fill
+                      borderRadius: BorderRadius.circular(AppRadius.cardSm),
+                    ),
+                    child: Column(
+                      children: [
+                        // 旅程名称
+                        _FormRow(
+                          label: '名称',
+                          child: TextFormField(
+                            controller: _nameCtrl,
+                            textInputAction: TextInputAction.next,
+                            style: const TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.w400,
+                              color: AppColors.textPrimary,
+                            ),
+                            textAlign: TextAlign.end,
+                            decoration: const InputDecoration(
+                              hintText: '输入旅程名称',
+                              hintStyle: TextStyle(
+                                  color: AppColors.textTertiary, fontSize: 15),
+                              border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              filled: false,
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(vertical: 2),
+                            ),
+                            validator: (v) =>
+                                (v == null || v.trim().isEmpty) ? '请输入名称' : null,
+                          ),
+                        ),
+                        const _FormDivider(),
+                        // 目的地
+                        _FormRow(
+                          label: '目的地',
+                          crossAlign: _selectedCities.length > 2
+                              ? CrossAxisAlignment.start
+                              : CrossAxisAlignment.center,
+                          child: _CityMultiSelectField(
+                            selectedCities: _selectedCities,
+                            onChanged: (v) => setState(() => _selectedCities = v),
+                          ),
+                        ),
+                        const _FormDivider(),
+                        // 出行日期
+                        _FormRow(
+                          label: '日期',
+                          onTap: _pickDateRange,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                '${fmt.format(_startDate)} → ${fmt.format(_endDate)}',
+                                style: const TextStyle(
+                                  fontSize: 15, color: AppColors.textPrimary),
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.chevron_right,
+                                  size: 16, color: AppColors.textTertiary),
+                            ],
+                          ),
+                        ),
+                        const _FormDivider(),
+                        // 公开
+                        _FormRow(
+                          label: '公开',
+                          child: SizedBox(
+                            height: 28,
+                            child: FittedBox(
+                              child: Switch(
+                                value: _isPublic,
+                                activeThumbColor: AppColors.spearmint,
+                                activeTrackColor: AppColors.spearmint.withValues(alpha: 0.22),
+                                inactiveThumbColor: const Color(0x381E243C),
+                                inactiveTrackColor: const Color(0x121E243C),
+                                trackOutlineColor: const WidgetStatePropertyAll(Colors.transparent),
+                                onChanged: (v) => setState(() => _isPublic = v),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  // Public toggle
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text('公开旅程',
-                        style: AppTextStyles.body.copyWith(color: AppColors.textPrimary)),
-                    value: _isPublic,
-                    activeThumbColor: AppColors.spearmint,
-                    activeTrackColor: AppColors.spearmint.withValues(alpha: 0.22),
-                    inactiveThumbColor: const Color(0x381E243C),
-                    inactiveTrackColor: const Color(0x121E243C),
-                    trackOutlineColor: const WidgetStatePropertyAll(Colors.transparent),
-                    onChanged: (v) => setState(() => _isPublic = v),
-                  ),
-                  const SizedBox(height: 16),
-                  // Save button
+                  const SizedBox(height: 24),
+
+                  // ── Save button ───────────────────────────────────────
                   Container(
                     height: 48,
                     decoration: BoxDecoration(
@@ -196,8 +259,7 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                       onPressed: _saving ? null : _submit,
                       child: _saving
                           ? const SizedBox(
-                              width: 20,
-                              height: 20,
+                              width: 20, height: 20,
                               child: CircularProgressIndicator(
                                   strokeWidth: 2, color: Colors.white))
                           : Text(
@@ -475,6 +537,59 @@ class _CalendarPickerDialogState extends State<_CalendarPickerDialog> {
   }
 }
 
+// ─── iOS-style form row (label left, content right) ─────────────────────────
+
+class _FormRow extends StatelessWidget {
+  const _FormRow({
+    required this.label,
+    required this.child,
+    this.onTap,
+    this.crossAlign = CrossAxisAlignment.center,
+  });
+  final String label;
+  final Widget child;
+  final VoidCallback? onTap;
+  final CrossAxisAlignment crossAlign;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          crossAxisAlignment: crossAlign,
+          children: [
+            Padding(
+              padding: crossAlign == CrossAxisAlignment.start
+                  ? const EdgeInsets.only(top: 2)
+                  : EdgeInsets.zero,
+              child: Text(label, style: const TextStyle(
+                fontSize: 15, fontWeight: FontWeight.w400,
+                color: AppColors.textPrimary,
+              )),
+            ),
+            const SizedBox(width: 16),
+            Expanded(child: child),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FormDivider extends StatelessWidget {
+  const _FormDivider();
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.only(left: 16),
+      child: Divider(height: 0.5, thickness: 0.5, color: Color(0x0F1E243C)),
+    );
+  }
+}
+
 // ─── City Multi-Select Field ──────────────────────────────────────────────────
 
 class _CityMultiSelectField extends StatefulWidget {
@@ -614,59 +729,56 @@ class _CityMultiSelectFieldState extends State<_CityMultiSelectField> {
       link: _layerLink,
       child: GestureDetector(
         onTap: () => _focusNode.requestFocus(),
-        child: InputDecorator(
-          decoration: InputDecoration(
-            labelText: '目的地城市',
-            suffixIcon: widget.selectedCities.isEmpty
-                ? const Icon(Icons.add_location_alt_outlined, size: 18)
-                : null,
-          ),
-          child: Wrap(
-            spacing: 6,
-            runSpacing: 6,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              for (int i = 0; i < widget.selectedCities.length; i++)
-                _CityChip(
-                  label: widget.selectedCities[i],
-                  onRemove: () => _removeCity(widget.selectedCities[i]),
-                  index: i,
-                ),
-              IntrinsicWidth(
-                child: TextField(
-                  controller: _textCtrl,
-                  focusNode: _focusNode,
-                  style: AppTextStyles.body,
-                  decoration: InputDecoration(
-                    hintText: widget.selectedCities.isEmpty
-                        ? '搜索城市'
-                        : '添加更多',
-                    hintStyle: const TextStyle(
-                      fontSize: 15,
-                      color: AppColors.textTertiary,
-                    ),
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 4),
-                    filled: false,
-                  ),
-                  textInputAction: TextInputAction.done,
-                  onSubmitted: (v) {
-                    final trimmed = v.trim();
-                    if (trimmed.isNotEmpty) _addCity(trimmed);
-                  },
-                  onChanged: (v) {
-                    if (v.endsWith(',') || v.endsWith('，')) {
-                      final city = v.substring(0, v.length - 1).trim();
-                      if (city.isNotEmpty) _addCity(city);
-                    }
-                  },
-                ),
+        child: Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          alignment: WrapAlignment.end,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            for (int i = 0; i < widget.selectedCities.length; i++)
+              _CityChip(
+                label: widget.selectedCities[i],
+                onRemove: () => _removeCity(widget.selectedCities[i]),
+                index: i,
               ),
-            ],
-          ),
+            IntrinsicWidth(
+              child: TextField(
+                controller: _textCtrl,
+                focusNode: _focusNode,
+                textAlign: TextAlign.end,
+                style: const TextStyle(
+                  fontSize: 15, fontWeight: FontWeight.w400,
+                  color: AppColors.textPrimary,
+                ),
+                decoration: InputDecoration(
+                  hintText: widget.selectedCities.isEmpty
+                      ? '搜索城市'
+                      : '添加更多',
+                  hintStyle: const TextStyle(
+                    fontSize: 15,
+                    color: AppColors.textTertiary,
+                  ),
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 2),
+                  filled: false,
+                ),
+                textInputAction: TextInputAction.done,
+                onSubmitted: (v) {
+                  final trimmed = v.trim();
+                  if (trimmed.isNotEmpty) _addCity(trimmed);
+                },
+                onChanged: (v) {
+                  if (v.endsWith(',') || v.endsWith('，')) {
+                    final city = v.substring(0, v.length - 1).trim();
+                    if (city.isNotEmpty) _addCity(city);
+                  }
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
