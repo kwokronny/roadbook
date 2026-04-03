@@ -178,46 +178,35 @@ class ScheduleTimelineItem extends StatelessWidget {
                                     ),
                                   ),
                                   const SizedBox(height: 6),
-                                  // Name + address row with nav button
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              schedule.name,
-                                              style: AppTextStyles.headline,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            if (schedule.address.isNotEmpty) ...[
-                                              const SizedBox(height: 1),
-                                              Text(
-                                                schedule.address,
-                                                style: AppTextStyles.caption,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ],
-                                          ],
-                                        ),
-                                      ),
-                                      if (!isSelectionMode) ...[
-                                        const SizedBox(width: 8),
-                                        _GlassNavButton(
-                                          coordinate: schedule.coordinate,
-                                          name: schedule.name,
-                                          isHotel: schedule.isHotel,
-                                          bgColor: _navBg,
-                                          borderColor: _navBorder,
-                                          iconColor: _navIcon,
-                                        ),
-                                      ],
-                                    ],
+                                  // Name
+                                  Text(
+                                    schedule.name,
+                                    style: AppTextStyles.headline,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
+                                  // Address
+                                  if (schedule.address.isNotEmpty) ...[
+                                    const SizedBox(height: 1),
+                                    Text(
+                                      schedule.address,
+                                      style: AppTextStyles.caption,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                  // Nav button below address
+                                  if (!isSelectionMode) ...[
+                                    const SizedBox(height: 8),
+                                    _GlassNavButton(
+                                      coordinate: schedule.coordinate,
+                                      name: schedule.name,
+                                      isHotel: schedule.isHotel,
+                                      bgColor: _navBg,
+                                      borderColor: _navBorder,
+                                      iconColor: _navIcon,
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),
@@ -441,10 +430,10 @@ class _ConcaveMoreButton extends StatelessWidget {
       child: CustomPaint(
         painter: _ConcaveMaskPainter(),
         child: const SizedBox(
-          width: 36,
-          height: 36,
+          width: 40,
+          height: 40,
           child: Center(
-            child: Icon(Icons.more_horiz, size: 16, color: AppColors.textSecondary),
+            child: Icon(Icons.more_horiz, size: 20, color: AppColors.textSecondary),
           ),
         ),
       ),
@@ -504,16 +493,11 @@ class _GlassNavButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!_isEnabled) return const SizedBox.shrink();
-    // Icon-only 38x38 button that wraps ScheduleNavButton for its popup menu
-    return SizedBox(
-      width: 38,
-      height: 38,
-      child: ScheduleNavButton(
-        coordinate: coordinate,
-        name: name,
-        isHotel: isHotel,
-        compact: true,
-      ),
+    return ScheduleNavButton(
+      coordinate: coordinate,
+      name: name,
+      isHotel: isHotel,
+      compact: true,
     );
   }
 }
@@ -524,9 +508,8 @@ class _ConcaveCutoutClipper extends CustomClipper<Path> {
   const _ConcaveCutoutClipper();
 
   static const double _cardRadius = AppRadius.card;
-  // Button 30x30, positioned at top:-4 right:-4
-  // Gap around button: 8px each side → total cutout = 30 + 16 = 46
-  static const double _buttonSize = 36.0;
+  // Button 40x40, positioned at top:-4 right:-4
+  static const double _buttonSize = 40.0;
   static const double _gap = 10.0;
   static const double _cutoutSize = _buttonSize + _gap * 2; // 50
   // Inner corner radius matches card corner radius (AppRadius.card = 20)
