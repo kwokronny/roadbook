@@ -107,8 +107,8 @@ class ScheduleTimelineItem extends StatelessWidget {
             ClipPath(
               clipper: const _ConcaveCutoutClipper(
                 radius: AppRadius.card,
-                cutoutRadius: 19, // slightly larger than button (30/2 + padding)
-                cutoutCenter: Offset(-1, -1), // relative to top-right corner
+                cutoutRadius: 19, // button 30/2 + 4px gap
+                cutoutCenter: Offset(-11, 11), // button center relative to top-right
               ),
               child: BackdropFilter(
                 filter: GlassSpec.cardBlur,
@@ -117,8 +117,7 @@ class ScheduleTimelineItem extends StatelessWidget {
                     color: schedule.isHotel
                         ? const Color(0x80F5F3FF) // lavender tint overlay
                         : GlassSpec.cardBg,
-                    borderRadius: BorderRadius.circular(AppRadius.card),
-                    border: Border.all(color: GlassSpec.cardBorder),
+                    // No borderRadius here — ClipPath handles the shape including concave cutout
                     boxShadow: GlassSpec.cardShadow,
                   ),
                   child: Column(
