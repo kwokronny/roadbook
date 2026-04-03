@@ -1,4 +1,5 @@
 // lib/features/travel/presentation/travel_detail_screen.dart
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -64,12 +65,12 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
       data: (travel) {
         _setInitialDay(travel);
         return Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.transparent,
         appBar: AppBar(
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(travel.name, style: AppTextStyles.appBarTitle),
+              Text(travel.name, style: AppTextStyles.headline),
               if (travel.cities.isNotEmpty)
                 Text(
                   travel.cities.join(' · '),
@@ -100,17 +101,25 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
   Widget _buildViewToggle() {
     return Container(
       margin: const EdgeInsets.only(right: 4),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _toggleIcon(Icons.format_list_bulleted, 0),
-          _toggleIcon(Icons.map_outlined, 1),
-        ],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color(0x80FFFFFF),
+              borderRadius: BorderRadius.circular(AppRadius.pill),
+              border: Border.all(color: const Color(0xCCFFFFFF)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _toggleIcon(Icons.format_list_bulleted, 0),
+                _toggleIcon(Icons.map_outlined, 1),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -124,7 +133,7 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: selected ? AppColors.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(AppRadius.pill),
         ),
         child: Icon(
           icon,
@@ -137,7 +146,6 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
 
   Widget _buildMoreMenu(BuildContext context, {required Travel travel, required bool canEdit, required bool canManage}) {
     return PopupMenuButton<String>(
-      icon: const Icon(Icons.more_vert, size: 22),
       offset: const Offset(0, 44),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.card),
@@ -198,20 +206,44 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
           ]),
         ),
       ],
+      child: Container(
+        width: 38,
+        height: 38,
+        margin: const EdgeInsets.only(right: 8),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: const Color(0x80FFFFFF),
+          border: Border.all(color: const Color(0xCCFFFFFF)),
+          boxShadow: const [
+            BoxShadow(color: Color(0x146478B4), blurRadius: 8, offset: Offset(0, 2)),
+          ],
+        ),
+        child: const Icon(Icons.more_horiz, size: 20, color: AppColors.textSecondary),
+      ),
     );
   }
 
   Widget _buildFab(BuildContext context, Travel travel) {
-    return FloatingActionButton(
-      onPressed: () {
-        setState(() => _currentTab = 1);
-        ref
-            .read(mapStateProvider(widget.travelId).notifier)
-            .enterSearchMode();
-      },
-      backgroundColor: AppColors.primary,
-      shape: const CircleBorder(),
-      child: const Icon(Icons.add, color: Colors.white),
+    return Container(
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(color: Color(0x40FF5B2E), blurRadius: 16, offset: Offset(0, 4)),
+          BoxShadow(color: Color(0x20FF5B2E), blurRadius: 4, offset: Offset(0, 1)),
+        ],
+      ),
+      child: FloatingActionButton(
+        onPressed: () {
+          setState(() => _currentTab = 1);
+          ref
+              .read(mapStateProvider(widget.travelId).notifier)
+              .enterSearchMode();
+        },
+        backgroundColor: AppColors.primary,
+        shape: const CircleBorder(),
+        elevation: 0,
+        child: const Icon(Icons.add, color: Colors.white, size: 28),
+      ),
     );
   }
 }

@@ -193,9 +193,23 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
     final listAsync = ref.watch(scheduleProvider(travel.id!));
     final selectedDay = ref.watch(selectedDayProvider(travel.id!));
 
-    return Row(
+    return Column(
       children: [
-        // ── 左侧：时间轴列表
+        // ── Top: Day bar
+        IgnorePointer(
+          ignoring: _isSelectionMode,
+          child: Opacity(
+            opacity: _isSelectionMode ? 0.4 : 1.0,
+            child: DayBar(
+              totalDays: _totalDays,
+              selectedDay: selectedDay,
+              travelStartDate: travel.startDate,
+              onDaySelected: (d) =>
+                  ref.read(selectedDayProvider(travel.id!).notifier).state = d,
+            ),
+          ),
+        ),
+        // ── Bottom: Timeline list (full width)
         Expanded(
           child: listAsync.when(
             loading: () => const Center(
@@ -227,10 +241,6 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
               }
 
               final displayItems = _buildDisplayItems(selectedDay, items);
-              final scheduleIndices = [
-                for (int i = 0; i < displayItems.length; i++)
-                  if (displayItems[i] is Schedule) i,
-              ];
 
               final allSelected = items.every((s) => _selectedIds.contains(s.id));
 
@@ -255,10 +265,7 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
                             ),
                           ),
                           const SizedBox(width: 10),
-                          Text(
-                            '已选 ${_selectedIds.length} 项',
-                            style: AppTextStyles.caption,
-                          ),
+                          Text('已选 ${_selectedIds.length} 项', style: AppTextStyles.caption),
                           const SizedBox(width: 12),
                           GestureDetector(
                             onTap: _selectedIds.isNotEmpty ? _batchMove : null,
@@ -288,8 +295,8 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
                           ref.invalidate(scheduleProvider(travel.id!)),
                       child: ListView.builder(
                         padding: const EdgeInsets.fromLTRB(
-                            AppSpacing.pageHorizontal, 14,
-                            AppSpacing.pageHorizontal, 14),
+                            AppSpacing.pageHorizontal, 8,
+                            AppSpacing.pageHorizontal, 100),
                         itemCount: displayItems.length + 1,
                         itemBuilder: (context, i) {
                           if (i == displayItems.length) {
@@ -300,67 +307,42 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
 
                           if (entry is _LuggageMarker) {
                             if (_isSelectionMode) return const SizedBox.shrink();
-                            final hasPrev = i > 0 && displayItems[i - 1] is Schedule;
-                            final hasNext = i < displayItems.length - 1 &&
-                                displayItems[i + 1] is Schedule;
                             return _LuggageCheckItem(
-                              onTap: () => context
-                                  .push('/travel/${travel.id}/luggage'),
-                              showLine: hasPrev && hasNext && scheduleIndices.length > 1,
+                              onTap: () => context.push('/travel/${travel.id}/luggage'),
                             );
                           }
 
                           final s = entry as Schedule;
-                          final k = scheduleIndices.indexOf(i);
-                          final isFirstSchedule = k == 0;
-                          final isLastSchedule = k == scheduleIndices.length - 1;
-
-                          return Stack(
-                            children: [
-                              // Vertical timeline line
-                              if (scheduleIndices.length > 1 && !_isSelectionMode)
-                                Positioned(
-                                  left: 19,
-                                  top: isFirstSchedule ? 20 : 0,
-                                  bottom: !isLastSchedule ? 0 : null,
-                                  height: isLastSchedule ? 20 : null,
-                                  child: Container(
-                                    width: 2,
-                                    color: AppColors.border,
-                                  ),
-                                ),
-                              ScheduleTimelineItem(
-                                schedule: s,
-                                travelStartDate: travel.startDate,
-                                canEdit: _canEdit,
-                                displayDay: selectedDay,
-                                isSelectionMode: _isSelectionMode,
-                                isSelected: _selectedIds.contains(s.id),
-                                onLongPress: _canEdit ? () => _enterSelectionMode(s.id!) : null,
-                                onToggleSelect: () => _toggleSelect(s.id!),
-                                onEditTimeTap: _canEdit
-                                    ? () => ScheduleQuickTimeSheet.show(
-                                          context,
-                                          travel: travel,
-                                          schedule: s,
-                                        )
-                                    : null,
-                                onEdit: _canEdit
-                                    ? () => ScheduleEditSheet.show(context,
-                                          travel: travel,
-                                          schedule: s,
-                                          initialDay: selectedDay)
-                                    : null,
-                                onClone: _canEdit
-                                    ? () => ref
-                                          .read(scheduleProvider(travel.id!).notifier)
-                                          .clone(s.id!)
-                                    : null,
-                                onDelete: _canEdit
-                                    ? () => _confirmDelete(context, ref, s)
-                                    : null,
-                              ),
-                            ],
+                          return ScheduleTimelineItem(
+                            schedule: s,
+                            travelStartDate: travel.startDate,
+                            canEdit: _canEdit,
+                            displayDay: selectedDay,
+                            isSelectionMode: _isSelectionMode,
+                            isSelected: _selectedIds.contains(s.id),
+                            onLongPress: _canEdit ? () => _enterSelectionMode(s.id!) : null,
+                            onToggleSelect: () => _toggleSelect(s.id!),
+                            onEditTimeTap: _canEdit
+                                ? () => ScheduleQuickTimeSheet.show(
+                                      context,
+                                      travel: travel,
+                                      schedule: s,
+                                    )
+                                : null,
+                            onEdit: _canEdit
+                                ? () => ScheduleEditSheet.show(context,
+                                      travel: travel,
+                                      schedule: s,
+                                      initialDay: selectedDay)
+                                : null,
+                            onClone: _canEdit
+                                ? () => ref
+                                      .read(scheduleProvider(travel.id!).notifier)
+                                      .clone(s.id!)
+                                : null,
+                            onDelete: _canEdit
+                                ? () => _confirmDelete(context, ref, s)
+                                : null,
                           );
                         },
                       ),
@@ -369,25 +351,6 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
                 ],
               );
             },
-          ),
-        ),
-        // ── 右侧：天数栏
-        Container(
-          decoration: const BoxDecoration(
-            border: Border(left: BorderSide(color: AppColors.border)),
-          ),
-          child: IgnorePointer(
-            ignoring: _isSelectionMode,
-            child: Opacity(
-              opacity: _isSelectionMode ? 0.4 : 1.0,
-              child: DaySidebar(
-                totalDays: _totalDays,
-                selectedDay: selectedDay,
-                travelStartDate: travel.startDate,
-                onDaySelected: (d) =>
-                    ref.read(selectedDayProvider(travel.id!).notifier).state = d,
-              ),
-            ),
           ),
         ),
       ],
@@ -421,16 +384,12 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
 }
 
 class _LuggageCheckItem extends StatelessWidget {
-  const _LuggageCheckItem({
-    required this.onTap,
-    this.showLine = false,
-  });
+  const _LuggageCheckItem({required this.onTap});
   final VoidCallback onTap;
-  final bool showLine;
 
   @override
   Widget build(BuildContext context) {
-    final card = GestureDetector(
+    return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 12),
@@ -458,20 +417,6 @@ class _LuggageCheckItem extends StatelessWidget {
           ],
         ),
       ),
-    );
-
-    if (!showLine) return card;
-
-    return Stack(
-      children: [
-        Positioned(
-          left: 19,
-          top: 0,
-          bottom: 0,
-          child: Container(width: 2, color: AppColors.border),
-        ),
-        card,
-      ],
     );
   }
 }
