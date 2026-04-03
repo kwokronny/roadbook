@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme.dart';
+import '../../../shared/widgets/pastel_mesh_background.dart';
 
 class MainShell extends StatelessWidget {
   const MainShell({super.key, required this.navigationShell});
@@ -13,26 +14,36 @@ class MainShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final location = GoRouterState.of(context).uri.path;
     final hideNav = _hideNavPattern.hasMatch(location);
+
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: navigationShell,
-      bottomNavigationBar: hideNav
-          ? null
-          : _BottomNav(
-              currentIndex: navigationShell.currentIndex,
-              onTap: (index) => navigationShell.goBranch(
-                index,
-                initialLocation: index == navigationShell.currentIndex,
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          const PastelMeshBackground(),
+          navigationShell,
+          if (!hideNav)
+            Positioned(
+              left: 20,
+              right: 20,
+              bottom: MediaQuery.of(context).padding.bottom + 16,
+              child: _FloatingIslandNav(
+                currentIndex: navigationShell.currentIndex,
+                onTap: (index) => navigationShell.goBranch(
+                  index,
+                  initialLocation: index == navigationShell.currentIndex,
+                ),
               ),
             ),
+        ],
+      ),
     );
   }
 }
 
-// ─── Bottom navigation bar ────────────────────────────────────────────────────
+// ─── Floating Island Navigation ─────────────────────────────────────────────
 
-class _BottomNav extends StatelessWidget {
-  const _BottomNav({required this.currentIndex, required this.onTap});
+class _FloatingIslandNav extends StatelessWidget {
+  const _FloatingIslandNav({required this.currentIndex, required this.onTap});
   final int currentIndex;
   final void Function(int) onTap;
 
@@ -45,46 +56,59 @@ class _BottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xF0F9F9F9), // rgba(249,249,249,0.94)
-        border: Border(
-          top: BorderSide(color: Color(0x1A000000), width: 0.5),
-        ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+        boxShadow: GlassSpec.navShadow,
       ),
-      child: SafeArea(
-        top: false,
-        child: SizedBox(
-          height: 50,
-          child: Row(
-            children: List.generate(_tabs.length, (i) {
-              final tab = _tabs[i];
-              final selected = i == currentIndex;
-              return Expanded(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => onTap(i),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        selected ? tab.filledIcon : tab.outlinedIcon,
-                        size: 24,
-                        color: selected ? AppColors.primary : AppColors.textSecondary,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+        child: BackdropFilter(
+          filter: GlassSpec.navBlur,
+          child: Container(
+            decoration: BoxDecoration(
+              color: GlassSpec.navBg,
+              borderRadius: BorderRadius.circular(AppRadius.pill),
+              border: Border.all(color: GlassSpec.navBorder, width: 1),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Row(
+              children: List.generate(_tabs.length, (i) {
+                final tab = _tabs[i];
+                final selected = i == currentIndex;
+                return Expanded(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => onTap(i),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            selected ? tab.filledIcon : tab.outlinedIcon,
+                            size: 22,
+                            color: selected
+                                ? AppColors.primary
+                                : AppColors.textTertiary,
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            tab.label,
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: selected ? FontWeight.w500 : FontWeight.w400,
+                              color: selected
+                                  ? AppColors.primary
+                                  : AppColors.textTertiary,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        tab.label,
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-                          color: selected ? AppColors.primary : AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              );
-            }),
+                );
+              }),
+            ),
           ),
         ),
       ),
@@ -93,11 +117,7 @@ class _BottomNav extends StatelessWidget {
 }
 
 class _TabItem {
-  const _TabItem({
-    required this.outlinedIcon,
-    required this.filledIcon,
-    required this.label,
-  });
+  const _TabItem({required this.outlinedIcon, required this.filledIcon, required this.label});
   final IconData outlinedIcon;
   final IconData filledIcon;
   final String label;
