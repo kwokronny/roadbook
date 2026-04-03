@@ -6,8 +6,6 @@ import '../data/collect_import_service.dart';
 import '../data/schedule_repository.dart';
 import '../domain/schedule_provider.dart';
 
-enum _ImportMode { ai, dianping }
-
 enum _Phase { input, importing, done }
 
 enum _ItemStatus { pending, loading, success, error }
@@ -37,16 +35,13 @@ class CollectImportSheet extends ConsumerStatefulWidget {
 }
 
 class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
-  _ImportMode _mode = _ImportMode.ai;
   _Phase _phase = _Phase.input;
-  final _jsonCtrl = TextEditingController();
   final _urlCtrl = TextEditingController();
   String? _parseError;
   List<_ImportItem> _items = [];
 
   @override
   void dispose() {
-    _jsonCtrl.dispose();
     _urlCtrl.dispose();
     super.dispose();
   }
@@ -57,14 +52,9 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
     // ── 解析数据 ─────────────────────────────────────────────────────────────
     List<ScheduleFormData> forms;
     try {
-      if (_mode == _ImportMode.ai) {
-        forms = CollectImportService.parseAiJson(_jsonCtrl.text.trim(),
-            tId: widget.travelId);
-      } else {
-        forms = await CollectImportService.fetchDianpingAlbum(
-            _urlCtrl.text.trim(),
-            tId: widget.travelId);
-      }
+      forms = await CollectImportService.fetchDianpingAlbum(
+          _urlCtrl.text.trim(),
+          tId: widget.travelId);
     } on CollectImportException catch (e) {
       setState(() => _parseError = e.message);
       return;
@@ -159,67 +149,28 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // ── 模式切换
-          SegmentedButton<_ImportMode>(
-            segments: const [
-              ButtonSegment(
-                  value: _ImportMode.ai,
-                  label: Text('AI 采集'),
-                  icon: Icon(Icons.auto_awesome, size: 16)),
-              ButtonSegment(
-                  value: _ImportMode.dianping,
-                  label: Text('点评收藏'),
-                  icon: Icon(Icons.star_outline, size: 16)),
-            ],
-            selected: {_mode},
-            onSelectionChanged: (s) =>
-                setState(() => _mode = s.first),
-            style: const ButtonStyle(
-              iconSize: WidgetStatePropertyAll(16),
-            ),
-          ),
-          const SizedBox(height: 12),
           // ── 说明文字
           Text(
-            _mode == _ImportMode.ai
-                ? 'AI 采集：粘贴行程 JSON 数组（包含 name / coordinate / address 字段）'
-                : '点评收藏：粘贴大众点评收藏夹的分享链接',
+            '粘贴大众点评收藏夹的分享链接',
             style: AppTextStyles.caption,
           ),
           const SizedBox(height: 10),
           // ── 输入框
-          if (_mode == _ImportMode.ai)
-            TextField(
-              controller: _jsonCtrl,
-              maxLines: 10,
-              style: const TextStyle(fontSize: 16, fontFamily: 'monospace'),
-              decoration: InputDecoration(
-                hintText: '在此粘贴 JSON…',
-                filled: true,
-                fillColor: const Color(0xFFF5F5F4),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppRadius.input),
-                  borderSide: BorderSide.none,
-                ),
-                errorText: _parseError,
+          TextField(
+            controller: _urlCtrl,
+            maxLines: 3,
+            style: const TextStyle(fontSize: 16),
+            decoration: InputDecoration(
+              hintText: '粘贴点评收藏分享链接…',
+              filled: true,
+              fillColor: const Color(0xFFF5F5F4),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.input),
+                borderSide: BorderSide.none,
               ),
-            )
-          else
-            TextField(
-              controller: _urlCtrl,
-              maxLines: 3,
-              style: const TextStyle(fontSize: 16),
-              decoration: InputDecoration(
-                hintText: '粘贴点评收藏分享链接…',
-                filled: true,
-                fillColor: const Color(0xFFF5F5F4),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppRadius.input),
-                  borderSide: BorderSide.none,
-                ),
-                errorText: _parseError,
-              ),
+              errorText: _parseError,
             ),
+          ),
           const SizedBox(height: 16),
           // ── 导入按钮
           Container(

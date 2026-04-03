@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:lpinyin/lpinyin.dart';
 import '../../../../core/cities_data.dart';
 import '../../../../core/theme.dart';
 import '../../../../features/travel/data/travel_repository.dart';
@@ -19,6 +20,7 @@ class TravelFormSheet extends ConsumerStatefulWidget {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useRootNavigator: true,
       backgroundColor: Colors.transparent,
       builder: (_) => TravelFormSheet(travel: travel),
     );
@@ -486,40 +488,102 @@ class _CityMultiSelectField extends StatefulWidget {
 class _CityMultiSelectFieldState extends State<_CityMultiSelectField> {
   final _textCtrl = TextEditingController();
   final _focusNode = FocusNode();
+  final _layerLink = LayerLink();
+  OverlayEntry? _overlay;
   List<String> _suggestions = [];
-  bool _isFocused = false;
-
-  bool get _showSuggestions => _isFocused && _textCtrl.text.trim().isNotEmpty;
 
   @override
   void initState() {
     super.initState();
-    _focusNode.addListener(() {
-      setState(() => _isFocused = _focusNode.hasFocus);
-    });
+    _focusNode.addListener(_onFocusChanged);
     _textCtrl.addListener(_onQueryChanged);
   }
 
   @override
   void dispose() {
+    _removeOverlay();
     _textCtrl.dispose();
     _focusNode.dispose();
     super.dispose();
   }
 
+  void _onFocusChanged() {
+    if (!_focusNode.hasFocus) _removeOverlay();
+  }
+
   void _onQueryChanged() {
     final query = _textCtrl.text.trim().toLowerCase();
     if (query.isEmpty) {
-      setState(() => _suggestions = []);
+      _removeOverlay();
+      _suggestions = [];
       return;
     }
-    setState(() {
-      _suggestions = kChineseCities
-          .where((c) =>
-              c.toLowerCase().contains(query) &&
-              !widget.selectedCities.contains(c))
-          .toList();
-    });
+    _suggestions = kChineseCities
+        .where((c) {
+          if (widget.selectedCities.contains(c)) return false;
+          if (c.toLowerCase().contains(query)) return true;
+          // Full pinyin match: e.g. "beijing" matches "北京"
+          final fullPinyin = PinyinHelper.getPinyinE(c, separator: '').toLowerCase();
+          if (fullPinyin.contains(query)) return true;
+          // First letter match: e.g. "bj" matches "北京"
+          final firstLetters = PinyinHelper.getShortPinyin(c).toLowerCase();
+          if (firstLetters.contains(query)) return true;
+          return false;
+        })
+        .take(6)
+        .toList();
+    if (_suggestions.isNotEmpty) {
+      _showOverlay();
+    } else {
+      _removeOverlay();
+    }
+  }
+
+  void _showOverlay() {
+    _removeOverlay();
+    final renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+    final width = renderBox.size.width;
+
+    _overlay = OverlayEntry(
+      builder: (_) => Positioned(
+        width: width,
+        child: CompositedTransformFollower(
+          link: _layerLink,
+          showWhenUnlinked: false,
+          offset: Offset(0, renderBox.size.height + 4),
+          child: Material(
+            elevation: 4,
+            shadowColor: Colors.black26,
+            borderRadius: BorderRadius.circular(12),
+            color: AppColors.surface,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: _suggestions.map((city) {
+                  return InkWell(
+                    onTap: () => _addCity(city),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                      child: Text(city, style: AppTextStyles.body),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    Overlay.of(context).insert(_overlay!);
+  }
+
+  void _removeOverlay() {
+    _overlay?.remove();
+    _overlay = null;
   }
 
   void _addCity(String city) {
@@ -531,7 +595,8 @@ class _CityMultiSelectFieldState extends State<_CityMultiSelectField> {
     }
     widget.onChanged([...widget.selectedCities, trimmed]);
     _textCtrl.clear();
-    setState(() => _suggestions = []);
+    _removeOverlay();
+    _suggestions = [];
   }
 
   void _removeCity(String city) {
@@ -540,62 +605,55 @@ class _CityMultiSelectFieldState extends State<_CityMultiSelectField> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Input container: chips + inline text field
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: AppColors.border),
-            borderRadius: BorderRadius.circular(AppRadius.input),
-            color: AppColors.surface,
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: GestureDetector(
+        onTap: () => _focusNode.requestFocus(),
+        child: InputDecorator(
+          decoration: InputDecoration(
+            labelText: '目的地城市',
+            suffixIcon: widget.selectedCities.isEmpty
+                ? const Icon(Icons.add_location_alt_outlined, size: 18)
+                : null,
           ),
-          padding: const EdgeInsets.all(8),
           child: Wrap(
             spacing: 6,
             runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              // Selected city chips
               for (final city in widget.selectedCities)
                 _CityChip(
                   label: city,
                   onRemove: () => _removeCity(city),
                 ),
-              // Inline text field
-              SizedBox(
-                height: 32,
-                width: 160,
+              IntrinsicWidth(
                 child: TextField(
                   controller: _textCtrl,
                   focusNode: _focusNode,
                   style: AppTextStyles.body,
-                  decoration: const InputDecoration(
-                    hintText: '搜索或输入城市',
-                    hintStyle: TextStyle(
+                  decoration: InputDecoration(
+                    hintText: widget.selectedCities.isEmpty
+                        ? '搜索城市'
+                        : '添加更多',
+                    hintStyle: const TextStyle(
                       fontSize: 15,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.textSecondary,
+                      color: AppColors.textTertiary,
                     ),
                     border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
                     isDense: true,
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 4),
+                    filled: false,
                   ),
                   textInputAction: TextInputAction.done,
-                  onSubmitted: (value) {
-                    final trimmed = value.trim();
-                    if (trimmed.isNotEmpty) {
-                      // Remove trailing comma if present
-                      final city = trimmed.endsWith(',')
-                          ? trimmed.substring(0, trimmed.length - 1)
-                          : trimmed;
-                      _addCity(city);
-                    }
+                  onSubmitted: (v) {
+                    final trimmed = v.trim();
+                    if (trimmed.isNotEmpty) _addCity(trimmed);
                   },
-                  onChanged: (value) {
-                    // Add city when comma is typed
-                    if (value.endsWith(',')) {
-                      final city = value.substring(0, value.length - 1).trim();
+                  onChanged: (v) {
+                    if (v.endsWith(',') || v.endsWith('，')) {
+                      final city = v.substring(0, v.length - 1).trim();
                       if (city.isNotEmpty) _addCity(city);
                     }
                   },
@@ -604,39 +662,7 @@ class _CityMultiSelectFieldState extends State<_CityMultiSelectField> {
             ],
           ),
         ),
-
-        // Suggestion dropdown
-        if (_showSuggestions)
-          Container(
-            constraints: const BoxConstraints(maxHeight: 180),
-            margin: const EdgeInsets.only(top: 4),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              border: Border.all(color: AppColors.border),
-              borderRadius: BorderRadius.circular(AppRadius.input),
-            ),
-            child: _suggestions.isEmpty
-                ? const SizedBox.shrink()
-                : ListView.builder(
-                    shrinkWrap: true,
-                    padding: EdgeInsets.zero,
-                    itemCount: _suggestions.length,
-                    itemBuilder: (context, index) {
-                      final city = _suggestions[index];
-                      return InkWell(
-                        onTap: () => _addCity(city),
-                        child: Container(
-                          height: 40,
-                          alignment: Alignment.centerLeft,
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 12),
-                          child: Text(city, style: AppTextStyles.body),
-                        ),
-                      );
-                    },
-                  ),
-          ),
-      ],
+      ),
     );
   }
 }
@@ -653,15 +679,18 @@ class _CityChip extends StatelessWidget {
       padding: const EdgeInsets.only(left: 10, right: 4, top: 4, bottom: 4),
       decoration: BoxDecoration(
         color: AppColors.primaryLight,
-        border: Border.all(color: AppColors.primaryBorder),
-        borderRadius: BorderRadius.circular(AppRadius.badge),
+        borderRadius: BorderRadius.circular(99),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             label,
-            style: AppTextStyles.body.copyWith(color: AppColors.primary),
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: AppColors.primary,
+            ),
           ),
           const SizedBox(width: 2),
           GestureDetector(

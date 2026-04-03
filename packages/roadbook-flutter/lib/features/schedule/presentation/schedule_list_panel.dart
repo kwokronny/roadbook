@@ -18,7 +18,7 @@ class _LuggageMarker {
   const _LuggageMarker();
 }
 
-class ScheduleListPanel extends ConsumerWidget {
+class ScheduleListPanel extends ConsumerStatefulWidget {
   const ScheduleListPanel({
     super.key,
     required this.travel,
@@ -27,6 +27,17 @@ class ScheduleListPanel extends ConsumerWidget {
 
   final Travel travel;
   final RoleType perm;
+
+  @override
+  ConsumerState<ScheduleListPanel> createState() => _ScheduleListPanelState();
+}
+
+class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
+  final Set<int> _selectedIds = {};
+  bool _isSelectionMode = false;
+
+  Travel get travel => widget.travel;
+  RoleType get perm => widget.perm;
 
   int get _totalDays =>
       travel.endDate.difference(travel.startDate).inDays + 1;
@@ -57,8 +68,128 @@ class ScheduleListPanel extends ConsumerWidget {
     return selectedDay == checkoutDay;
   }
 
+  void _enterSelectionMode(int scheduleId) {
+    setState(() {
+      _isSelectionMode = true;
+      _selectedIds.clear();
+      _selectedIds.add(scheduleId);
+    });
+  }
+
+  void _exitSelectionMode() {
+    setState(() {
+      _isSelectionMode = false;
+      _selectedIds.clear();
+    });
+  }
+
+  void _toggleSelect(int id) {
+    setState(() {
+      if (_selectedIds.contains(id)) {
+        _selectedIds.remove(id);
+        if (_selectedIds.isEmpty) _isSelectionMode = false;
+      } else {
+        _selectedIds.add(id);
+      }
+    });
+  }
+
+  void _toggleSelectAll(List<Schedule> items) {
+    setState(() {
+      final allIds = items.map((s) => s.id!).toSet();
+      if (_selectedIds.containsAll(allIds)) {
+        _selectedIds.clear();
+      } else {
+        _selectedIds.addAll(allIds);
+      }
+    });
+  }
+
+  Future<void> _batchDelete() async {
+    final count = _selectedIds.length;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        title: const Text('批量删除'),
+        content: Text('确定删除选中的 $count 个行程？'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(dialogCtx).pop(false),
+              child: const Text('取消')),
+          TextButton(
+              onPressed: () => Navigator.of(dialogCtx).pop(true),
+              child: const Text('删除',
+                  style: TextStyle(color: Colors.red))),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    final notifier = ref.read(scheduleProvider(travel.id!).notifier);
+    for (final id in _selectedIds.toList()) {
+      await notifier.remove(id);
+    }
+    _exitSelectionMode();
+  }
+
+  Future<void> _batchMove() async {
+    final targetDay = await showDialog<int>(
+      context: context,
+      builder: (dialogCtx) => SimpleDialog(
+        title: const Text('移至第几天'),
+        children: [
+          SimpleDialogOption(
+            onPressed: () => Navigator.of(dialogCtx).pop(0),
+            child: const Text('待规划'),
+          ),
+          for (int d = 1; d <= _totalDays; d++)
+            SimpleDialogOption(
+              onPressed: () => Navigator.of(dialogCtx).pop(d),
+              child: Text('第 $d 天'),
+            ),
+        ],
+      ),
+    );
+    if (targetDay == null) return;
+
+    final notifier = ref.read(scheduleProvider(travel.id!).notifier);
+    final allSchedules = ref.read(scheduleProvider(travel.id!)).valueOrNull ?? [];
+
+    for (final id in _selectedIds.toList()) {
+      final s = allSchedules.where((s) => s.id == id).firstOrNull;
+      if (s == null) continue;
+
+      DateTime? newStart;
+      DateTime? newEnd;
+      if (targetDay > 0) {
+        // Move to target day, preserve time-of-day or default to 09:00
+        final targetDate = travel.startDate.add(Duration(days: targetDay - 1));
+        final oldTime = s.startTime?.toLocal();
+        final hour = oldTime?.hour ?? 9;
+        final minute = oldTime?.minute ?? 0;
+        newStart = DateTime(targetDate.year, targetDate.month, targetDate.day, hour, minute);
+        if (s.isHotel && s.endTime != null) {
+          final oldEnd = s.endTime!.toLocal();
+          final duration = s.startTime != null
+              ? oldEnd.difference(s.startTime!.toLocal())
+              : const Duration(days: 1);
+          newEnd = newStart.add(duration);
+        }
+      }
+      // targetDay == 0 → clear time (待规划)
+
+      await notifier.quickEditTime(
+        schedule: s,
+        travelId: travel.id!,
+        newStartTime: newStart,
+        newEndTime: newEnd,
+      );
+    }
+    _exitSelectionMode();
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final listAsync = ref.watch(scheduleProvider(travel.id!));
     final selectedDay = ref.watch(selectedDayProvider(travel.id!));
 
@@ -86,6 +217,7 @@ class ScheduleListPanel extends ConsumerWidget {
             data: (all) {
               final items = _schedulesForDay(selectedDay, all);
               if (items.isEmpty) {
+                if (_isSelectionMode) _exitSelectionMode();
                 return Center(
                   child: Text(
                     selectedDay == 0 ? '暂无待规划行程' : '第 $selectedDay 天暂无行程',
@@ -95,89 +227,146 @@ class ScheduleListPanel extends ConsumerWidget {
               }
 
               final displayItems = _buildDisplayItems(selectedDay, items);
-              // Precompute display-list indices of Schedule entries for timeline lines
               final scheduleIndices = [
                 for (int i = 0; i < displayItems.length; i++)
                   if (displayItems[i] is Schedule) i,
               ];
 
-              return RefreshIndicator(
-                color: AppColors.primary,
-                onRefresh: () async =>
-                    ref.invalidate(scheduleProvider(travel.id!)),
-                child: ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.pageHorizontal, 14,
-                      AppSpacing.pageHorizontal, 14),
-                  itemCount: displayItems.length + 1,
-                  itemBuilder: (context, i) {
-                    if (i == displayItems.length) {
-                      return const SizedBox(height: 16);
-                    }
+              final allSelected = items.every((s) => _selectedIds.contains(s.id));
 
-                    final entry = displayItems[i];
-
-                    if (entry is _LuggageMarker) {
-                      final hasPrev = i > 0 && displayItems[i - 1] is Schedule;
-                      final hasNext = i < displayItems.length - 1 &&
-                          displayItems[i + 1] is Schedule;
-                      return _LuggageCheckItem(
-                        onTap: () => context
-                            .push('/travel/${travel.id}/luggage'),
-                        showLine: hasPrev && hasNext && scheduleIndices.length > 1,
-                      );
-                    }
-
-                    final s = entry as Schedule;
-                    final k = scheduleIndices.indexOf(i);
-                    final isFirstSchedule = k == 0;
-                    final isLastSchedule = k == scheduleIndices.length - 1;
-
-                    return Stack(
-                      children: [
-                        // Vertical timeline line
-                        if (scheduleIndices.length > 1)
-                          Positioned(
-                            left: 19, // center of 40px cover image
-                            top: isFirstSchedule ? 20 : 0,
-                            bottom: !isLastSchedule ? 0 : null,
-                            height: isLastSchedule ? 20 : null,
-                            child: Container(
-                              width: 2,
-                              color: AppColors.border,
+              return Column(
+                children: [
+                  // ── Selection toolbar
+                  if (_isSelectionMode)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        border: Border(bottom: BorderSide(color: AppColors.border)),
+                      ),
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () => _toggleSelectAll(items),
+                            child: Icon(
+                              allSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+                              size: 22,
+                              color: allSelected ? AppColors.primary : AppColors.textSecondary,
                             ),
                           ),
-                        ScheduleTimelineItem(
-                          schedule: s,
-                          travelStartDate: travel.startDate,
-                          canEdit: _canEdit,
-                          displayDay: selectedDay,
-                          onEditTimeTap: _canEdit
-                              ? () => ScheduleQuickTimeSheet.show(
-                                    context,
-                                    travel: travel,
-                                    schedule: s,
-                                  )
-                              : null,
-                          onEdit: _canEdit
-                              ? () => ScheduleEditSheet.show(context,
-                                    travel: travel,
-                                    schedule: s,
-                                    initialDay: selectedDay)
-                              : null,
-                          onClone: _canEdit
-                              ? () => ref
-                                    .read(scheduleProvider(travel.id!).notifier)
-                                    .clone(s.id!)
-                              : null,
-                          onDelete: _canEdit
-                              ? () => _confirmDelete(context, ref, s)
-                              : null,
-                        ),
-                      ],
-                    );
-                  },
-                ),
+                          const SizedBox(width: 10),
+                          Text(
+                            '已选 ${_selectedIds.length} 项',
+                            style: AppTextStyles.caption,
+                          ),
+                          const SizedBox(width: 12),
+                          GestureDetector(
+                            onTap: _selectedIds.isNotEmpty ? _batchMove : null,
+                            child: Icon(Icons.drive_file_move_outline, size: 22,
+                                color: _selectedIds.isNotEmpty ? AppColors.primary : AppColors.textDisabled),
+                          ),
+                          const SizedBox(width: 12),
+                          GestureDetector(
+                            onTap: _selectedIds.isNotEmpty ? _batchDelete : null,
+                            child: Icon(Icons.delete_outline, size: 22,
+                                color: _selectedIds.isNotEmpty ? Colors.red : AppColors.textDisabled),
+                          ),
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: _exitSelectionMode,
+                            child: const Icon(Icons.close, size: 20, color: AppColors.textSecondary),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  // ── List
+                  Expanded(
+                    child: RefreshIndicator(
+                      color: AppColors.primary,
+                      onRefresh: () async =>
+                          ref.invalidate(scheduleProvider(travel.id!)),
+                      child: ListView.builder(
+                        padding: const EdgeInsets.fromLTRB(
+                            AppSpacing.pageHorizontal, 14,
+                            AppSpacing.pageHorizontal, 14),
+                        itemCount: displayItems.length + 1,
+                        itemBuilder: (context, i) {
+                          if (i == displayItems.length) {
+                            return const SizedBox(height: 16);
+                          }
+
+                          final entry = displayItems[i];
+
+                          if (entry is _LuggageMarker) {
+                            if (_isSelectionMode) return const SizedBox.shrink();
+                            final hasPrev = i > 0 && displayItems[i - 1] is Schedule;
+                            final hasNext = i < displayItems.length - 1 &&
+                                displayItems[i + 1] is Schedule;
+                            return _LuggageCheckItem(
+                              onTap: () => context
+                                  .push('/travel/${travel.id}/luggage'),
+                              showLine: hasPrev && hasNext && scheduleIndices.length > 1,
+                            );
+                          }
+
+                          final s = entry as Schedule;
+                          final k = scheduleIndices.indexOf(i);
+                          final isFirstSchedule = k == 0;
+                          final isLastSchedule = k == scheduleIndices.length - 1;
+
+                          return Stack(
+                            children: [
+                              // Vertical timeline line
+                              if (scheduleIndices.length > 1 && !_isSelectionMode)
+                                Positioned(
+                                  left: 19,
+                                  top: isFirstSchedule ? 20 : 0,
+                                  bottom: !isLastSchedule ? 0 : null,
+                                  height: isLastSchedule ? 20 : null,
+                                  child: Container(
+                                    width: 2,
+                                    color: AppColors.border,
+                                  ),
+                                ),
+                              ScheduleTimelineItem(
+                                schedule: s,
+                                travelStartDate: travel.startDate,
+                                canEdit: _canEdit,
+                                displayDay: selectedDay,
+                                isSelectionMode: _isSelectionMode,
+                                isSelected: _selectedIds.contains(s.id),
+                                onLongPress: _canEdit ? () => _enterSelectionMode(s.id!) : null,
+                                onToggleSelect: () => _toggleSelect(s.id!),
+                                onEditTimeTap: _canEdit
+                                    ? () => ScheduleQuickTimeSheet.show(
+                                          context,
+                                          travel: travel,
+                                          schedule: s,
+                                        )
+                                    : null,
+                                onEdit: _canEdit
+                                    ? () => ScheduleEditSheet.show(context,
+                                          travel: travel,
+                                          schedule: s,
+                                          initialDay: selectedDay)
+                                    : null,
+                                onClone: _canEdit
+                                    ? () => ref
+                                          .read(scheduleProvider(travel.id!).notifier)
+                                          .clone(s.id!)
+                                    : null,
+                                onDelete: _canEdit
+                                    ? () => _confirmDelete(context, ref, s)
+                                    : null,
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               );
             },
           ),
@@ -187,12 +376,18 @@ class ScheduleListPanel extends ConsumerWidget {
           decoration: const BoxDecoration(
             border: Border(left: BorderSide(color: AppColors.border)),
           ),
-          child: DaySidebar(
-            totalDays: _totalDays,
-            selectedDay: selectedDay,
-            travelStartDate: travel.startDate,
-            onDaySelected: (d) =>
-                ref.read(selectedDayProvider(travel.id!).notifier).state = d,
+          child: IgnorePointer(
+            ignoring: _isSelectionMode,
+            child: Opacity(
+              opacity: _isSelectionMode ? 0.4 : 1.0,
+              child: DaySidebar(
+                totalDays: _totalDays,
+                selectedDay: selectedDay,
+                travelStartDate: travel.startDate,
+                onDaySelected: (d) =>
+                    ref.read(selectedDayProvider(travel.id!).notifier).state = d,
+              ),
+            ),
           ),
         ),
       ],
@@ -203,15 +398,15 @@ class ScheduleListPanel extends ConsumerWidget {
       BuildContext context, WidgetRef ref, Schedule s) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogCtx) => AlertDialog(
         title: const Text('删除行程'),
         content: Text('确定删除「${s.name}」？'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
+              onPressed: () => Navigator.of(dialogCtx).pop(false),
               child: const Text('取消')),
           TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
+              onPressed: () => Navigator.of(dialogCtx).pop(true),
               child: const Text('删除',
                   style: TextStyle(color: Colors.red))),
         ],

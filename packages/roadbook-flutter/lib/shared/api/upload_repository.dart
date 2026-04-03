@@ -32,8 +32,9 @@ class UploadRepository {
           : _dio.options.baseUrl;
       return relativePaths.map((p) => '$base$p').toList();
     } on DioException catch (e) {
-      final msg = (e.response?.data as Map?)?['message'] as String?;
-      throw msg ?? '上传失败';
+      final data = e.response?.data;
+      final msg = data is Map ? (data['message'] ?? data['msg']) as String? : null;
+      throw msg ?? e.message ?? '上传失败';
     }
   }
 }

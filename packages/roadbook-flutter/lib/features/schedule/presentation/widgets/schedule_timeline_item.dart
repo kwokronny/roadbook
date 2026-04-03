@@ -17,6 +17,10 @@ class ScheduleTimelineItem extends StatelessWidget {
     this.onEdit,
     this.onClone,
     this.onDelete,
+    this.isSelectionMode = false,
+    this.isSelected = false,
+    this.onLongPress,
+    this.onToggleSelect,
   });
 
   final Schedule schedule;
@@ -27,6 +31,10 @@ class ScheduleTimelineItem extends StatelessWidget {
   final VoidCallback? onEdit;
   final VoidCallback? onClone;
   final VoidCallback? onDelete;
+  final bool isSelectionMode;
+  final bool isSelected;
+  final VoidCallback? onLongPress;
+  final VoidCallback? onToggleSelect;
 
   static const _maxThumbs = 4;
   static final _timeFmt = DateFormat('HH:mm');
@@ -68,12 +76,29 @@ class ScheduleTimelineItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return GestureDetector(
+      onTap: isSelectionMode ? onToggleSelect : null,
+      child: Padding(
       padding: const EdgeInsets.only(bottom: 28),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _CoverImage(schedule: schedule),
+          if (isSelectionMode)
+            Padding(
+              padding: const EdgeInsets.only(top: 8, right: 6),
+              child: Icon(
+                isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+                size: 22,
+                color: isSelected ? AppColors.primary : AppColors.textSecondary,
+              ),
+            )
+          else
+            GestureDetector(
+              onLongPress: canEdit ? onLongPress : null,
+              child: _CoverImage(schedule: schedule),
+            ),
+          if (isSelectionMode)
+            _CoverImage(schedule: schedule),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -115,6 +140,30 @@ class ScheduleTimelineItem extends StatelessWidget {
                     ),
                   ],
                 ),
+                if (schedule.notes != null && schedule.notes!.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF0EDE8),
+                      borderRadius: BorderRadius.circular(AppRadius.card),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.notes, size: 14, color: AppColors.textSecondary),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            schedule.notes!,
+                            style: AppTextStyles.caption,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 if (schedule.screenshotList.isNotEmpty) ...[
                   const SizedBox(height: 6),
                   _buildScreenshots(context),
@@ -124,6 +173,7 @@ class ScheduleTimelineItem extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 
@@ -143,31 +193,14 @@ class ScheduleTimelineItem extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                   color: _accentColor,
                   height: 1,
+                  decoration: canEdit ? TextDecoration.underline : null,
+                  decorationStyle: TextDecorationStyle.dashed,
+                  decorationColor: _accentColor.withValues(alpha: 0.4),
                 ),
               ),
               if (canEdit) ...[
                 const SizedBox(width: 5),
-                Container(
-                  key: const Key('editIcon'),
-                  width: 22,
-                  height: 22,
-                  decoration: BoxDecoration(
-                    color: schedule.isHotel
-                        ? AppColors.hotelLight
-                        : schedule.startTime == null
-                            ? const Color(0xFFF5F5F4)
-                            : AppColors.primaryLight,
-                    borderRadius: BorderRadius.circular(5),
-                    border: Border.all(
-                      color: schedule.isHotel
-                          ? AppColors.hotelBorder
-                          : schedule.startTime == null
-                              ? const Color(0xFFE8E0D8)
-                              : AppColors.primaryBorder,
-                    ),
-                  ),
-                  child: Icon(Icons.edit_outlined, size: 12, color: _accentColor),
-                ),
+                Icon(Icons.schedule, key: const Key('editIcon'), size: 18, color: _accentColor),
               ],
             ],
           ),

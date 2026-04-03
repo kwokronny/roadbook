@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:amap_flutter_map/amap_flutter_map.dart';
 import 'package:amap_flutter_base/amap_flutter_base.dart';
 import '../../../../core/theme.dart';
@@ -15,16 +16,126 @@ import '../../../../shared/utils/platform_util.dart';
 import '../../../../features/schedule/domain/schedule_provider.dart';
 import '../../../../features/travel/domain/travel_detail_provider.dart';
 import '../../../../features/schedule/presentation/schedule_edit_sheet.dart';
+import '../../../../features/schedule/presentation/schedule_quick_time_sheet.dart';
 import 'map_state_notifier.dart';
 import 'map_day_selector.dart';
 import 'map_search_bar.dart';
 import 'map_info_bar.dart';
 
-/// Renders a rounded-rect marker icon to BitmapDescriptor via Canvas.
+final _mapTimeFmt = DateFormat('HH:mm');
+
+/// Renders a schedule marker: rounded-rect badge with "D{N}" + time/name text beside it.
+Future<BitmapDescriptor> _buildScheduleMarkerBitmap({
+  required Color color,
+  required String dayLabel,
+  required String time,
+  required String name,
+}) async {
+  const double badgeSize = 80;
+  const double badgeRadius = 16;
+  const double badgeFontSize = 36;
+  const double textFontSize = 34;
+  const double gap = 12;
+  const double borderWidth = 4;
+  const double maxTextWidth = 400;
+
+  // ── Badge label "D1" etc
+  final badgeTextBuilder = ui.ParagraphBuilder(
+    ui.ParagraphStyle(textAlign: TextAlign.center, maxLines: 1),
+  )
+    ..pushStyle(ui.TextStyle(
+      color: Colors.white,
+      fontSize: badgeFontSize,
+      fontWeight: ui.FontWeight.w800,
+    ))
+    ..addText(dayLabel);
+  final badgePara = badgeTextBuilder.build()
+    ..layout(const ui.ParagraphConstraints(width: badgeSize));
+
+  // ── White-stroke shadows for side text
+  const sw = 3.0;
+  final strokeShadows = [
+    for (final dx in [-sw, 0.0, sw])
+      for (final dy in [-sw, 0.0, sw])
+        if (dx != 0 || dy != 0)
+          ui.Shadow(offset: Offset(dx, dy), blurRadius: sw, color: Colors.white),
+  ];
+
+  // ── Time text (line 1)
+  final timePara = _buildSideParagraph(time, textFontSize, color, strokeShadows, maxTextWidth);
+  // ── Name text (line 2), truncate
+  final displayName = name.length > 6 ? '${name.substring(0, 6)}…' : name;
+  final namePara = _buildSideParagraph(displayName, textFontSize, color, strokeShadows, maxTextWidth);
+
+  final sideTextWidth = timePara.longestLine > namePara.longestLine
+      ? timePara.longestLine
+      : namePara.longestLine;
+  final sideTextHeight = timePara.height + namePara.height;
+
+  final totalW = badgeSize + gap + sideTextWidth + 8;
+  final totalH = badgeSize > sideTextHeight ? badgeSize : sideTextHeight;
+
+  final recorder = ui.PictureRecorder();
+  final canvas = ui.Canvas(recorder);
+
+  // Draw badge background
+  final badgeRect = ui.RRect.fromRectAndRadius(
+    ui.Rect.fromLTWH(borderWidth, (totalH - badgeSize) / 2 + borderWidth,
+        badgeSize - borderWidth * 2, badgeSize - borderWidth * 2),
+    const ui.Radius.circular(badgeRadius),
+  );
+  canvas.drawRRect(badgeRect, ui.Paint()..color = color);
+  canvas.drawRRect(
+    badgeRect,
+    ui.Paint()
+      ..color = Colors.white
+      ..style = ui.PaintingStyle.stroke
+      ..strokeWidth = borderWidth,
+  );
+
+  // Draw badge text
+  canvas.drawParagraph(
+    badgePara,
+    Offset(0, (totalH - badgePara.height) / 2),
+  );
+
+  // Draw side text
+  final sideX = badgeSize + gap;
+  final sideY = (totalH - sideTextHeight) / 2;
+  if (time.isNotEmpty) {
+    canvas.drawParagraph(timePara, Offset(sideX, sideY));
+  }
+  canvas.drawParagraph(
+    namePara,
+    Offset(sideX, sideY + (time.isNotEmpty ? timePara.height : 0)),
+  );
+
+  final picture = recorder.endRecording();
+  final image = await picture.toImage(totalW.ceil(), totalH.ceil());
+  final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+  return BitmapDescriptor.fromBytes(byteData!.buffer.asUint8List());
+}
+
+ui.Paragraph _buildSideParagraph(
+    String text, double size, Color color, List<ui.Shadow> shadows, double maxWidth) {
+  final builder = ui.ParagraphBuilder(
+    ui.ParagraphStyle(textAlign: TextAlign.left, maxLines: 1, ellipsis: '…'),
+  )
+    ..pushStyle(ui.TextStyle(
+      color: color,
+      fontSize: size,
+      fontWeight: ui.FontWeight.w700,
+      shadows: shadows,
+    ))
+    ..addText(text);
+  return builder.build()..layout(ui.ParagraphConstraints(width: maxWidth));
+}
+
+/// Renders a rounded-rect marker icon (for POI search results).
 Future<BitmapDescriptor> _buildMarkerBitmap({
   required Color color,
   required String label,
-  double size = 52,
+  double size = 104,
 }) async {
   final recorder = ui.PictureRecorder();
   final canvas = ui.Canvas(recorder);
@@ -32,14 +143,14 @@ Future<BitmapDescriptor> _buildMarkerBitmap({
   final paint = ui.Paint()..color = color;
   final rrect = ui.RRect.fromRectAndRadius(
     ui.Rect.fromLTWH(2, 2, size - 4, size - 4),
-    const ui.Radius.circular(10),
+    const ui.Radius.circular(20),
   );
   canvas.drawRRect(rrect, paint);
 
   final borderPaint = ui.Paint()
     ..color = const Color(0xFFFFFFFF)
     ..style = ui.PaintingStyle.stroke
-    ..strokeWidth = 2.5;
+    ..strokeWidth = 5;
   canvas.drawRRect(rrect, borderPaint);
 
   final paragraphBuilder = ui.ParagraphBuilder(
@@ -47,7 +158,7 @@ Future<BitmapDescriptor> _buildMarkerBitmap({
   )
     ..pushStyle(ui.TextStyle(
       color: const Color(0xFFFFFFFF),
-      fontSize: label.length == 1 ? 20 : 15,
+      fontSize: label.length == 1 ? 40 : 30,
       fontWeight: ui.FontWeight.w800,
     ))
     ..addText(label);
@@ -75,10 +186,12 @@ class MapTabView extends ConsumerStatefulWidget {
 class _MapTabViewState extends ConsumerState<MapTabView> {
   AMapController? _mapController;
   final Map<String, BitmapDescriptor> _iconCache = {};
+  final Map<String, BitmapDescriptor> _scheduleIconCache = {};
   final TextEditingController _searchCtrl = TextEditingController();
   bool _iconsReady = false;
   bool _platformChecked = false;
   bool _isSimulator = false;
+  int _lastScheduleHash = 0;
 
   @override
   void initState() {
@@ -122,7 +235,7 @@ class _MapTabViewState extends ConsumerState<MapTabView> {
     if (travel == null) return;
     final selectedDay = ref.read(mapSelectedDayProvider(widget.travelId));
     final daySchedules = selectedDay == -1
-        ? schedules.where((s) => s.startTime != null).toList()
+        ? schedules
         : schedulesForDay(selectedDay, schedules, travel.startDate);
     final points = daySchedules
         .where((s) => s.coordinate.isNotEmpty && s.coordinate != '0,0')
@@ -152,25 +265,75 @@ class _MapTabViewState extends ConsumerState<MapTabView> {
 
   Future<void> _preloadIcons() async {
     for (int i = 1; i <= 10; i++) {
-      _iconCache['day_$i'] = await _buildMarkerBitmap(
-        color: AppColors.primary,
-        label: '$i',
-      );
       _iconCache['day_large_$i'] = await _buildMarkerBitmap(
         color: AppColors.primary,
         label: '$i',
-        size: 104,
       );
       _iconCache['poi_$i'] = await _buildMarkerBitmap(
         color: AppColors.textSecondary,
         label: '$i',
       );
     }
-    _iconCache['hotel'] = await _buildMarkerBitmap(
-      color: AppColors.hotel,
-      label: '🏨',
-    );
     if (mounted) setState(() => _iconsReady = true);
+  }
+
+  /// Build schedule marker icons with day badge + time/name text.
+  Future<void> _buildScheduleIcons(List<Schedule> schedules, {DateTime? travelStart}) async {
+    for (final s in schedules) {
+      if (s.coordinate.isEmpty || s.coordinate == '0,0') continue;
+
+      String timeLabel;
+      Color color;
+      int dayNum = 0;
+      if (s.startTime != null && travelStart != null) {
+        dayNum = s.startTime!.toLocal().difference(travelStart).inDays + 1;
+      }
+      final dayLabel = dayNum > 0 ? 'D$dayNum' : '';
+
+      if (s.isHotel) {
+        color = AppColors.hotel;
+        timeLabel = s.startTime != null ? _mapTimeFmt.format(s.startTime!.toLocal()) : '';
+      } else if (s.startTime != null) {
+        color = AppColors.primary;
+        timeLabel = _mapTimeFmt.format(s.startTime!.toLocal());
+      } else {
+        color = AppColors.textSecondary;
+        timeLabel = '';
+      }
+
+      final cacheKey = '${s.id}_${dayLabel}_${timeLabel}_${s.name}';
+      if (!_scheduleIconCache.containsKey(cacheKey)) {
+        _scheduleIconCache[cacheKey] = await _buildScheduleMarkerBitmap(
+          color: color,
+          dayLabel: dayLabel.isEmpty ? '?' : dayLabel,
+          time: timeLabel,
+          name: s.name,
+        );
+      }
+    }
+    if (mounted) setState(() {});
+  }
+
+  String _scheduleCacheKey(Schedule s, DateTime? travelStart) {
+    int dayNum = 0;
+    if (s.startTime != null && travelStart != null) {
+      dayNum = s.startTime!.toLocal().difference(travelStart).inDays + 1;
+    }
+    final dayLabel = dayNum > 0 ? 'D$dayNum' : '';
+    String timeLabel;
+    if (s.isHotel) {
+      timeLabel = s.startTime != null ? _mapTimeFmt.format(s.startTime!.toLocal()) : '';
+    } else if (s.startTime != null) {
+      timeLabel = _mapTimeFmt.format(s.startTime!.toLocal());
+    } else {
+      timeLabel = '';
+    }
+    return '${s.id}_${dayLabel}_${timeLabel}_${s.name}';
+  }
+
+  BitmapDescriptor _scheduleIcon(Schedule s, DateTime? travelStart) {
+    final cacheKey = _scheduleCacheKey(s, travelStart);
+    return _scheduleIconCache[cacheKey] ?? BitmapDescriptor.defaultMarker;
   }
 
   BitmapDescriptor _icon(String key) =>
@@ -220,9 +383,16 @@ class _MapTabViewState extends ConsumerState<MapTabView> {
     final travel = travelAsync.valueOrNull;
     final schedules = schedulesAsync.valueOrNull ?? [];
 
+    // Rebuild schedule icons when schedules change
+    final scheduleHash = Object.hashAll(schedules.map((s) => '${s.id}_${s.startTime}_${s.name}_${s.isHotel}'));
+    if (scheduleHash != _lastScheduleHash && schedules.isNotEmpty) {
+      _lastScheduleHash = scheduleHash;
+      _buildScheduleIcons(schedules, travelStart: travel?.startDate);
+    }
+
     final daySchedules = travel != null
         ? (selectedDay == -1
-            ? schedules.where((s) => s.startTime != null).toList()
+            ? schedules
             : schedulesForDay(selectedDay, schedules, travel.startDate))
         : <Schedule>[];
 
@@ -236,10 +406,9 @@ class _MapTabViewState extends ConsumerState<MapTabView> {
       final s = validSchedules[i];
       final parts = s.coordinate.split(',');
       if (parts.length != 2) continue;
-      final iconKey = s.isHotel ? 'hotel' : 'day_${i + 1}';
       scheduleMarkers.add(Marker(
         position: LatLng(double.parse(parts[1]), double.parse(parts[0])),
-        icon: _iconsReady ? _icon(iconKey) : BitmapDescriptor.defaultMarker,
+        icon: _scheduleIcon(s, travel?.startDate),
         onTap: (_) {
           ref
               .read(mapStateProvider(widget.travelId).notifier)
@@ -320,6 +489,7 @@ class _MapTabViewState extends ConsumerState<MapTabView> {
               hasShow: true,
               hasAgree: true,
             ),
+            labelsEnabled: false,
             onMapCreated: (ctrl) {
               _mapController = ctrl;
               WidgetsBinding.instance.addPostFrameCallback(
@@ -426,6 +596,15 @@ class _MapTabViewState extends ConsumerState<MapTabView> {
                 child: selectedSchedule != null
                     ? MapInfoBar.schedule(
                         schedule: selectedSchedule,
+                        onEditTimeTap: () {
+                          if (travel != null) {
+                            ScheduleQuickTimeSheet.show(
+                              context,
+                              travel: travel,
+                              schedule: selectedSchedule,
+                            );
+                          }
+                        },
                         onTap: () {
                           if (travel != null) {
                             ScheduleEditSheet.show(
