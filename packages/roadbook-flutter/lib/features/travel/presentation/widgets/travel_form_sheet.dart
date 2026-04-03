@@ -130,7 +130,7 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                   Row(
                     children: [
                       Text(isEdit ? '编辑旅程' : '新建旅程',
-                          style: AppTextStyles.appBarTitle),
+                          style: AppTextStyles.title2),
                       const Spacer(),
                       IconButton(
                         icon: const Icon(Icons.close),
@@ -185,7 +185,7 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                     height: 48,
                     decoration: BoxDecoration(
                       gradient: AppColors.primaryGradient,
-                      borderRadius: BorderRadius.circular(AppRadius.fab),
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
                     ),
                     child: TextButton(
                       onPressed: _saving ? null : _submit,
@@ -199,8 +199,8 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                               isEdit ? '保存修改' : '创建旅程',
                               style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.w600),
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w500),
                             ),
                     ),
                   ),
@@ -355,7 +355,7 @@ class _CalendarPickerDialogState extends State<_CalendarPickerDialog> {
                       '${_viewMonth.year}年${_viewMonth.month}月',
                       style: const TextStyle(
                           fontSize: 18,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w500,
                           color: AppColors.textPrimary),
                     ),
                   ),
@@ -446,7 +446,7 @@ class _CalendarPickerDialogState extends State<_CalendarPickerDialog> {
                             style: TextStyle(
                               fontSize: 17,
                               fontWeight: (isStart || isEnd || isToday)
-                                  ? FontWeight.w700
+                                  ? FontWeight.w600
                                   : FontWeight.w400,
                               color: (isStart || isEnd)
                                   ? Colors.white
@@ -621,10 +621,11 @@ class _CityMultiSelectFieldState extends State<_CityMultiSelectField> {
             runSpacing: 6,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              for (final city in widget.selectedCities)
+              for (int i = 0; i < widget.selectedCities.length; i++)
                 _CityChip(
-                  label: city,
-                  onRemove: () => _removeCity(city),
+                  label: widget.selectedCities[i],
+                  onRemove: () => _removeCity(widget.selectedCities[i]),
+                  index: i,
                 ),
               IntrinsicWidth(
                 child: TextField(
@@ -668,34 +669,36 @@ class _CityMultiSelectFieldState extends State<_CityMultiSelectField> {
 }
 
 class _CityChip extends StatelessWidget {
-  const _CityChip({required this.label, required this.onRemove});
+  const _CityChip({required this.label, required this.onRemove, required this.index});
 
   final String label;
   final VoidCallback onRemove;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(left: 10, right: 4, top: 4, bottom: 4),
       decoration: BoxDecoration(
-        color: AppColors.primaryLight,
-        borderRadius: BorderRadius.circular(99),
+        color: AppColors.cityTagBg(index),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+        border: Border.all(color: AppColors.cityTagBorder(index), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: AppColors.primary,
+              color: AppColors.cityTagText(index),
             ),
           ),
           const SizedBox(width: 2),
           GestureDetector(
             onTap: onRemove,
-            child: const Icon(Icons.close, size: 14, color: AppColors.primary),
+            child: Icon(Icons.close, size: 14, color: AppColors.cityTagText(index)),
           ),
         ],
       ),
