@@ -530,7 +530,7 @@ class _ConcaveCutoutClipper extends CustomClipper<Path> {
   static const double _gap = 8.0;
   static const double _cutoutSize = _buttonSize + _gap * 2; // 46
   // Inner corner radius where card meets cutout
-  static const double _innerRadius = 10.0;
+  static const double _innerRadius = 14.0;
 
   @override
   Path getClip(Size size) {
@@ -559,8 +559,10 @@ class _ConcaveCutoutClipper extends CustomClipper<Path> {
     path.lineTo(cx, cb - ir);
     // Inner radius: curve from cutout left edge back to card right direction
     path.quadraticBezierTo(cx, cb, cx + ir, cb);
-    // Cutout bottom edge going right (to card right edge or beyond)
-    path.lineTo(w, cb);
+    // Cutout bottom edge going right, stop before card right edge for inner radius
+    path.lineTo(w - ir, cb);
+    // Inner radius: curve from cutout bottom edge into card right edge
+    path.quadraticBezierTo(w, cb, w, cb + ir);
 
     // Right edge down
     path.lineTo(w, h - r);
