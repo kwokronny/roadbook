@@ -102,7 +102,7 @@ class ScheduleTimelineItem extends StatelessWidget {
       onTap: isSelectionMode ? onToggleSelect : null,
       onLongPress: canEdit && !isSelectionMode ? onLongPress : null,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.only(bottom: 20),
         child: Stack(
           clipBehavior: Clip.none,
           children: [
@@ -111,8 +111,8 @@ class ScheduleTimelineItem extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(AppRadius.card),
                 boxShadow: const [
-                  BoxShadow(color: Color(0x1A6478B4), blurRadius: 16, offset: Offset(0, 4)),
-                  BoxShadow(color: Color(0x0A6478B4), blurRadius: 4, offset: Offset(0, 1)),
+                  BoxShadow(color: Color(0x226478B4), blurRadius: 20, offset: Offset(0, 6)),
+                  BoxShadow(color: Color(0x0F6478B4), blurRadius: 6, offset: Offset(0, 2)),
                 ],
               ),
             ),
@@ -122,10 +122,8 @@ class ScheduleTimelineItem extends StatelessWidget {
               child: BackdropFilter(
                 filter: GlassSpec.cardBlur,
                 child: Container(
-                  decoration: BoxDecoration(
-                    color: schedule.isHotel
-                        ? const Color(0xE6F5F3FF)
-                        : const Color(0xE6FFFFFF),
+                  decoration: const BoxDecoration(
+                    color: Color(0xE6FFFFFF),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -289,8 +287,8 @@ class ScheduleTimelineItem extends StatelessWidget {
             // ── Nav button (top-right, with concave mask cutout)
             if (_hasCoordinate)
               Positioned(
-                top: -4,
-                right: -4,
+                top: 0,
+                right: 0,
                 child: IgnorePointer(
                   ignoring: isSelectionMode,
                   child: Opacity(
@@ -445,8 +443,8 @@ class _ConcaveNavButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 41,
-      height: 41,
+      width: 36,
+      height: 36,
       child: ScheduleNavButton(
         coordinate: coordinate,
         name: name,
