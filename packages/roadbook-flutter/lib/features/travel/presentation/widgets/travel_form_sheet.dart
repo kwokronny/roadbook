@@ -174,9 +174,14 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                   // Public toggle
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: Text('公开旅程', style: AppTextStyles.body),
+                    title: Text('公开旅程',
+                        style: AppTextStyles.body.copyWith(color: AppColors.textPrimary)),
                     value: _isPublic,
-                    activeThumbColor: AppColors.primary,
+                    activeThumbColor: AppColors.spearmint,
+                    activeTrackColor: AppColors.spearmint.withValues(alpha: 0.22),
+                    inactiveThumbColor: const Color(0x381E243C),
+                    inactiveTrackColor: const Color(0x121E243C),
+                    trackOutlineColor: const WidgetStatePropertyAll(Colors.transparent),
                     onChanged: (v) => setState(() => _isPublic = v),
                   ),
                   const SizedBox(height: 16),

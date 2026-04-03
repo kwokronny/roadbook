@@ -266,34 +266,34 @@ class AppTheme {
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.background,
+      fillColor: const Color(0x0D1E243C), // rgba(30,36,60,0.05) — subtle tint on white sheets
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.input),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(AppRadius.cardSm),
+        borderSide: const BorderSide(color: Color(0x141E243C), width: 1), // rgba(30,36,60,0.08)
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.input),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(AppRadius.cardSm),
+        borderSide: const BorderSide(color: Color(0x141E243C), width: 1),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.input),
-        borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+        borderRadius: BorderRadius.circular(AppRadius.cardSm),
+        borderSide: BorderSide(color: AppColors.skyBlue.withValues(alpha: 0.45), width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.input),
+        borderRadius: BorderRadius.circular(AppRadius.cardSm),
         borderSide: const BorderSide(color: AppColors.destructive, width: 1),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.input),
+        borderRadius: BorderRadius.circular(AppRadius.cardSm),
         borderSide: const BorderSide(color: AppColors.destructive, width: 1.5),
       ),
-      labelStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.w400, color: AppColors.textSecondary),
-      floatingLabelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.textSecondary),
+      labelStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppColors.textSecondary),
+      floatingLabelStyle: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.skyBlue.withValues(alpha: 0.80)),
       hintStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppColors.textTertiary),
       errorStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.destructive),
-      suffixIconColor: AppColors.textSecondary,
-      prefixIconColor: AppColors.textSecondary,
+      suffixIconColor: AppColors.textTertiary,
+      prefixIconColor: AppColors.textTertiary,
     ),
     textSelectionTheme: const TextSelectionThemeData(
       cursorColor: AppColors.primary,
