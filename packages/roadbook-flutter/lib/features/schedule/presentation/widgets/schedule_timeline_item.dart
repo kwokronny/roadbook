@@ -247,10 +247,14 @@ class ScheduleTimelineItem extends StatelessWidget {
                               if (schedule.notes != null &&
                                   schedule.notes!.isNotEmpty)
                                 Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Icon(Icons.notes,
-                                        size: 14,
-                                        color: AppColors.textSecondary),
+                                    const Padding(
+                                      padding: EdgeInsets.only(top: 2),
+                                      child: Icon(Icons.notes,
+                                          size: 14,
+                                          color: AppColors.textSecondary),
+                                    ),
                                     const SizedBox(width: 4),
                                     Expanded(
                                       child: Text(
@@ -509,8 +513,8 @@ class _ConcaveCutoutClipper extends CustomClipper<Path> {
 
   static const double _cardRadius = AppRadius.card;
   // Button 40x40, positioned at top:-4 right:-4
-  static const double _buttonSize = 40.0;
-  static const double _gap = 10.0;
+  static const double _buttonSize = 36.0;
+  static const double _gap = 8.0;
   static const double _cutoutSize = _buttonSize + _gap * 2; // 50
   // Inner corner radius matches card corner radius (AppRadius.card = 20)
   static const double _innerRadius = _cardRadius;
