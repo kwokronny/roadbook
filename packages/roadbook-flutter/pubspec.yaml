@@ -41,6 +41,7 @@ dependencies:
   # 高德地图
   amap_flutter_map: ^3.0.0
   amap_flutter_base: ^3.0.0
+  lpinyin: ^2.0.3
 
 dev_dependencies:
   flutter_test:
