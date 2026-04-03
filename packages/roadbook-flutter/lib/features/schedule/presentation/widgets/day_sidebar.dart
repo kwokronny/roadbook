@@ -29,7 +29,7 @@ class DayBar extends StatelessWidget {
     final days = [for (int d = 1; d <= totalDays; d++) d, 0];
 
     return SizedBox(
-      height: 52,
+      height: 56,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
