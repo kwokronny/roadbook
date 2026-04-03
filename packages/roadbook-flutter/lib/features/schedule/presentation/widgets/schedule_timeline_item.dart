@@ -103,9 +103,13 @@ class ScheduleTimelineItem extends StatelessWidget {
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            // ── Glass card
-            ClipRRect(
-              borderRadius: BorderRadius.circular(AppRadius.card),
+            // ── Glass card with concave cutout for more button
+            ClipPath(
+              clipper: const _ConcaveCutoutClipper(
+                radius: AppRadius.card,
+                cutoutRadius: 19, // slightly larger than button (30/2 + padding)
+                cutoutCenter: Offset(-1, -1), // relative to top-right corner
+              ),
               child: BackdropFilter(
                 filter: GlassSpec.cardBlur,
                 child: Container(
@@ -518,6 +522,43 @@ class _GlassNavButton extends StatelessWidget {
       ),
     );
   }
+}
+
+// ─── Concave Cutout Clipper ──────────────────────────────────────────────────
+
+class _ConcaveCutoutClipper extends CustomClipper<Path> {
+  const _ConcaveCutoutClipper({
+    required this.radius,
+    required this.cutoutRadius,
+    required this.cutoutCenter,
+  });
+
+  final double radius;       // card corner radius
+  final double cutoutRadius; // circular cutout radius
+  final Offset cutoutCenter; // offset from top-right corner
+
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    // Rounded rect for the card
+    path.addRRect(RRect.fromRectAndRadius(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Radius.circular(radius),
+    ));
+    // Subtract a circle at top-right
+    final circlePath = Path()
+      ..addOval(Rect.fromCircle(
+        center: Offset(size.width + cutoutCenter.dx, cutoutCenter.dy),
+        radius: cutoutRadius,
+      ));
+    return Path.combine(PathOperation.difference, path, circlePath);
+  }
+
+  @override
+  bool shouldReclip(covariant _ConcaveCutoutClipper old) =>
+      old.radius != radius ||
+      old.cutoutRadius != cutoutRadius ||
+      old.cutoutCenter != cutoutCenter;
 }
 
 // ─── Dashed Line Painter ─────────────────────────────────────────────────────
