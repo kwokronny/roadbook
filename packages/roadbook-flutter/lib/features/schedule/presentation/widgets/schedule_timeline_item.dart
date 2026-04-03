@@ -103,6 +103,16 @@ class ScheduleTimelineItem extends StatelessWidget {
         child: Stack(
           clipBehavior: Clip.none,
           children: [
+            // ── Shadow layer (outside ClipPath so it's not clipped)
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(AppRadius.card),
+                boxShadow: const [
+                  BoxShadow(color: Color(0x1A6478B4), blurRadius: 16, offset: Offset(0, 4)),
+                  BoxShadow(color: Color(0x0A6478B4), blurRadius: 4, offset: Offset(0, 1)),
+                ],
+              ),
+            ),
             // ── Glass card with concave cutout for more button
             ClipPath(
               clipper: const _ConcaveCutoutClipper(),
@@ -111,9 +121,8 @@ class ScheduleTimelineItem extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     color: schedule.isHotel
-                        ? const Color(0xE6F5F3FF) // lavender tint, 90% opacity
-                        : const Color(0xE6FFFFFF), // white, 90% opacity
-                    boxShadow: GlassSpec.cardShadow,
+                        ? const Color(0xE6F5F3FF)
+                        : const Color(0xE6FFFFFF),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
