@@ -1,7 +1,10 @@
 // lib/shared/api/upload_repository.dart
+import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import '../providers/dio_provider.dart';
 import 'api_endpoints.dart';
 
@@ -9,20 +12,57 @@ class UploadRepository {
   UploadRepository(this._dio);
   final Dio _dio;
 
+  /// Max dimension (width or height) for compressed images.
+  static const int _maxDimension = 1920;
+
+  /// JPEG quality (0-100).
+  static const int _quality = 80;
+
+  /// File size threshold — only compress if larger than 500KB.
+  static const int _compressThreshold = 500 * 1024;
+
+  /// Compress an image file if it exceeds [_compressThreshold].
+  /// Returns the original path if no compression needed or compression fails.
+  Future<String> _compressIfNeeded(XFile file) async {
+    final fileSize = await File(file.path).length();
+    if (fileSize <= _compressThreshold) return file.path;
+
+    final ext = p.extension(file.path).toLowerCase();
+    final isImage = ['.jpg', '.jpeg', '.png', '.heic', '.heif', '.webp'].contains(ext);
+    if (!isImage) return file.path;
+
+    try {
+      final dir = await getTemporaryDirectory();
+      final targetPath = p.join(
+        dir.path,
+        'upload_${DateTime.now().millisecondsSinceEpoch}_${p.basenameWithoutExtension(file.path)}.jpg',
+      );
+
+      final result = await FlutterImageCompress.compressAndGetFile(
+        file.path,
+        targetPath,
+        minWidth: _maxDimension,
+        minHeight: _maxDimension,
+        quality: _quality,
+      );
+
+      return result?.path ?? file.path;
+    } catch (_) {
+      return file.path;
+    }
+  }
+
   /// Uploads [files] to POST /upload (multipart/form-data, field: 'file').
+  /// Images are compressed before upload if they exceed 500KB.
   /// Returns absolute URLs. Throws [String] on DioException.
-  ///
-  /// Note: _AuthInterceptor unwraps the {code, data} envelope on success,
-  /// so response.data is already List<dynamic> here.
-  /// In the error path the interceptor does NOT unwrap, so
-  /// e.response?.data is still {code, message} — ['message'] extraction is correct.
   Future<List<String>> upload(List<XFile> files) async {
     try {
       final formData = FormData();
       for (final f in files) {
+        final compressedPath = await _compressIfNeeded(f);
         formData.files.add(MapEntry(
           'file',
-          await MultipartFile.fromFile(f.path, filename: f.name),
+          await MultipartFile.fromFile(compressedPath, filename: p.basename(compressedPath)),
         ));
       }
       final res = await _dio.post<dynamic>(ApiEndpoints.upload, data: formData);
