@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/theme.dart';
 import '../../../../shared/models/travel.dart';
-import '../../../../shared/widgets/glass_card.dart';
 
 // ─── Status helpers ─────────────────────────────────────────────────────────
 
@@ -48,11 +47,20 @@ class TravelCard extends StatelessWidget {
     final days   = travel.endDate.difference(travel.startDate).inDays + 1;
     final fmt    = DateFormat('MM/dd');
 
-    return GlassCard(
-      margin: const EdgeInsets.only(bottom: 14),
-      tintColor: AppColors.statusTint(status),
-      padding: EdgeInsets.zero,
-      onTap: onTap,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(AppRadius.card),
+            boxShadow: const [
+              BoxShadow(color: Color(0x226478B4), blurRadius: 20, offset: Offset(0, 6)),
+              BoxShadow(color: Color(0x0F6478B4), blurRadius: 6, offset: Offset(0, 2)),
+            ],
+          ),
+          clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -122,6 +130,8 @@ class TravelCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+        ),
       ),
     );
   }
