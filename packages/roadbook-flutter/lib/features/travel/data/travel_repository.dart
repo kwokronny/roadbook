@@ -51,7 +51,7 @@ class TravelRepository {
       final loadedCount = (page - 1) * _pageSize + records.length;
       return TravelPage(travels: records, hasMore: loadedCount < total);
     } on DioException catch (e) {
-      final msg = (e.response?.data as Map?)?['message'] as String?;
+      final msg = (e.response?.data is Map ? e.response?.data['message'] : null) as String?;
       throw msg ?? '获取旅程失败';
     }
   }
@@ -72,7 +72,7 @@ class TravelRepository {
       return Travel.fromJson(res.data!);
     } on DioException catch (e) {
       final msg = e.message ??
-          (e.response?.data as Map?)?['msg'] as String? ??
+          (e.response?.data is Map ? e.response?.data['msg'] : null) as String? ??
           '保存旅程失败';
       throw msg;
     }
@@ -82,7 +82,7 @@ class TravelRepository {
     try {
       await _dio.post<dynamic>(ApiEndpoints.travelRemove, data: {'id': id});
     } on DioException catch (e) {
-      final msg = (e.response?.data as Map?)?['message'] as String?;
+      final msg = (e.response?.data is Map ? e.response?.data['message'] : null) as String?;
       throw msg ?? '删除旅程失败';
     }
   }
@@ -95,7 +95,7 @@ class TravelRepository {
       );
       return Travel.fromJson(res.data!);
     } on DioException catch (e) {
-      final msg = (e.response?.data as Map?)?['message'] as String?;
+      final msg = (e.response?.data is Map ? e.response?.data['message'] : null) as String?;
       throw msg ?? '获取旅程详情失败';
     }
   }
@@ -107,7 +107,7 @@ class TravelRepository {
         data: {'id': travelId, 'uid': userId, 'role': role},
       );
     } on DioException catch (e) {
-      final msg = (e.response?.data as Map?)?['message'] as String?;
+      final msg = (e.response?.data is Map ? e.response?.data['message'] : null) as String?;
       throw msg ?? '设置权限失败';
     }
   }
@@ -120,7 +120,7 @@ class TravelRepository {
       );
       return res.data!;
     } on DioException catch (e) {
-      final msg = (e.response?.data as Map?)?['message'] as String?;
+      final msg = (e.response?.data is Map ? e.response?.data['message'] : null) as String?;
       throw msg ?? '生成邀请链接失败';
     }
   }
