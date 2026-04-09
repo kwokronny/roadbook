@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/theme.dart';
 import '../../../../shared/models/schedule.dart';
+import '../../../../shared/widgets/glass_card.dart';
 import '../schedule_photo_viewer.dart';
 import 'schedule_nav_button.dart';
 
@@ -106,28 +107,13 @@ class ScheduleTimelineItem extends StatelessWidget {
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            // ── Shadow layer (outside ClipPath so it's not clipped)
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(AppRadius.card),
-                boxShadow: const [
-                  BoxShadow(color: Color(0x226478B4), blurRadius: 20, offset: Offset(0, 6)),
-                  BoxShadow(color: Color(0x0F6478B4), blurRadius: 6, offset: Offset(0, 2)),
-                ],
-              ),
-            ),
-            // ── Glass card with concave cutout for more button
-            ClipPath(
-              clipper: const _ConcaveCutoutClipper(),
-              child: BackdropFilter(
-                filter: GlassSpec.cardBlur,
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Color(0xE6FFFFFF),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+            // ── Glass card
+            GlassCard(
+              padding: EdgeInsets.zero,
+              tintColor: schedule.isHotel ? AppColors.hotel.withValues(alpha: 0.04) : null,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                       // ── Upper section: cover + info + nav
                       Padding(
                         padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
@@ -257,8 +243,6 @@ class ScheduleTimelineItem extends StatelessWidget {
                     ],
                   ),
                 ),
-              ),
-            ),
             // ── Nav button (top-right, with concave mask cutout)
             if (_hasCoordinate)
               Positioned(
