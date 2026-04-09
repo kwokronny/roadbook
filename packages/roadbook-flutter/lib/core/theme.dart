@@ -115,7 +115,7 @@ enum TravelStatusType { ongoing, upcoming, planning, ended }
 
 abstract class GlassSpec {
   static ImageFilter cardBlur = ImageFilter.blur(sigmaX: 28, sigmaY: 28);
-  static const Color cardBg          = Color(0x8CFFFFFF);
+  static const Color cardBg          = Color(0x66FFFFFF); // rgba(255,255,255,0.40)
   static const Color cardBorder      = Color(0xE6FFFFFF);
   static const List<BoxShadow> cardShadow = [
     BoxShadow(color: Color(0x1A6478B4), blurRadius: 24, offset: Offset(0, 4)),
