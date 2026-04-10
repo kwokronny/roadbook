@@ -52,11 +52,11 @@ class _MeshPainter extends CustomPainter {
   _MeshPainter(this.t);
   final double t;
 
-  // Warm palette harmonious with brand coral #FF5B2E
-  static const _peachColor = Color(0x30FFCBB8);     // soft peach — coral's light tint
-  static const _apricotColor = Color(0x28FFD6A0);   // warm apricot — analogous amber
-  static const _roseColor = Color(0x25FFC0C0);      // dusty rose — coral's pink neighbor
-  static const _baseColor = Color(0xFFFFF8F5);      // very warm white base
+  // Very light warm tints — clean, not muddy
+  static const _peachColor = Color(0x1AFFCBB8);     // barely-there peach
+  static const _apricotColor = Color(0x18FFE0C0);   // hint of warm gold
+  static const _roseColor = Color(0x15FFD0D0);      // whisper of rose
+  static const _baseColor = Color(0xFFFFFBF9);      // near-white warm base
 
   @override
   void paint(Canvas canvas, Size size) {
