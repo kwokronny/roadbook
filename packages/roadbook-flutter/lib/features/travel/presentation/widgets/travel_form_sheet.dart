@@ -801,9 +801,7 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
 
           // ── City list grouped by letter ────────────────────────────
           Expanded(
-            child: NotificationListener<ScrollNotification>(
-              onNotification: (_) => true, // absorb scroll to prevent sheet drag
-              child: ListView.builder(
+            child: ListView.builder(
               itemCount: _letters.length,
               itemBuilder: (context, sectionIndex) {
                 final letter = _letters[sectionIndex];
@@ -839,7 +837,6 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
                   ],
                 );
               },
-            ),
             ),
           ),
         ],
