@@ -52,11 +52,11 @@ class _MeshPainter extends CustomPainter {
   _MeshPainter(this.t);
   final double t;
 
-  // Very light warm tints — clean, not muddy
-  static const _peachColor = Color(0x1AFFCBB8);     // barely-there peach
-  static const _apricotColor = Color(0x18FFE0C0);   // hint of warm gold
-  static const _roseColor = Color(0x15FFD0D0);      // whisper of rose
-  static const _baseColor = Color(0xFFFFFBF9);      // near-white warm base
+  // Warm sand/cream palette — clean, elegant like reference
+  static const _sandColor = Color(0x30F5E6C8);      // warm sand
+  static const _honeyColor = Color(0x28F0D898);      // soft honey gold
+  static const _creamColor = Color(0x20F5E0B0);      // light cream
+  static const _baseColor = Color(0xFFF7F3EE);       // warm off-white
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -70,25 +70,25 @@ class _MeshPainter extends CustomPainter {
       centerX: size.width * 0.20 + math.cos(t) * size.width * 0.06,
       centerY: size.height * 0.22 + math.sin(t * 0.8) * size.height * 0.04,
       radius: size.width * 0.55,
-      color: _peachColor,
+      color: _sandColor,
     );
 
     _drawBlob(
       canvas, size,
-      // Apricot — drifts around top-right
+      // Honey — drifts around top-right
       centerX: size.width * 0.80 + math.cos(t * 0.7 + 2.0) * size.width * 0.05,
       centerY: size.height * 0.18 + math.sin(t * 0.6 + 1.0) * size.height * 0.05,
       radius: size.width * 0.50,
-      color: _apricotColor,
+      color: _honeyColor,
     );
 
     _drawBlob(
       canvas, size,
-      // Rose — drifts around bottom-center
+      // Cream — drifts around bottom-center
       centerX: size.width * 0.60 + math.cos(t * 0.5 + 4.0) * size.width * 0.07,
       centerY: size.height * 0.80 + math.sin(t * 0.9 + 3.0) * size.height * 0.04,
       radius: size.width * 0.55,
-      color: _roseColor,
+      color: _creamColor,
     );
   }
 

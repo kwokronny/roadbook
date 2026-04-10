@@ -114,12 +114,12 @@ enum TravelStatusType { ongoing, upcoming, planning, ended }
 // ─── Glass Surface Specs ──────────────────────────────────────────────────────
 
 abstract class GlassSpec {
-  static ImageFilter cardBlur = ImageFilter.blur(sigmaX: 28, sigmaY: 28);
-  static const Color cardBg          = Color(0xB8FFFFFF); // rgba(255,255,255,0.72)
-  static const Color cardBorder      = Color(0xE6FFFFFF);
+  static ImageFilter cardBlur = ImageFilter.blur(sigmaX: 12, sigmaY: 12);
+  static const Color cardBg          = Color(0xE6FFFFFF); // rgba(255,255,255,0.90)
+  static const Color cardBorder      = Color(0x1A000000); // subtle dark border like reference
   static const List<BoxShadow> cardShadow = [
-    BoxShadow(color: Color(0x1A6478B4), blurRadius: 24, offset: Offset(0, 4)),
-    BoxShadow(color: Color(0x126478B4), blurRadius: 4,  offset: Offset(0, 1)),
+    BoxShadow(color: Color(0x12000000), blurRadius: 16, offset: Offset(0, 4)),
+    BoxShadow(color: Color(0x08000000), blurRadius: 4,  offset: Offset(0, 1)),
   ];
 
   static ImageFilter navBlur = ImageFilter.blur(sigmaX: 40, sigmaY: 40);
