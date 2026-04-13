@@ -12,7 +12,8 @@
     "build-doc": "pnpm -F ./packages/docs build",
     "dev-flutter": "cd packages/roadbook-flutter && flutter run",
     "build-flutter-ios": "cd packages/roadbook-flutter && flutter build ios --release",
-    "build-flutter-android": "cd packages/roadbook-flutter && flutter build apk --release"
+    "build-flutter-android": "cd packages/roadbook-flutter && flutter build apk --release",
+    "dev-ui": "pnpm -F @roadbook/ui dev"
   },
   "keywords": [
     "roadbook"
