@@ -1,6 +1,7 @@
 // Foundation
 export { AmbientBg } from './components/ambient-bg'
 export { GlassCard } from './components/glass-card'
+export { PhoneFrame } from './components/phone-frame'
 
 // Base UI
 export { Button } from './components/ui/button'
