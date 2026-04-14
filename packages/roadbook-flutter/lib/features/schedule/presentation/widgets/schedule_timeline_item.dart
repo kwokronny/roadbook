@@ -286,16 +286,24 @@ class ScheduleTimelineItem extends StatelessWidget {
         bottomRight: Radius.circular(20),
       );
 
+      final lowerGradient = isHotel
+          ? const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0x0E8C5CF6), Color(0x048C5CF6)],
+            )
+          : const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0x10FFF3C4), Color(0x06FFF3C4)],
+            );
+
       lowerSection = Container(
         width: double.infinity,
         padding: const EdgeInsets.fromLTRB(14, 10, 14, 24),
         decoration: BoxDecoration(
-          color: lowerBg,
+          gradient: lowerGradient,
           borderRadius: lowerRadius,
-          border: Border.all(
-            color: isHotel ? AppColors.lavenderFrostBorder : const Color(0x141C1C1E),
-            width: 1,
-          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
