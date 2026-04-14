@@ -290,12 +290,12 @@ class ScheduleTimelineItem extends StatelessWidget {
           ? const LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Color(0x0E8C5CF6), Color(0x048C5CF6)],
+              colors: [Color(0x288C5CF6), Color(0x0C8C5CF6)],
             )
           : const LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Color(0x10FFF3C4), Color(0x06FFF3C4)],
+              colors: [Color(0x30FDEEB4), Color(0x12FFF8DC)],
             );
 
       lowerSection = Container(
@@ -304,6 +304,13 @@ class ScheduleTimelineItem extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: lowerGradient,
           borderRadius: lowerRadius,
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x0A000000),
+              blurRadius: 12,
+              offset: Offset(0, 2),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

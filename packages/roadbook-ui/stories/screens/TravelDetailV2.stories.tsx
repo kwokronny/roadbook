@@ -123,8 +123,9 @@ function ScheduleCard({
           className="px-3.5 pt-3 pb-6"
           style={{
             background: isDark
-              ? 'linear-gradient(180deg, rgba(140,92,246,0.055) 0%, rgba(140,92,246,0.015) 100%)'
-              : 'linear-gradient(180deg, rgba(255,243,196,0.065) 0%, rgba(255,243,196,0.025) 100%)',
+              ? 'linear-gradient(180deg, rgba(140,92,246,0.16) 0%, rgba(140,92,246,0.05) 100%)'
+              : 'linear-gradient(180deg, rgba(253,238,180,0.19) 0%, rgba(255,248,220,0.07) 100%)',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
             borderRadius: '0 0 20px 20px',
           }}
         >
