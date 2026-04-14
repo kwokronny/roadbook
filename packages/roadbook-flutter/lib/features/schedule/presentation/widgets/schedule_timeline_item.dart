@@ -1,9 +1,11 @@
 // lib/features/schedule/presentation/widgets/schedule_timeline_item.dart
+import 'dart:math' as math;
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/theme.dart';
 import '../../../../shared/models/schedule.dart';
-import '../../../../shared/widgets/glass_card.dart';
+import '../../../../shared/widgets/glass_popover.dart';
 import '../schedule_photo_viewer.dart';
 import 'schedule_nav_button.dart';
 
@@ -69,25 +71,24 @@ class ScheduleTimelineItem extends StatelessWidget {
   }
 
   Color get _accentColor {
-    if (displayDay == 0) return AppColors.textSecondary;
-    if (schedule.isHotel) return AppColors.hotel;
-    if (schedule.startTime == null) return AppColors.textSecondary;
+    if (displayDay == 0) return AppColors.inkTertiary;
+    if (schedule.isHotel) return AppColors.lavender;
+    if (schedule.startTime == null) return AppColors.inkTertiary;
     return AppColors.primary;
   }
 
-  Color get _navBg {
-    if (schedule.isHotel) return AppColors.hotelLight;
-    return AppColors.primaryLight;
+  Color get _timeBadgeBg {
+    if (displayDay == 0) return const Color(0x0D1C1C1E); // neutral
+    if (schedule.isHotel) return AppColors.lavenderTimeBg;
+    if (schedule.startTime == null) return const Color(0x0D1C1C1E);
+    return AppColors.coralTint;
   }
 
-  Color get _navBorder {
-    if (schedule.isHotel) return AppColors.hotelBorder;
-    return AppColors.primaryBorder;
-  }
-
-  Color get _navIcon {
-    if (schedule.isHotel) return AppColors.hotel;
-    return AppColors.primary;
+  Color get _timeBadgeText {
+    if (displayDay == 0) return AppColors.inkTertiary;
+    if (schedule.isHotel) return AppColors.lavenderDeep;
+    if (schedule.startTime == null) return AppColors.inkTertiary;
+    return const Color(0xFFD4410A); // coral dark
   }
 
   bool get _hasCoordinate =>
@@ -103,167 +104,224 @@ class ScheduleTimelineItem extends StatelessWidget {
       onTap: isSelectionMode ? onToggleSelect : null,
       onLongPress: canEdit && !isSelectionMode ? onLongPress : null,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 20),
-        child: Stack(
-          clipBehavior: Clip.none,
+        padding: EdgeInsets.only(bottom: isSelectionMode ? 10 : 14),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Glass card
-            GlassCard(
-              padding: EdgeInsets.zero,
-              tintColor: schedule.isHotel ? AppColors.hotel.withValues(alpha: 0.04) : null,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                      // ── Upper section: cover + info + nav
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Selection checkbox or cover
-                            if (isSelectionMode)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 4, right: 10),
-                                child: Icon(
-                                  isSelected
-                                      ? Icons.check_circle
-                                      : Icons.radio_button_unchecked,
-                                  size: 24,
-                                  color: isSelected
-                                      ? AppColors.primary
-                                      : AppColors.textSecondary,
-                                ),
-                              ),
-                            // Cover image
-                            _CoverImage(schedule: schedule),
-                            const SizedBox(width: 12),
-                            // Center: time pill + name + address
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Time pill badge
-                                  GestureDetector(
-                                    onTap: canEdit ? onEditTimeTap : null,
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 3),
-                                      decoration: BoxDecoration(
-                                        color: _accentColor.withValues(alpha: 0.10),
-                                        borderRadius:
-                                            BorderRadius.circular(AppRadius.pill),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            _timeLabel,
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w600,
-                                              color: _accentColor,
-                                            ),
-                                          ),
-                                          if (canEdit) ...[
-                                            const SizedBox(width: 3),
-                                            Icon(Icons.schedule,
-                                                size: 12, color: _accentColor),
-                                          ],
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  // Name
-                                  Text(
-                                    schedule.name,
-                                    style: AppTextStyles.headline,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  // Address
-                                  if (schedule.address.isNotEmpty) ...[
-                                    const SizedBox(height: 1),
-                                    Text(
-                                      schedule.address,
-                                      style: AppTextStyles.caption,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      // ── Lower section: dashed divider + notes/screenshots
-                      if (_hasExtras) ...[
-                        // Dashed divider (full width)
-                        CustomPaint(
-                          painter: _DashedLinePainter(
-                            color: const Color(0x1A1E243C),
-                          ),
-                          size: const Size(double.infinity, 1),
-                        ),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
-                          decoration: const BoxDecoration(
-                            color: Color(0x08000000), // same subtle tint with transparency
-                            borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(AppRadius.card),
-                              bottomRight: Radius.circular(AppRadius.card),
-                            ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Screenshots first
-                              if (schedule.screenshotList.isNotEmpty) ...[
-                                _buildScreenshots(context),
-                              ],
-                              if (schedule.screenshotList.isNotEmpty &&
-                                  schedule.notes != null &&
-                                  schedule.notes!.isNotEmpty)
-                                const SizedBox(height: 6),
-                              // Notes
-                              if (schedule.notes != null &&
-                                  schedule.notes!.isNotEmpty)
-                                Text(
-                                  schedule.notes!,
-                                  style: AppTextStyles.caption,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ],
+            // Selection checkbox (if in selection mode)
+            if (isSelectionMode)
+              Padding(
+                padding: const EdgeInsets.only(top: 14, right: 8),
+                child: Container(
+                  width: 22, height: 22,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isSelected ? AppColors.primary : Colors.transparent,
+                    border: isSelected
+                        ? null
+                        : Border.all(color: AppColors.inkTertiary, width: 2),
                   ),
-                ),
-            // ── Nav button (top-right, with concave mask cutout)
-            if (_hasCoordinate)
-              Positioned(
-                top: 0,
-                right: 0,
-                child: IgnorePointer(
-                  ignoring: isSelectionMode,
-                  child: Opacity(
-                    opacity: isSelectionMode ? 0.35 : 1.0,
-                    child: _ConcaveNavButton(
-                      coordinate: schedule.coordinate,
-                      name: schedule.name,
-                      isHotel: schedule.isHotel,
-                      iconColor: _navIcon,
-                    ),
-                  ),
+                  child: isSelected
+                      ? const Icon(Icons.check, size: 14, color: Colors.white)
+                      : null,
                 ),
               ),
+            // ── Card (glass for all variants)
+            Expanded(
+              child: _buildCardBody(context),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildCardBody(BuildContext context) {
+    final isHotel = schedule.isHotel;
+    final nameColor = isHotel ? AppColors.lavenderDeep : AppColors.inkPrimary;
+    final addrColor = isHotel ? AppColors.lavenderAddr : AppColors.inkTertiary;
+    final noteColor = isHotel ? AppColors.lavenderNote : AppColors.inkSecondary;
+    final moreColor = isHotel ? AppColors.lavender : AppColors.inkTertiary;
+
+    final hasNotes = schedule.notes != null && schedule.notes!.isNotEmpty;
+    final hasPhotos = schedule.screenshotList.isNotEmpty;
+    final hasLower = hasNotes || hasPhotos;
+
+    // ── Upper card: glass card with cover, time+more row, title, address, nav
+    final upperContent = Padding(
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _CoverImage(schedule: schedule),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ── Time badge + More button row
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: canEdit ? onEditTimeTap : null,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: _timeBadgeBg,
+                          borderRadius: BorderRadius.circular(AppRadius.pill),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(_timeLabel,
+                                style: TextStyle(fontSize: 12,
+                                    fontWeight: FontWeight.w500, color: _timeBadgeText)),
+                            if (canEdit) ...[
+                              const SizedBox(width: 3),
+                              Icon(Icons.edit_calendar_outlined,
+                                  size: 11, color: _timeBadgeText),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    if (canEdit && !isSelectionMode)
+                      _MoreIconButton(
+                        onEdit: onEdit,
+                        onClone: onClone,
+                        onDelete: onDelete,
+                        color: moreColor,
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 3),
+                Text(schedule.name,
+                    style: TextStyle(fontSize: 17,
+                        fontWeight: FontWeight.w500, color: nameColor),
+                    maxLines: 2, overflow: TextOverflow.ellipsis),
+                ...[
+                  const SizedBox(height: 1),
+                  Text(schedule.address.isNotEmpty ? schedule.address : '暂无地址信息',
+                      style: TextStyle(fontSize: 13, color: addrColor),
+                      maxLines: 1, overflow: TextOverflow.ellipsis),
+                ],
+                if (_hasCoordinate && !isSelectionMode) ...[
+                  const SizedBox(height: 8),
+                  ScheduleNavButton(
+                      coordinate: schedule.coordinate,
+                      name: schedule.name,
+                      isHotel: schedule.isHotel),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+
+    // ── Upper card widget (glass for all, with lavender tint for hotel)
+    final upperRadius = hasLower
+        ? const BorderRadius.only(
+            topLeft: Radius.circular(AppRadius.card),
+            topRight: Radius.circular(AppRadius.card),
+          )
+        : BorderRadius.circular(AppRadius.card);
+
+    // Build upper card manually to control border radius per lower-section state
+    final Widget upperCardWrapped = Container(
+      decoration: BoxDecoration(
+        color: GlassSpec.cardBg,
+        borderRadius: upperRadius,
+        border: Border.all(
+          color: isHotel ? AppColors.lavenderFrostBorder : GlassSpec.cardBorder,
+          width: 1,
+        ),
+        boxShadow: GlassSpec.cardShadow,
+      ),
+      child: Stack(
+        children: [
+          // Tint overlay for hotel
+          if (isHotel)
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: upperRadius,
+                  gradient: LinearGradient(
+                    begin: const Alignment(-0.5, -0.5),
+                    end: const Alignment(0.5, 0.5),
+                    colors: [
+                      AppColors.lavenderFrost,
+                      AppColors.lavenderFrost.withValues(alpha: AppColors.lavenderFrost.a * 0.33),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          // Specular highlight
+          Positioned.fill(
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: upperRadius,
+                  gradient: GlassSpec.specularHighlight,
+                ),
+              ),
+            ),
+          ),
+          // Content
+          upperContent,
+        ],
+      ),
+    );
+
+    // ── Lower section: photos + notes
+    Widget? lowerSection;
+    if (hasLower) {
+      final lowerBg = isHotel
+          ? const Color(0x098C5CF6) // lavender subtle
+          : const Color(0x091C1C1E); // neutral subtle
+      const lowerRadius = BorderRadius.only(
+        bottomLeft: Radius.circular(20),
+        bottomRight: Radius.circular(20),
+      );
+
+      lowerSection = Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(14, 10, 14, 24),
+        decoration: BoxDecoration(
+          color: lowerBg,
+          borderRadius: lowerRadius,
+          border: Border.all(
+            color: isHotel ? AppColors.lavenderFrostBorder : const Color(0x141C1C1E),
+            width: 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (hasPhotos) ...[
+              _buildScreenshots(context),
+              if (hasNotes) const SizedBox(height: 8),
+            ],
+            if (hasNotes)
+              Text(
+                schedule.notes!,
+                style: TextStyle(fontSize: 13, color: noteColor, height: 1.5),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        upperCardWrapped,
+        if (lowerSection != null) lowerSection,
+      ],
     );
   }
 
@@ -284,40 +342,40 @@ class ScheduleTimelineItem extends StatelessWidget {
             ),
             child: SizedBox(
               key: const Key('screenshotThumb'),
-              width: 36,
-              height: 36,
+              width: 52,
+              height: 52,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(AppRadius.timeCell),
+                borderRadius: BorderRadius.circular(8),
                 child: Image.network(
                   visible[i],
-                  width: 36,
-                  height: 36,
+                  width: 40,
+                  height: 40,
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => Container(
-                    width: 36,
-                    height: 36,
-                    color: AppColors.border,
+                    width: 40,
+                    height: 40,
+                    color: const Color(0x0D1C1C1E),
                     child: const Icon(Icons.broken_image_outlined,
-                        size: 14, color: AppColors.textDisabled),
+                        size: 14, color: AppColors.inkTertiary),
                   ),
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 4),
+          const SizedBox(width: 3),
         ],
         if (overflow > 0)
           Container(
-            width: 36,
-            height: 36,
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
-              color: AppColors.border,
-              borderRadius: BorderRadius.circular(AppRadius.timeCell),
+              color: const Color(0x0D1C1C1E),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Center(
               child: Text('+$overflow',
                   style: AppTextStyles.micro
-                      .copyWith(fontWeight: FontWeight.w700)),
+                      .copyWith(fontWeight: FontWeight.w500)),
             ),
           ),
       ],
@@ -325,308 +383,44 @@ class ScheduleTimelineItem extends StatelessWidget {
   }
 }
 
-// ─── Concave More Button ─────────────────────────────────────────────────────
+// ─── More Icon Button (borderless, inline with time row) ────────────────────
 
 enum _MenuAction { edit, clone, delete }
 
-// ─── Inline More Button (pill, below address) ──────────────────────────────
-
-class _InlineMoreButton extends StatelessWidget {
-  const _InlineMoreButton({this.onEdit, this.onClone, this.onDelete});
+class _MoreIconButton extends StatelessWidget {
+  const _MoreIconButton({this.onEdit, this.onClone, this.onDelete, required this.color});
   final VoidCallback? onEdit;
   final VoidCallback? onClone;
   final VoidCallback? onDelete;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton<_MenuAction>(
-      onSelected: (a) {
-        switch (a) {
-          case _MenuAction.edit:   onEdit?.call();
-          case _MenuAction.clone:  onClone?.call();
-          case _MenuAction.delete: onDelete?.call();
-        }
-      },
-      offset: const Offset(0, 36),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.card)),
-      color: AppColors.surface,
-      elevation: 4,
-      itemBuilder: (_) => [
-        PopupMenuItem(value: _MenuAction.edit, height: 40, child: Row(children: [
-          const Icon(Icons.edit_outlined, size: 16, color: AppColors.textPrimary),
-          const SizedBox(width: 10), Text('编辑', style: AppTextStyles.cardTitle.copyWith(fontWeight: FontWeight.w400)),
-        ])),
-        PopupMenuItem(value: _MenuAction.clone, height: 40, child: Row(children: [
-          const Icon(Icons.copy_outlined, size: 16, color: AppColors.textPrimary),
-          const SizedBox(width: 10), Text('克隆', style: AppTextStyles.cardTitle.copyWith(fontWeight: FontWeight.w400)),
-        ])),
-        const PopupMenuDivider(height: 1),
-        PopupMenuItem(value: _MenuAction.delete, height: 40, child: Row(children: [
-          const Icon(Icons.delete_outline, size: 16, color: Colors.red),
-          const SizedBox(width: 10), Text('删除', style: AppTextStyles.cardTitle.copyWith(fontWeight: FontWeight.w400, color: Colors.red)),
-        ])),
-      ],
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-        decoration: BoxDecoration(
-          color: const Color(0x0D1E243C),
-          borderRadius: BorderRadius.circular(AppRadius.pill),
+    return Builder(builder: (ctx) {
+      return GestureDetector(
+        onTap: () {
+          final box = ctx.findRenderObject() as RenderBox;
+          final pos = box.localToGlobal(Offset.zero);
+          showGlassPopover(
+            context: ctx,
+            position: RelativeRect.fromLTRB(
+                pos.dx, pos.dy + 20,
+                MediaQuery.of(ctx).size.width - pos.dx - box.size.width, 0),
+            items: [
+              PopoverItem(icon: Icons.edit_outlined, label: '编辑', onTap: () => onEdit?.call()),
+              PopoverItem(icon: Icons.copy_outlined, label: '克隆', onTap: () => onClone?.call()),
+              PopoverItem(icon: Icons.delete_outline, label: '删除', isDestructive: true,
+                  onTap: () => onDelete?.call()),
+            ],
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          child: Icon(Icons.more_horiz, size: 16, color: color),
         ),
-        child: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.more_horiz, size: 15, color: AppColors.textSecondary),
-            SizedBox(width: 4),
-            Text('更多', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textSecondary)),
-          ],
-        ),
-      ),
-    );
+      );
+    });
   }
-}
-
-// ─── Concave Nav Button (top-right corner) ──────────────────────────────────
-
-class _ConcaveNavButton extends StatelessWidget {
-  const _ConcaveNavButton({
-    required this.coordinate,
-    required this.name,
-    required this.isHotel,
-    required this.iconColor,
-  });
-  final String coordinate;
-  final String name;
-  final bool isHotel;
-  final Color iconColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 36,
-      height: 36,
-      child: ScheduleNavButton(
-        coordinate: coordinate,
-        name: name,
-        isHotel: isHotel,
-        compact: true,
-      ),
-    );
-  }
-}
-
-class _ConcaveMoreButton extends StatelessWidget {
-  const _ConcaveMoreButton({
-    required this.accentColor,
-    required this.isHotel,
-    required this.hasStartTime,
-    this.onEdit,
-    this.onClone,
-    this.onDelete,
-  });
-
-  final Color accentColor;
-  final bool isHotel;
-  final bool hasStartTime;
-  final VoidCallback? onEdit;
-  final VoidCallback? onClone;
-  final VoidCallback? onDelete;
-
-  @override
-  Widget build(BuildContext context) {
-    return PopupMenuButton<_MenuAction>(
-      onSelected: (action) {
-        switch (action) {
-          case _MenuAction.edit:
-            onEdit?.call();
-          case _MenuAction.clone:
-            onClone?.call();
-          case _MenuAction.delete:
-            onDelete?.call();
-        }
-      },
-      offset: const Offset(0, 36),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadius.card),
-      ),
-      color: AppColors.surface,
-      elevation: 4,
-      itemBuilder: (_) => [
-        PopupMenuItem(
-          value: _MenuAction.edit,
-          height: 40,
-          child: Row(children: [
-            const Icon(Icons.edit_outlined,
-                size: 16, color: AppColors.textPrimary),
-            const SizedBox(width: 10),
-            Text('编辑',
-                style: AppTextStyles.cardTitle
-                    .copyWith(fontWeight: FontWeight.w400)),
-          ]),
-        ),
-        PopupMenuItem(
-          value: _MenuAction.clone,
-          height: 40,
-          child: Row(children: [
-            const Icon(Icons.copy_outlined,
-                size: 16, color: AppColors.textPrimary),
-            const SizedBox(width: 10),
-            Text('克隆',
-                style: AppTextStyles.cardTitle
-                    .copyWith(fontWeight: FontWeight.w400)),
-          ]),
-        ),
-        const PopupMenuDivider(height: 1),
-        PopupMenuItem(
-          value: _MenuAction.delete,
-          height: 40,
-          child: Row(children: [
-            const Icon(Icons.delete_outline, size: 16, color: Colors.red),
-            const SizedBox(width: 10),
-            Text('删除',
-                style: AppTextStyles.cardTitle
-                    .copyWith(fontWeight: FontWeight.w400, color: Colors.red)),
-          ]),
-        ),
-      ],
-      child: CustomPaint(
-        painter: _ConcaveMaskPainter(),
-        child: const SizedBox(
-          width: 41,
-          height: 41,
-          child: Center(
-            child: Icon(Icons.more_horiz, size: 20, color: AppColors.textSecondary),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Draws a 30px circle with concave cutout mask on bottom-left
-class _ConcaveMaskPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    const radius = 17.0;
-
-    // Circle fill
-    final fillPaint = Paint()
-      ..color = const Color(0xCCFFFFFF)
-      ..style = PaintingStyle.fill;
-    canvas.drawCircle(center, radius, fillPaint);
-
-    // Circle border
-    final borderPaint = Paint()
-      ..color = const Color(0xE6FFFFFF)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
-    canvas.drawCircle(center, radius, borderPaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-// ─── Glass Nav Button (38x38 rounded square) ─────────────────────────────────
-
-class _GlassNavButton extends StatelessWidget {
-  const _GlassNavButton({
-    required this.coordinate,
-    required this.name,
-    required this.isHotel,
-    required this.bgColor,
-    required this.borderColor,
-    required this.iconColor,
-  });
-
-  final String coordinate;
-  final String name;
-  final bool isHotel;
-  final Color bgColor;
-  final Color borderColor;
-  final Color iconColor;
-
-  bool get _isEnabled {
-    if (coordinate.isEmpty || coordinate == '0,0') return false;
-    return coordinate.split(',').length >= 2;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (!_isEnabled) return const SizedBox.shrink();
-    return ScheduleNavButton(
-      coordinate: coordinate,
-      name: name,
-      isHotel: isHotel,
-      compact: true,
-    );
-  }
-}
-
-// ─── Concave Cutout Clipper ──────────────────────────────────────────────────
-
-class _ConcaveCutoutClipper extends CustomClipper<Path> {
-  const _ConcaveCutoutClipper();
-
-  static const double _cardRadius = AppRadius.card;
-  // Button 40x40, positioned at top:-4 right:-4
-  static const double _buttonSize = 36.0;
-  static const double _gap = 10.0;
-  static const double _cutoutSize = _buttonSize + _gap * 2; // 50
-  // Inner corner radius matches card corner radius (AppRadius.card = 20)
-  static const double _innerRadius = _cardRadius;
-
-  @override
-  Path getClip(Size size) {
-    final w = size.width;
-    final h = size.height;
-    final r = _cardRadius;
-    final ir = _innerRadius;
-
-    // Cutout rect position (top-left of cutout square in card coords)
-    final cx = w - _buttonSize + 4 - _gap; // left edge of cutout
-    final cy = -4.0 - _gap;                // top edge of cutout
-    final cb = cy + _cutoutSize;            // bottom edge of cutout
-    // cr = cx + _cutoutSize extends beyond card, not needed for path
-
-    // Build the card outline with a concave notch at top-right
-    final path = Path();
-
-    // Start at top-left after corner radius
-    path.moveTo(r, 0);
-
-    // Top edge → stop before cutout, add inner radius curve into cutout
-    path.lineTo(cx - ir, 0);
-    // Inner radius: curve from card top edge down into cutout left edge
-    path.quadraticBezierTo(cx, 0, cx, ir);
-    // Cutout left edge going down
-    path.lineTo(cx, cb - ir);
-    // Inner radius: curve from cutout left edge back to card right direction
-    path.quadraticBezierTo(cx, cb, cx + ir, cb);
-    // Cutout bottom edge going right, stop before card right edge for inner radius
-    path.lineTo(w - ir, cb);
-    // Inner radius: curve from cutout bottom edge into card right edge
-    path.quadraticBezierTo(w, cb, w, cb + ir);
-
-    // Right edge down
-    path.lineTo(w, h - r);
-    // Bottom-right corner
-    path.quadraticBezierTo(w, h, w - r, h);
-    // Bottom edge
-    path.lineTo(r, h);
-    // Bottom-left corner
-    path.quadraticBezierTo(0, h, 0, h - r);
-    // Left edge up
-    path.lineTo(0, r);
-    // Top-left corner
-    path.quadraticBezierTo(0, 0, r, 0);
-
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(covariant _ConcaveCutoutClipper old) => false;
 }
 
 // ─── Dashed Line Painter ─────────────────────────────────────────────────────
@@ -637,16 +431,23 @@ class _DashedLinePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
+    // Dark line (inset shadow — top)
+    final darkPaint = Paint()
       ..color = color
       ..strokeWidth = 1
+      ..style = PaintingStyle.stroke;
+    // Light line (highlight — bottom, 0.5px offset)
+    final lightPaint = Paint()
+      ..color = const Color(0x30FFFFFF)
+      ..strokeWidth = 0.5
       ..style = PaintingStyle.stroke;
 
     const dashWidth = 4.0;
     const dashSpace = 3.0;
     double x = 0;
     while (x < size.width) {
-      canvas.drawLine(Offset(x, 0), Offset(x + dashWidth, 0), paint);
+      canvas.drawLine(Offset(x, 0), Offset(x + dashWidth, 0), darkPaint);
+      canvas.drawLine(Offset(x, 1), Offset(x + dashWidth, 1), lightPaint);
       x += dashWidth + dashSpace;
     }
   }
@@ -655,42 +456,40 @@ class _DashedLinePainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-// ─── Cover Image (56x56) ─────────────────────────────────────────────────────
+// ─── Cover Image (48x48) ─────────────────────────────────────────────────────
 
 class _CoverImage extends StatelessWidget {
   const _CoverImage({required this.schedule});
   final Schedule schedule;
 
-  Color get _borderColor {
-    if (schedule.isHotel) return AppColors.hotel;
-    if (schedule.startTime == null) return AppColors.unplanned;
-    return AppColors.primary;
+  Color get _bg {
+    if (schedule.isHotel) return AppColors.lavenderTint;
+    if (schedule.startTime == null) return const Color(0x0A1C1C1E); // neutral
+    return const Color(0x14FF6B3D); // rgba(255,107,61,0.08)
   }
 
-  Color get _defaultBg {
-    if (schedule.isHotel) return AppColors.hotelLight;
-    if (schedule.startTime == null) return AppColors.unplannedLight;
-    return const Color(0xFFFEE2C8);
+  Color get _border {
+    if (schedule.isHotel) return const Color(0x268C5CF6); // rgba(140,92,246,0.15)
+    if (schedule.startTime == null) return const Color(0x0F1C1C1E); // rgba(28,28,30,0.06)
+    return const Color(0x1FFF6B3D); // rgba(255,107,61,0.12)
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 56,
-      height: 56,
+      width: 48,
+      height: 48,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: _borderColor, width: 2),
-        color: _defaultBg,
+        borderRadius: BorderRadius.circular(12),
+        color: _bg,
+        border: Border.all(color: _border, width: 1),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(11),
         child: schedule.cover != null && schedule.cover!.isNotEmpty
             ? Image.network(
                 schedule.cover!,
-                width: 56,
-                height: 56,
-                fit: BoxFit.cover,
+                width: 48, height: 48, fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) =>
                     _DefaultIcon(schedule: schedule),
               )
@@ -710,6 +509,121 @@ class _DefaultIcon extends StatelessWidget {
       child: Text(
         schedule.isHotel ? '🏨' : '📍',
         style: const TextStyle(fontSize: 28),
+      ),
+    );
+  }
+}
+
+// ── Subtle noise texture overlay ────────────────────────────────────────────
+
+class _NoisePainter extends CustomPainter {
+  static final _rng = math.Random(42);
+  static const _density = 0.08;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = const Color(0x0A000000);
+    const step = 4.0;
+    for (double x = 0; x < size.width; x += step) {
+      for (double y = 0; y < size.height; y += step) {
+        if (_rng.nextDouble() < _density) {
+          canvas.drawCircle(Offset(x, y), 0.6, paint);
+        }
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _NoisePainter old) => false;
+}
+
+// ── Expandable note box ─────────────────────────────────────────────────────
+
+class _ExpandableNote extends StatefulWidget {
+  const _ExpandableNote({
+    required this.text,
+    required this.isDark,
+    required this.noteColor,
+  });
+  final String text;
+  final bool isDark;
+  final Color noteColor;
+
+  @override
+  State<_ExpandableNote> createState() => _ExpandableNoteState();
+}
+
+class _ExpandableNoteState extends State<_ExpandableNote> {
+  bool _expanded = false;
+  bool _overflows = false;
+
+  final _textStyle = const TextStyle(
+      fontSize: 14, fontStyle: FontStyle.italic, height: 1.5);
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkOverflow());
+  }
+
+  void _checkOverflow() {
+    final tp = TextPainter(
+      text: TextSpan(text: widget.text, style: _textStyle),
+      maxLines: 2,
+      textDirection: ui.TextDirection.ltr,
+    )..layout(maxWidth: (context.size?.width ?? 300) - 28); // minus padding
+    if (mounted && tp.didExceedMaxLines != _overflows) {
+      setState(() => _overflows = tp.didExceedMaxLines);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.fromLTRB(14, 12, 14, _overflows ? 8 : 12),
+      decoration: BoxDecoration(
+        color: widget.isDark
+            ? const Color(0x1AFFFFFF)
+            : const Color(0xFFEDE5D8),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AnimatedCrossFade(
+            firstChild: Text(widget.text,
+                style: _textStyle.copyWith(color: widget.noteColor),
+                maxLines: 2, overflow: TextOverflow.ellipsis),
+            secondChild: Text(widget.text,
+                style: _textStyle.copyWith(color: widget.noteColor)),
+            crossFadeState: _expanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 200),
+          ),
+          if (_overflows) ...[
+            const SizedBox(height: 6),
+            GestureDetector(
+              onTap: () => setState(() => _expanded = !_expanded),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _expanded ? '收起' : '展开',
+                    style: TextStyle(
+                        fontSize: 13, color: widget.noteColor.withValues(alpha: 0.5)),
+                  ),
+                  Icon(
+                    _expanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    size: 16,
+                    color: widget.noteColor.withValues(alpha: 0.5),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

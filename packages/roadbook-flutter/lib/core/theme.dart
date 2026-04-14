@@ -1,96 +1,117 @@
 // lib/core/theme.dart
+// Frosted Warmth / SandTrail Design System — 小肥路书
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
 abstract class AppColors {
-  // ─── Brand ───────────────────────────────────────────────────────────────
-  static const Color primary = Color(0xFFFF5B2E);
+  // ─── Brand Accent ────────────────────────────────────────────────────────
+  static const Color primary    = Color(0xFFFF6B3D); // Coral Ember
+  static const Color coralGlow  = Color(0x59FF6B3D); // rgba(255,107,61,0.35) — shadow on coral buttons
+  static const Color coralTint  = Color(0x1AFF6B3D); // rgba(255,107,61,0.10) — badge/tag bg
 
-  // ─── Liquid Glass Accent Palette ─────────────────────────────────────────
-  static const Color skyBlue   = Color(0xFF2A7EF5);
-  static const Color spearmint = Color(0xFF0AAD88);
-  static const Color petalPink = Color(0xFFE8387A);
-  static const Color sunstone  = Color(0xFFE08500);
-  static const Color lavender  = Color(0xFF7C55F0);
+  // ─── Dark Accents ────────────────────────────────────────────────────────
+  static const Color darkPill      = Color(0xE01C1C1E); // rgba(28,28,30,0.88) — primary CTA
+  static const Color darkPillHover = Color(0xBF1C1C1E); // rgba(28,28,30,0.75) — pressed
 
-  // ─── Text (blue-tinted dark) ─────────────────────────────────────────────
-  static const Color textPrimary   = Color(0xEB1E243C); // rgba(30,36,60,0.92)
-  static const Color textSecondary = Color(0x8C1E243C); // rgba(30,36,60,0.55)
-  static const Color textTertiary  = Color(0x591E243C); // rgba(30,36,60,0.35)
+  // ─── Canvas & Surface ────────────────────────────────────────────────────
+  static const Color warmCanvas    = Color(0xFFF2EDE8); // App base background
+  static const Color cardFrost     = Color(0x85FFFFFF); // rgba(255,255,255,0.52)
+  static const Color cardFrostStrong = Color(0xB8FFFFFF); // rgba(255,255,255,0.72) — sheets
+  static const Color cardBorder    = Color(0xA6FFFFFF); // rgba(255,255,255,0.65)
+  static const Color dockGlass     = Color(0x4DFFFFFF); // rgba(255,255,255,0.30)
+
+  // ─── Ink (neutral #1C1C1E at varying opacities) ──────────────────────────
+  static const Color inkPrimary   = Color(0xE61C1C1E); // rgba(28,28,30,0.90)
+  static const Color inkSecondary = Color(0x801C1C1E); // rgba(28,28,30,0.50)
+  static const Color inkTertiary  = Color(0x471C1C1E); // rgba(28,28,30,0.28)
+
+  // Backward-compat aliases — screens may still reference these names
+  static const Color textPrimary   = inkPrimary;
+  static const Color textSecondary = inkSecondary;
+  static const Color textTertiary  = inkTertiary;
 
   // ─── Semantic ────────────────────────────────────────────────────────────
   static const Color destructive = Color(0xFFFF3B30);
   static const Color success     = Color(0xFF34C759);
   static const Color neutral     = Color(0xFF8E8E93);
 
-  // ─── Hotel (preserved for schedule screens) ──────────────────────────────
-  static const Color hotel       = Color(0xFF8B5CF6);
-  static const Color hotelLight  = Color(0xFFF5F3FF);
-  static const Color hotelBorder = Color(0xFFDDD6FE);
+  // ─── Secondary Accent — Lavender (Hotel / Accommodation) ─────────────────
+  static const Color lavender      = Color(0xFF8C5CF6);
+  static const Color lavenderTint  = Color(0x1A8C5CF6); // rgba(140,92,246,0.10)
+  static const Color lavenderText  = Color(0xFF6D3FC0);
+  static const Color lavenderDeep  = Color(0xFF6D3FC0); // deep purple — hotel title text
+  static const Color lavenderAddr  = Color(0x808C5CF6); // rgba(140,92,246,0.50) — hotel address
+  static const Color lavenderNote  = Color(0x738C5CF6); // rgba(140,92,246,0.45) — hotel notes
+  static const Color lavenderFrost = Color(0x148C5CF6); // rgba(140,92,246,0.08) — hotel card tint
+  static const Color lavenderFrostBorder = Color(0x268C5CF6); // rgba(140,92,246,0.15) — hotel card border
+  static const Color lavenderTimeBg = Color(0x1F8C5CF6); // rgba(140,92,246,0.12) — hotel time badge
 
-  // ─── Schedule unplanned (preserved) ──────────────────────────────────────
+  // Backward-compat aliases for hotel
+  static const Color hotel       = lavender;
+  static const Color hotelLight  = lavenderTint;
+  static const Color hotelBorder = Color(0x388C5CF6); // rgba(140,92,246,0.22)
+
+  // ─── Schedule unplanned ──────────────────────────────────────────────────
   static const Color unplanned      = Color(0xFFD4C8BF);
   static const Color unplannedLight = Color(0xFFEDE8E3);
 
-  // ─── Backward compat aliases (used by preserved screens) ─────────────────
-  static const Color primaryLight  = Color(0xFFFFEFEB);
-  static const Color primaryBorder = Color(0xFFFFCBBD);
-  static const Color background    = Color(0xFFF2F2F7);
+  // ─── Backward compat aliases ─────────────────────────────────────────────
+  static const Color primaryLight  = coralTint;
+  static const Color primaryBorder = Color(0x38FF6B3D); // rgba(255,107,61,0.22)
+  static const Color background    = warmCanvas;
   static const Color surface       = Color(0xFFFFFFFF);
   static const Color border        = Color(0xFFE5E5EA);
   static const Color separator     = Color(0x1A3C3C43);
   static const Color textDisabled  = Color(0xFFC7C7CC);
   static const Color successLight  = Color(0xFFEAFFF0);
 
-  // ─── City tag color cycle ────────────────────────────────────────────────
-  static const List<Color> tagAccents = [lavender, spearmint, petalPink, sunstone, skyBlue];
+  // ─── Accent palette (preserved for legacy screens) ───────────────────────
+  static const Color sunstone  = Color(0xFFE08500);
+  static const Color skyBlue   = Color(0xFF2A7EF5);
+  static const Color spearmint = Color(0xFF0AAD88);
+  static const Color petalPink = Color(0xFFE8387A);
 
-  static Color cityTagColor(int index) => tagAccents[index % tagAccents.length];
-  static Color cityTagBg(int index) => cityTagColor(index).withValues(alpha: 0.10);
-  static Color cityTagBorder(int index) => cityTagColor(index).withValues(alpha: 0.22);
-  static Color cityTagText(int index) {
-    const darkVariants = [
-      Color(0xFF5C38CC), // lavender
-      Color(0xFF0A8A6D), // spearmint
-      Color(0xFFC02060), // petalPink
-      Color(0xFFB56800), // sunstone
-      Color(0xFF1A5FC8), // skyBlue
-    ];
-    return darkVariants[index % darkVariants.length];
-  }
+  // ─── City tags — unified dark style ──────────────────────────────────────
+  static const Color _cityTagBg     = Color(0x0D1C1C1E); // rgba(28,28,30,0.05)
+  static const Color _cityTagBorder = Color(0x141C1C1E); // rgba(28,28,30,0.08)
 
-  // ─── Status colors ───────────────────────────────────────────────────────
+  static Color cityTagColor(int index) => inkSecondary;
+  static Color cityTagBg(int index) => _cityTagBg;
+  static Color cityTagBorder(int index) => _cityTagBorder;
+  static Color cityTagText(int index) => inkSecondary;
+
+  // ─── Status colors (Frosted Warmth) ──────────────────────────────────────
   static Color statusTint(TravelStatusType status) => switch (status) {
-    TravelStatusType.ongoing  => const Color(0x0F0AAD88),
-    TravelStatusType.upcoming => const Color(0x0FE08500),
-    TravelStatusType.planning => const Color(0x0D2A7EF5),
+    TravelStatusType.ongoing  => const Color(0x0AFF6B3D), // rgba(255,107,61,0.04)
+    TravelStatusType.upcoming => const Color(0x0AE08500), // rgba(224,133,0,0.04)
+    TravelStatusType.planning => Colors.transparent,
     TravelStatusType.ended    => Colors.transparent,
   };
 
   static Color statusBadgeBg(TravelStatusType status) => switch (status) {
-    TravelStatusType.ongoing  => spearmint.withValues(alpha: 0.10),
-    TravelStatusType.upcoming => sunstone.withValues(alpha: 0.10),
-    TravelStatusType.planning => skyBlue.withValues(alpha: 0.10),
-    TravelStatusType.ended    => const Color(0x0D1E243C),
+    TravelStatusType.ongoing  => coralTint,                 // rgba(255,107,61,0.10)
+    TravelStatusType.upcoming => const Color(0x1AE08500),   // rgba(224,133,0,0.10)
+    TravelStatusType.planning => const Color(0x0F1C1C1E),   // rgba(28,28,30,0.06)
+    TravelStatusType.ended    => const Color(0x0A1C1C1E),   // rgba(28,28,30,0.04)
   };
 
   static Color statusBadgeBorder(TravelStatusType status) => switch (status) {
-    TravelStatusType.ongoing  => spearmint.withValues(alpha: 0.22),
-    TravelStatusType.upcoming => sunstone.withValues(alpha: 0.22),
-    TravelStatusType.planning => skyBlue.withValues(alpha: 0.22),
-    TravelStatusType.ended    => const Color(0x1E1E243C),
+    TravelStatusType.ongoing  => const Color(0x38FF6B3D),   // rgba(255,107,61,0.22)
+    TravelStatusType.upcoming => const Color(0x38E08500),   // rgba(224,133,0,0.22)
+    TravelStatusType.planning => const Color(0x1F1C1C1E),   // rgba(28,28,30,0.12)
+    TravelStatusType.ended    => const Color(0x141C1C1E),   // rgba(28,28,30,0.08)
   };
 
   static Color statusBadgeText(TravelStatusType status) => switch (status) {
-    TravelStatusType.ongoing  => const Color(0xFF0A8A6D),
-    TravelStatusType.upcoming => const Color(0xFFB56800),
-    TravelStatusType.planning => const Color(0xFF1A5FC8),
-    TravelStatusType.ended    => const Color(0x661E243C),
+    TravelStatusType.ongoing  => const Color(0xFFD4410A),   // coral dark
+    TravelStatusType.upcoming => const Color(0xFFB56800),   // sunstone dark
+    TravelStatusType.planning => inkSecondary,
+    TravelStatusType.ended    => inkTertiary,
   };
 
   // ─── Legacy gradients (preserved for non-redesigned screens) ─────────────
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [Color(0xFFFF5B2E), Color(0xFFFF8C42)],
+    colors: [Color(0xFFFF6B3D), Color(0xFFFF8C42)],
     begin: Alignment.topLeft, end: Alignment.bottomRight,
   );
   static const LinearGradient ongoingGradient  = primaryGradient;
@@ -111,86 +132,131 @@ abstract class AppColors {
 /// Travel status type — moved here so theme can reference it without importing travel_card.
 enum TravelStatusType { ongoing, upcoming, planning, ended }
 
-// ─── Glass Surface Specs ──────────────────────────────────────────────────────
+// ─── Glass Surface Specs (Frosted Warmth) ────────────────────────────────────
 
 abstract class GlassSpec {
-  static ImageFilter cardBlur = ImageFilter.blur(sigmaX: 12, sigmaY: 12);
-  static const Color cardBg          = Color(0xE6FFFFFF); // rgba(255,255,255,0.90)
-  static const Color cardBorder      = Color(0x1A000000); // subtle dark border like reference
+  // Card / Schedule Item
+  static ImageFilter cardBlur = ImageFilter.blur(sigmaX: 14, sigmaY: 14);
+  static const Color cardBg     = Color(0x8CFFFFFF); // rgba(255,255,255,0.55)
+  static const Color cardBorder = Color(0xA6FFFFFF); // rgba(255,255,255,0.65)
   static const List<BoxShadow> cardShadow = [
-    BoxShadow(color: Color(0x12000000), blurRadius: 16, offset: Offset(0, 4)),
-    BoxShadow(color: Color(0x08000000), blurRadius: 4,  offset: Offset(0, 1)),
+    BoxShadow(color: Color(0x0F000000), blurRadius: 32, offset: Offset(0, 8)),
+    BoxShadow(color: Color(0x08000000), blurRadius: 2,  offset: Offset(0, 1)),
   ];
 
-  static ImageFilter navBlur = ImageFilter.blur(sigmaX: 40, sigmaY: 40);
-  static const Color navBg     = Color(0x8CFFFFFF);
-  static const Color navBorder = Color(0xE6FFFFFF);
+  // Bottom Sheet — blur(50) saturate(1.8)
+  static ImageFilter sheetBlur = ImageFilter.blur(sigmaX: 50, sigmaY: 50);
+  static const Color sheetBg     = Color(0xB8FFFFFF); // rgba(255,255,255,0.72)
+  static const Color sheetBorder = Color(0x8CFFFFFF); // rgba(255,255,255,0.55)
+  static const List<BoxShadow> sheetShadow = [
+    BoxShadow(color: Color(0x0F000000), blurRadius: 32, offset: Offset(0, -8)),
+  ];
+  static const Color dragHandle = Color(0x291C1C1E); // rgba(28,28,30,0.16)
+
+  // Navigation Dock (Floating Island) — blur(50) saturate(1.8) brightness(1.05)
+  static ImageFilter navBlur = ImageFilter.blur(sigmaX: 50, sigmaY: 50);
+  static const Color navBg     = Color(0x4DFFFFFF); // rgba(255,255,255,0.30)
+  static const Color navBorder = Color(0x80FFFFFF); // rgba(255,255,255,0.50)
   static const List<BoxShadow> navShadow = [
-    BoxShadow(color: Color(0x1E6478B4), blurRadius: 24, offset: Offset(0, 4)),
-    BoxShadow(color: Color(0x146478B4), blurRadius: 4,  offset: Offset(0, 1)),
+    BoxShadow(color: Color(0x0F000000), blurRadius: 32, offset: Offset(0, 8)),
+  ];
+  static const BoxShadow navInsetShadow = BoxShadow(
+    color: Color(0x8CFFFFFF), // rgba(255,255,255,0.55)
+    blurRadius: 0, offset: Offset(0, 1),
+  );
+
+  // Glass Indicator (dock sliding pill)
+  static const Color indicatorBg     = Color(0x73FFFFFF); // rgba(255,255,255,0.45)
+  static const Color indicatorBorder = Color(0x99FFFFFF); // rgba(255,255,255,0.60)
+  static const List<BoxShadow> indicatorShadow = [
+    BoxShadow(color: Color(0x0D000000), blurRadius: 12, offset: Offset(0, 2)),
   ];
 
+  // Input (on white sheets)
   static ImageFilter inputBlur = ImageFilter.blur(sigmaX: 16, sigmaY: 16);
-  static const Color inputBg       = Color(0x80FFFFFF);
-  static const Color inputBorder   = Color(0xCCFFFFFF);
-  static const Color inputFocusBorder = Color(0x732A7EF5);
+  static const Color inputBg          = Color(0x73FFFFFF); // rgba(255,255,255,0.45)
+  static const Color inputBorder      = Color(0x99FFFFFF); // rgba(255,255,255,0.60)
+  static const Color inputFocusBorder = Color(0x66FF6B3D); // rgba(255,107,61,0.40)
 
+  // Input (on glass / mesh background)
+  static const Color inputOnGlassBg     = Color(0x0D1C1C1E); // rgba(28,28,30,0.05)
+  static const Color inputOnGlassBorder = Color(0x141C1C1E); // rgba(28,28,30,0.08)
+
+  // Specular highlight — 160deg gradient (subtle)
   static const LinearGradient specularHighlight = LinearGradient(
-    begin: Alignment(-0.6, -0.8),
-    end: Alignment(0.6, 0.8),
-    colors: [Color(0x80FFFFFF), Color(0x00FFFFFF)],
-    stops: [0.0, 0.45],
+    begin: Alignment(-0.5, -0.87), // ≈ 160deg from top-left
+    end: Alignment(0.5, 0.87),
+    colors: [Color(0x33FFFFFF), Color(0x00FFFFFF)], // rgba(255,255,255,0.20) → transparent
+    stops: [0.0, 0.40],
   );
 }
 
-// ─── Text Styles (Liquid Glass lightweight) ───────────────────────────────────
+// ─── Text Styles (Frosted Warmth — PingFang SC, CJK-primary) ─────────────────
 
 abstract class AppTextStyles {
-  static const TextStyle largeTitle = TextStyle(
-    fontSize: 34, fontWeight: FontWeight.w300, color: AppColors.textPrimary,
-    letterSpacing: -0.85,
-  );
-  static const TextStyle title1 = TextStyle(
-    fontSize: 28, fontWeight: FontWeight.w400, color: AppColors.textPrimary,
-    letterSpacing: -0.56,
-  );
-  static const TextStyle title2 = TextStyle(
-    fontSize: 22, fontWeight: FontWeight.w400, color: AppColors.textPrimary,
-    letterSpacing: -0.33,
-  );
-  static const TextStyle headline = TextStyle(
-    fontSize: 17, fontWeight: FontWeight.w500, color: AppColors.textPrimary,
-  );
-  static const TextStyle body = TextStyle(
-    fontSize: 17, fontWeight: FontWeight.w400, color: AppColors.textSecondary,
-  );
-  static const TextStyle caption = TextStyle(
-    fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.textTertiary,
+  // Display — ultra-thin large titles
+  static const TextStyle display = TextStyle(
+    fontSize: 34, fontWeight: FontWeight.w200, color: AppColors.inkPrimary,
+    letterSpacing: -1.02, // -0.03em
   );
 
-  // Backward-compat aliases for preserved screens
+  // Title — section headers
+  static const TextStyle title = TextStyle(
+    fontSize: 22, fontWeight: FontWeight.w300, color: AppColors.inkPrimary,
+    letterSpacing: -0.44, // -0.02em
+  );
+
+  // App Bar Title
   static const TextStyle appBarTitle = TextStyle(
-    fontSize: 20, fontWeight: FontWeight.w400, color: AppColors.textPrimary,
-    letterSpacing: -0.30,
+    fontSize: 18, fontWeight: FontWeight.w500, color: AppColors.inkPrimary,
+    letterSpacing: -0.18, // -0.01em
   );
-  static TextStyle get subheadline => const TextStyle(
-    fontSize: 15, fontWeight: FontWeight.w400, color: AppColors.textPrimary,
+
+  // Headline — card titles, names
+  static const TextStyle headline = TextStyle(
+    fontSize: 17, fontWeight: FontWeight.w500, color: AppColors.inkPrimary,
   );
-  static TextStyle get micro => const TextStyle(
-    fontSize: 11, fontWeight: FontWeight.w400, color: AppColors.textSecondary,
+
+  // Body — descriptions, inactive labels
+  static const TextStyle body = TextStyle(
+    fontSize: 15, fontWeight: FontWeight.w400, color: AppColors.inkSecondary,
   );
-  static TextStyle get pageHeroTitle => largeTitle;
-  static TextStyle get cardTitle => headline;
+
+  // Caption — small text
+  static const TextStyle caption = TextStyle(
+    fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.inkTertiary,
+  );
+
+  // Micro — smallest text
+  static const TextStyle micro = TextStyle(
+    fontSize: 10, fontWeight: FontWeight.w400, color: AppColors.inkTertiary,
+  );
+
+  // Subheadline — mid-size body text
+  static const TextStyle subheadline = TextStyle(
+    fontSize: 15, fontWeight: FontWeight.w400, color: AppColors.inkPrimary,
+  );
+
+  // Backward-compat aliases
+  static const TextStyle largeTitle = display;
+  static const TextStyle title1 = TextStyle(
+    fontSize: 28, fontWeight: FontWeight.w300, color: AppColors.inkPrimary,
+    letterSpacing: -0.56,
+  );
+  static const TextStyle title2 = title;
+  static const TextStyle pageHeroTitle = display;
+  static const TextStyle cardTitle = headline;
 }
 
 // ─── Radius ───────────────────────────────────────────────────────────────────
 
 abstract class AppRadius {
-  static const double card     = 20;
-  static const double cardSm   = 14;
+  static const double card     = 24;
+  static const double cardSm   = 16;
   static const double cardXs   = 10;
   static const double pill     = 100;
   static const double sheet    = 24;
+  static const double cover    = 14; // image/cover radius
 
   // Backward-compat aliases
   static const double contentCard = 12;
@@ -212,27 +278,38 @@ abstract class AppSpacing {
   static const double xxl = 32;
   static const double touch = 44;
 
-  // Backward-compat aliases
-  static const double pageHorizontal = 16;
+  static const double pageHorizontal = 20; // page-h
   static const double cardPadding    = 16;
-  static const double cardGap        = 8;
+  static const double cardGap        = 14; // travel list gap
+  static const double scheduleGap    = 20; // schedule list gap
+  static const double dockInset      = 20; // dock from edges
+  static const double dockHeight     = 58;
 }
 
 // ─── Animation ────────────────────────────────────────────────────────────────
 
 abstract class AppAnimations {
+  // Durations
   static const Duration fast   = Duration(milliseconds: 180);
   static const Duration normal = Duration(milliseconds: 280);
   static const Duration slow   = Duration(milliseconds: 380);
+  static const Duration spring500 = Duration(milliseconds: 500);
+  static const Duration spring600 = Duration(milliseconds: 600);
 
-  static const Curve spring     = Cubic(0.34, 1.56, 0.64, 1.0);
-  static const Curve easeOut    = Cubic(0.22, 0.0, 0.36, 1.0);
-  static const Curve expressive = Cubic(0.22, 1.0, 0.36, 1.0);
+  // Curves
+  static const Curve spring     = Cubic(0.34, 1.3, 0.64, 1.0);  // bouncy spring
+  static const Curve easeOut    = Cubic(0.22, 0.0, 0.36, 1.0);  // sheet dismiss, tab switch
+  static const Curve expressive = Cubic(0.22, 1.0, 0.36, 1.0);  // emphasis, stagger reveals
 
   // Backward-compat aliases
   static const Curve defaultCurve = easeOut;
   static const Curve springCurve  = spring;
-  static const Curve sheetCurve   = Cubic(0.22, 1.0, 0.36, 1.0);
+  static const Curve sheetCurve   = expressive;
+
+  // Micro-interaction constants
+  static const double pressScale    = 0.92;
+  static const double tabPressScale = 0.88;
+  static const double cardHoldScale = 0.97;
 }
 
 // ─── ThemeData ────────────────────────────────────────────────────────────────
@@ -250,7 +327,7 @@ class AppTheme {
     useMaterial3: true,
     splashFactory: NoSplash.splashFactory,
     highlightColor: AppColors.primary.withValues(alpha: 0.06),
-    scaffoldBackgroundColor: AppColors.background,
+    scaffoldBackgroundColor: AppColors.warmCanvas,
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.primary,
       surface: AppColors.surface,
@@ -262,42 +339,42 @@ class AppTheme {
       elevation: 0,
       scrolledUnderElevation: 0,
       titleTextStyle: AppTextStyles.appBarTitle,
-      iconTheme: IconThemeData(color: AppColors.textPrimary),
+      iconTheme: IconThemeData(color: AppColors.inkPrimary),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: const Color(0x0D1E243C), // rgba(30,36,60,0.05) — subtle tint on white sheets
+      fillColor: GlassSpec.inputOnGlassBg, // rgba(28,28,30,0.05) on sheets
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.cardSm),
-        borderSide: const BorderSide(color: Color(0x141E243C), width: 1), // rgba(30,36,60,0.08)
+        borderRadius: BorderRadius.circular(AppRadius.cover),
+        borderSide: const BorderSide(color: GlassSpec.inputOnGlassBorder, width: 1),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.cardSm),
-        borderSide: const BorderSide(color: Color(0x141E243C), width: 1),
+        borderRadius: BorderRadius.circular(AppRadius.cover),
+        borderSide: const BorderSide(color: GlassSpec.inputOnGlassBorder, width: 1),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.cardSm),
-        borderSide: BorderSide(color: AppColors.skyBlue.withValues(alpha: 0.45), width: 1.5),
+        borderRadius: BorderRadius.circular(AppRadius.cover),
+        borderSide: const BorderSide(color: GlassSpec.inputFocusBorder, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.cardSm),
+        borderRadius: BorderRadius.circular(AppRadius.cover),
         borderSide: const BorderSide(color: AppColors.destructive, width: 1),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.cardSm),
+        borderRadius: BorderRadius.circular(AppRadius.cover),
         borderSide: const BorderSide(color: AppColors.destructive, width: 1.5),
       ),
-      labelStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppColors.textSecondary),
-      floatingLabelStyle: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.skyBlue.withValues(alpha: 0.80)),
-      hintStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppColors.textTertiary),
+      labelStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppColors.inkSecondary),
+      floatingLabelStyle: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.primary.withValues(alpha: 0.80)),
+      hintStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppColors.inkTertiary),
       errorStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.destructive),
-      suffixIconColor: AppColors.textTertiary,
-      prefixIconColor: AppColors.textTertiary,
+      suffixIconColor: AppColors.inkTertiary,
+      prefixIconColor: AppColors.inkTertiary,
     ),
     textSelectionTheme: const TextSelectionThemeData(
       cursorColor: AppColors.primary,
-      selectionColor: AppColors.primaryLight,
+      selectionColor: AppColors.coralTint,
       selectionHandleColor: AppColors.primary,
     ),
     dialogTheme: DialogThemeData(
@@ -316,8 +393,8 @@ class AppTheme {
       dayStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
       dayForegroundColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) return Colors.white;
-        if (states.contains(WidgetState.disabled)) return AppColors.textTertiary;
-        return AppColors.textPrimary;
+        if (states.contains(WidgetState.disabled)) return AppColors.inkTertiary;
+        return AppColors.inkPrimary;
       }),
       dayBackgroundColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) return AppColors.primary;
@@ -328,7 +405,7 @@ class AppTheme {
       todayBorder: const BorderSide(color: AppColors.primary, width: 1),
       yearForegroundColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) return Colors.white;
-        return AppColors.textPrimary;
+        return AppColors.inkPrimary;
       }),
       yearBackgroundColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) return AppColors.primary;
@@ -336,11 +413,11 @@ class AppTheme {
       }),
       rangePickerBackgroundColor: AppColors.surface,
       rangePickerSurfaceTintColor: Colors.transparent,
-      rangeSelectionBackgroundColor: AppColors.primaryLight,
-      cancelButtonStyle: const ButtonStyle(foregroundColor: WidgetStatePropertyAll(AppColors.textSecondary)),
+      rangeSelectionBackgroundColor: AppColors.coralTint,
+      cancelButtonStyle: const ButtonStyle(foregroundColor: WidgetStatePropertyAll(AppColors.inkSecondary)),
       confirmButtonStyle: const ButtonStyle(
         foregroundColor: WidgetStatePropertyAll(AppColors.primary),
-        textStyle: WidgetStatePropertyAll(TextStyle(fontWeight: FontWeight.w600)),
+        textStyle: WidgetStatePropertyAll(TextStyle(fontWeight: FontWeight.w500)),
       ),
     ),
     bottomSheetTheme: const BottomSheetThemeData(

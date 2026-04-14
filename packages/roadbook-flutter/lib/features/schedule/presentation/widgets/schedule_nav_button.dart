@@ -1,5 +1,6 @@
 // lib/features/schedule/presentation/widgets/schedule_nav_button.dart
 import 'dart:io';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme.dart';
@@ -25,9 +26,7 @@ class ScheduleNavButton extends StatelessWidget {
     return parts.length >= 2;
   }
 
-  Color get _bgColor => isHotel ? AppColors.hotelLight : AppColors.primaryLight;
-  Color get _borderColor => isHotel ? AppColors.hotelBorder : AppColors.primaryBorder;
-  Color get _iconColor => isHotel ? AppColors.hotel : AppColors.primary;
+  Color get _iconColor => isHotel ? AppColors.lavender : AppColors.primary;
 
   String _buildAmapUrl(String mapMode) {
     final parts = coordinate.split(',');
@@ -69,6 +68,8 @@ class ScheduleNavButton extends StatelessWidget {
     {'mode': 'ride', 'emoji': '🚲', 'label': '骑行'},
   ];
 
+  Color get _textColor => isHotel ? AppColors.lavender : AppColors.primary;
+
   @override
   Widget build(BuildContext context) {
     return Opacity(
@@ -95,31 +96,41 @@ class ScheduleNavButton extends StatelessWidget {
           );
         }).toList(),
         child: compact
-            ? Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: _iconColor,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.navigation_rounded, size: 17, color: Colors.white),
-              )
-            : Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                decoration: BoxDecoration(
-                  color: _bgColor,
-                  borderRadius: BorderRadius.circular(AppRadius.input),
-                  border: Border.all(color: _borderColor),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.navigation_rounded, size: 18, color: _iconColor),
-                    const SizedBox(width: 4),
-                    Text('导航', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _iconColor)),
-                  ],
+          ? Container(
+              width: 36, height: 36,
+              decoration: const BoxDecoration(
+                color: AppColors.primary,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.navigation_rounded, size: 16, color: Colors.white),
+            )
+          : ClipRRect(
+              borderRadius: BorderRadius.circular(AppRadius.pill),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  height: 34,
+                  decoration: BoxDecoration(
+                    color: const Color(0x85FFFFFF), // frost glass
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
+                    border: Border.all(color: const Color(0xA6FFFFFF), width: 1), // 65% white
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.navigation_rounded, size: 12, color: _textColor),
+                      const SizedBox(width: 5),
+                      Text(
+                        '导航前往',
+                        style: TextStyle(
+                          fontSize: 12, fontWeight: FontWeight.w500, color: _textColor,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
+            ),
       ),
     );
   }
