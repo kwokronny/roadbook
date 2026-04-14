@@ -122,10 +122,8 @@ function ScheduleCard({
         <div
           className="px-3.5 pt-3 pb-6"
           style={{
-            background: isDark
-              ? 'linear-gradient(180deg, rgba(140,92,246,0.16) 0%, rgba(140,92,246,0.05) 100%)'
-              : 'linear-gradient(180deg, rgba(253,238,180,0.19) 0%, rgba(255,248,220,0.07) 100%)',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+            background: 'linear-gradient(180deg, #FFF0C8 0%, #FFF8E7 100%)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
             borderRadius: '0 0 20px 20px',
           }}
         >
@@ -146,7 +144,7 @@ function ScheduleCard({
           {note && (
             <div
               className="text-[11px] leading-relaxed line-clamp-2"
-              style={{ color: isDark ? 'rgba(140,92,246,0.45)' : 'rgba(28,28,30,0.50)' }}
+              style={{ color: 'rgba(28,28,30,0.50)' }}
             >
               {note}
             </div>
@@ -154,7 +152,7 @@ function ScheduleCard({
           {dianping && (
             <div
               className="text-[10px] mt-1"
-              style={{ color: isDark ? 'rgba(140,92,246,0.35)' : 'rgba(28,28,30,0.28)' }}
+              style={{ color: 'rgba(28,28,30,0.28)' }}
             >
               {dianping}
             </div>

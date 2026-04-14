@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme.dart';
+import '../../../../shared/widgets/glass_popover.dart';
 
 class ScheduleNavButton extends StatelessWidget {
   const ScheduleNavButton({
@@ -26,7 +27,7 @@ class ScheduleNavButton extends StatelessWidget {
     return parts.length >= 2;
   }
 
-  Color get _iconColor => isHotel ? AppColors.lavender : AppColors.primary;
+  Color get _textColor => isHotel ? AppColors.lavender : AppColors.primary;
 
   String _buildAmapUrl(String mapMode) {
     final parts = coordinate.split(',');
@@ -68,69 +69,88 @@ class ScheduleNavButton extends StatelessWidget {
     {'mode': 'ride', 'emoji': '🚲', 'label': '骑行'},
   ];
 
-  Color get _textColor => isHotel ? AppColors.lavender : AppColors.primary;
+  void _showNavPopover(BuildContext context) {
+    final RenderBox button = context.findRenderObject() as RenderBox;
+    final RenderBox overlay =
+        Navigator.of(context).overlay!.context.findRenderObject() as RenderBox;
+    final Offset buttonPos = button.localToGlobal(Offset.zero, ancestor: overlay);
+
+    final position = RelativeRect.fromLTRB(
+      buttonPos.dx,
+      buttonPos.dy + button.size.height + 4,
+      overlay.size.width - buttonPos.dx - button.size.width,
+      0,
+    );
+
+    showGlassPopover(
+      context: context,
+      position: position,
+      items: _modes
+          .map((m) => PopoverItem(
+                emoji: m['emoji'],
+                label: m['label']!,
+                onTap: () => _launch(m['mode']!),
+              ))
+          .toList(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (compact) {
+      return Opacity(
+        opacity: _isEnabled ? 1.0 : 0.38,
+        child: GestureDetector(
+          onTap: _isEnabled ? () => _showNavPopover(context) : null,
+          child: Container(
+            width: 36,
+            height: 36,
+            decoration: const BoxDecoration(
+              color: AppColors.primary,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.navigation_rounded,
+                size: 16, color: Colors.white),
+          ),
+        ),
+      );
+    }
+
     return Opacity(
       opacity: _isEnabled ? 1.0 : 0.38,
-      child: PopupMenuButton<String>(
-        enabled: _isEnabled,
-        onSelected: _launch,
-        offset: const Offset(0, 36),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.card),
-        ),
-        color: AppColors.surface,
-        elevation: 4,
-        itemBuilder: (_) => _modes.map((m) {
-          return PopupMenuItem<String>(
-            value: m['mode'],
-            height: 44,
-            child: Row(children: [
-              Text(m['emoji']!, style: const TextStyle(fontSize: 18)),
-              const SizedBox(width: 10),
-              Text(m['label']!,
-                  style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w500)),
-            ]),
-          );
-        }).toList(),
-        child: compact
-          ? Container(
-              width: 36, height: 36,
-              decoration: const BoxDecoration(
-                color: AppColors.primary,
-                shape: BoxShape.circle,
+      child: GestureDetector(
+        onTap: _isEnabled ? () => _showNavPopover(context) : null,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(AppRadius.pill),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              height: 34,
+              decoration: BoxDecoration(
+                color: const Color(0x85FFFFFF),
+                borderRadius: BorderRadius.circular(AppRadius.pill),
+                border: Border.all(
+                    color: const Color(0xA6FFFFFF), width: 1),
               ),
-              child: const Icon(Icons.navigation_rounded, size: 16, color: Colors.white),
-            )
-          : ClipRRect(
-              borderRadius: BorderRadius.circular(AppRadius.pill),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  height: 34,
-                  decoration: BoxDecoration(
-                    color: const Color(0x85FFFFFF), // frost glass
-                    borderRadius: BorderRadius.circular(AppRadius.pill),
-                    border: Border.all(color: const Color(0xA6FFFFFF), width: 1), // 65% white
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.navigation_rounded,
+                      size: 12, color: _textColor),
+                  const SizedBox(width: 5),
+                  Text(
+                    '导航前往',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: _textColor,
+                    ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.navigation_rounded, size: 12, color: _textColor),
-                      const SizedBox(width: 5),
-                      Text(
-                        '导航前往',
-                        style: TextStyle(
-                          fontSize: 12, fontWeight: FontWeight.w500, color: _textColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                ],
               ),
             ),
+          ),
+        ),
       ),
     );
   }

@@ -140,7 +140,7 @@ class ScheduleTimelineItem extends StatelessWidget {
     final isHotel = schedule.isHotel;
     final nameColor = isHotel ? AppColors.lavenderDeep : AppColors.inkPrimary;
     final addrColor = isHotel ? AppColors.lavenderAddr : AppColors.inkTertiary;
-    final noteColor = isHotel ? AppColors.lavenderNote : AppColors.inkSecondary;
+    final noteColor = AppColors.inkSecondary;
     final moreColor = isHotel ? AppColors.lavender : AppColors.inkTertiary;
 
     final hasNotes = schedule.notes != null && schedule.notes!.isNotEmpty;
@@ -150,72 +150,81 @@ class ScheduleTimelineItem extends StatelessWidget {
     // ── Upper card: glass card with cover, time+more row, title, address, nav
     final upperContent = Padding(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _CoverImage(schedule: schedule),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // ── Time badge + More button row
-                Row(
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _CoverImage(schedule: schedule),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    GestureDetector(
-                      onTap: canEdit ? onEditTimeTap : null,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: _timeBadgeBg,
-                          borderRadius: BorderRadius.circular(AppRadius.pill),
+                    // ── Time badge + More button row
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: canEdit ? onEditTimeTap : null,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: _timeBadgeBg,
+                              borderRadius: BorderRadius.circular(AppRadius.pill),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(_timeLabel,
+                                    style: TextStyle(fontSize: 12,
+                                        fontWeight: FontWeight.w500, color: _timeBadgeText)),
+                                if (canEdit) ...[
+                                  const SizedBox(width: 3),
+                                  Icon(Icons.edit_calendar_outlined,
+                                      size: 11, color: _timeBadgeText),
+                                ],
+                              ],
+                            ),
+                          ),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(_timeLabel,
-                                style: TextStyle(fontSize: 12,
-                                    fontWeight: FontWeight.w500, color: _timeBadgeText)),
-                            if (canEdit) ...[
-                              const SizedBox(width: 3),
-                              Icon(Icons.edit_calendar_outlined,
-                                  size: 11, color: _timeBadgeText),
-                            ],
-                          ],
-                        ),
-                      ),
+                        const Spacer(),
+                        if (canEdit && !isSelectionMode)
+                          _MoreIconButton(
+                            onEdit: onEdit,
+                            onClone: onClone,
+                            onDelete: onDelete,
+                            color: moreColor,
+                          ),
+                      ],
                     ),
-                    const Spacer(),
-                    if (canEdit && !isSelectionMode)
-                      _MoreIconButton(
-                        onEdit: onEdit,
-                        onClone: onClone,
-                        onDelete: onDelete,
-                        color: moreColor,
-                      ),
+                    const SizedBox(height: 3),
+                    Text(schedule.name,
+                        style: TextStyle(fontSize: 17,
+                            fontWeight: FontWeight.w500, color: nameColor),
+                        maxLines: 2, overflow: TextOverflow.ellipsis),
+                    ...[
+                      const SizedBox(height: 1),
+                      Text(schedule.address.isNotEmpty ? schedule.address : '暂无地址信息',
+                          style: TextStyle(fontSize: 13, color: addrColor),
+                          maxLines: 1, overflow: TextOverflow.ellipsis),
+                    ],
                   ],
                 ),
-                const SizedBox(height: 3),
-                Text(schedule.name,
-                    style: TextStyle(fontSize: 17,
-                        fontWeight: FontWeight.w500, color: nameColor),
-                    maxLines: 2, overflow: TextOverflow.ellipsis),
-                ...[
-                  const SizedBox(height: 1),
-                  Text(schedule.address.isNotEmpty ? schedule.address : '暂无地址信息',
-                      style: TextStyle(fontSize: 13, color: addrColor),
-                      maxLines: 1, overflow: TextOverflow.ellipsis),
-                ],
-                if (_hasCoordinate && !isSelectionMode) ...[
-                  const SizedBox(height: 8),
-                  ScheduleNavButton(
-                      coordinate: schedule.coordinate,
-                      name: schedule.name,
-                      isHotel: schedule.isHotel),
-                ],
-              ],
-            ),
+              ),
+            ],
           ),
+          // ── Nav button: full width, outside the cover+body row
+          if (_hasCoordinate && !isSelectionMode) ...[
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: ScheduleNavButton(
+                  coordinate: schedule.coordinate,
+                  name: schedule.name,
+                  isHotel: schedule.isHotel),
+            ),
+          ],
         ],
       ),
     );
@@ -286,28 +295,23 @@ class ScheduleTimelineItem extends StatelessWidget {
         bottomRight: Radius.circular(20),
       );
 
-      final lowerGradient = isHotel
-          ? const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0x288C5CF6), Color(0x0C8C5CF6)],
-            )
-          : const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0x30FDEEB4), Color(0x12FFF8DC)],
-            );
-
       lowerSection = Container(
         width: double.infinity,
-        padding: const EdgeInsets.fromLTRB(14, 10, 14, 24),
+        padding: const EdgeInsets.fromLTRB(14, 14, 14, 24),
         decoration: BoxDecoration(
-          gradient: lowerGradient,
+          gradient: const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFFFFF0C8), // 顶部：浓暖黄
+              Color(0xFFFFF8E7), // 底部：便利贴浅色
+            ],
+          ),
           borderRadius: lowerRadius,
           boxShadow: const [
             BoxShadow(
-              color: Color(0x0A000000),
-              blurRadius: 12,
+              color: Color(0x10000000),
+              blurRadius: 8,
               offset: Offset(0, 2),
             ),
           ],
