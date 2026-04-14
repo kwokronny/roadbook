@@ -349,9 +349,11 @@ class ScheduleTimelineItem extends StatelessWidget {
     final visible = urls.take(_maxThumbs).toList();
     final overflow = urls.length - _maxThumbs;
 
-    return Row(
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
       children: [
-        for (int i = 0; i < visible.length; i++) ...[
+        for (int i = 0; i < visible.length; i++)
           GestureDetector(
             onTap: () => SchedulePhotoViewer.show(
               context,
@@ -359,30 +361,24 @@ class ScheduleTimelineItem extends StatelessWidget {
               scheduleName: schedule.name,
               initialIndex: i,
             ),
-            child: SizedBox(
+            child: ClipRRect(
               key: const Key('screenshotThumb'),
-              width: 52,
-              height: 52,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  visible[i],
-                  width: 40,
-                  height: 40,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    width: 40,
-                    height: 40,
-                    color: const Color(0x0D1C1C1E),
-                    child: const Icon(Icons.broken_image_outlined,
-                        size: 14, color: AppColors.inkTertiary),
-                  ),
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                visible[i],
+                width: 48,
+                height: 48,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  width: 48,
+                  height: 48,
+                  color: const Color(0x0D1C1C1E),
+                  child: const Icon(Icons.broken_image_outlined,
+                      size: 14, color: AppColors.inkTertiary),
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 3),
-        ],
         if (overflow > 0)
           Container(
             width: 40,
