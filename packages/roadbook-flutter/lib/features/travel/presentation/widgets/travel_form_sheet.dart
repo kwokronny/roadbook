@@ -276,9 +276,10 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                         // 公开
                         _FormRow(
                           label: '公开',
-                          child: SizedBox(
-                            height: 28,
-                            child: FittedBox(
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Transform.scale(
+                              scale: 0.9,
                               child: Switch(
                                 value: _isPublic,
                                 activeThumbColor: AppColors.success,
@@ -731,6 +732,7 @@ class _CityPickerSheet extends StatefulWidget {
 class _CityPickerSheetState extends State<_CityPickerSheet> {
   late Set<String> _selected;
   final _searchCtrl = TextEditingController();
+  final _scrollCtrl = ScrollController();
   String _query = '';
 
   // Grouped data: letter → cities
@@ -748,7 +750,26 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
   @override
   void dispose() {
     _searchCtrl.dispose();
+    _scrollCtrl.dispose();
     super.dispose();
+  }
+
+  void _scrollToLetter(String letter) {
+    const double headerHeight = 32;
+    const double itemHeight = 41;
+
+    double offset = 0;
+    for (final l in _letters) {
+      final cities = _filteredCities(_grouped[l]!);
+      if (cities.isEmpty) continue;
+      if (l == letter) break;
+      offset += headerHeight + cities.length * itemHeight;
+    }
+    _scrollCtrl.animateTo(
+      offset.clamp(0, _scrollCtrl.position.maxScrollExtent),
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+    );
   }
 
   Map<String, List<String>> _buildGroups() {
@@ -873,42 +894,68 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
 
           // ── City list grouped by letter ────────────────────────────
           Expanded(
-            child: ListView.builder(
-              itemCount: _letters.length,
-              itemBuilder: (context, sectionIndex) {
-                final letter = _letters[sectionIndex];
-                final cities = _filteredCities(_grouped[letter]!);
-                if (cities.isEmpty) return const SizedBox.shrink();
+            child: Stack(
+              children: [
+                Container(
+                  margin: const EdgeInsets.fromLTRB(16, 0, 24, 16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xB0FFFFFF),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  clipBehavior: Clip.hardEdge,
+                  child: ListView.builder(
+                    controller: _scrollCtrl,
+                    padding: EdgeInsets.zero,
+                    itemCount: _letters.length,
+                    itemBuilder: (context, sectionIndex) {
+                      final letter = _letters[sectionIndex];
+                      final cities = _filteredCities(_grouped[letter]!);
+                      if (cities.isEmpty) return const SizedBox.shrink();
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Section header
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                      child: Text(letter, style: const TextStyle(
-                        fontSize: 13, fontWeight: FontWeight.w500,
-                        color: AppColors.textTertiary,
-                      )),
-                    ),
-                    // City items
-                    for (final city in cities)
-                      _CityItem(
-                        city: city,
-                        selected: _selected.contains(city),
-                        onTap: () {
-                          setState(() {
-                            if (_selected.contains(city)) {
-                              _selected.remove(city);
-                            } else {
-                              _selected.add(city);
-                            }
-                          });
-                        },
-                      ),
-                  ],
-                );
-              },
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Section header
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(14, 12, 14, 4),
+                            child: Text(letter, style: const TextStyle(
+                              fontSize: 13, fontWeight: FontWeight.w500,
+                              color: AppColors.textTertiary,
+                            )),
+                          ),
+                          // City items with dividers
+                          for (int i = 0; i < cities.length; i++) ...[
+                            _CityItem(
+                              city: cities[i],
+                              selected: _selected.contains(cities[i]),
+                              onTap: () {
+                                setState(() {
+                                  if (_selected.contains(cities[i])) {
+                                    _selected.remove(cities[i]);
+                                  } else {
+                                    _selected.add(cities[i]);
+                                  }
+                                });
+                              },
+                            ),
+                            if (i < cities.length - 1)
+                              const Divider(height: 0.5, thickness: 0.5, indent: 14, color: Color(0x0F1C1C1E)),
+                          ],
+                        ],
+                      );
+                    },
+                  ),
+                ),
+                Positioned(
+                  right: 2,
+                  top: 0,
+                  bottom: 0,
+                  child: _LetterBar(
+                    letters: _letters,
+                    onSelect: _scrollToLetter,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -934,7 +981,7 @@ class _CityItem extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         child: Row(
           children: [
             Text(city, style: TextStyle(
@@ -985,6 +1032,52 @@ class _CityChip extends StatelessWidget {
             child: Icon(Icons.close, size: 14, color: AppColors.cityTagText(index)),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _LetterBar extends StatelessWidget {
+  const _LetterBar({required this.letters, required this.onSelect});
+  final List<String> letters;
+  final void Function(String letter) onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onVerticalDragUpdate: (details) {
+        final box = context.findRenderObject() as RenderBox;
+        final pos = box.globalToLocal(details.globalPosition);
+        final index = (pos.dy / (box.size.height / letters.length))
+            .clamp(0, letters.length - 1)
+            .toInt();
+        onSelect(letters[index]);
+      },
+      onTapDown: (details) {
+        final box = context.findRenderObject() as RenderBox;
+        final pos = box.globalToLocal(details.globalPosition);
+        final index = (pos.dy / (box.size.height / letters.length))
+            .clamp(0, letters.length - 1)
+            .toInt();
+        onSelect(letters[index]);
+      },
+      child: Container(
+        width: 16,
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: letters
+              .map((l) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 0.5),
+                    child: Text(l,
+                        style: const TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.inkTertiary,
+                        )),
+                  ))
+              .toList(),
+        ),
       ),
     );
   }
