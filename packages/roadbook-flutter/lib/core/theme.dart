@@ -35,21 +35,21 @@ abstract class AppColors {
   static const Color success     = Color(0xFF34C759);
   static const Color neutral     = Color(0xFF8E8E93);
 
-  // ─── Secondary Accent — Serene Night Blue (Hotel / Accommodation) ────────
-  static const Color lavender      = Color(0xFF3D5A80); // serene deep blue
-  static const Color lavenderTint  = Color(0x143D5A80);
-  static const Color lavenderText  = Color(0xFF3D5A80);
-  static const Color lavenderDeep  = Color(0xFF2C4A6E); // deep navy — hotel title text
-  static const Color lavenderAddr  = Color(0x803D5A80); // 50%
-  static const Color lavenderNote  = Color(0x733D5A80); // 45%
-  static const Color lavenderFrost = Color(0x103D5A80); // 6% — hotel card tint
-  static const Color lavenderFrostBorder = Color(0x1A3D5A80); // 10% — hotel card border
-  static const Color lavenderTimeBg = Color(0x183D5A80); // 9% — hotel time badge
+  // ─── Secondary Accent — Lavender (Hotel / Accommodation) ─────────────────
+  static const Color lavender      = Color(0xFF8C5CF6);
+  static const Color lavenderTint  = Color(0x1A8C5CF6); // rgba(140,92,246,0.10)
+  static const Color lavenderText  = Color(0xFF6D3FC0);
+  static const Color lavenderDeep  = Color(0xFF6D3FC0); // deep purple — hotel title text
+  static const Color lavenderAddr  = Color(0x808C5CF6); // rgba(140,92,246,0.50) — hotel address
+  static const Color lavenderNote  = Color(0x738C5CF6); // rgba(140,92,246,0.45) — hotel notes
+  static const Color lavenderFrost = Color(0x148C5CF6); // rgba(140,92,246,0.08) — hotel card tint
+  static const Color lavenderFrostBorder = Color(0x268C5CF6); // rgba(140,92,246,0.15) — hotel card border
+  static const Color lavenderTimeBg = Color(0x1F8C5CF6); // rgba(140,92,246,0.12) — hotel time badge
 
   // Backward-compat aliases for hotel
-  static const Color hotel       = Color(0xFF3D5A80);
+  static const Color hotel       = lavender;
   static const Color hotelLight  = lavenderTint;
-  static const Color hotelBorder = Color(0x283D5A80);
+  static const Color hotelBorder = Color(0x388C5CF6); // rgba(140,92,246,0.22)
 
   // ─── Schedule unplanned ──────────────────────────────────────────────────
   static const Color unplanned      = Color(0xFFD4C8BF);
@@ -136,18 +136,18 @@ enum TravelStatusType { ongoing, upcoming, planning, ended }
 
 abstract class GlassSpec {
   // Card / Schedule Item
-  static ImageFilter cardBlur = ImageFilter.blur(sigmaX: 14, sigmaY: 14);
-  static const Color cardBg     = Color(0x8CFFFFFF); // rgba(255,255,255,0.55)
+  static ImageFilter cardBlur = ImageFilter.blur(sigmaX: 20, sigmaY: 20);
+  static const Color cardBg     = Color(0x80FFFFFF); // rgba(255,255,255,0.50)
   static const Color cardBorder = Color(0xA6FFFFFF); // rgba(255,255,255,0.65)
   static const List<BoxShadow> cardShadow = [
     BoxShadow(color: Color(0x1A000000), blurRadius: 24, offset: Offset(0, 6)),
     BoxShadow(color: Color(0x0D000000), blurRadius: 4,  offset: Offset(0, 1)),
   ];
 
-  // Bottom Sheet — blur(50) saturate(1.8)
-  static ImageFilter sheetBlur = ImageFilter.blur(sigmaX: 50, sigmaY: 50);
-  static const Color sheetBg     = Color(0xB8FFFFFF); // rgba(255,255,255,0.72)
-  static const Color sheetBorder = Color(0x8CFFFFFF); // rgba(255,255,255,0.55)
+  // Bottom Sheet — blur(50) saturate(1.8), translucent for glass feel
+  static ImageFilter sheetBlur = ImageFilter.blur(sigmaX: 30, sigmaY: 30);
+  static const Color sheetBg     = Color(0x80FFFFFF); // rgba(255,255,255,0.50) — more translucent
+  static const Color sheetBorder = Color(0xA6FFFFFF); // rgba(255,255,255,0.65)
   static const List<BoxShadow> sheetShadow = [
     BoxShadow(color: Color(0x0F000000), blurRadius: 32, offset: Offset(0, -8)),
   ];
