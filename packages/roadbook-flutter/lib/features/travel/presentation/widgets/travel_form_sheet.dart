@@ -124,7 +124,7 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                 top: BorderSide(color: Color(0xE6FFFFFF), width: 1),
               ),
               boxShadow: [
-                BoxShadow(color: Color(0x1A6478B4), blurRadius: 24, offset: Offset(0, -4)),
+                BoxShadow(color: Color(0x0F000000), blurRadius: 32, offset: Offset(0, -8)),
               ],
             ),
             child: SafeArea(
@@ -144,7 +144,7 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                           width: 36, height: 4,
                           margin: const EdgeInsets.only(bottom: 16),
                           decoration: BoxDecoration(
-                            color: const Color(0x281E243C),
+                            color: const Color(0x281C1C1E),
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
@@ -153,19 +153,18 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                       Row(
                         children: [
                           Text(isEdit ? '编辑旅程' : '新建旅程',
-                              style: AppTextStyles.title2),
+                              style: AppTextStyles.title.copyWith(fontSize: 20)),
                           const Spacer(),
                           GestureDetector(
                             onTap: () => Navigator.of(context).pop(),
                             child: Container(
-                              width: 28, height: 28,
-                              decoration: BoxDecoration(
-                                color: const Color(0x141E243C),
+                              width: 26, height: 26,
+                              decoration: const BoxDecoration(
+                                color: Color(0x1A1C1C1E), // rgba(28,28,30,0.10)
                                 shape: BoxShape.circle,
-                                border: Border.all(color: const Color(0x0A1E243C)),
                               ),
-                              child: const Icon(Icons.close, size: 16,
-                                  color: AppColors.textSecondary),
+                              child: const Icon(Icons.close, size: 12,
+                                  color: AppColors.inkSecondary),
                             ),
                           ),
                         ],
@@ -175,8 +174,8 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                       // ── Grouped form card ─────────────────────────────────
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(AppRadius.cardSm),
+                          color: const Color(0xB0FFFFFF),
+                          borderRadius: BorderRadius.circular(14),
                         ),
                     child: Column(
                       children: [
@@ -282,10 +281,10 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                             child: FittedBox(
                               child: Switch(
                                 value: _isPublic,
-                                activeThumbColor: AppColors.spearmint,
-                                activeTrackColor: AppColors.spearmint.withValues(alpha: 0.22),
-                                inactiveThumbColor: const Color(0x381E243C),
-                                inactiveTrackColor: const Color(0x121E243C),
+                                activeThumbColor: AppColors.success,
+                                activeTrackColor: AppColors.success.withValues(alpha: 0.22),
+                                inactiveThumbColor: const Color(0x381C1C1E),
+                                inactiveTrackColor: const Color(0x121C1C1E),
                                 trackOutlineColor: const WidgetStatePropertyAll(Colors.transparent),
                                 onChanged: (v) => setState(() => _isPublic = v),
                               ),
@@ -297,27 +296,38 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                   ),
                   const SizedBox(height: 24),
 
-                  // ── Save button ───────────────────────────────────────
-                  Container(
-                    height: 48,
-                    decoration: BoxDecoration(
-                      gradient: AppColors.primaryGradient,
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                    ),
-                    child: TextButton(
-                      onPressed: _saving ? null : _submit,
-                      child: _saving
-                          ? const SizedBox(
-                              width: 20, height: 20,
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: Colors.white))
-                          : Text(
-                              isEdit ? '保存修改' : '创建旅程',
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w500),
-                            ),
+                  // ── Dark CTA button ───────────────────────────────────
+                  GestureDetector(
+                    onTap: _saving ? null : _submit,
+                    child: Container(
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: AppColors.darkPill,
+                        borderRadius: BorderRadius.circular(AppRadius.pill),
+                      ),
+                      child: Center(
+                        child: _saving
+                            ? const SizedBox(
+                                width: 20, height: 20,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2, color: Colors.white))
+                            : Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    isEdit ? '保存修改' : '创建旅程',
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  const Text('→',
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 15)),
+                                ],
+                              ),
+                      ),
                     ),
                   ),
                     ],
@@ -408,10 +418,25 @@ class _CalendarPickerDialogState extends State<_CalendarPickerDialog> {
     }
   }
 
+  static const _wkNames = ['周一','周二','周三','周四','周五','周六','周日'];
+
   String _hint() {
     if (!_pendingEnd) return '请选择开始日期';
-    final fmt = DateFormat('M月d日');
-    return '已选 ${fmt.format(_start)}，请选择结束日期';
+    return '已选 ${_start.month}/${_start.day} — 请选结束日期';
+  }
+
+  String _rangeSummary() {
+    if (_end == null) return '';
+    final sw = _wkNames[_start.weekday - 1];
+    final ew = _wkNames[_end!.weekday - 1];
+    final nights = _end!.difference(_start).inDays;
+    return '${_start.month}/${_start.day} ($sw) → ${_end!.month}/${_end!.day} ($ew)';
+  }
+
+  String _nightsLabel() {
+    if (_end == null) return '';
+    final n = _end!.difference(_start).inDays;
+    return '${n}晚${n + 1}天';
   }
 
   @override
@@ -424,134 +449,150 @@ class _CalendarPickerDialogState extends State<_CalendarPickerDialog> {
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.sheet)),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(AppSpacing.cardPadding, 20, AppSpacing.cardPadding, AppSpacing.cardPadding),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Header
-            Row(
+          borderRadius: BorderRadius.circular(20)),
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xB3FFFFFF), // 70% white — more transparent
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0x80FFFFFF)),
+              boxShadow: const [
+                BoxShadow(color: Color(0x1A000000), blurRadius: 24, offset: Offset(0, 8)),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text('出行日期',
-                        style: AppTextStyles.appBarTitle),
-                    const SizedBox(height: 2),
-                    Text(_hint(),
-                        style: AppTextStyles.body.copyWith(color: AppColors.textSecondary)),
-                  ],
+            // ── Header
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('出行日期',
+                          style: AppTextStyles.title.copyWith(fontSize: 18)),
+                      const SizedBox(height: 2),
+                      Text(_hint(),
+                          style: TextStyle(fontSize: 12, color: AppColors.primary)),
+                    ],
+                  ),
                 ),
-                const Spacer(),
-                IconButton(
-                  icon: const Icon(Icons.close, size: 20),
-                  onPressed: () => Navigator.of(context).pop(),
-                  padding: EdgeInsets.zero,
-                  constraints:
-                      const BoxConstraints(minWidth: 32, minHeight: 32),
+                GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Container(
+                    width: 26, height: 26,
+                    decoration: const BoxDecoration(
+                      color: Color(0x1A1C1C1E), shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.close, size: 12,
+                        color: AppColors.inkSecondary),
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            // Month navigation
+            const SizedBox(height: 14),
+            // ── Month nav
             Row(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.chevron_left, size: 22),
-                  color: AppColors.textSecondary,
-                  onPressed: () => setState(() => _viewMonth =
+                GestureDetector(
+                  onTap: () => setState(() => _viewMonth =
                       DateTime(_viewMonth.year, _viewMonth.month - 1)),
-                  padding: EdgeInsets.zero,
-                  constraints:
-                      const BoxConstraints(minWidth: 36, minHeight: 36),
+                  child: Container(
+                    width: 28, height: 28,
+                    decoration: const BoxDecoration(
+                      color: Color(0x0D1C1C1E), shape: BoxShape.circle,
+                    ),
+                    child: const Center(child: Text('‹',
+                        style: TextStyle(fontSize: 14, color: AppColors.inkSecondary))),
+                  ),
                 ),
                 Expanded(
                   child: Center(
                     child: Text(
                       '${_viewMonth.year}年${_viewMonth.month}月',
-                      style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textPrimary),
+                      style: const TextStyle(fontSize: 16,
+                          fontWeight: FontWeight.w500, color: AppColors.inkPrimary),
                     ),
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.chevron_right, size: 22),
-                  color: AppColors.textSecondary,
-                  onPressed: () => setState(() => _viewMonth =
+                GestureDetector(
+                  onTap: () => setState(() => _viewMonth =
                       DateTime(_viewMonth.year, _viewMonth.month + 1)),
-                  padding: EdgeInsets.zero,
-                  constraints:
-                      const BoxConstraints(minWidth: 36, minHeight: 36),
+                  child: Container(
+                    width: 28, height: 28,
+                    decoration: const BoxDecoration(
+                      color: Color(0x0D1C1C1E), shape: BoxShape.circle,
+                    ),
+                    child: const Center(child: Text('›',
+                        style: TextStyle(fontSize: 14, color: AppColors.inkSecondary))),
+                  ),
                 ),
               ],
             ),
-            // Weekday labels
+            const SizedBox(height: 10),
+            // ── Weekday labels
             Row(
               children: _weekLabels
                   .map((l) => Expanded(
                         child: Center(
                           child: Text(l,
-                              style: AppTextStyles.caption),
+                              style: const TextStyle(
+                                  fontSize: 11, color: AppColors.inkTertiary)),
                         ),
                       ))
                   .toList(),
             ),
             const SizedBox(height: 4),
-            // Calendar grid
+            // ── Calendar grid
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               gridDelegate:
                   const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 7,
-                childAspectRatio: 1,
-              ),
+                crossAxisCount: 7, childAspectRatio: 1),
               itemCount: offset + daysInMonth,
               itemBuilder: (context, i) {
                 if (i < offset) return const SizedBox();
                 final day = i - offset + 1;
-                final date =
-                    DateTime(_viewMonth.year, _viewMonth.month, day);
+                final date = DateTime(_viewMonth.year, _viewMonth.month, day);
                 final isStart = _isStart(date);
                 final isEnd = _isEnd(date);
                 final inRange = _inRange(date);
                 final isToday = _sameDay(date, DateTime.now());
 
-                Color? bgColor;
-                BorderRadius? bgRadius;
-                if (isStart && isEnd) {
-                  bgColor = AppColors.primaryLight;
-                  bgRadius = BorderRadius.circular(AppRadius.badge);
-                } else if (isStart) {
-                  bgColor = AppColors.primaryLight;
-                  bgRadius = const BorderRadius.horizontal(
-                      left: Radius.circular(AppRadius.badge));
+                // Range background strip
+                Color? stripColor;
+                BorderRadius? stripRadius;
+                if (isStart && _end != null) {
+                  stripColor = AppColors.coralTint;
+                  stripRadius = const BorderRadius.horizontal(
+                      left: Radius.circular(50));
                 } else if (isEnd) {
-                  bgColor = AppColors.primaryLight;
-                  bgRadius = const BorderRadius.horizontal(
-                      right: Radius.circular(AppRadius.badge));
+                  stripColor = AppColors.coralTint;
+                  stripRadius = const BorderRadius.horizontal(
+                      right: Radius.circular(50));
                 } else if (inRange) {
-                  bgColor = AppColors.primaryLight;
-                  bgRadius = BorderRadius.zero;
+                  stripColor = AppColors.coralTint;
+                  stripRadius = BorderRadius.zero;
                 }
 
                 return GestureDetector(
                   onTap: () => _onDayTap(date),
                   child: Container(
-                    decoration: bgColor != null
-                        ? BoxDecoration(
-                            color: bgColor,
-                            borderRadius: bgRadius,
-                          )
+                    decoration: stripColor != null
+                        ? BoxDecoration(color: stripColor, borderRadius: stripRadius)
                         : null,
                     child: Center(
                       child: Container(
-                        width: 30,
-                        height: 30,
+                        width: 34, height: 34,
                         decoration: BoxDecoration(
                           color: (isStart || isEnd)
                               ? AppColors.primary
@@ -562,15 +603,15 @@ class _CalendarPickerDialogState extends State<_CalendarPickerDialog> {
                           child: Text(
                             '$day',
                             style: TextStyle(
-                              fontSize: 17,
+                              fontSize: 14,
                               fontWeight: (isStart || isEnd || isToday)
-                                  ? FontWeight.w600
+                                  ? FontWeight.w500
                                   : FontWeight.w400,
                               color: (isStart || isEnd)
                                   ? Colors.white
-                                  : isToday
-                                      ? AppColors.primary
-                                      : AppColors.textPrimary,
+                                  : (inRange || isToday)
+                                      ? const Color(0xFFD4410A)
+                                      : AppColors.inkSecondary,
                             ),
                           ),
                         ),
@@ -580,9 +621,31 @@ class _CalendarPickerDialogState extends State<_CalendarPickerDialog> {
                 );
               },
             ),
-            const SizedBox(height: 4),
+            // ── Range summary
+            if (_end != null) ...[
+              const SizedBox(height: 14),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppColors.coralTint,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Text(_rangeSummary(),
+                        style: const TextStyle(fontSize: 13,
+                            fontWeight: FontWeight.w500, color: Color(0xFFD4410A))),
+                    const Spacer(),
+                    Text(_nightsLabel(),
+                        style: const TextStyle(fontSize: 12, color: Color(0xFFD4410A))),
+                  ],
+                ),
+              ),
+            ],
           ],
+          ),
         ),
+      ),
       ),
     );
   }
@@ -602,26 +665,30 @@ class _FormRow extends StatelessWidget {
   final VoidCallback? onTap;
   final CrossAxisAlignment crossAlign;
 
+  static const double _labelWidth = 60;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         child: Row(
           crossAxisAlignment: crossAlign,
           children: [
-            Padding(
-              padding: crossAlign == CrossAxisAlignment.start
-                  ? const EdgeInsets.only(top: 2)
-                  : EdgeInsets.zero,
-              child: Text(label, style: const TextStyle(
-                fontSize: 15, fontWeight: FontWeight.w400,
-                color: AppColors.textPrimary,
-              )),
+            SizedBox(
+              width: _labelWidth,
+              child: Padding(
+                padding: crossAlign == CrossAxisAlignment.start
+                    ? const EdgeInsets.only(top: 2)
+                    : EdgeInsets.zero,
+                child: Text(label, style: const TextStyle(
+                  fontSize: 14, fontWeight: FontWeight.w400,
+                  color: AppColors.inkPrimary,
+                )),
+              ),
             ),
-            const SizedBox(width: 16),
             Expanded(child: child),
           ],
         ),
@@ -635,8 +702,8 @@ class _FormDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Padding(
-      padding: EdgeInsets.only(left: 16),
-      child: Divider(height: 0.5, thickness: 0.5, color: Color(0x0F1E243C)),
+      padding: EdgeInsets.only(left: 14),
+      child: Divider(height: 0.5, thickness: 0.5, color: Color(0x0F1C1C1E)),
     );
   }
 }
@@ -708,12 +775,17 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.75,
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-      ),
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+      child: BackdropFilter(
+        filter: GlassSpec.sheetBlur,
+        child: Container(
+          height: MediaQuery.of(context).size.height * 0.75,
+          decoration: const BoxDecoration(
+            color: GlassSpec.sheetBg,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+            border: Border(top: BorderSide(color: GlassSpec.sheetBorder, width: 1)),
+          ),
       child: Column(
         children: [
           // ── Header ────────────────────────────────────────────────
@@ -746,7 +818,7 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
             child: Container(
               height: 36,
               decoration: BoxDecoration(
-                color: const Color(0x0D1E243C),
+                color: const Color(0x0D1C1C1E),
                 borderRadius: BorderRadius.circular(AppRadius.cardXs),
               ),
               child: Row(
@@ -815,7 +887,7 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                       child: Text(letter, style: const TextStyle(
-                        fontSize: 13, fontWeight: FontWeight.w600,
+                        fontSize: 13, fontWeight: FontWeight.w500,
                         color: AppColors.textTertiary,
                       )),
                     ),
@@ -840,6 +912,8 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
             ),
           ),
         ],
+      ),
+      ),
       ),
     );
   }
@@ -870,7 +944,7 @@ class _CityItem extends StatelessWidget {
             )),
             const Spacer(),
             if (selected)
-              const Icon(Icons.check_circle, size: 20, color: AppColors.spearmint),
+              const Icon(Icons.check_circle, size: 20, color: AppColors.success),
           ],
         ),
       ),

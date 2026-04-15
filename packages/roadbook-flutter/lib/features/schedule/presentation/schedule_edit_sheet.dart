@@ -118,7 +118,7 @@ class _ScheduleEditSheetState extends ConsumerState<ScheduleEditSheet> {
           filter: GlassSpec.sheetBlur,
           child: Container(
             decoration: const BoxDecoration(
-              color: GlassSpec.sheetBg, // 72% white
+              color: GlassSpec.sheetBg,
               borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
               border: Border(top: BorderSide(color: GlassSpec.sheetBorder, width: 1)),
             ),
@@ -169,7 +169,7 @@ class _ScheduleEditSheetState extends ConsumerState<ScheduleEditSheet> {
                   // ── iOS grouped form card
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: const Color(0xB0FFFFFF), // 70% white — semi-transparent on glass sheet
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Column(
