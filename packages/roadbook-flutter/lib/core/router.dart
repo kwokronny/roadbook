@@ -31,6 +31,62 @@ abstract class RouterGuard {
   }
 }
 
+/// Slide + fade transition matching Frosted Warmth spec:
+/// Push: new page slides in from right + fades in; old page slides left + fades out
+/// Pop: reverse
+CustomTransitionPage<void> _fadeSlide({
+  required LocalKey key,
+  required Widget child,
+}) {
+  return CustomTransitionPage<void>(
+    key: key,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 350),
+    reverseTransitionDuration: const Duration(milliseconds: 300),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      // Incoming page: slide from right + fade in
+      final slideIn = Tween<Offset>(
+        begin: const Offset(0.25, 0),
+        end: Offset.zero,
+      ).animate(CurvedAnimation(
+        parent: animation,
+        curve: const Cubic(0.22, 0.0, 0.36, 1), // ease-out
+      ));
+
+      final fadeIn = Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(parent: animation, curve: Curves.easeOut),
+      );
+
+      // Outgoing page (when this page is being covered): slide left + fade out
+      final slideOut = Tween<Offset>(
+        begin: Offset.zero,
+        end: const Offset(-0.15, 0),
+      ).animate(CurvedAnimation(
+        parent: secondaryAnimation,
+        curve: const Cubic(0.22, 0.0, 0.36, 1),
+      ));
+
+      final fadeOut = Tween<double>(begin: 1.0, end: 0.6).animate(
+        CurvedAnimation(parent: secondaryAnimation, curve: Curves.easeOut),
+      );
+
+      return SlideTransition(
+        position: slideOut,
+        child: FadeTransition(
+          opacity: fadeOut,
+          child: SlideTransition(
+            position: slideIn,
+            child: FadeTransition(
+              opacity: fadeIn,
+              child: child,
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
 final routerProvider = Provider<GoRouter>((ref) {
   final refreshNotifier = ValueNotifier<int>(0);
   ref.listen(authStateProvider, (_, __) => refreshNotifier.value++);
@@ -47,11 +103,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       );
     },
     routes: [
-      GoRoute(path: '/signin', builder: (_, __) => const SignInScreen()),
-      GoRoute(path: '/signup', builder: (_, __) => const SignUpScreen()),
       GoRoute(
-          path: '/accept',
-          builder: (_, __) => const _PlaceholderScreen(label: 'Accept')),
+        path: '/signin',
+        pageBuilder: (_, state) => _fadeSlide(key: state.pageKey, child: const SignInScreen()),
+      ),
+      GoRoute(
+        path: '/signup',
+        pageBuilder: (_, state) => _fadeSlide(key: state.pageKey, child: const SignUpScreen()),
+      ),
+      GoRoute(
+        path: '/accept',
+        pageBuilder: (_, state) => _fadeSlide(key: state.pageKey, child: const _PlaceholderScreen(label: 'Accept')),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
             MainShell(navigationShell: navigationShell),
@@ -63,17 +126,16 @@ final routerProvider = Provider<GoRouter>((ref) {
               routes: [
                 GoRoute(
                   path: ':id',
-                  builder: (_, state) {
+                  pageBuilder: (_, state) {
                     final id = int.parse(state.pathParameters['id']!);
-                    return TravelDetailScreen(travelId: id);
+                    return _fadeSlide(key: state.pageKey, child: TravelDetailScreen(travelId: id));
                   },
                   routes: [
                     GoRoute(
                       path: 'luggage',
-                      builder: (_, state) {
-                        final id =
-                            int.parse(state.pathParameters['id']!);
-                        return LuggageScreen(travelId: id);
+                      pageBuilder: (_, state) {
+                        final id = int.parse(state.pathParameters['id']!);
+                        return _fadeSlide(key: state.pageKey, child: LuggageScreen(travelId: id));
                       },
                     ),
                   ],
@@ -94,15 +156,15 @@ final routerProvider = Provider<GoRouter>((ref) {
               routes: [
                 GoRoute(
                   path: 'edit',
-                  builder: (_, __) => const EditProfileScreen(),
+                  pageBuilder: (_, state) => _fadeSlide(key: state.pageKey, child: const EditProfileScreen()),
                 ),
                 GoRoute(
                   path: 'settings',
-                  builder: (_, __) => const SettingsScreen(),
+                  pageBuilder: (_, state) => _fadeSlide(key: state.pageKey, child: const SettingsScreen()),
                 ),
                 GoRoute(
                   path: 'api-keys',
-                  builder: (_, __) => const ApiKeysScreen(),
+                  pageBuilder: (_, state) => _fadeSlide(key: state.pageKey, child: const ApiKeysScreen()),
                 ),
               ],
             ),

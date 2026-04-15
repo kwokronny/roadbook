@@ -51,7 +51,7 @@ class ProfileScreen extends ConsumerWidget {
               totalDays: totalDays,
               onTap: () => context.push('/profile/edit'),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
             // 菜单组 1
             _MenuGroup(items: [
               const _MenuItem(
@@ -80,7 +80,7 @@ class ProfileScreen extends ConsumerWidget {
                 onTap: () => context.push('/profile/api-keys'),
               ),
             ]),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
             // 退出登录
             _MenuGroup(items: [
               _MenuItem(
@@ -166,7 +166,7 @@ class _UserCard extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: AppColors.textTertiary, size: 20),
+          const Text('›', style: TextStyle(fontSize: 14, color: AppColors.inkTertiary)),
         ],
       ),
     );
@@ -181,8 +181,8 @@ class _Avatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipOval(
       child: SizedBox(
-        width: 50,
-        height: 50,
+        width: 44,
+        height: 44,
         child: avatarUrl != null
             ? Image.network(avatarUrl!, fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => _placeholder())
@@ -198,7 +198,7 @@ class _Avatar extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [
             AppColors.lavender.withValues(alpha: 0.3),
-            AppColors.skyBlue.withValues(alpha: 0.3),
+            AppColors.primary.withValues(alpha: 0.3),
           ],
         ),
       ),
@@ -218,12 +218,12 @@ class _Stat extends StatelessWidget {
         children: [
           Text('$value',
               style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary)),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.inkPrimary)),
           Text(label,
               style: const TextStyle(
-                  fontSize: 11, color: AppColors.textSecondary)),
+                  fontSize: 10, color: AppColors.inkTertiary)),
         ],
       );
 }
@@ -245,8 +245,8 @@ class _MenuGroup extends StatelessWidget {
               Divider(
                   height: 0.5,
                   thickness: 0.5,
-                  indent: 44,
-                  color: AppColors.textPrimary.withValues(alpha: 0.06)),
+                  indent: 48,
+                  color: AppColors.inkPrimary.withValues(alpha: 0.05)),
           ],
         ],
       ),
@@ -285,13 +285,13 @@ class _MenuItem extends StatelessWidget {
             children: [
               if (icon != null) ...[
                 Container(
-                  width: 26,
-                  height: 26,
+                  width: 24,
+                  height: 24,
                   decoration: BoxDecoration(
-                    color: iconBg?.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(8),
+                    color: iconBg,
+                    borderRadius: BorderRadius.circular(7),
                   ),
-                  child: Icon(icon, color: iconBg, size: 15),
+                  child: Icon(icon, color: Colors.white, size: 14),
                 ),
                 const SizedBox(width: 10),
               ],
@@ -299,9 +299,9 @@ class _MenuItem extends StatelessWidget {
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: 15,
-                  color: labelColor ?? AppColors.textPrimary,
-                  fontWeight: centerLabel ? FontWeight.w600 : FontWeight.w400,
+                  fontSize: 14,
+                  color: labelColor ?? AppColors.inkPrimary,
+                  fontWeight: centerLabel ? FontWeight.w500 : FontWeight.w400,
                 ),
               ),
               if (centerLabel) const Spacer(),
@@ -309,8 +309,8 @@ class _MenuItem extends StatelessWidget {
                 const Spacer(),
                 if (trailing != null) trailing!,
                 if (onTap != null)
-                  const Icon(Icons.chevron_right,
-                      color: AppColors.textTertiary, size: 18),
+                  const Text('›', style: TextStyle(
+                      fontSize: 12, color: AppColors.inkTertiary)),
               ],
             ],
           ),
