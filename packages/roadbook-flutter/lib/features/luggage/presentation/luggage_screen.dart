@@ -6,14 +6,18 @@ import 'widgets/luggage_category_section.dart';
 import 'widgets/add_item_sheet.dart';
 
 const _categoryTemplates = [
-  {'emoji': '📋', 'name': '证件'},
-  {'emoji': '👕', 'name': '衣物'},
-  {'emoji': '📱', 'name': '电子'},
-  {'emoji': '🪥', 'name': '洗漱'},
-  {'emoji': '💊', 'name': '药品'},
-  {'emoji': '🧴', 'name': '防晒护肤'},
-  {'emoji': '🎒', 'name': '随身'},
-  {'emoji': '🍫', 'name': '零食'},
+  {'emoji': '📋', 'name': '证件', 'items': '护照,身份证,签证,机票打印件,酒店预订单,旅行保险单'},
+  {'emoji': '👕', 'name': '衣物', 'items': 'T恤,内衣内裤,外套,袜子,运动鞋,睡衣'},
+  {'emoji': '📱', 'name': '电子', 'items': '充电宝,手机充电线,转换插头,相机,耳机'},
+  {'emoji': '🪥', 'name': '洗漱', 'items': '牙刷,牙膏,洗发水,沐浴露,护手霜,剃须刀'},
+  {'emoji': '💊', 'name': '药品', 'items': '感冒药,肠胃药,止痛药,创可贴,防蚊液'},
+  {'emoji': '🧴', 'name': '防晒护肤', 'items': '防晒霜,晒后修复乳,保湿喷雾,护唇膏,面膜'},
+  {'emoji': '🎒', 'name': '随身', 'items': '钱包,钥匙,充电宝,纸巾,口罩,雨伞'},
+  {'emoji': '🍫', 'name': '零食', 'items': '巧克力,坚果,饼干,糖果,牛肉干'},
+  {'emoji': '🧥', 'name': '冬季御寒', 'items': '羽绒服,围巾,手套,毛帽,保暖内衣,暖宝宝'},
+  {'emoji': '👗', 'name': '夏季清凉', 'items': '短裤,凉鞋,墨镜,泳衣,遮阳帽,防晒衣'},
+  {'emoji': '⛷️', 'name': '滑雪装备', 'items': '滑雪手套,护目镜,面罩,暖宝宝,防水裤,厚袜子'},
+  {'emoji': '💇', 'name': '洗护造型', 'items': '梳子,发胶,发夹,皮筋,干发帽,卷发棒'},
 ];
 
 class LuggageScreen extends ConsumerWidget {
@@ -265,6 +269,8 @@ class _AddCategorySheetState extends State<_AddCategorySheet> {
                       ..._categoryTemplates.map((t) {
                         final name = t['name']!;
                         final emoji = t['emoji']!;
+                        final itemsStr = t['items'] ?? '';
+                        final presetItems = itemsStr.isNotEmpty ? itemsStr.split(',') : <String>[];
                         final exists = widget.existingNames.contains(name);
                         return GestureDetector(
                           onTap: exists
@@ -273,7 +279,7 @@ class _AddCategorySheetState extends State<_AddCategorySheet> {
                                   Navigator.pop(context);
                                   await ref
                                       .read(luggageProvider(widget.travelId).notifier)
-                                      .addCategory(name, emoji: emoji);
+                                      .addCategory(name, emoji: emoji, presetItems: presetItems);
                                 },
                           child: Container(
                             decoration: BoxDecoration(

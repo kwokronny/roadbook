@@ -138,7 +138,7 @@ class LuggageNotifier
     _saveCheckedLocally({});
   }
 
-  Future<void> addCategory(String name, {String emoji = '📦'}) async {
+  Future<void> addCategory(String name, {String emoji = '📦', List<String> presetItems = const []}) async {
     final current = state.valueOrNull;
     if (current == null) return;
     final previous = current.categories;
@@ -146,7 +146,7 @@ class LuggageNotifier
       id: _uuid.v4(),
       name: name,
       emoji: emoji,
-      items: const [],
+      items: presetItems.map((t) => LuggageItem(id: _uuid.v4(), text: t)).toList(),
     );
     final updated = [...current.categories, newCat];
     state = AsyncData(current.copyWith(categories: updated));
