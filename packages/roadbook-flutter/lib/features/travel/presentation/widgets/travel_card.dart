@@ -1,9 +1,9 @@
 // lib/features/travel/presentation/widgets/travel_card.dart
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/theme.dart';
 import '../../../../shared/models/travel.dart';
-import '../../../../shared/widgets/glass_card.dart';
 
 // ─── Status helpers ─────────────────────────────────────────────────────────
 
@@ -26,7 +26,63 @@ String _labelFor(TravelStatusType status) => switch (status) {
   TravelStatusType.ended    => '已结束',
 };
 
-// ─── TravelCard ─────────────────────────────────────────────────────────────
+// ─── Status-based gradient specs ────────────────────────────────────────────
+
+class _StatusGradientSpec {
+  const _StatusGradientSpec({
+    required this.gradient,
+    required this.borderColor,
+    this.shadow,
+    this.hasAccentBar = false,
+    this.opacity = 1.0,
+  });
+
+  final LinearGradient gradient;
+  final Color borderColor;
+  final BoxShadow? shadow;
+  final bool hasAccentBar;
+  final double opacity;
+
+  static _StatusGradientSpec forStatus(TravelStatusType status) => switch (status) {
+    TravelStatusType.ongoing => const _StatusGradientSpec(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0x99FFFFFF), Color(0x14FF6B3D)], // white 60% -> coral 8%
+      ),
+      borderColor: Color(0x1FFF6B3D), // coral 12%
+      shadow: BoxShadow(color: Color(0x1AFF6B3D), blurRadius: 24, offset: Offset(0, 6)),
+      hasAccentBar: true,
+    ),
+    TravelStatusType.upcoming => const _StatusGradientSpec(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0x8CFFFFFF), Color(0x0F8C5CF6)], // white 55% -> lavender 6%
+      ),
+      borderColor: Color(0x1A8C5CF6), // lavender 10%
+    ),
+    TravelStatusType.planning => const _StatusGradientSpec(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0x85FFFFFF), Color(0x0A8C5CF6)], // white 52% -> lavender 4%
+      ),
+      borderColor: Color(0x1A8C5CF6), // lavender 10%
+    ),
+    TravelStatusType.ended => const _StatusGradientSpec(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0x61FFFFFF), Color(0x081C1C1E)], // white 38% -> ink 3%
+      ),
+      borderColor: Color(0xA6FFFFFF), // white 65%
+      opacity: 0.75,
+    ),
+  };
+}
+
+// ─── TravelCard V2 ──────────────────────────────────────────────────────────
 
 class TravelCard extends StatelessWidget {
   const TravelCard({
@@ -45,83 +101,179 @@ class TravelCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final status = computeTravelStatus(travel.startDate, travel.endDate);
+    final spec   = _StatusGradientSpec.forStatus(status);
     final days   = travel.endDate.difference(travel.startDate).inDays + 1;
+    final people = travel.collaborators.length;
     final fmt    = DateFormat('MM/dd');
 
-    return GlassCard(
-      margin: const EdgeInsets.only(bottom: 14),
-      tintColor: AppColors.statusTint(status),
-      padding: EdgeInsets.zero,
-      onTap: onTap,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // ── Header: name + status badge ──────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 12, 0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                    travel.name,
-                    style: AppTextStyles.headline,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+    Widget card = ClipRRect(
+      borderRadius: BorderRadius.circular(AppRadius.card),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: spec.gradient,
+            borderRadius: BorderRadius.circular(AppRadius.card),
+            border: Border.all(color: spec.borderColor, width: 1),
+            boxShadow: [
+              if (spec.shadow != null) spec.shadow!,
+              ...GlassSpec.cardShadow,
+            ],
+          ),
+          child: Stack(
+            children: [
+              // Specular highlight
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(AppRadius.card),
+                      gradient: GlassSpec.specularHighlight,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 8),
-                _StatusBadge(status: status),
-              ],
-            ),
-          ),
-
-          // ── Date + days ──────────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
-            child: Text(
-              '${fmt.format(travel.startDate)} — ${fmt.format(travel.endDate)}  ·  $days天',
-              style: AppTextStyles.caption,
-            ),
-          ),
-
-          // ── City tags ────────────────────────────────────────────────────
-          if (travel.cities.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-              child: Wrap(
-                spacing: 6,
-                runSpacing: 4,
-                children: [
-                  for (int i = 0; i < travel.cities.length && i < 4; i++)
-                    _CityTag(city: travel.cities[i], index: i),
-                ],
               ),
-            ),
-
-          // ── Dashed divider ───────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
-            child: CustomPaint(
-              painter: _DashedLinePainter(color: const Color(0x141E243C)),
-              size: const Size(double.infinity, 1),
-            ),
+              // Top accent bar for ongoing status
+              if (spec.hasAccentBar)
+                Positioned(
+                  top: 0, left: 0, right: 0,
+                  child: Container(
+                    height: 2,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFFFF6B3D), Color(0xFFFF8C42)],
+                      ),
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.card)),
+                    ),
+                  ),
+                ),
+              // Content
+              Padding(
+                padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // ── Row 1: Name + More icon ───────────────────────────────
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            travel.name,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.inkPrimary,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: () => _showMoreActions(context),
+                          behavior: HitTestBehavior.opaque,
+                          child: const Padding(
+                            padding: EdgeInsets.only(top: 2),
+                            child: Icon(
+                              Icons.more_horiz,
+                              size: 16,
+                              color: AppColors.inkTertiary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    // ── Row 2: Status pill + Date | People + Days ─────────────
+                    Row(
+                      children: [
+                        _StatusBadge(status: status),
+                        const SizedBox(width: 6),
+                        Text(
+                          '${fmt.format(travel.startDate)} - ${fmt.format(travel.endDate)}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.inkPrimary.withValues(alpha: 0.55),
+                          ),
+                        ),
+                        const Spacer(),
+                        Text(
+                          '${days}天 · ${people}人',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: AppColors.inkPrimary.withValues(alpha: 0.50),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    // ── Row 3: Avatar group | City tags ───────────────────────
+                    Row(
+                      children: [
+                        if (travel.collaborators.isNotEmpty)
+                          _buildCollaborators(),
+                        const Spacer(),
+                        if (travel.cities.isNotEmpty)
+                          Flexible(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                for (int i = 0; i < travel.cities.length && i < 4; i++) ...[
+                                  if (i > 0) const SizedBox(width: 4),
+                                  _CityTag(city: travel.cities[i]),
+                                ],
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
+        ),
+      ),
+    );
 
-          // ── Bottom row: collaborators + actions ──────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 4, 8, 8),
-            child: Row(
-              children: [
-                if (travel.collaborators.isNotEmpty)
-                  _buildCollaborators(),
-                const Spacer(),
-                if (onEdit != null || onDelete != null)
-                  _buildMoreMenu(),
-              ],
-            ),
-          ),
-        ],
+    // Apply overall opacity for ended status
+    if (spec.opacity < 1.0) {
+      card = Opacity(opacity: spec.opacity, child: card);
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: GestureDetector(
+        onTap: onTap,
+        child: card,
+      ),
+    );
+  }
+
+  void _showMoreActions(BuildContext context) {
+    if (onEdit == null && onDelete == null) return;
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (onEdit != null)
+              ListTile(
+                leading: const Icon(Icons.edit_outlined, size: 20, color: AppColors.inkPrimary),
+                title: const Text('编辑'),
+                onTap: () { Navigator.pop(context); onEdit!(); },
+              ),
+            if (onDelete != null)
+              ListTile(
+                leading: const Icon(Icons.delete_outline, size: 20, color: AppColors.destructive),
+                title: const Text('删除', style: TextStyle(color: AppColors.destructive)),
+                onTap: () { Navigator.pop(context); onDelete!(); },
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -129,11 +281,11 @@ class TravelCard extends StatelessWidget {
   Widget _buildCollaborators() {
     final visible = travel.collaborators.take(5).toList();
     final overflow = travel.collaborators.length - 5;
-    const double size = 26;
-    const double overlap = 7;
+    const double size = 24;
+    const double overlap = 6;
 
     return SizedBox(
-      width: size + (visible.length - 1) * (size - overlap) + (overflow > 0 ? 26 : 0),
+      width: size + (visible.length - 1) * (size - overlap) + (overflow > 0 ? (size - overlap) + size : 0),
       height: size,
       child: Stack(
         children: [
@@ -144,9 +296,9 @@ class TravelCard extends StatelessWidget {
                 width: size,
                 height: size,
                 decoration: BoxDecoration(
-                  color: AppColors.tagAccents[i % AppColors.tagAccents.length].withValues(alpha: 0.15),
+                  color: const Color(0xFFC4C4C6),
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.8), width: 2),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.70), width: 2),
                 ),
                 child: ClipOval(
                   child: visible[i].user.avatar != null && visible[i].user.avatar!.isNotEmpty
@@ -154,9 +306,9 @@ class TravelCard extends StatelessWidget {
                           visible[i].user.avatar!,
                           width: size, height: size, fit: BoxFit.cover,
                           errorBuilder: (_, __, ___) => _avatarFallback(
-                              visible[i].user.name ?? visible[i].user.username, i),
+                              visible[i].user.name ?? visible[i].user.username),
                         )
-                      : _avatarFallback(visible[i].user.name ?? visible[i].user.username, i),
+                      : _avatarFallback(visible[i].user.name ?? visible[i].user.username),
                 ),
               ),
             ),
@@ -167,13 +319,13 @@ class TravelCard extends StatelessWidget {
                 width: size,
                 height: size,
                 decoration: BoxDecoration(
-                  color: const Color(0x0D1E243C),
+                  color: const Color(0xFFC4C4C6),
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.8), width: 2),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.70), width: 2),
                 ),
                 child: Center(
                   child: Text('+$overflow',
-                    style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w500, color: AppColors.textSecondary)),
+                    style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w500, color: Colors.white)),
                 ),
               ),
             ),
@@ -182,50 +334,21 @@ class TravelCard extends StatelessWidget {
     );
   }
 
-  Widget _avatarFallback(String name, int index) {
+  Widget _avatarFallback(String name) {
     return Center(
       child: Text(
         name.characters.first,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: AppColors.cityTagText(index),
+        style: const TextStyle(
+          fontSize: 9,
+          fontWeight: FontWeight.w500,
+          color: Colors.white,
         ),
       ),
     );
   }
-
-  Widget _buildMoreMenu() {
-    return PopupMenuButton<String>(
-      icon: const Icon(Icons.more_horiz, size: 18, color: AppColors.textTertiary),
-      padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      color: AppColors.surface,
-      elevation: 4,
-      itemBuilder: (_) => [
-        if (onEdit != null)
-          const PopupMenuItem(value: 'edit', height: 40,
-            child: Row(children: [
-              Icon(Icons.edit_outlined, size: 16, color: AppColors.textPrimary),
-              SizedBox(width: 10), Text('编辑'),
-            ])),
-        if (onDelete != null)
-          const PopupMenuItem(value: 'delete', height: 40,
-            child: Row(children: [
-              Icon(Icons.delete_outline, size: 16, color: AppColors.destructive),
-              SizedBox(width: 10), Text('删除', style: TextStyle(color: AppColors.destructive)),
-            ])),
-      ],
-      onSelected: (v) {
-        if (v == 'edit') onEdit?.call();
-        if (v == 'delete') onDelete?.call();
-      },
-    );
-  }
 }
 
-// ─── Status badge ───────────────────────────────────────────────────────────
+// ─── Status badge (compact: dot + label) ────────────────────────────────────
 
 class _StatusBadge extends StatelessWidget {
   const _StatusBadge({required this.status});
@@ -234,73 +357,59 @@ class _StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
       decoration: BoxDecoration(
         color: AppColors.statusBadgeBg(status),
         borderRadius: BorderRadius.circular(AppRadius.pill),
-        border: Border.all(color: AppColors.statusBadgeBorder(status), width: 1),
       ),
-      child: Text(
-        _labelFor(status),
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w500,
-          color: AppColors.statusBadgeText(status),
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 5,
+            height: 5,
+            decoration: BoxDecoration(
+              color: AppColors.statusBadgeText(status),
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            _labelFor(status),
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w500,
+              color: AppColors.statusBadgeText(status),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-// ─── City tag ───────────────────────────────────────────────────────────────
+// ─── City tag (neutral dark style) ──────────────────────────────────────────
 
 class _CityTag extends StatelessWidget {
-  const _CityTag({required this.city, required this.index});
+  const _CityTag({required this.city});
   final String city;
-  final int index;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: AppColors.cityTagBg(index),
+        color: AppColors.cityTagBg(0),
         borderRadius: BorderRadius.circular(AppRadius.pill),
-        border: Border.all(color: AppColors.cityTagBorder(index), width: 1),
+        border: Border.all(color: AppColors.cityTagBorder(0), width: 1),
       ),
       child: Text(
         city,
         style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w400,
-          color: AppColors.cityTagText(index),
+          fontSize: 10,
+          color: AppColors.cityTagText(0),
         ),
       ),
     );
   }
-}
-
-// ─── Dashed line painter ────────────────────────────────────────────────────
-
-class _DashedLinePainter extends CustomPainter {
-  _DashedLinePainter({required this.color});
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke;
-    const dashWidth = 5.0;
-    const dashGap = 3.0;
-    double x = 0;
-    while (x < size.width) {
-      canvas.drawLine(Offset(x, 0), Offset(x + dashWidth, 0), paint);
-      x += dashWidth + dashGap;
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _DashedLinePainter old) => old.color != color;
 }
