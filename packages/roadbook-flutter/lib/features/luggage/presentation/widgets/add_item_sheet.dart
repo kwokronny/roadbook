@@ -83,13 +83,18 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
     return Padding(
       padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: Container(
-        constraints: BoxConstraints(maxHeight: maxHeight),
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          borderRadius:
-              BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-        ),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+        child: BackdropFilter(
+          filter: GlassSpec.sheetBlur,
+          child: Container(
+            constraints: BoxConstraints(maxHeight: maxHeight),
+            decoration: const BoxDecoration(
+              color: GlassSpec.sheetBg,
+              borderRadius:
+                  BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+              border: Border(top: BorderSide(color: GlassSpec.sheetBorder, width: 1)),
+            ),
         child: SafeArea(
           top: false,
           child: Column(
@@ -107,6 +112,8 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
               _buildAddButton(),
             ],
           ),
+        ),
+      ),
         ),
       ),
     );
@@ -130,7 +137,7 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
             const Text('添加物品',
                 style: TextStyle(
                     fontSize: 17,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w500,
                     color: AppColors.textPrimary)),
             if (_selected.isNotEmpty)
               Text('已选 ${_selected.length}',
@@ -146,7 +153,7 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
           height: 36,
           decoration: BoxDecoration(
             color: AppColors.background,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(AppRadius.pill),
           ),
           child: TextField(
             controller: _searchCtrl,
@@ -191,7 +198,7 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
                       text: _query,
                       style: const TextStyle(
                           color: AppColors.primary,
-                          fontWeight: FontWeight.w600)),
+                          fontWeight: FontWeight.w500)),
                   const TextSpan(text: '" 为新物品'),
                 ],
               ),
@@ -202,25 +209,15 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
   }
 
   Widget _buildPresetView() {
+    final allPresets = {..._categoryPresets, ...universalPresets}.toList();
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 8),
       children: [
-        _buildGroupHeader('${widget.categoryName}常用'),
-        ..._categoryPresets.map(_buildSelectRow),
-        const SizedBox(height: 8),
-        _buildGroupHeader('通用常用'),
-        ...universalPresets.map(_buildSelectRow),
+        ...allPresets.map(_buildSelectRow),
         _buildCustomInputRow(),
       ],
     );
   }
-
-  Widget _buildGroupHeader(String title) => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-        child: Text(title,
-            style: AppTextStyles.caption
-                .copyWith(fontWeight: FontWeight.w600)),
-      );
 
   Widget _buildSelectRow(String text) {
     final alreadyHas = _existingTexts.contains(text);
@@ -335,7 +332,7 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
               style: const TextStyle(
                   color: Colors.white,
                   fontSize: 15,
-                  fontWeight: FontWeight.w600),
+                  fontWeight: FontWeight.w500),
             ),
           ),
         ),

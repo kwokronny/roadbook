@@ -21,69 +21,53 @@ class TemplateSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius:
-            BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 36,
-            height: 4,
-            margin: const EdgeInsets.only(bottom: 16),
-            decoration: BoxDecoration(
-              color: AppColors.textTertiary,
-              borderRadius: BorderRadius.circular(2),
-            ),
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+      child: BackdropFilter(
+        filter: GlassSpec.sheetBlur,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+          decoration: const BoxDecoration(
+            color: GlassSpec.sheetBg,
+            borderRadius:
+                BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+            border: Border(top: BorderSide(color: GlassSpec.sheetBorder, width: 1)),
           ),
-          const Text('选择出行季节',
-              style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary)),
-          const SizedBox(height: 4),
-          Text('点击即导入对应季节的打包建议', style: AppTextStyles.caption),
-          const SizedBox(height: 16),
-          GridView.count(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisCount: 2,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            childAspectRatio: 2.5,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              _SeasonCard(
-                  travelId: travelId,
-                  season: LuggageSeason.spring,
-                  emoji: '🌸',
-                  label: '春季',
-                  months: '3–5月'),
-              _SeasonCard(
-                  travelId: travelId,
-                  season: LuggageSeason.summer,
-                  emoji: '☀️',
-                  label: '夏季',
-                  months: '6–8月'),
-              _SeasonCard(
-                  travelId: travelId,
-                  season: LuggageSeason.autumn,
-                  emoji: '🍂',
-                  label: '秋季',
-                  months: '9–11月'),
-              _SeasonCard(
-                  travelId: travelId,
-                  season: LuggageSeason.winter,
-                  emoji: '❄️',
-                  label: '冬季',
-                  months: '12–2月'),
+              Container(
+                width: 36, height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: AppColors.textTertiary,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const Text('选择出行季节',
+                  style: TextStyle(
+                      fontSize: 17, fontWeight: FontWeight.w500,
+                      color: AppColors.textPrimary)),
+              const SizedBox(height: 4),
+              Text('点击即导入对应季节的打包建议', style: AppTextStyles.caption),
+              const SizedBox(height: 16),
+              GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                mainAxisSpacing: 10, crossAxisSpacing: 10,
+                childAspectRatio: 2.5,
+                children: [
+                  _SeasonCard(travelId: travelId, season: LuggageSeason.spring, emoji: '🌸', label: '春季', months: '3–5月'),
+                  _SeasonCard(travelId: travelId, season: LuggageSeason.summer, emoji: '☀️', label: '夏季', months: '6–8月'),
+                  _SeasonCard(travelId: travelId, season: LuggageSeason.autumn, emoji: '🍂', label: '秋季', months: '9–11月'),
+                  _SeasonCard(travelId: travelId, season: LuggageSeason.winter, emoji: '❄️', label: '冬季', months: '12–2月'),
+                ],
+              ),
+              const SizedBox(height: 8),
             ],
           ),
-          const SizedBox(height: 8),
-        ],
+        ),
       ),
     );
   }
@@ -136,7 +120,7 @@ class _SeasonCard extends ConsumerWidget {
                 Text(label,
                     style: const TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                         color: AppColors.textPrimary)),
                 Text(months, style: AppTextStyles.micro),
               ],

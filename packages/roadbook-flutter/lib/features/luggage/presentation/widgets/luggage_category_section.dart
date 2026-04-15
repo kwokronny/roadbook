@@ -60,7 +60,6 @@ class _LuggageCategorySectionState
   Widget _buildHeader() {
     return GestureDetector(
       onTap: () => setState(() => _expanded = !_expanded),
-      onLongPress: widget.canEdit ? _confirmDelete : null,
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
         height: 44,
@@ -76,7 +75,7 @@ class _LuggageCategorySectionState
                   widget.category.name,
                   style: const TextStyle(
                       fontSize: 15,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w500,
                       color: AppColors.textPrimary),
                 ),
               ),
@@ -84,6 +83,14 @@ class _LuggageCategorySectionState
                 '$_checkedInCat/${widget.category.items.length}',
                 style: AppTextStyles.caption,
               ),
+              if (widget.canEdit) ...[
+                const SizedBox(width: 4),
+                GestureDetector(
+                  onTap: _confirmDelete,
+                  child: const Icon(Icons.delete_outline,
+                      size: 18, color: AppColors.inkTertiary),
+                ),
+              ],
               const SizedBox(width: 6),
               AnimatedRotation(
                 turns: _expanded ? 0 : -0.25,

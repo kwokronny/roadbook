@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import '../data/luggage_repository.dart';
 import '../../../shared/constants/luggage_presets.dart';
@@ -94,15 +95,21 @@ class LuggageNotifier
       cats = [];
     }
 
+    // Load checked IDs from local storage
+    final prefs = await SharedPreferences.getInstance();
+    final savedIds = prefs.getStringList(_checkedKey(arg)) ?? [];
+
     return LuggageState(
       categories: cats,
-      checkedIds: const {},
+      checkedIds: savedIds.toSet(),
       isSaving: false,
       canEdit: canEdit,
     );
   }
 
-  // ── Local-only ────────────────────────────────────────────────────────────
+  static String _checkedKey(int travelId) => 'luggage_checked_$travelId';
+
+  // ── Local-only (persisted to SharedPreferences) ──────────────────────────
 
   void toggleCheck(String itemId) {
     final current = state.valueOrNull;
@@ -114,18 +121,31 @@ class LuggageNotifier
       checked.add(itemId);
     }
     state = AsyncData(current.copyWith(checkedIds: checked));
+    _saveCheckedLocally(checked);
+  }
+
+  Future<void> _saveCheckedLocally(Set<String> ids) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_checkedKey(arg), ids.toList());
   }
 
   // ── Persistent mutations ──────────────────────────────────────────────────
 
-  Future<void> addCategory(String name) async {
+  void clearAllChecks() {
+    final current = state.valueOrNull;
+    if (current == null) return;
+    state = AsyncData(current.copyWith(checkedIds: {}));
+    _saveCheckedLocally({});
+  }
+
+  Future<void> addCategory(String name, {String emoji = '📦'}) async {
     final current = state.valueOrNull;
     if (current == null) return;
     final previous = current.categories;
     final newCat = LuggageCategory(
       id: _uuid.v4(),
       name: name,
-      emoji: '📦',
+      emoji: emoji,
       items: const [],
     );
     final updated = [...current.categories, newCat];
