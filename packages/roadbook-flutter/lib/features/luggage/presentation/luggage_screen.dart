@@ -210,6 +210,7 @@ class _AddCategorySheet extends StatefulWidget {
 }
 
 class _AddCategorySheetState extends State<_AddCategorySheet> {
+  final Set<int> _selected = {};
   bool _showCustomInput = false;
   final _ctrl = TextEditingController();
 
@@ -221,170 +222,221 @@ class _AddCategorySheetState extends State<_AddCategorySheet> {
 
   @override
   Widget build(BuildContext context) {
+    final maxHeight = MediaQuery.of(context).size.height * 0.75;
     return Padding(
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: ClipRRect(
         borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
         child: BackdropFilter(
           filter: GlassSpec.sheetBlur,
           child: Container(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+            constraints: BoxConstraints(maxHeight: maxHeight),
             decoration: const BoxDecoration(
               color: GlassSpec.sheetBg,
-              borderRadius:
-                  BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
               border: Border(top: BorderSide(color: GlassSpec.sheetBorder, width: 1)),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // ── Handle
                 Center(
                   child: Container(
-                    width: 36,
-                    height: 4,
-                    margin: const EdgeInsets.only(bottom: 16),
+                    width: 36, height: 4,
+                    margin: const EdgeInsets.only(top: 10, bottom: 14),
                     decoration: BoxDecoration(
                       color: AppColors.textTertiary,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
                 ),
-                const Text('添加分类',
-                    style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.textPrimary)),
-                const SizedBox(height: 12),
-                Consumer(
-                  builder: (_, ref, __) => GridView.count(
-                    crossAxisCount: 4,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                    childAspectRatio: 2.2,
+                // ── Title bar
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
                     children: [
-                      ..._categoryTemplates.map((t) {
-                        final name = t['name']!;
-                        final emoji = t['emoji']!;
-                        final itemsStr = t['items'] ?? '';
-                        final presetItems = itemsStr.isNotEmpty ? itemsStr.split(',') : <String>[];
-                        final exists = widget.existingNames.contains(name);
-                        return GestureDetector(
-                          onTap: exists
-                              ? null
-                              : () async {
-                                  Navigator.pop(context);
-                                  await ref
-                                      .read(luggageProvider(widget.travelId).notifier)
-                                      .addCategory(name, emoji: emoji, presetItems: presetItems);
-                                },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: exists
-                                  ? AppColors.background
-                                  : AppColors.surface,
-                              borderRadius: BorderRadius.circular(AppRadius.pill),
-                              border: Border.all(
-                                color: exists
-                                    ? AppColors.border
-                                    : const Color(0x1F1C1C1E),
-                              ),
-                            ),
-                            alignment: Alignment.center,
-                            child: Text(
-                              '$emoji $name',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: exists
-                                    ? AppColors.textTertiary
-                                    : AppColors.textPrimary,
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                      GestureDetector(
-                        onTap: () => setState(() => _showCustomInput = !_showCustomInput),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: _showCustomInput
-                                ? AppColors.primary.withOpacity(0.1)
-                                : AppColors.surface,
-                            borderRadius: BorderRadius.circular(AppRadius.pill),
-                            border: Border.all(
-                              color: _showCustomInput
-                                  ? AppColors.primary
-                                  : const Color(0x1F1C1C1E),
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            '✏️ 自定义',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: _showCustomInput
-                                  ? AppColors.primary
-                                  : AppColors.textPrimary,
-                            ),
-                          ),
-                        ),
-                      ),
+                      const Text('添加分类',
+                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColors.textPrimary)),
+                      const Spacer(),
+                      if (_selected.isNotEmpty)
+                        Text('已选 ${_selected.length}',
+                            style: const TextStyle(fontSize: 14, color: AppColors.primary)),
                     ],
                   ),
                 ),
-                if (_showCustomInput) ...[
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _ctrl,
-                    autofocus: true,
-                    onChanged: (_) => setState(() {}),
-                    decoration: InputDecoration(
-                      hintText: '分类名称',
-                      filled: true,
-                      fillColor: AppColors.background,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppRadius.input),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Consumer(
-                    builder: (_, ref, __) => SizedBox(
-                      height: 48,
-                      child: ElevatedButton(
-                        onPressed: _ctrl.text.trim().isEmpty
-                            ? null
-                            : () async {
-                                final name = _ctrl.text.trim();
-                                Navigator.pop(context);
-                                await ref
-                                    .read(luggageProvider(widget.travelId).notifier)
-                                    .addCategory(name);
-                              },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          disabledBackgroundColor: AppColors.textTertiary,
-                          shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(AppRadius.input)),
+                const SizedBox(height: 8),
+                const Divider(height: 0.5, thickness: 0.5, color: AppColors.separator),
+                // ── List
+                Flexible(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    itemCount: _categoryTemplates.length + 1, // +1 for custom
+                    itemBuilder: (_, i) {
+                      if (i == _categoryTemplates.length) {
+                        // Custom input row
+                        return _buildCustomRow();
+                      }
+                      final t = _categoryTemplates[i];
+                      final name = t['name']!;
+                      final emoji = t['emoji']!;
+                      final itemsStr = t['items'] ?? '';
+                      final itemCount = itemsStr.isNotEmpty ? itemsStr.split(',').length : 0;
+                      final exists = widget.existingNames.contains(name);
+                      final selected = _selected.contains(i);
+
+                      return GestureDetector(
+                        onTap: exists ? null : () {
+                          setState(() {
+                            if (selected) {
+                              _selected.remove(i);
+                            } else {
+                              _selected.add(i);
+                            }
+                          });
+                        },
+                        behavior: HitTestBehavior.opaque,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          child: Row(
+                            children: [
+                              // Checkbox
+                              Container(
+                                width: 22, height: 22,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: exists
+                                      ? AppColors.background
+                                      : selected ? AppColors.primary : Colors.transparent,
+                                  border: Border.all(
+                                    color: exists
+                                        ? AppColors.textTertiary
+                                        : selected ? AppColors.primary : AppColors.border,
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: selected
+                                    ? const Icon(Icons.check, size: 14, color: Colors.white)
+                                    : null,
+                              ),
+                              const SizedBox(width: 12),
+                              // Emoji
+                              Text(emoji, style: const TextStyle(fontSize: 20)),
+                              const SizedBox(width: 10),
+                              // Name + item count
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(name, style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                      color: exists ? AppColors.textTertiary : AppColors.textPrimary,
+                                    )),
+                                    if (itemCount > 0)
+                                      Text('$itemCount 件常用物品', style: TextStyle(
+                                        fontSize: 12,
+                                        color: exists ? AppColors.textTertiary : AppColors.inkTertiary,
+                                      )),
+                                  ],
+                                ),
+                              ),
+                              if (exists)
+                                const Text('已添加', style: TextStyle(fontSize: 12, color: AppColors.textTertiary)),
+                            ],
+                          ),
                         ),
-                        child: const Text('添加',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500)),
-                      ),
-                    ),
+                      );
+                    },
                   ),
-                ],
+                ),
+                // ── Add button
+                Consumer(
+                  builder: (_, ref, __) {
+                    final hasCustom = _showCustomInput && _ctrl.text.trim().isNotEmpty;
+                    final total = _selected.length + (hasCustom ? 1 : 0);
+                    return Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                      child: SafeArea(
+                        top: false,
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: ElevatedButton(
+                            onPressed: total == 0 ? null : () async {
+                              Navigator.pop(context);
+                              final notifier = ref.read(luggageProvider(widget.travelId).notifier);
+                              for (final idx in _selected) {
+                                final t = _categoryTemplates[idx];
+                                final itemsStr = t['items'] ?? '';
+                                final presetItems = itemsStr.isNotEmpty ? itemsStr.split(',') : <String>[];
+                                await notifier.addCategory(t['name']!, emoji: t['emoji']!, presetItems: presetItems);
+                              }
+                              if (hasCustom) {
+                                await notifier.addCategory(_ctrl.text.trim());
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              disabledBackgroundColor: AppColors.textTertiary,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(AppRadius.input)),
+                            ),
+                            child: Text(
+                              total > 0 ? '添加 $total 个分类' : '选择分类',
+                              style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildCustomRow() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: Column(
+        children: [
+          GestureDetector(
+            onTap: () => setState(() => _showCustomInput = !_showCustomInput),
+            behavior: HitTestBehavior.opaque,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                children: [
+                  Icon(Icons.add_circle_outline, size: 22, color: AppColors.primary),
+                  const SizedBox(width: 12),
+                  Text('自定义分类', style: TextStyle(fontSize: 15, color: AppColors.primary)),
+                ],
+              ),
+            ),
+          ),
+          if (_showCustomInput) ...[
+            const SizedBox(height: 8),
+            TextField(
+              controller: _ctrl,
+              autofocus: true,
+              onChanged: (_) => setState(() {}),
+              decoration: InputDecoration(
+                hintText: '输入分类名称',
+                filled: true,
+                fillColor: AppColors.background,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.input),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
