@@ -35,21 +35,21 @@ abstract class AppColors {
   static const Color success     = Color(0xFF34C759);
   static const Color neutral     = Color(0xFF8E8E93);
 
-  // ─── Secondary Accent — Serene Slate (Hotel / Accommodation) ─────────────
-  static const Color lavender      = Color(0xFF6B7FA0); // muted slate blue
-  static const Color lavenderTint  = Color(0x146B7FA0); // muted slate tint
-  static const Color lavenderText  = Color(0xFF5A6680);
-  static const Color lavenderDeep  = Color(0xFF4A5568); // quiet slate — hotel title text
-  static const Color lavenderAddr  = Color(0x806B7FA0); // muted slate 50% — hotel address
-  static const Color lavenderNote  = Color(0x736B7FA0); // muted slate 45% — hotel notes
-  static const Color lavenderFrost = Color(0x106B7FA0); // slate 6% — hotel card tint
-  static const Color lavenderFrostBorder = Color(0x1A6B7FA0); // slate 10% — hotel card border
-  static const Color lavenderTimeBg = Color(0x186B7FA0); // slate 9% — hotel time badge
+  // ─── Secondary Accent — Serene Night Blue (Hotel / Accommodation) ────────
+  static const Color lavender      = Color(0xFF3D5A80); // serene deep blue
+  static const Color lavenderTint  = Color(0x143D5A80);
+  static const Color lavenderText  = Color(0xFF3D5A80);
+  static const Color lavenderDeep  = Color(0xFF2C4A6E); // deep navy — hotel title text
+  static const Color lavenderAddr  = Color(0x803D5A80); // 50%
+  static const Color lavenderNote  = Color(0x733D5A80); // 45%
+  static const Color lavenderFrost = Color(0x103D5A80); // 6% — hotel card tint
+  static const Color lavenderFrostBorder = Color(0x1A3D5A80); // 10% — hotel card border
+  static const Color lavenderTimeBg = Color(0x183D5A80); // 9% — hotel time badge
 
   // Backward-compat aliases for hotel
-  static const Color hotel       = Color(0xFF6B7FA0); // muted slate blue
+  static const Color hotel       = Color(0xFF3D5A80);
   static const Color hotelLight  = lavenderTint;
-  static const Color hotelBorder = Color(0x286B7FA0);
+  static const Color hotelBorder = Color(0x283D5A80);
 
   // ─── Schedule unplanned ──────────────────────────────────────────────────
   static const Color unplanned      = Color(0xFFD4C8BF);
