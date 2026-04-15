@@ -2,43 +2,89 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
-/// Full-screen pastel mesh gradient background with slow drifting animation.
-/// Use inside a Stack as the bottom layer.
+/// Ambient Canvas — warm base with three colour orbs.
+/// On each route change the orbs animate to new random positions,
+/// then gently breathe in place until the next switch.
 class PastelMeshBackground extends StatefulWidget {
   const PastelMeshBackground({super.key});
 
+  /// Global key for accessing state from anywhere.
+  static final globalKey = GlobalKey<_PastelMeshBgState>();
+
+  /// Call this to randomise orb positions (e.g. on page switch).
+  static void shuffle([BuildContext? _]) {
+    globalKey.currentState?.shuffle();
+  }
+
   @override
-  State<PastelMeshBackground> createState() => _PastelMeshBackgroundState();
+  State<PastelMeshBackground> createState() => _PastelMeshBgState();
 }
 
-class _PastelMeshBackgroundState extends State<PastelMeshBackground>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
+class _PastelMeshBgState extends State<PastelMeshBackground>
+    with TickerProviderStateMixin {
+  final _rng = math.Random();
+
+  // ── Breathing loop (continuous)
+  late final AnimationController _breatheCtrl;
+
+  // ── Position transition (fires on shuffle)
+  late final AnimationController _moveCtrl;
+
+  // Each orb: previous position → current target position (normalised 0–1)
+  late List<Offset> _fromPos;
+  late List<Offset> _toPos;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    _toPos = _randomPositions();
+    _fromPos = List.of(_toPos);
+
+    _breatheCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 20),
+      duration: const Duration(seconds: 8),
     )..repeat();
+
+    _moveCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    )..value = 1.0; // start settled
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _breatheCtrl.dispose();
+    _moveCtrl.dispose();
     super.dispose();
+  }
+
+  List<Offset> _randomPositions() => [
+    Offset(0.10 + _rng.nextDouble() * 0.35, 0.08 + _rng.nextDouble() * 0.30),
+    Offset(0.50 + _rng.nextDouble() * 0.40, 0.05 + _rng.nextDouble() * 0.30),
+    Offset(0.15 + _rng.nextDouble() * 0.50, 0.55 + _rng.nextDouble() * 0.30),
+  ];
+
+  void shuffle() {
+    setState(() {
+      _fromPos = List.of(_toPos);
+      _toPos = _randomPositions();
+    });
+    _moveCtrl.forward(from: 0);
   }
 
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
       child: AnimatedBuilder(
-        animation: _controller,
+        animation: Listenable.merge([_breatheCtrl, _moveCtrl]),
         builder: (context, _) {
-          final t = _controller.value * 2 * math.pi;
           return CustomPaint(
-            painter: _MeshPainter(t),
+            painter: _OrbPainter(
+              breathe: _breatheCtrl.value * 2 * math.pi,
+              moveT: Curves.easeOutCubic.transform(_moveCtrl.value),
+              fromPos: _fromPos,
+              toPos: _toPos,
+            ),
             isComplex: true,
             willChange: true,
           );
@@ -48,67 +94,64 @@ class _PastelMeshBackgroundState extends State<PastelMeshBackground>
   }
 }
 
-class _MeshPainter extends CustomPainter {
-  _MeshPainter(this.t);
-  final double t;
+// ─── Painter ────────────────────────────────────────────────────────────────
 
-  // Warm sand/cream palette — clean, elegant like reference
-  static const _sandColor = Color(0x30F5E6C8);      // warm sand
-  static const _honeyColor = Color(0x28F0D898);      // soft honey gold
-  static const _creamColor = Color(0x20F5E0B0);      // light cream
-  static const _baseColor = Color(0xFFF7F3EE);       // warm off-white
+class _OrbPainter extends CustomPainter {
+  _OrbPainter({
+    required this.breathe,
+    required this.moveT,
+    required this.fromPos,
+    required this.toPos,
+  });
+
+  final double breathe; // radians, loops 0→2π
+  final double moveT;   // 0→1 position transition progress
+  final List<Offset> fromPos;
+  final List<Offset> toPos;
+
+  static const _colors = [
+    Color(0x38F5D2A0), // Sand warm — 22%, brightest
+    Color(0x28FF6B3D), // Coral — 16%, mid
+    Color(0x18F0C878), // Honey — 9%, softest
+  ];
+  static const _radii = [0.65, 0.55, 0.70]; // relative to width
+  // Per-orb breathing amplitude and frequency
+  static const _bAmpX  = [0.025, 0.020, 0.030];
+  static const _bAmpY  = [0.018, 0.022, 0.016];
+  static const _bFreqX = [1.0, 0.7, 0.5];
+  static const _bFreqY = [0.8, 0.6, 0.9];
+  static const _bPhase = [0.0, 2.0, 4.0];
+
+  static const _base = Color(0xFFF2EDE8);
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Base fill
-    canvas.drawRect(Offset.zero & size, Paint()..color = _baseColor);
+    final w = size.width;
+    final h = size.height;
 
-    // Each blob drifts slowly in a small elliptical path
-    _drawBlob(
-      canvas, size,
-      // Coral — drifts around top-left
-      centerX: size.width * 0.20 + math.cos(t) * size.width * 0.06,
-      centerY: size.height * 0.22 + math.sin(t * 0.8) * size.height * 0.04,
-      radius: size.width * 0.55,
-      color: _sandColor,
-    );
+    canvas.drawRect(Offset.zero & size, Paint()..color = _base);
 
-    _drawBlob(
-      canvas, size,
-      // Honey — drifts around top-right
-      centerX: size.width * 0.80 + math.cos(t * 0.7 + 2.0) * size.width * 0.05,
-      centerY: size.height * 0.18 + math.sin(t * 0.6 + 1.0) * size.height * 0.05,
-      radius: size.width * 0.50,
-      color: _honeyColor,
-    );
+    for (int i = 0; i < 3; i++) {
+      // Lerp from old position to new position
+      final fx = fromPos[i].dx + (toPos[i].dx - fromPos[i].dx) * moveT;
+      final fy = fromPos[i].dy + (toPos[i].dy - fromPos[i].dy) * moveT;
 
-    _drawBlob(
-      canvas, size,
-      // Cream — drifts around bottom-center
-      centerX: size.width * 0.60 + math.cos(t * 0.5 + 4.0) * size.width * 0.07,
-      centerY: size.height * 0.80 + math.sin(t * 0.9 + 3.0) * size.height * 0.04,
-      radius: size.width * 0.55,
-      color: _creamColor,
-    );
-  }
+      // Add breathing oscillation on top
+      final cx = w * fx +
+          math.cos(breathe * _bFreqX[i] + _bPhase[i]) * w * _bAmpX[i];
+      final cy = h * fy +
+          math.sin(breathe * _bFreqY[i] + _bPhase[i]) * h * _bAmpY[i];
 
-  void _drawBlob(Canvas canvas, Size size, {
-    required double centerX,
-    required double centerY,
-    required double radius,
-    required Color color,
-  }) {
-    final shader = RadialGradient(
-      colors: [color, color.withValues(alpha: 0)],
-    ).createShader(
-      Rect.fromCircle(center: Offset(centerX, centerY), radius: radius),
-    );
-    canvas.drawRect(
-      Offset.zero & size,
-      Paint()..shader = shader,
-    );
+      final r = w * _radii[i];
+      final color = _colors[i];
+      final shader = RadialGradient(
+        colors: [color, color.withValues(alpha: 0)],
+      ).createShader(Rect.fromCircle(center: Offset(cx, cy), radius: r));
+
+      canvas.drawRect(Offset.zero & size, Paint()..shader = shader);
+    }
   }
 
   @override
-  bool shouldRepaint(covariant _MeshPainter old) => old.t != t;
+  bool shouldRepaint(covariant _OrbPainter old) => true;
 }
