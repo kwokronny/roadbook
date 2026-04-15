@@ -796,16 +796,11 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-      child: BackdropFilter(
-        filter: GlassSpec.sheetBlur,
-        child: Container(
+    return Container(
           height: MediaQuery.of(context).size.height * 0.75,
           decoration: const BoxDecoration(
-            color: GlassSpec.sheetBg,
+            color: Colors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-            border: Border(top: BorderSide(color: GlassSpec.sheetBorder, width: 1)),
           ),
       child: Column(
         children: [
@@ -896,13 +891,8 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
           Expanded(
             child: Stack(
               children: [
-                Container(
-                  margin: const EdgeInsets.fromLTRB(16, 0, 24, 16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xB0FFFFFF),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  clipBehavior: Clip.hardEdge,
+                Padding(
+                  padding: const EdgeInsets.only(right: 20),
                   child: ListView.builder(
                     controller: _scrollCtrl,
                     padding: EdgeInsets.zero,
@@ -959,8 +949,6 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
             ),
           ),
         ],
-      ),
-      ),
       ),
     );
   }
