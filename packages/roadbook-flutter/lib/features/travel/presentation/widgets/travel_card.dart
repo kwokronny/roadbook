@@ -48,19 +48,16 @@ class _StatusGradientSpec {
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        stops: [0.0, 0.7, 1.0],
-        colors: [Color(0x99FFFFFF), Color(0x90FFFFFF), Color(0x14FF6B3D)],
+        colors: [Color(0x00FF6B3D), Color(0x14FF6B3D)], // transparent → coral 8%
       ),
       borderColor: Color(0x1FFF6B3D),
-      shadow: BoxShadow(color: Color(0x0FFF6B3D), blurRadius: 16, offset: Offset(0, 4)),
       hasAccentBar: true,
     ),
     TravelStatusType.upcoming => const _StatusGradientSpec(
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        stops: [0.0, 0.7, 1.0],
-        colors: [Color(0x8CFFFFFF), Color(0x88FFFFFF), Color(0x0F8C5CF6)],
+        colors: [Color(0x008C5CF6), Color(0x0F8C5CF6)], // transparent → lavender 6%
       ),
       borderColor: Color(0x1A8C5CF6),
     ),
@@ -68,8 +65,7 @@ class _StatusGradientSpec {
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        stops: [0.0, 0.7, 1.0],
-        colors: [Color(0x85FFFFFF), Color(0x82FFFFFF), Color(0x0A8C5CF6)],
+        colors: [Color(0x008C5CF6), Color(0x0A8C5CF6)], // transparent → lavender 4%
       ),
       borderColor: Color(0x1A8C5CF6),
     ),
@@ -77,8 +73,7 @@ class _StatusGradientSpec {
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        stops: [0.0, 0.8, 1.0],
-        colors: [Color(0x61FFFFFF), Color(0x58FFFFFF), Color(0x051C1C1E)],
+        colors: [Color(0x001C1C1E), Color(0x081C1C1E)], // transparent → ink 3%
       ),
       borderColor: Color(0xA6FFFFFF),
       opacity: 0.75,
@@ -113,16 +108,13 @@ class TravelCard extends StatelessWidget {
     Widget card = ClipRRect(
       borderRadius: BorderRadius.circular(AppRadius.card),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+        filter: GlassSpec.cardBlur,
         child: Container(
           decoration: BoxDecoration(
-            gradient: spec.gradient,
+            color: GlassSpec.cardBg, // solid glass white ~55%
             borderRadius: BorderRadius.circular(AppRadius.card),
             border: Border.all(color: spec.borderColor, width: 1),
-            boxShadow: [
-              if (spec.shadow != null) spec.shadow!,
-              ...GlassSpec.cardShadow,
-            ],
+            boxShadow: GlassSpec.cardShadow,
           ),
           child: Stack(
             children: [
@@ -133,6 +125,17 @@ class TravelCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(AppRadius.card),
                       gradient: GlassSpec.specularHighlight,
+                    ),
+                  ),
+                ),
+              ),
+              // Status color tint overlay — separate layer on top of glass
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(AppRadius.card),
+                      gradient: spec.gradient,
                     ),
                   ),
                 ),
