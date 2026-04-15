@@ -48,35 +48,39 @@ class _StatusGradientSpec {
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [Color(0x99FFFFFF), Color(0x14FF6B3D)], // white 60% -> coral 8%
+        stops: [0.0, 0.7, 1.0],
+        colors: [Color(0x99FFFFFF), Color(0x90FFFFFF), Color(0x14FF6B3D)],
       ),
-      borderColor: Color(0x1FFF6B3D), // coral 12%
-      shadow: BoxShadow(color: Color(0x1AFF6B3D), blurRadius: 24, offset: Offset(0, 6)),
+      borderColor: Color(0x1FFF6B3D),
+      shadow: BoxShadow(color: Color(0x0FFF6B3D), blurRadius: 16, offset: Offset(0, 4)),
       hasAccentBar: true,
     ),
     TravelStatusType.upcoming => const _StatusGradientSpec(
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [Color(0x8CFFFFFF), Color(0x0F8C5CF6)], // white 55% -> lavender 6%
+        stops: [0.0, 0.7, 1.0],
+        colors: [Color(0x8CFFFFFF), Color(0x88FFFFFF), Color(0x0F8C5CF6)],
       ),
-      borderColor: Color(0x1A8C5CF6), // lavender 10%
+      borderColor: Color(0x1A8C5CF6),
     ),
     TravelStatusType.planning => const _StatusGradientSpec(
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [Color(0x85FFFFFF), Color(0x0A8C5CF6)], // white 52% -> lavender 4%
+        stops: [0.0, 0.7, 1.0],
+        colors: [Color(0x85FFFFFF), Color(0x82FFFFFF), Color(0x0A8C5CF6)],
       ),
-      borderColor: Color(0x1A8C5CF6), // lavender 10%
+      borderColor: Color(0x1A8C5CF6),
     ),
     TravelStatusType.ended => const _StatusGradientSpec(
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [Color(0x61FFFFFF), Color(0x081C1C1E)], // white 38% -> ink 3%
+        stops: [0.0, 0.8, 1.0],
+        colors: [Color(0x61FFFFFF), Color(0x58FFFFFF), Color(0x051C1C1E)],
       ),
-      borderColor: Color(0xA6FFFFFF), // white 65%
+      borderColor: Color(0xA6FFFFFF),
       opacity: 0.75,
     ),
   };
@@ -136,14 +140,17 @@ class TravelCard extends StatelessWidget {
               // Top accent bar for ongoing status
               if (spec.hasAccentBar)
                 Positioned(
-                  top: 0, left: 0, right: 0,
-                  child: Container(
-                    height: 2,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Color(0xFFFF6B3D), Color(0xFFFF8C42)],
+                  top: 0, left: 24, right: 24,
+                  child: Opacity(
+                    opacity: 0.45,
+                    child: Container(
+                      height: 2,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Colors.transparent, Color(0xFFFF6B3D), Colors.transparent],
+                        ),
+                        borderRadius: BorderRadius.circular(1),
                       ),
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.card)),
                     ),
                   ),
                 ),
@@ -191,7 +198,7 @@ class TravelCard extends StatelessWidget {
                         _StatusBadge(status: status),
                         const SizedBox(width: 6),
                         Text(
-                          '${fmt.format(travel.startDate)} - ${fmt.format(travel.endDate)}',
+                          '${fmt.format(travel.startDate)} — ${fmt.format(travel.endDate)}',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
