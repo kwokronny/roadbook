@@ -90,9 +90,24 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final user = ref.watch(authStateProvider).valueOrNull?.user;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.transparent,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 12),
+          child: Center(
+            child: GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                width: 32, height: 32,
+                decoration: const BoxDecoration(
+                  color: AppColors.darkPill, shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.chevron_left, size: 20, color: Colors.white),
+              ),
+            ),
+          ),
+        ),
         title: const Text('编辑资料', style: AppTextStyles.appBarTitle),
         actions: [
           TextButton(
@@ -106,10 +121,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 : Text(
                     '保存',
                     style: TextStyle(
+                      fontSize: 14,
                       color: _isDirty
                           ? AppColors.primary
-                          : AppColors.textTertiary,
-                      fontWeight: FontWeight.w600,
+                          : AppColors.inkTertiary,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
           ),
@@ -131,16 +147,16 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       bottom: 0,
                       right: 0,
                       child: Container(
-                        width: 22,
-                        height: 22,
+                        width: 24,
+                        height: 24,
                         decoration: BoxDecoration(
-                          color: AppColors.textPrimary,
+                          color: AppColors.darkPill,
                           shape: BoxShape.circle,
                           border: Border.all(
-                              color: AppColors.background, width: 2),
+                              color: AppColors.warmCanvas, width: 2),
                         ),
                         child: const Icon(Icons.camera_alt,
-                            color: Colors.white, size: 11),
+                            color: Colors.white, size: 12),
                       ),
                     ),
                   ],
@@ -154,7 +170,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 horizontal: AppSpacing.pageHorizontal),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(AppRadius.contentCard),
+              borderRadius: BorderRadius.circular(AppRadius.cover),
             ),
             child: Column(
               children: [

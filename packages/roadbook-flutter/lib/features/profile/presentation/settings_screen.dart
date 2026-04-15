@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme.dart';
+import '../../../shared/widgets/glass_card.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -104,9 +105,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.transparent,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 12),
+          child: Center(
+            child: GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                width: 32, height: 32,
+                decoration: const BoxDecoration(
+                  color: AppColors.darkPill, shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.chevron_left, size: 20, color: Colors.white),
+              ),
+            ),
+          ),
+        ),
         title: const Text('设置', style: AppTextStyles.appBarTitle),
       ),
       body: ListView(
@@ -176,15 +192,15 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(
-            AppSpacing.pageHorizontal, 16, AppSpacing.pageHorizontal, 4),
+        padding: EdgeInsets.fromLTRB(
+            AppSpacing.pageHorizontal + 4, 14, AppSpacing.pageHorizontal, 6),
         child: Text(
           title.toUpperCase(),
           style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
-              letterSpacing: 0.5),
+              fontSize: 10,
+              fontWeight: FontWeight.w500,
+              color: AppColors.inkTertiary,
+              letterSpacing: 1.1),
         ),
       );
 }
@@ -194,29 +210,21 @@ class _MenuGroup extends StatelessWidget {
   final List<Widget> items;
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) => GlassCard(
         margin: const EdgeInsets.symmetric(
             horizontal: AppSpacing.pageHorizontal),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppRadius.contentCard),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 4,
-                offset: const Offset(0, 1)),
-          ],
-        ),
+        padding: EdgeInsets.zero,
+        borderRadius: AppRadius.cardSm,
         child: Column(
           children: [
             for (int i = 0; i < items.length; i++) ...[
               items[i],
               if (i < items.length - 1)
-                const Divider(
+                Divider(
                     height: 0.5,
                     thickness: 0.5,
-                    indent: 44,
-                    color: AppColors.separator),
+                    indent: 48,
+                    color: AppColors.inkPrimary.withValues(alpha: 0.05)),
             ],
           ],
         ),

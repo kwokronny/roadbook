@@ -155,13 +155,38 @@ class _ApiKeysScreenState extends ConsumerState<ApiKeysScreen> {
     final keysAsync = ref.watch(apiKeyListProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('API Key 管理'),
+        backgroundColor: Colors.transparent,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 12),
+          child: Center(
+            child: GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                width: 32, height: 32,
+                decoration: const BoxDecoration(
+                  color: AppColors.darkPill, shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.chevron_left, size: 20, color: Colors.white),
+              ),
+            ),
+          ),
+        ),
+        title: const Text('API Key 管理', style: AppTextStyles.appBarTitle),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _createKey,
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: GestureDetector(
+              onTap: _createKey,
+              child: Container(
+                width: 32, height: 32,
+                decoration: const BoxDecoration(
+                  color: AppColors.darkPill, shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.add, size: 18, color: Colors.white),
+              ),
+            ),
           ),
         ],
       ),
@@ -268,7 +293,7 @@ class _ApiKeyCard extends StatelessWidget {
                 Text(apiKey.name,
                     style: const TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                         color: AppColors.textPrimary)),
                 const SizedBox(height: 2),
                 Text(
