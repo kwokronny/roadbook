@@ -33,7 +33,7 @@ function ScheduleCard({
 
   const coverColors: Record<string, React.CSSProperties> = {
     poi: { background: 'rgba(255,107,61,0.08)', border: '1px solid rgba(255,107,61,0.12)' },
-    hotel: { background: 'rgba(140,92,246,0.10)', border: '1px solid rgba(140,92,246,0.15)' },
+    hotel: { background: 'rgba(107,127,160,0.10)', border: '1px solid rgba(107,127,160,0.15)' },
     neutral: { background: 'rgba(28,28,30,0.04)', border: '1px solid rgba(28,28,30,0.06)' },
   }
 
@@ -43,10 +43,10 @@ function ScheduleCard({
       <div
         className="relative p-3"
         style={{
-          background: isDark ? 'rgba(140,92,246,0.08)' : 'rgba(255,255,255,0.52)',
+          background: isDark ? 'rgba(107,127,160,0.08)' : 'rgba(255,255,255,0.52)',
           backdropFilter: 'blur(40px) saturate(1.4)',
           WebkitBackdropFilter: 'blur(40px) saturate(1.4)',
-          border: isDark ? '1px solid rgba(140,92,246,0.15)' : '1px solid rgba(255,255,255,0.65)',
+          border: isDark ? '1px solid rgba(107,127,160,0.15)' : '1px solid rgba(255,255,255,0.65)',
           borderRadius: hasLower ? '24px 24px 0 0' : '24px',
           boxShadow: '0 8px 32px rgba(0,0,0,0.06)',
         }}
@@ -75,18 +75,18 @@ function ScheduleCard({
             <div className="flex items-center justify-between">
               <TimeBadge variant={timeVariant} time={time} editable={timeVariant !== 'unplanned'} />
               {/* More — borderless icon */}
-              <Icon name="more-h" size={16} style={{ color: isDark ? '#8C5CF6' : 'rgba(28,28,30,0.28)' }} />
+              <Icon name="more-h" size={16} style={{ color: isDark ? '#6B7FA0' : 'rgba(28,28,30,0.28)' }} />
             </div>
             <div
               className="text-[16px] font-medium leading-snug line-clamp-2 mt-1"
-              style={{ color: isDark ? '#6D3FC0' : undefined }}
+              style={{ color: isDark ? '#4A5568' : undefined }}
             >
               {title}
             </div>
             {address && (
               <div
                 className="text-[11px] truncate mt-0.5"
-                style={{ color: isDark ? 'rgba(140,92,246,0.50)' : undefined }}
+                style={{ color: isDark ? 'rgba(107,127,160,0.50)' : undefined }}
               >
                 {!isDark && <span className="text-ink-tertiary">{address}</span>}
                 {isDark && address}
@@ -105,7 +105,7 @@ function ScheduleCard({
               background: 'rgba(255,255,255,0.52)',
               backdropFilter: 'blur(24px) saturate(1.4)',
               WebkitBackdropFilter: 'blur(24px) saturate(1.4)',
-              color: isDark ? '#8C5CF6' : '#FF6B3D',
+              color: isDark ? '#6B7FA0' : '#FF6B3D',
               fontSize: 12,
               fontWeight: 500,
               border: '1px solid rgba(255,255,255,0.65)',
@@ -135,7 +135,7 @@ function ScheduleCard({
                   className="w-9 h-9"
                   style={{
                     borderRadius: 8,
-                    background: isDark ? 'rgba(140,92,246,0.08)' : 'rgba(28,28,30,0.05)',
+                    background: isDark ? 'rgba(107,127,160,0.08)' : 'rgba(28,28,30,0.05)',
                   }}
                 />
               ))}

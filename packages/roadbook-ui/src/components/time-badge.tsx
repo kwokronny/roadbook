@@ -8,7 +8,7 @@ const timeBadgeVariants = cva(
     variants: {
       variant: {
         poi: 'bg-coral-tint text-[var(--ongoing-text)] text-[12px] px-2 py-0.5',
-        hotel: 'bg-[rgba(140,92,246,0.15)] text-lavender-text text-[15px] px-[11px] py-1 tracking-tight',
+        hotel: 'bg-[rgba(107,127,160,0.09)] text-[#4A5568] text-[12px] px-2 py-0.5',
         unplanned: 'bg-[rgba(28,28,30,0.05)] text-ink-tertiary text-[12px] px-2 py-0.5',
       },
     },

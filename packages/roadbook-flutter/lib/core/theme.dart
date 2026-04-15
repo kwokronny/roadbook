@@ -35,21 +35,21 @@ abstract class AppColors {
   static const Color success     = Color(0xFF34C759);
   static const Color neutral     = Color(0xFF8E8E93);
 
-  // ─── Secondary Accent — Lavender (Hotel / Accommodation) ─────────────────
-  static const Color lavender      = Color(0xFF8C5CF6);
-  static const Color lavenderTint  = Color(0x1A8C5CF6); // rgba(140,92,246,0.10)
-  static const Color lavenderText  = Color(0xFF6D3FC0);
-  static const Color lavenderDeep  = Color(0xFF6D3FC0); // deep purple — hotel title text
-  static const Color lavenderAddr  = Color(0x808C5CF6); // rgba(140,92,246,0.50) — hotel address
-  static const Color lavenderNote  = Color(0x738C5CF6); // rgba(140,92,246,0.45) — hotel notes
-  static const Color lavenderFrost = Color(0x148C5CF6); // rgba(140,92,246,0.08) — hotel card tint
-  static const Color lavenderFrostBorder = Color(0x268C5CF6); // rgba(140,92,246,0.15) — hotel card border
-  static const Color lavenderTimeBg = Color(0x1F8C5CF6); // rgba(140,92,246,0.12) — hotel time badge
+  // ─── Secondary Accent — Serene Slate (Hotel / Accommodation) ─────────────
+  static const Color lavender      = Color(0xFF6B7FA0); // muted slate blue
+  static const Color lavenderTint  = Color(0x146B7FA0); // muted slate tint
+  static const Color lavenderText  = Color(0xFF5A6680);
+  static const Color lavenderDeep  = Color(0xFF4A5568); // quiet slate — hotel title text
+  static const Color lavenderAddr  = Color(0x806B7FA0); // muted slate 50% — hotel address
+  static const Color lavenderNote  = Color(0x736B7FA0); // muted slate 45% — hotel notes
+  static const Color lavenderFrost = Color(0x106B7FA0); // slate 6% — hotel card tint
+  static const Color lavenderFrostBorder = Color(0x1A6B7FA0); // slate 10% — hotel card border
+  static const Color lavenderTimeBg = Color(0x186B7FA0); // slate 9% — hotel time badge
 
   // Backward-compat aliases for hotel
-  static const Color hotel       = lavender;
+  static const Color hotel       = Color(0xFF6B7FA0); // muted slate blue
   static const Color hotelLight  = lavenderTint;
-  static const Color hotelBorder = Color(0x388C5CF6); // rgba(140,92,246,0.22)
+  static const Color hotelBorder = Color(0x286B7FA0);
 
   // ─── Schedule unplanned ──────────────────────────────────────────────────
   static const Color unplanned      = Color(0xFFD4C8BF);
@@ -140,8 +140,8 @@ abstract class GlassSpec {
   static const Color cardBg     = Color(0x8CFFFFFF); // rgba(255,255,255,0.55)
   static const Color cardBorder = Color(0xA6FFFFFF); // rgba(255,255,255,0.65)
   static const List<BoxShadow> cardShadow = [
-    BoxShadow(color: Color(0x0F000000), blurRadius: 32, offset: Offset(0, 8)),
-    BoxShadow(color: Color(0x08000000), blurRadius: 2,  offset: Offset(0, 1)),
+    BoxShadow(color: Color(0x1A000000), blurRadius: 24, offset: Offset(0, 6)),
+    BoxShadow(color: Color(0x0D000000), blurRadius: 4,  offset: Offset(0, 1)),
   ];
 
   // Bottom Sheet — blur(50) saturate(1.8)
