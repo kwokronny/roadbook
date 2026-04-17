@@ -11,7 +11,7 @@ class PublicTravelCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   static const _gradients = [
-    LinearGradient(colors: [Color(0xFFFF5B2E), Color(0xFFFF8C42)],
+    LinearGradient(colors: [Color(0xFFFF6B3D), Color(0xFFFF8C42)],
         begin: Alignment.topLeft, end: Alignment.bottomRight),
     LinearGradient(colors: [Color(0xFF6366F1), Color(0xFF4F46E5)],
         begin: Alignment.topLeft, end: Alignment.bottomRight),
@@ -39,73 +39,66 @@ class PublicTravelCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.pageHorizontal, vertical: 4),
+            horizontal: AppSpacing.pageHorizontal, vertical: 5),
+        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppRadius.contentCard),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 4,
-              offset: const Offset(0, 1),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(AppRadius.cardSm),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(AppRadius.contentCard),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 封面色块
-              Container(
-                height: 60,
-                decoration: BoxDecoration(gradient: gradient),
-              ),
-              // 内容区
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      travel.name,
-                      style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      '${travel.cityLabel} · ${travel.days}天',
-                      style: const TextStyle(
-                          fontSize: 11, color: AppColors.textSecondary),
-                    ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        // 作者头像
-                        _OwnerAvatar(owner: travel.owner),
-                        const SizedBox(width: 5),
-                        Text(
-                          travel.owner.name,
-                          style: const TextStyle(
-                              fontSize: 11, color: AppColors.textSecondary),
-                        ),
-                        const Spacer(),
-                        Text(
-                          '${_formatViewCount(travel.viewCount)} 浏览',
-                          style: const TextStyle(
-                              fontSize: 11, color: AppColors.textTertiary),
-                        ),
-                      ],
-                    ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Cover — warm gradient
+            Container(
+              height: 80,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0x1FFF6B3D), // rgba(255,107,61,0.12)
+                    Color(0x33F5D2AA), // rgba(245,210,170,0.20)
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+            // Body — glass
+            ClipRect(
+              child: BackdropFilter(
+                filter: GlassSpec.cardBlur,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+                  decoration: BoxDecoration(
+                    color: GlassSpec.cardBg,
+                    border: Border.all(color: GlassSpec.cardBorder),
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(AppRadius.cardSm),
+                      bottomRight: Radius.circular(AppRadius.cardSm),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        travel.name,
+                        style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.inkPrimary),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${travel.cityLabel} · ${travel.days}天',
+                        style: const TextStyle(
+                            fontSize: 11, color: AppColors.inkTertiary),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

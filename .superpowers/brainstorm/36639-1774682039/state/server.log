@@ -1,0 +1,4 @@
+{"type":"server-started","port":53242,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:53242","screen_dir":"/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/.superpowers/brainstorm/36639-1774682039/content","state_dir":"/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/.superpowers/brainstorm/36639-1774682039/state"}
+{"type":"screen-added","file":"/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/.superpowers/brainstorm/36639-1774682039/content/item-structure.html"}
+{"type":"screen-added","file":"/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/.superpowers/brainstorm/36639-1774682039/content/luggage-design.html"}
+{"type":"server-stopped","reason":"idle timeout"}

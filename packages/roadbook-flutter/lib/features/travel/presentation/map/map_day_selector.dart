@@ -72,27 +72,26 @@ class _DayChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        duration: AppAnimations.normal,
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary : Colors.white,
-          borderRadius: BorderRadius.circular(99),
-          boxShadow: [
-            BoxShadow(
-              color: selected
-                  ? AppColors.primary.withValues(alpha: 0.35)
-                  : Colors.black.withValues(alpha: 0.1),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          color: selected
+              ? AppColors.primary
+              : const Color(0xB3FFFFFF), // rgba(255,255,255,0.70)
+          borderRadius: BorderRadius.circular(AppRadius.pill),
+          boxShadow: selected
+              ? [BoxShadow(
+                  color: AppColors.coralGlow,
+                  blurRadius: 8, offset: const Offset(0, 2))]
+              : null,
         ),
         child: Text(
           label,
           textAlign: TextAlign.center,
-          style: AppTextStyles.body.copyWith(
-            color: selected ? Colors.white : AppColors.textSecondary,
-            fontWeight: FontWeight.w700,
+          style: TextStyle(
+            fontSize: 11,
+            color: selected ? Colors.white : AppColors.inkSecondary,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ),
@@ -111,17 +110,10 @@ class _SearchButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(99),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          color: const Color(0xB3FFFFFF),
+          borderRadius: BorderRadius.circular(AppRadius.pill),
         ),
-        child: const Center(child: Icon(Icons.search, size: 20, color: AppColors.textSecondary)),
+        child: const Center(child: Icon(Icons.search, size: 20, color: AppColors.inkSecondary)),
       ),
     );
   }

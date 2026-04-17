@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/theme.dart';
+
 import '../../../../shared/api/upload_repository.dart';
 
 class ScreenshotPickerField extends ConsumerStatefulWidget {
@@ -164,7 +165,7 @@ class _AddButton extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.add, size: 22, color: AppColors.textSecondary),
+            const Icon(Icons.add, size: 20, color: AppColors.textSecondary),
             const SizedBox(height: 2),
             Text('添加', style: AppTextStyles.micro),
           ],

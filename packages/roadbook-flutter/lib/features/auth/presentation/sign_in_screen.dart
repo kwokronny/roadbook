@@ -1,8 +1,10 @@
 // lib/features/auth/presentation/sign_in_screen.dart
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme.dart';
+import '../../../shared/widgets/pastel_mesh_background.dart';
 import '../domain/auth_provider.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
@@ -43,106 +45,218 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     });
 
     return Scaffold(
-      backgroundColor: AppColors.surface, // white for auth screens
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.pageHorizontal, vertical: 24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 40),
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          const PastelMeshBackground(),
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // ── Brand title ──────────────────────────────────────
+                      const Text(
+                        '小肥路书',
+                        style: AppTextStyles.display,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '登录你的旅行计划',
+                        style: AppTextStyles.body.copyWith(
+                          color: AppColors.inkSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 28),
 
-                // ── Brand logo ──────────────────────────────────────────
-                Center(
-                  child: Container(
-                    width: 52,
-                    height: 52,
-                    decoration: BoxDecoration(
-                      gradient: AppColors.primaryGradient,
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: const Icon(Icons.map, color: Colors.white, size: 28),
+                      // ── Glass form card ──────────────────────────────────
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(AppRadius.card),
+                        child: BackdropFilter(
+                          filter: GlassSpec.cardBlur,
+                          child: Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: GlassSpec.cardBg,
+                              borderRadius: BorderRadius.circular(AppRadius.card),
+                              border: Border.all(color: GlassSpec.cardBorder),
+                            ),
+                            child: Column(
+                              children: [
+                                // Username
+                                _GlassInput(
+                                  controller: _usernameCtrl,
+                                  hintText: '输入用户名',
+                                  validator: (v) =>
+                                      (v == null || v.trim().isEmpty)
+                                          ? '请输入用户名'
+                                          : null,
+                                  textInputAction: TextInputAction.next,
+                                ),
+                                const SizedBox(height: 12),
+
+                                // Password
+                                _GlassInput(
+                                  controller: _passwordCtrl,
+                                  hintText: '输入密码',
+                                  obscureText: true,
+                                  textInputAction: TextInputAction.done,
+                                  onFieldSubmitted: (_) => _submit(),
+                                  validator: (v) =>
+                                      (v == null || v.length < 6)
+                                          ? '密码至少 6 位'
+                                          : null,
+                                ),
+                                const SizedBox(height: 16),
+
+                                // Dark CTA button
+                                SizedBox(
+                                  height: 44,
+                                  width: double.infinity,
+                                  child: GestureDetector(
+                                    onTap: state.isLoading ? null : _submit,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: AppColors.darkPill,
+                                        borderRadius: BorderRadius.circular(
+                                            AppRadius.pill),
+                                      ),
+                                      child: Center(
+                                        child: state.isLoading
+                                            ? const SizedBox(
+                                                width: 20, height: 20,
+                                                child: CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    color: Colors.white),
+                                              )
+                                            : const Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Text(
+                                                    '登录',
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight: FontWeight.w400,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 6),
+                                                  Text(
+                                                    '→',
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // ── Register link ────────────────────────────────────
+                      Center(
+                        child: GestureDetector(
+                          onTap: () => context.go('/signup'),
+                          child: Text.rich(
+                            TextSpan(
+                              text: '没有账号？',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.inkSecondary,
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: '注册',
+                                  style: TextStyle(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 16),
-
-                // ── App name ────────────────────────────────────────────
-                Center(
-                  child: Text(
-                    '小肥路书',
-                    style: AppTextStyles.largeTitle.copyWith(letterSpacing: 2),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Center(
-                  child: Text('记录你的每一段旅程', style: AppTextStyles.caption),
-                ),
-                const SizedBox(height: 48),
-
-                // ── Username field ──────────────────────────────────────
-                AuthField(
-                  controller: _usernameCtrl,
-                  hintText: '用户名',
-                  prefixIcon: Icons.person_outline,
-                  textInputAction: TextInputAction.next,
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? '请输入用户名' : null,
-                ),
-                const SizedBox(height: 10),
-
-                // ── Password field ──────────────────────────────────────
-                AuthField(
-                  controller: _passwordCtrl,
-                  hintText: '密码',
-                  prefixIcon: Icons.lock_outline,
-                  obscureText: true,
-                  textInputAction: TextInputAction.done,
-                  onFieldSubmitted: (_) => _submit(),
-                  validator: (v) =>
-                      (v == null || v.length < 6) ? '密码至少 6 位' : null,
-                ),
-                const SizedBox(height: 24),
-
-                // ── Login button ────────────────────────────────────────
-                SizedBox(
-                  height: 50,
-                  child: FilledButton(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                    ),
-                    onPressed: state.isLoading ? null : _submit,
-                    child: state.isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                                strokeWidth: 2, color: Colors.white))
-                        : const Text('登录',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w600)),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // ── Register link ───────────────────────────────────────
-                Center(
-                  child: TextButton(
-                    onPressed: () => context.go('/signup'),
-                    child: Text(
-                      '还没有账号？去注册',
-                      style: AppTextStyles.subheadline
-                          .copyWith(color: AppColors.primary),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Glass Input Field ──────────────────────────────────────────────────────
+
+class _GlassInput extends StatelessWidget {
+  const _GlassInput({
+    required this.controller,
+    required this.hintText,
+    this.obscureText = false,
+    this.textInputAction = TextInputAction.next,
+    this.onFieldSubmitted,
+    this.validator,
+  });
+
+  final TextEditingController controller;
+  final String hintText;
+  final bool obscureText;
+  final TextInputAction textInputAction;
+  final ValueChanged<String>? onFieldSubmitted;
+  final FormFieldValidator<String>? validator;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: controller,
+      obscureText: obscureText,
+      textInputAction: textInputAction,
+      onFieldSubmitted: onFieldSubmitted,
+      validator: validator,
+      style: const TextStyle(fontSize: 14, color: AppColors.inkPrimary),
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: const TextStyle(fontSize: 14, color: AppColors.inkTertiary),
+        filled: true,
+        fillColor: GlassSpec.inputBg,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: GlassSpec.inputBorder, width: 1),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: GlassSpec.inputBorder, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide:
+              const BorderSide(color: GlassSpec.inputFocusBorder, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide:
+              const BorderSide(color: AppColors.destructive, width: 1),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide:
+              const BorderSide(color: AppColors.destructive, width: 1.5),
         ),
       ),
     );
@@ -182,23 +296,24 @@ class AuthField extends StatelessWidget {
       style: AppTextStyles.body,
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
-        prefixIcon: Icon(prefixIcon, size: 20, color: AppColors.textSecondary),
+        hintStyle: AppTextStyles.body.copyWith(color: AppColors.inkTertiary),
+        prefixIcon: Icon(prefixIcon, size: 20, color: AppColors.inkTertiary),
         filled: true,
-        fillColor: AppColors.background, // #F2F2F7
+        fillColor: GlassSpec.inputBg,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.input),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: GlassSpec.inputBorder, width: 1),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.input),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: GlassSpec.inputBorder, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.input),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+          borderRadius: BorderRadius.circular(12),
+          borderSide:
+              const BorderSide(color: GlassSpec.inputFocusBorder, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.input),

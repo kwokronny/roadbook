@@ -1,23 +1,23 @@
 // lib/shared/widgets/glass_card.dart
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../core/theme.dart';
 
-/// Reusable Liquid Glass card surface with BackdropFilter, specular highlight,
-/// and optional tint overlay.
+/// Frosted Warmth glass card — semi-transparent white surface with
+/// specular highlight and optional tint overlay.
+/// No BackdropFilter (unreliable inside ListView); transparency
+/// comes from the alpha of [GlassSpec.cardBg] directly.
 class GlassCard extends StatelessWidget {
   const GlassCard({
     super.key,
     required this.child,
     this.tintColor,
-    this.padding = const EdgeInsets.all(16),
+    this.padding = const EdgeInsets.all(AppSpacing.cardPadding),
     this.margin = EdgeInsets.zero,
     this.borderRadius = AppRadius.card,
     this.onTap,
   });
 
   final Widget child;
-  /// Optional tint gradient overlay (e.g. status color).
   final Color? tintColor;
   final EdgeInsets padding;
   final EdgeInsets margin;
@@ -28,51 +28,48 @@ class GlassCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: margin,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(borderRadius),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
-          child: GestureDetector(
-            onTap: onTap,
-            child: Container(
-              decoration: BoxDecoration(
-                color: GlassSpec.cardBg,
-                borderRadius: BorderRadius.circular(borderRadius),
-                border: Border.all(color: GlassSpec.cardBorder, width: 1),
-                boxShadow: GlassSpec.cardShadow,
-              ),
-              child: Stack(
-                children: [
-                  // Tint overlay
-                  if (tintColor != null)
-                    Positioned.fill(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(borderRadius),
-                          gradient: LinearGradient(
-                            begin: const Alignment(-0.5, -0.5),
-                            end: const Alignment(0.5, 0.5),
-                            colors: [tintColor!, tintColor!.withValues(alpha: tintColor!.a * 0.33)],
-                          ),
-                        ),
-                      ),
-                    ),
-                  // Specular highlight
-                  Positioned.fill(
-                    child: IgnorePointer(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(borderRadius),
-                          gradient: GlassSpec.specularHighlight,
-                        ),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            color: GlassSpec.cardBg,
+            borderRadius: BorderRadius.circular(borderRadius),
+            border: Border.all(color: GlassSpec.cardBorder, width: 1),
+            boxShadow: GlassSpec.cardShadow,
+          ),
+          child: Stack(
+            children: [
+              // Tint overlay
+              if (tintColor != null)
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(borderRadius),
+                      gradient: LinearGradient(
+                        begin: const Alignment(-0.5, -0.5),
+                        end: const Alignment(0.5, 0.5),
+                        colors: [
+                          tintColor!,
+                          tintColor!.withValues(alpha: tintColor!.a * 0.33),
+                        ],
                       ),
                     ),
                   ),
-                  // Content
-                  Padding(padding: padding, child: child),
-                ],
+                ),
+              // Specular highlight (160deg)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(borderRadius),
+                      gradient: GlassSpec.specularHighlight,
+                    ),
+                  ),
+                ),
               ),
-            ),
+              // Content
+              Padding(padding: padding, child: child),
+            ],
           ),
         ),
       ),

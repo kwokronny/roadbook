@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>背景对比：Mesh vs 纯白</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    color: rgba(30,36,60,0.92);
+    min-height: 100vh;
+    padding: 32px 24px 48px;
+    background:
+      radial-gradient(ellipse 70% 55% at 15% 25%, rgba(180,210,255,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 65% at 85% 15%, rgba(200,185,255,0.35) 0%, transparent 55%),
+      #eef2ff;
+  }
+
+  .page-title { text-align: center; font-size: 28px; font-weight: 300; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .page-sub { text-align: center; font-size: 14px; color: rgba(30,36,60,0.45); margin-bottom: 36px; }
+
+  .compare-row {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 800px;
+    margin: 0 auto 32px;
+  }
+
+  .phone-col { flex: 0 0 320px; text-align: center; }
+  .col-title { font-size: 16px; font-weight: 500; margin-bottom: 3px; }
+  .col-sub { font-size: 12px; color: rgba(30,36,60,0.4); margin-bottom: 14px; }
+
+  .phone {
+    width: 300px;
+    margin: 0 auto;
+    border-radius: 40px;
+    overflow: hidden;
+    border: 3px solid rgba(30,36,60,0.08);
+    box-shadow: 0 16px 48px rgba(30,36,60,0.12);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .phone:hover { transform: translateY(-4px); box-shadow: 0 20px 56px rgba(30,36,60,0.16); }
+  .phone.selected { border-color: #2A7EF5; box-shadow: 0 0 0 3px rgba(42,126,245,0.25), 0 16px 48px rgba(30,36,60,0.12); }
+
+  .screen {
+    min-height: 600px;
+    position: relative;
+    padding: 28px 16px 0;
+  }
+
+  .mesh-bg {
+    background:
+      radial-gradient(ellipse 70% 55% at 15% 25%, rgba(255,180,160,0.30) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 65% at 85% 15%, rgba(200,185,255,0.40) 0%, transparent 55%),
+      radial-gradient(ellipse 65% 50% at 65% 85%, rgba(160,230,210,0.30) 0%, transparent 60%),
+      #f2f0ff;
+  }
+
+  .white-bg {
+    background: #ffffff;
+  }
+
+  /* App bar */
+  .bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .bar-title { font-size: 28px; font-weight: 300; letter-spacing: -0.025em; }
+  .bar-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.85);
+    box-shadow: 0 2px 8px rgba(100,120,200,0.08), inset 0 1px 0 rgba(255,255,255,0.9);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: rgba(30,36,60,0.65);
+  }
+  /* On white bg the glass button needs different treatment */
+  .white-bg .bar-btn {
+    background: rgba(245,245,247,0.80);
+    border: 1px solid rgba(230,230,235,0.90);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  /* Search */
+  .srch {
+    background: rgba(255,255,255,0.50);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.80);
+    border-radius: 14px;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: rgba(30,36,60,0.35);
+    margin-bottom: 16px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.90), 0 1px 3px rgba(100,120,200,0.06);
+  }
+  .white-bg .srch {
+    background: rgba(245,245,247,0.90);
+    border: 1px solid rgba(230,230,235,0.80);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.90);
+  }
+
+  /* Glass card */
+  .g-card {
+    backdrop-filter: blur(28px) saturate(2.2) brightness(1.05);
+    -webkit-backdrop-filter: blur(28px) saturate(2.2) brightness(1.05);
+    border: 1px solid rgba(255,255,255,0.90);
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(100,120,180,0.10), 0 1px 4px rgba(100,120,180,0.07), inset 0 1px 0 rgba(255,255,255,0.95);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .g-card::after {
+    content: '';
+    position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(145deg, rgba(255,255,255,0.50) 0%, transparent 45%);
+    pointer-events: none;
+  }
+
+  /* On mesh */
+  .mesh-bg .tint-ongoing { background: rgba(255,255,255,0.48); }
+  .mesh-bg .tint-ongoing::before {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(135deg, rgba(10,173,136,0.06) 0%, rgba(10,173,136,0.02) 100%);
+    pointer-events: none;
+  }
+  .mesh-bg .tint-planning { background: rgba(255,255,255,0.50); }
+  .mesh-bg .tint-planning::before {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(135deg, rgba(42,126,245,0.05) 0%, rgba(42,126,245,0.02) 100%);
+    pointer-events: none;
+  }
+  .mesh-bg .tint-upcoming { background: rgba(255,255,255,0.48); }
+  .mesh-bg .tint-upcoming::before {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(135deg, rgba(224,133,0,0.06) 0%, rgba(224,133,0,0.02) 100%);
+    pointer-events: none;
+  }
+
+  /* On white — glass effect diminished, cards look like plain containers */
+  .white-bg .g-card {
+    background: rgba(255,255,255,0.95);
+    border: 1px solid rgba(230,230,235,0.70);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+  }
+  .white-bg .g-card::after {
+    background: none;
+  }
+  .white-bg .tint-ongoing { background: rgba(245,255,250,0.90); }
+  .white-bg .tint-planning { background: rgba(245,248,255,0.90); }
+  .white-bg .tint-upcoming { background: rgba(255,250,240,0.90); }
+
+  /* Card content */
+  .c-head { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1; }
+  .c-name { font-size: 17px; font-weight: 500; letter-spacing: -0.01em; }
+  .c-date { font-size: 12px; color: rgba(30,36,60,0.40); margin-top: 2px; }
+  .c-badge { padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 500; border: 1px solid; }
+  .badge-ongoing { background: rgba(10,173,136,0.10); border-color: rgba(10,173,136,0.22); color: #0a8a6d; }
+  .badge-planning { background: rgba(42,126,245,0.10); border-color: rgba(42,126,245,0.22); color: #1a5fc8; }
+  .badge-upcoming { background: rgba(224,133,0,0.10); border-color: rgba(224,133,0,0.22); color: #b56800; }
+
+  .c-tags { display: flex; gap: 6px; margin-top: 10px; position: relative; z-index: 1; }
+  .c-tag { padding: 3px 10px; border-radius: 100px; font-size: 11px; border: 1px solid; }
+  .tag-purple { background: rgba(124,85,240,0.10); border-color: rgba(124,85,240,0.22); color: #5c38cc; }
+  .tag-teal { background: rgba(10,173,136,0.10); border-color: rgba(10,173,136,0.22); color: #0a8a6d; }
+  .tag-pink { background: rgba(232,56,122,0.10); border-color: rgba(232,56,122,0.22); color: #c02060; }
+  .tag-blue { background: rgba(42,126,245,0.10); border-color: rgba(42,126,245,0.22); color: #1a5fc8; }
+
+  .c-divider { border: none; border-top: 1px dashed rgba(30,36,60,0.08); margin: 10px 0; position: relative; z-index: 1; }
+  .c-foot { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1; }
+  .c-days { font-size: 12px; color: rgba(30,36,60,0.45); }
+
+  .avs { display: flex; }
+  .av {
+    width: 24px; height: 24px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.8);
+    margin-left: -6px; font-size: 10px; font-weight: 500;
+    display: flex; align-items: center; justify-content: center; color: #fff;
+  }
+  .av:first-child { margin-left: 0; }
+
+  .fab {
+    position: absolute;
+    bottom: 88px; right: 18px;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; color: #fff;
+    background: #FF5B2E;
+    box-shadow: 0 4px 16px rgba(255,91,46,0.30);
+    z-index: 2;
+  }
+
+  /* Floating island nav */
+  .island-nav {
+    position: absolute;
+    bottom: 16px; left: 20px; right: 20px;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(40px) saturate(2.2) brightness(1.05);
+    -webkit-backdrop-filter: blur(40px) saturate(2.2) brightness(1.05);
+    border: 1px solid rgba(255,255,255,0.90);
+    border-radius: 100px;
+    box-shadow: 0 4px 24px rgba(100,120,180,0.12), 0 1px 4px rgba(100,120,180,0.08), inset 0 1px 0 rgba(255,255,255,0.95);
+    padding: 8px 8px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    overflow: hidden;
+    z-index: 3;
+  }
+  .island-nav::after {
+    content: '';
+    position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255,255,255,0.45) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .white-bg .island-nav {
+    background: rgba(245,245,247,0.85);
+    border: 1px solid rgba(230,230,235,0.80);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .island-nav .ni { text-align: center; position: relative; z-index: 1; padding: 4px 0; }
+  .island-nav .ni-icon { font-size: 22px; display: block; margin-bottom: 1px; }
+  .island-nav .ni-label { font-size: 10px; font-weight: 400; }
+  .island-nav .ni.off { color: rgba(30,36,60,0.30); }
+  .island-nav .ni.on { color: #FF5B2E; }
+  .island-nav .ni.on .ni-label { font-weight: 500; }
+
+  /* Callout */
+  .callout {
+    max-width: 700px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.85);
+    border-radius: 16px;
+    padding: 18px 22px;
+    font-size: 13px;
+    color: rgba(30,36,60,0.55);
+    line-height: 1.8;
+  }
+  .callout b { color: rgba(30,36,60,0.85); font-weight: 500; }
+  .callout .warn { color: #c02060; }
+
+  .sel-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255,255,255,0.90);
+    padding: 12px;
+    text-align: center;
+    font-size: 13px;
+    color: rgba(30,36,60,0.50);
+    z-index: 100;
+  }
+  .sel-bar .chosen { color: #2A7EF5; font-weight: 500; }
+
+  @media (max-width: 720px) {
+    .compare-row { flex-direction: column; align-items: center; }
+  }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Mesh 渐变 vs 纯白背景</h1>
+<p class="page-sub">点击选择你偏好的背景方案</p>
+
+<div class="compare-row">
+
+  <!-- Mesh -->
+  <div class="phone-col">
+    <div class="col-title">A · Pastel Mesh 渐变</div>
+    <div class="col-sub">推荐 — glass 效果完整呈现</div>
+    <div class="phone" data-choice="a" onclick="select(this)">
+      <div class="screen mesh-bg">
+        <div class="bar">
+          <div class="bar-title">旅程</div>
+          <div class="bar-btn">＋</div>
+        </div>
+        <div class="srch">🔍  搜索旅行计划...</div>
+
+        <div class="g-card tint-ongoing">
+          <div class="c-head">
+            <div><div class="c-name">东京自由行</div><div class="c-date">04/10 – 04/17</div></div>
+            <div class="c-badge badge-ongoing">进行中</div>
+          </div>
+          <div class="c-tags">
+            <span class="c-tag tag-purple">东京</span>
+            <span class="c-tag tag-teal">大阪</span>
+          </div>
+          <hr class="c-divider">
+          <div class="c-foot">
+            <div class="avs"><div class="av" style="background:#FF5B2E;">R</div><div class="av" style="background:#7C55F0;">L</div></div>
+            <div class="c-days">7天</div>
+          </div>
+        </div>
+
+        <div class="g-card tint-planning">
+          <div class="c-head">
+            <div><div class="c-name">清迈之旅</div><div class="c-date">05/01 – 05/05</div></div>
+            <div class="c-badge badge-planning">计划中</div>
+          </div>
+          <div class="c-tags">
+            <span class="c-tag tag-pink">清迈</span>
+          </div>
+          <hr class="c-divider">
+          <div class="c-foot">
+            <div class="avs"><div class="av" style="background:#FF5B2E;">R</div></div>
+            <div class="c-days">4天</div>
+          </div>
+        </div>
+
+        <div class="g-card tint-upcoming">
+          <div class="c-head">
+            <div><div class="c-name">首尔美食团</div><div class="c-date">04/18 – 04/22</div></div>
+            <div class="c-badge badge-upcoming">即将出发</div>
+          </div>
+          <div class="c-tags">
+            <span class="c-tag tag-blue">首尔</span>
+          </div>
+          <hr class="c-divider">
+          <div class="c-foot">
+            <div class="avs"><div class="av" style="background:#FF5B2E;">R</div><div class="av" style="background:#0AAD88;">M</div><div class="av" style="background:#E08500;">J</div></div>
+            <div class="c-days">4天</div>
+          </div>
+        </div>
+
+        <div class="fab">＋</div>
+        <div class="island-nav">
+          <div class="ni on"><span class="ni-icon">🗺️</span><div class="ni-label">旅程</div></div>
+          <div class="ni off"><span class="ni-icon">🔍</span><div class="ni-label">发现</div></div>
+          <div class="ni off"><span class="ni-icon">👤</span><div class="ni-label">我的</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- White -->
+  <div class="phone-col">
+    <div class="col-title">B · 纯白背景</div>
+    <div class="col-sub">干净简洁，但 glass 效果减弱</div>
+    <div class="phone" data-choice="b" onclick="select(this)">
+      <div class="screen white-bg">
+        <div class="bar">
+          <div class="bar-title">旅程</div>
+          <div class="bar-btn">＋</div>
+        </div>
+        <div class="srch">🔍  搜索旅行计划...</div>
+
+        <div class="g-card tint-ongoing">
+          <div class="c-head">
+            <div><div class="c-name">东京自由行</div><div class="c-date">04/10 – 04/17</div></div>
+            <div class="c-badge badge-ongoing">进行中</div>
+          </div>
+          <div class="c-tags">
+            <span class="c-tag tag-purple">东京</span>
+            <span class="c-tag tag-teal">大阪</span>
+          </div>
+          <hr class="c-divider">
+          <div class="c-foot">
+            <div class="avs"><div class="av" style="background:#FF5B2E;">R</div><div class="av" style="background:#7C55F0;">L</div></div>
+            <div class="c-days">7天</div>
+          </div>
+        </div>
+
+        <div class="g-card tint-planning">
+          <div class="c-head">
+            <div><div class="c-name">清迈之旅</div><div class="c-date">05/01 – 05/05</div></div>
+            <div class="c-badge badge-planning">计划中</div>
+          </div>
+          <div class="c-tags">
+            <span class="c-tag tag-pink">清迈</span>
+          </div>
+          <hr class="c-divider">
+          <div class="c-foot">
+            <div class="avs"><div class="av" style="background:#FF5B2E;">R</div></div>
+            <div class="c-days">4天</div>
+          </div>
+        </div>
+
+        <div class="g-card tint-upcoming">
+          <div class="c-head">
+            <div><div class="c-name">首尔美食团</div><div class="c-date">04/18 – 04/22</div></div>
+            <div class="c-badge badge-upcoming">即将出发</div>
+          </div>
+          <div class="c-tags">
+            <span class="c-tag tag-blue">首尔</span>
+          </div>
+          <hr class="c-divider">
+          <div class="c-foot">
+            <div class="avs"><div class="av" style="background:#FF5B2E;">R</div><div class="av" style="background:#0AAD88;">M</div><div class="av" style="background:#E08500;">J</div></div>
+            <div class="c-days">4天</div>
+          </div>
+        </div>
+
+        <div class="fab">＋</div>
+        <div class="island-nav">
+          <div class="ni on"><span class="ni-icon">🗺️</span><div class="ni-label">旅程</div></div>
+          <div class="ni off"><span class="ni-icon">🔍</span><div class="ni-label">发现</div></div>
+          <div class="ni off"><span class="ni-icon">👤</span><div class="ni-label">我的</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="callout">
+  <b>关键区别：</b><br>
+  · Mesh 渐变让 glass 的 <b>blur + saturate</b> 有内容可采样，卡片会透出柔和的色彩折射<br>
+  · 纯白背景下 blur 采样的全是白色，<span class="warn">glass 效果基本消失</span>，卡片退化为普通的浅灰色容器<br>
+  · Liquid Glass 设计指南明确指出：<b>"Don't place glass on white — the blur samples nothing interesting"</b><br>
+  · 如果你偏好简洁干净的风格，可以考虑用<b>极淡的渐变</b>（比把色彩浓度降到 15-20%）作为折中
+</div>
+
+<div class="sel-bar">
+  <span id="sel-text">点击上方手机选择，然后回到终端告诉我</span>
+</div>
+
+<script>
+  function select(el) {
+    document.querySelectorAll('.phone').forEach(f => f.classList.remove('selected'));
+    el.classList.add('selected');
+    const choice = el.dataset.choice;
+    const labels = { a: 'A · Pastel Mesh 渐变', b: 'B · 纯白背景' };
+    document.getElementById('sel-text').innerHTML = '已选择: <span class="chosen">' + labels[choice] + '</span>';
+    if (window.__sendEvent) window.__sendEvent({ type: 'click', choice: choice, text: labels[choice] });
+  }
+</script>
+
+</body>
+</html>

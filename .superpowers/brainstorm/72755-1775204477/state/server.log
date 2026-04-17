@@ -1,0 +1,8 @@
+{"type":"server-started","port":55439,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:55439","screen_dir":"/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/.superpowers/brainstorm/72755-1775204477/content","state_dir":"/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/.superpowers/brainstorm/72755-1775204477/state"}
+{"type":"screen-added","file":"/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/.superpowers/brainstorm/72755-1775204477/content/travel-detail-v5.html"}
+{"type":"screen-added","file":"/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/.superpowers/brainstorm/72755-1775204477/content/travel-detail-v6.html"}
+{"type":"screen-added","file":"/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/.superpowers/brainstorm/72755-1775204477/content/travel-detail-v7.html"}
+{"type":"screen-added","file":"/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/.superpowers/brainstorm/72755-1775204477/content/travel-detail-v8.html"}
+{"type":"screen-added","file":"/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/.superpowers/brainstorm/72755-1775204477/content/travel-detail-v9.html"}
+{"type":"screen-added","file":"/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/.superpowers/brainstorm/72755-1775204477/content/travel-detail-v10.html"}
+{"type":"server-stopped","reason":"idle timeout"}

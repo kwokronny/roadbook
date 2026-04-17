@@ -6,6 +6,9 @@ import 'package:image_picker/image_picker.dart';
 import '../../../core/theme.dart';
 import '../../../shared/providers/auth_state_provider.dart';
 import '../../../shared/providers/dio_provider.dart';
+import '../../../shared/widgets/app_toast.dart';
+import '../../../shared/api/upload_repository.dart';
+import '../../../shared/models/user.dart';
 import '../data/profile_repository.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
@@ -33,7 +36,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   }
 
   ProfileRepository get _repo =>
-      ProfileRepository(ref.read(dioProvider));
+      ProfileRepository(ref.read(dioProvider), ref.read(uploadRepositoryProvider));
 
   bool get _isDirty {
     final user = ref.read(authStateProvider).valueOrNull?.user;
@@ -47,14 +50,22 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       final updated = await _repo.updateName(_nameCtrl.text.trim());
       await ref.read(authStateProvider.notifier).updateUser(updated);
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('保存成功')));
-        Navigator.pop(context);
+        AppToast.success(context, '保存成功');
       }
     } catch (e) {
+      // Fallback: patch user locally with new name
+      final current = ref.read(authStateProvider).valueOrNull?.user;
+      if (current != null) {
+        final patched = User(
+          id: current.id,
+          username: current.username,
+          name: _nameCtrl.text.trim(),
+          avatar: current.avatar,
+        );
+        await ref.read(authStateProvider.notifier).updateUser(patched);
+      }
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('$e')));
+        AppToast.error(context, '$e');
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -69,16 +80,23 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
     setState(() => _saving = true);
     try {
-      final updated = await _repo.uploadAvatar(File(xfile.path));
-      await ref.read(authStateProvider.notifier).updateUser(updated);
+      final avatarUrl = await _repo.uploadAvatar(File(xfile.path));
+      final current = ref.read(authStateProvider).valueOrNull?.user;
+      if (current != null) {
+        final patched = User(
+          id: current.id,
+          username: current.username,
+          name: current.name,
+          avatar: avatarUrl,
+        );
+        await ref.read(authStateProvider.notifier).updateUser(patched);
+      }
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('头像已更新')));
+        AppToast.success(context, '头像已更新');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('$e')));
+        AppToast.error(context, '$e');
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -194,6 +212,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         fontSize: 15, color: AppColors.textPrimary),
                     decoration: const InputDecoration(
                       border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      focusedErrorBorder: InputBorder.none,
+                      filled: false,
                       isDense: true,
                       contentPadding: EdgeInsets.zero,
                       hintText: '设置昵称',

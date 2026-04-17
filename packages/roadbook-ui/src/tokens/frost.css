@@ -38,4 +38,15 @@
   /* Skeleton */
   --bone-base: rgba(28, 28, 30, 0.04);
   --bone-shimmer: rgba(255, 255, 255, 0.50);
+
+  /* Drawer */
+  --scrim: rgba(28, 28, 30, 0.20);
+  --handle: rgba(28, 28, 30, 0.16);
+  --close-bg: rgba(28, 28, 30, 0.06);
+  --divider: rgba(28, 28, 30, 0.06);
+  --form-card: rgba(255, 255, 255, 0.70);
+  --row-hover: rgba(28, 28, 30, 0.04);
+  --row-hover-destructive: rgba(212, 65, 10, 0.06);
+  --selected-bg: rgba(255, 107, 61, 0.04);
+  --check-border: rgba(28, 28, 30, 0.16);
 }

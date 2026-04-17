@@ -1,0 +1,252 @@
+<h2>APP 视觉风格方向</h2>
+<p class="subtitle">选择最适合「小肥路书」的设计语言 — 点击你喜欢的方向</p>
+
+<div class="cards" style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px;">
+
+  <!-- A: Warm & Friendly -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)" style="cursor:pointer; border-radius:16px; overflow:hidden; border:2px solid transparent;">
+    <div class="card-image" style="height: 360px; background: #FDFAF6; padding: 16px; position: relative;">
+      <!-- Phone mockup -->
+      <div style="width: 220px; margin: 0 auto; background: #fff; border-radius: 28px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.08); border: 2px solid #F0EBE3; height: 340px;">
+        <!-- Status bar -->
+        <div style="height: 28px; background: #FDFAF6; display:flex; align-items:center; justify-content:center;">
+          <div style="width: 60px; height: 6px; background: #E8E0D8; border-radius:3px;"></div>
+        </div>
+        <!-- Header -->
+        <div style="padding: 12px 16px 8px;">
+          <div style="font-size: 18px; font-weight: 800; color: #1C1917;">我的旅程</div>
+          <!-- Search -->
+          <div style="margin-top: 8px; background: #FFF; border: 1px solid #F0EBE3; border-radius: 8px; padding: 6px 10px; font-size: 11px; color: #A8A29E;">搜索旅程名称...</div>
+        </div>
+        <!-- Ongoing banner -->
+        <div style="margin: 4px 12px; padding: 8px 10px; background: linear-gradient(135deg, #F97316, #FBBF24); border-radius: 10px; display:flex; align-items:center; gap:6px;">
+          <span style="font-size:12px;">✈️</span>
+          <span style="font-size: 11px; color: white; font-weight: 600;">旅行中：东京自由行</span>
+        </div>
+        <!-- Cards -->
+        <div style="padding: 8px 12px;">
+          <div style="background: #FFF; border: 1px solid #F0EBE3; border-radius: 12px; padding: 10px; margin-bottom: 8px;">
+            <div style="display:flex; gap:8px;">
+              <div style="width:48px; height:48px; border-radius:10px; background: linear-gradient(135deg, #FED7AA, #FBBF24);"></div>
+              <div>
+                <div style="font-size:12px; font-weight:700; color:#1C1917;">东京自由行</div>
+                <div style="font-size:10px; color:#A8A29E;">东京 · 大阪 · 京都</div>
+                <div style="font-size:9px; color:#F97316; margin-top:2px;">3/25 - 4/2</div>
+              </div>
+            </div>
+          </div>
+          <div style="background: #FFF; border: 1px solid #F0EBE3; border-radius: 12px; padding: 10px;">
+            <div style="display:flex; gap:8px;">
+              <div style="width:48px; height:48px; border-radius:10px; background: linear-gradient(135deg, #D4C8BF, #EDE8E3);"></div>
+              <div>
+                <div style="font-size:12px; font-weight:700; color:#1C1917;">曼谷清迈</div>
+                <div style="font-size:10px; color:#A8A29E;">曼谷 · 清迈</div>
+                <div style="font-size:9px; color:#A8A29E; margin-top:2px;">5/10 - 5/18</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- FAB -->
+        <div style="position:absolute; bottom:20px; right:24px; width:40px; height:40px; background: linear-gradient(135deg, #F97316, #FBBF24); border-radius:12px; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 12px rgba(249,115,22,0.3);">
+          <span style="color:white; font-size:20px; font-weight:300;">+</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body" style="padding: 16px;">
+      <h3 style="margin:0 0 6px;">A. 温暖亲切</h3>
+      <p style="margin:0; font-size:14px; color:#666; line-height:1.5;">暖橙 + 米白底色，圆角卡片，柔和阴影。像翻开一本旅行日记，亲切而有温度。</p>
+      <div style="margin-top:10px; display:flex; gap:6px;">
+        <div style="width:24px;height:24px;border-radius:50%;background:#F97316;"></div>
+        <div style="width:24px;height:24px;border-radius:50%;background:#FBBF24;"></div>
+        <div style="width:24px;height:24px;border-radius:50%;background:#FDFAF6;border:1px solid #E8E0D8;"></div>
+        <div style="width:24px;height:24px;border-radius:50%;background:#1C1917;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B: Clean & Modern -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)" style="cursor:pointer; border-radius:16px; overflow:hidden; border:2px solid transparent;">
+    <div class="card-image" style="height: 360px; background: #F0F9FF; padding: 16px; position: relative;">
+      <div style="width: 220px; margin: 0 auto; background: #fff; border-radius: 28px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.06); border: 1px solid #E0F2FE; height: 340px;">
+        <div style="height: 28px; background: #F8FAFC; display:flex; align-items:center; justify-content:center;">
+          <div style="width: 60px; height: 6px; background: #E2E8F0; border-radius:3px;"></div>
+        </div>
+        <div style="padding: 12px 16px 8px;">
+          <div style="font-size: 18px; font-weight: 700; color: #0C4A6E;">我的旅程</div>
+          <div style="margin-top: 8px; background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 20px; padding: 6px 12px; font-size: 11px; color: #7DD3FC;">搜索旅程...</div>
+        </div>
+        <!-- Tag filters -->
+        <div style="padding: 4px 16px; display:flex; gap:6px;">
+          <div style="padding:3px 10px; background:#0EA5E9; color:white; border-radius:12px; font-size:10px; font-weight:600;">全部</div>
+          <div style="padding:3px 10px; background:#F0F9FF; color:#0EA5E9; border-radius:12px; font-size:10px; border:1px solid #BAE6FD;">进行中</div>
+          <div style="padding:3px 10px; background:#F0F9FF; color:#0EA5E9; border-radius:12px; font-size:10px; border:1px solid #BAE6FD;">已完成</div>
+        </div>
+        <!-- Cards -->
+        <div style="padding: 8px 12px;">
+          <div style="background: #FFF; border: 1px solid #E0F2FE; border-radius: 14px; padding: 10px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(14,165,233,0.06);">
+            <div style="display:flex; gap:8px;">
+              <div style="width:48px; height:48px; border-radius:12px; background: linear-gradient(135deg, #7DD3FC, #0EA5E9);"></div>
+              <div>
+                <div style="font-size:12px; font-weight:700; color:#0C4A6E;">东京自由行</div>
+                <div style="font-size:10px; color:#7DD3FC;">东京 · 大阪 · 京都</div>
+                <div style="font-size:9px; color:#0EA5E9; margin-top:2px;">3/25 - 4/2</div>
+              </div>
+            </div>
+          </div>
+          <div style="background: #FFF; border: 1px solid #E0F2FE; border-radius: 14px; padding: 10px;">
+            <div style="display:flex; gap:8px;">
+              <div style="width:48px; height:48px; border-radius:12px; background: linear-gradient(135deg, #BAE6FD, #38BDF8);"></div>
+              <div>
+                <div style="font-size:12px; font-weight:700; color:#0C4A6E;">曼谷清迈</div>
+                <div style="font-size:10px; color:#7DD3FC;">曼谷 · 清迈</div>
+                <div style="font-size:9px; color:#94A3B8; margin-top:2px;">5/10 - 5/18</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="position:absolute; bottom:20px; right:24px; width:40px; height:40px; background: #0EA5E9; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 12px rgba(14,165,233,0.3);">
+          <span style="color:white; font-size:20px; font-weight:300;">+</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body" style="padding: 16px;">
+      <h3 style="margin:0 0 6px;">B. 清爽现代</h3>
+      <p style="margin:0; font-size:14px; color:#666; line-height:1.5;">天蓝 + 纯白，胶囊标签过滤，圆润按钮。干净利落的工具感，信息一目了然。</p>
+      <div style="margin-top:10px; display:flex; gap:6px;">
+        <div style="width:24px;height:24px;border-radius:50%;background:#0EA5E9;"></div>
+        <div style="width:24px;height:24px;border-radius:50%;background:#38BDF8;"></div>
+        <div style="width:24px;height:24px;border-radius:50%;background:#F0F9FF;border:1px solid #BAE6FD;"></div>
+        <div style="width:24px;height:24px;border-radius:50%;background:#0C4A6E;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C: Premium & Immersive -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)" style="cursor:pointer; border-radius:16px; overflow:hidden; border:2px solid transparent;">
+    <div class="card-image" style="height: 360px; background: #1a1a2e; padding: 16px; position: relative;">
+      <div style="width: 220px; margin: 0 auto; background: #16213e; border-radius: 28px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); height: 340px;">
+        <div style="height: 28px; background: #0f3460; display:flex; align-items:center; justify-content:center;">
+          <div style="width: 60px; height: 6px; background: rgba(255,255,255,0.15); border-radius:3px;"></div>
+        </div>
+        <div style="padding: 12px 16px 8px;">
+          <div style="font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.5); letter-spacing:2px;">ROADBOOK</div>
+          <div style="font-size: 18px; font-weight: 700; color: #E2B04A; margin-top:2px;">我的旅程</div>
+        </div>
+        <!-- Hero card with gradient overlay -->
+        <div style="margin: 4px 12px; height: 90px; border-radius: 14px; background: linear-gradient(135deg, #0f3460 0%, #533483 100%); position:relative; overflow:hidden;">
+          <div style="position:absolute; inset:0; background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);"></div>
+          <div style="position:absolute; bottom:8px; left:10px;">
+            <div style="font-size:13px; font-weight:700; color:white;">东京自由行</div>
+            <div style="font-size:10px; color:rgba(255,255,255,0.7);">东京 · 大阪 · 京都</div>
+          </div>
+          <div style="position:absolute; top:8px; right:10px; padding:2px 8px; background:rgba(226,176,74,0.2); border:1px solid rgba(226,176,74,0.4); border-radius:8px;">
+            <span style="font-size:9px; color:#E2B04A; font-weight:600;">旅行中</span>
+          </div>
+        </div>
+        <!-- List items -->
+        <div style="padding: 8px 12px;">
+          <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 10px; margin-bottom: 6px;">
+            <div style="display:flex; gap:8px; align-items:center;">
+              <div style="width:40px; height:40px; border-radius:10px; background: linear-gradient(135deg, #533483, #0f3460);"></div>
+              <div>
+                <div style="font-size:12px; font-weight:600; color:rgba(255,255,255,0.9);">曼谷清迈</div>
+                <div style="font-size:10px; color:rgba(255,255,255,0.4);">5/10 - 5/18</div>
+              </div>
+            </div>
+          </div>
+          <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 10px;">
+            <div style="display:flex; gap:8px; align-items:center;">
+              <div style="width:40px; height:40px; border-radius:10px; background: linear-gradient(135deg, #1a1a2e, #533483);"></div>
+              <div>
+                <div style="font-size:12px; font-weight:600; color:rgba(255,255,255,0.9);">巴厘岛蜜月</div>
+                <div style="font-size:10px; color:rgba(255,255,255,0.4);">6/15 - 6/22</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="position:absolute; bottom:20px; right:24px; width:40px; height:40px; background: linear-gradient(135deg, #E2B04A, #D4941C); border-radius:12px; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 16px rgba(226,176,74,0.3);">
+          <span style="color:#16213e; font-size:20px; font-weight:700;">+</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body" style="padding: 16px;">
+      <h3 style="margin:0 0 6px;">C. 高端质感</h3>
+      <p style="margin:0; font-size:14px; color:#666; line-height:1.5;">深色底 + 金色点缀，大图沉浸式卡片，渐变覆盖层。高端旅行杂志质感。</p>
+      <div style="margin-top:10px; display:flex; gap:6px;">
+        <div style="width:24px;height:24px;border-radius:50%;background:#E2B04A;"></div>
+        <div style="width:24px;height:24px;border-radius:50%;background:#533483;"></div>
+        <div style="width:24px;height:24px;border-radius:50%;background:#16213e;"></div>
+        <div style="width:24px;height:24px;border-radius:50%;background:#0f3460;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D: Playful & Illustrated -->
+  <div class="card" data-choice="d" onclick="toggleSelect(this)" style="cursor:pointer; border-radius:16px; overflow:hidden; border:2px solid transparent;">
+    <div class="card-image" style="height: 360px; background: #FFF5F5; padding: 16px; position: relative;">
+      <div style="width: 220px; margin: 0 auto; background: #fff; border-radius: 28px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.06); border: 2px solid #FECDD3; height: 340px;">
+        <div style="height: 28px; background: #FFF1F2; display:flex; align-items:center; justify-content:center;">
+          <div style="width: 60px; height: 6px; background: #FECDD3; border-radius:3px;"></div>
+        </div>
+        <div style="padding: 12px 16px 4px;">
+          <div style="font-size: 18px; font-weight: 800; color: #1E293B;">
+            <span style="color:#F43F5E;">Hi!</span> 出发吧 ✨
+          </div>
+          <div style="font-size:10px; color:#94A3B8; margin-top:2px;">3个旅程等着你</div>
+        </div>
+        <!-- Illustrated banner -->
+        <div style="margin: 6px 12px; padding: 10px; background: linear-gradient(135deg, #FDF2F8, #FCE7F3, #DBEAFE); border-radius: 14px; display:flex; align-items:center; gap:8px;">
+          <div style="font-size:28px;">🗺️</div>
+          <div>
+            <div style="font-size:11px; font-weight:700; color:#BE185D;">东京自由行</div>
+            <div style="font-size:9px; color:#F472B6;">正在旅行中 ~</div>
+          </div>
+        </div>
+        <!-- Colorful cards -->
+        <div style="padding: 6px 12px;">
+          <div style="background: linear-gradient(135deg, #FEF3C7, #FDE68A); border-radius: 14px; padding: 10px; margin-bottom: 6px;">
+            <div style="display:flex; gap:8px; align-items:center;">
+              <div style="width:36px; height:36px; border-radius:50%; background: #FBBF24; display:flex; align-items:center; justify-content:center; font-size:16px;">🏯</div>
+              <div>
+                <div style="font-size:12px; font-weight:700; color:#92400E;">东京自由行</div>
+                <div style="font-size:10px; color:#B45309;">3/25 - 4/2 · 9天</div>
+              </div>
+            </div>
+          </div>
+          <div style="background: linear-gradient(135deg, #CCFBF1, #99F6E4); border-radius: 14px; padding: 10px; margin-bottom: 6px;">
+            <div style="display:flex; gap:8px; align-items:center;">
+              <div style="width:36px; height:36px; border-radius:50%; background: #2DD4BF; display:flex; align-items:center; justify-content:center; font-size:16px;">🏝️</div>
+              <div>
+                <div style="font-size:12px; font-weight:700; color:#134E4A;">曼谷清迈</div>
+                <div style="font-size:10px; color:#0F766E;">5/10 - 5/18 · 9天</div>
+              </div>
+            </div>
+          </div>
+          <div style="background: linear-gradient(135deg, #E0E7FF, #C7D2FE); border-radius: 14px; padding: 10px;">
+            <div style="display:flex; gap:8px; align-items:center;">
+              <div style="width:36px; height:36px; border-radius:50%; background: #818CF8; display:flex; align-items:center; justify-content:center; font-size:16px;">🏖️</div>
+              <div>
+                <div style="font-size:12px; font-weight:700; color:#312E81;">巴厘岛蜜月</div>
+                <div style="font-size:10px; color:#4338CA;">6/15 - 6/22 · 8天</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="position:absolute; bottom:20px; right:24px; width:40px; height:40px; background: linear-gradient(135deg, #F43F5E, #EC4899); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 12px rgba(244,63,94,0.3);">
+          <span style="color:white; font-size:20px; font-weight:300;">+</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body" style="padding: 16px;">
+      <h3 style="margin:0 0 6px;">D. 活泼插画风</h3>
+      <p style="margin:0; font-size:14px; color:#666; line-height:1.5;">多彩渐变卡片，圆形图标，emoji 插画点缀。年轻、趣味、充满活力。</p>
+      <div style="margin-top:10px; display:flex; gap:6px;">
+        <div style="width:24px;height:24px;border-radius:50%;background:#F43F5E;"></div>
+        <div style="width:24px;height:24px;border-radius:50%;background:#FBBF24;"></div>
+        <div style="width:24px;height:24px;border-radius:50%;background:#2DD4BF;"></div>
+        <div style="width:24px;height:24px;border-radius:50%;background:#818CF8;"></div>
+      </div>
+    </div>
+  </div>
+
+</div>

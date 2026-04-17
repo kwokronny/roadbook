@@ -55,9 +55,24 @@ class LuggageScreen extends ConsumerWidget {
                 Text(e.toString(), style: AppTextStyles.caption)),
       ),
       data: (state) => Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: const Text('行李清单'),
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 12),
+            child: Center(
+              child: GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Container(
+                  width: 32, height: 32,
+                  decoration: const BoxDecoration(
+                    color: AppColors.darkPill, shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.chevron_left, size: 20, color: Colors.white),
+                ),
+              ),
+            ),
+          ),
+          title: const Text('行李清单', style: AppTextStyles.appBarTitle),
           actions: [
             if (state.canEdit)
               TextButton(
@@ -102,6 +117,7 @@ class LuggageScreen extends ConsumerWidget {
                     child: Container(
                       height: 44,
                       decoration: BoxDecoration(
+                        color: Colors.transparent,
                         border: Border.all(color: const Color(0x1F1C1C1E)),
                         borderRadius: BorderRadius.circular(AppRadius.pill),
                       ),
@@ -133,25 +149,33 @@ class LuggageScreen extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
           AppSpacing.pageHorizontal, 16, AppSpacing.pageHorizontal, 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('$checked / $total 已打包',
-              style: const TextStyle(
-                  fontSize: 14, color: AppColors.textSecondary)),
-          const SizedBox(height: 6),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: progress,
-              minHeight: 6,
-              backgroundColor: AppColors.border,
-              valueColor: const AlwaysStoppedAnimation<Color>(
-                  AppColors.primary),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: const Color(0xB8FFFFFF), // rgba(255,255,255,0.72)
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: GlassSpec.cardShadow,
+        ),
+        child: Row(
+          children: [
+            Text('$checked / $total 已打包',
+                style: const TextStyle(
+                    fontSize: 14, color: AppColors.textSecondary)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 6,
+                  backgroundColor: AppColors.border,
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                      AppColors.primary),
+                ),
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-        ],
+          ],
+        ),
       ),
     );
   }

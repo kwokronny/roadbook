@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/theme.dart';
 import '../../../../shared/models/travel.dart';
+import '../../../../shared/widgets/glass_popover.dart';
 
 // ─── Status helpers ─────────────────────────────────────────────────────────
 
@@ -50,8 +51,7 @@ class _StatusGradientSpec {
         end: Alignment.bottomRight,
         colors: [Color(0x00FF6B3D), Color(0x14FF6B3D)], // transparent → coral 8%
       ),
-      borderColor: Color(0x1FFF6B3D),
-      hasAccentBar: true,
+      borderColor: Color(0x40FFFFFF), // subtle white border, no colored outline
     ),
     TravelStatusType.upcoming => const _StatusGradientSpec(
       gradient: LinearGradient(
@@ -59,7 +59,7 @@ class _StatusGradientSpec {
         end: Alignment.bottomRight,
         colors: [Color(0x008C5CF6), Color(0x0F8C5CF6)], // transparent → lavender 6%
       ),
-      borderColor: Color(0x1A8C5CF6),
+      borderColor: Color(0x40FFFFFF), // subtle white border
     ),
     TravelStatusType.planning => const _StatusGradientSpec(
       gradient: LinearGradient(
@@ -67,7 +67,7 @@ class _StatusGradientSpec {
         end: Alignment.bottomRight,
         colors: [Color(0x008C5CF6), Color(0x0A8C5CF6)], // transparent → lavender 4%
       ),
-      borderColor: Color(0x1A8C5CF6),
+      borderColor: Color(0x40FFFFFF), // subtle white border
     ),
     TravelStatusType.ended => const _StatusGradientSpec(
       gradient: LinearGradient(
@@ -75,7 +75,7 @@ class _StatusGradientSpec {
         end: Alignment.bottomRight,
         colors: [Color(0x001C1C1E), Color(0x081C1C1E)], // transparent → ink 3%
       ),
-      borderColor: Color(0xA6FFFFFF),
+      borderColor: Color(0x33FFFFFF), // even subtler for ended
       opacity: 0.75,
     ),
   };
@@ -105,17 +105,21 @@ class TravelCard extends StatelessWidget {
     final people = travel.collaborators.length;
     final fmt    = DateFormat('MM/dd');
 
-    Widget card = ClipRRect(
-      borderRadius: BorderRadius.circular(AppRadius.card),
-      child: BackdropFilter(
-        filter: GlassSpec.cardBlur,
-        child: Container(
-          decoration: BoxDecoration(
-            color: GlassSpec.cardBg, // solid glass white ~55%
-            borderRadius: BorderRadius.circular(AppRadius.card),
-            border: Border.all(color: spec.borderColor, width: 1),
-            boxShadow: GlassSpec.cardShadow,
-          ),
+    Widget card = Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        boxShadow: GlassSpec.cardShadow,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        child: BackdropFilter(
+          filter: GlassSpec.cardBlur,
+          child: Container(
+            decoration: BoxDecoration(
+              color: GlassSpec.cardBg,
+              borderRadius: BorderRadius.circular(AppRadius.card),
+              border: Border.all(color: spec.borderColor, width: 1),
+            ),
           child: Stack(
             children: [
               // Specular highlight
@@ -140,23 +144,6 @@ class TravelCard extends StatelessWidget {
                   ),
                 ),
               ),
-              // Top accent bar for ongoing status
-              if (spec.hasAccentBar)
-                Positioned(
-                  top: 0, left: 24, right: 24,
-                  child: Opacity(
-                    opacity: 0.45,
-                    child: Container(
-                      height: 2,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Colors.transparent, Color(0xFFFF6B3D), Colors.transparent],
-                        ),
-                        borderRadius: BorderRadius.circular(1),
-                      ),
-                    ),
-                  ),
-                ),
               // Content
               Padding(
                 padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
@@ -180,18 +167,20 @@ class TravelCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        GestureDetector(
-                          onTap: () => _showMoreActions(context),
-                          behavior: HitTestBehavior.opaque,
-                          child: const Padding(
-                            padding: EdgeInsets.only(top: 2),
-                            child: Icon(
-                              Icons.more_horiz,
-                              size: 16,
-                              color: AppColors.inkTertiary,
+                        Builder(builder: (ctx) {
+                          return GestureDetector(
+                            onTap: () => _showMorePopover(ctx),
+                            behavior: HitTestBehavior.opaque,
+                            child: const Padding(
+                              padding: EdgeInsets.only(top: 2),
+                              child: Icon(
+                                Icons.more_horiz,
+                                size: 16,
+                                color: AppColors.inkTertiary,
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                        }),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -203,7 +192,7 @@ class TravelCard extends StatelessWidget {
                         Text(
                           '${fmt.format(travel.startDate)} — ${fmt.format(travel.endDate)}',
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: AppColors.inkPrimary.withValues(alpha: 0.55),
                           ),
@@ -212,30 +201,28 @@ class TravelCard extends StatelessWidget {
                         Text(
                           '${days}天 · ${people}人',
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: 13,
                             color: AppColors.inkPrimary.withValues(alpha: 0.50),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
-                    // ── Row 3: Avatar group | City tags ───────────────────────
+                    // ── Row 3: Avatar group | City tags (right-aligned) ─────────
                     Row(
                       children: [
                         if (travel.collaborators.isNotEmpty)
                           _buildCollaborators(),
                         const Spacer(),
                         if (travel.cities.isNotEmpty)
-                          Flexible(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                for (int i = 0; i < travel.cities.length && i < 4; i++) ...[
-                                  if (i > 0) const SizedBox(width: 4),
-                                  _CityTag(city: travel.cities[i]),
-                                ],
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              for (int i = 0; i < travel.cities.length && i < 4; i++) ...[
+                                if (i > 0) const SizedBox(width: 4),
+                                _CityTag(city: travel.cities[i]),
                               ],
-                            ),
+                            ],
                           ),
                       ],
                     ),
@@ -245,6 +232,7 @@ class TravelCard extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
 
@@ -262,29 +250,31 @@ class TravelCard extends StatelessWidget {
     );
   }
 
-  void _showMoreActions(BuildContext context) {
+  void _showMorePopover(BuildContext ctx) {
     if (onEdit == null && onDelete == null) return;
-    showModalBottomSheet(
-      context: context,
-      builder: (_) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (onEdit != null)
-              ListTile(
-                leading: const Icon(Icons.edit_outlined, size: 20, color: AppColors.inkPrimary),
-                title: const Text('编辑'),
-                onTap: () { Navigator.pop(context); onEdit!(); },
-              ),
-            if (onDelete != null)
-              ListTile(
-                leading: const Icon(Icons.delete_outline, size: 20, color: AppColors.destructive),
-                title: const Text('删除', style: TextStyle(color: AppColors.destructive)),
-                onTap: () { Navigator.pop(context); onDelete!(); },
-              ),
-          ],
-        ),
+    final box = ctx.findRenderObject() as RenderBox;
+    final pos = box.localToGlobal(Offset.zero);
+    showGlassPopover(
+      context: ctx,
+      position: RelativeRect.fromLTRB(
+        pos.dx, pos.dy + 20,
+        MediaQuery.of(ctx).size.width - pos.dx - box.size.width, 0,
       ),
+      items: [
+        if (onEdit != null)
+          PopoverItem(
+            icon: Icons.edit_outlined,
+            label: '编辑',
+            onTap: () => onEdit!(),
+          ),
+        if (onDelete != null)
+          PopoverItem(
+            icon: Icons.delete_outline,
+            label: '删除',
+            isDestructive: true,
+            onTap: () => onDelete!(),
+          ),
+      ],
     );
   }
 

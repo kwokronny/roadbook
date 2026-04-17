@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme.dart';
+
 import '../../../shared/models/api_key.dart';
 import '../domain/api_key_provider.dart';
 
@@ -184,7 +185,7 @@ class _ApiKeysScreenState extends ConsumerState<ApiKeysScreen> {
                 decoration: const BoxDecoration(
                   color: AppColors.darkPill, shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.add, size: 18, color: Colors.white),
+                child: const Icon(Icons.add, size: 20, color: Colors.white),
               ),
             ),
           ),
@@ -213,7 +214,7 @@ class _ApiKeysScreenState extends ConsumerState<ApiKeysScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.key_off_outlined,
+                  const Icon(Icons.key,
                       size: 48, color: AppColors.textTertiary),
                   const SizedBox(height: 12),
                   Text('暂无 API Key', style: AppTextStyles.caption),

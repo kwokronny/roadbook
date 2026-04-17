@@ -14,6 +14,9 @@ import '../../../features/schedule/domain/schedule_provider.dart';
 import '../../schedule/presentation/collect_import_sheet.dart';
 import 'map/map_tab_view.dart';
 import 'map/map_state_notifier.dart';
+import '../../../features/schedule/presentation/widgets/day_sidebar.dart';
+import '../../../shared/widgets/pastel_mesh_background.dart';
+import '../../../shared/widgets/glass_popover.dart';
 
 class TravelDetailScreen extends ConsumerStatefulWidget {
   const TravelDetailScreen({super.key, required this.travelId});
@@ -27,6 +30,8 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
   int _currentTab = 0;
   bool _initialDaySet = false;
 
+  int _totalDays(Travel t) => t.endDate.difference(t.startDate).inDays + 1;
+
   void _setInitialDay(Travel travel) {
     if (_initialDaySet) return;
     _initialDaySet = true;
@@ -34,14 +39,15 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
     final today = DateTime(now.year, now.month, now.day);
     final start = DateTime(
         travel.startDate.year, travel.startDate.month, travel.startDate.day);
-    final end = DateTime(
-        travel.endDate.year, travel.endDate.month, travel.endDate.day);
+    final end =
+        DateTime(travel.endDate.year, travel.endDate.month, travel.endDate.day);
     if (!today.isBefore(start) && !today.isAfter(end)) {
       final day = today.difference(start).inDays + 1;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           ref.read(selectedDayProvider(widget.travelId).notifier).state = day;
-          ref.read(mapSelectedDayProvider(widget.travelId).notifier).state = day;
+          ref.read(mapSelectedDayProvider(widget.travelId).notifier).state =
+              day;
         }
       });
     }
@@ -56,7 +62,8 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
 
     return travelAsync.when(
       loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+        body:
+            Center(child: CircularProgressIndicator(color: AppColors.primary)),
       ),
       error: (e, _) => Scaffold(
         appBar: AppBar(),
@@ -65,162 +72,199 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
       data: (travel) {
         _setInitialDay(travel);
         return Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(travel.name, style: AppTextStyles.headline),
-              if (travel.cities.isNotEmpty)
-                Text(
-                  travel.cities.join(' · '),
-                  style: AppTextStyles.micro.copyWith(color: AppColors.textSecondary),
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            leadingWidth: 56,
+            leading: Padding(
+              padding: const EdgeInsets.only(left: AppSpacing.pageHorizontal),
+              child: Center(
+                child: GestureDetector(
+                  onTap: () => context.pop(),
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: const BoxDecoration(
+                      color: AppColors.darkPill,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.chevron_left,
+                        size: 22, color: Colors.white),
+                  ),
                 ),
+              ),
+            ),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(travel.name,
+                    style: AppTextStyles.headline.copyWith(fontSize: 16)),
+                if (travel.cities.isNotEmpty)
+                  Text(
+                    travel.cities.join(' · '),
+                    style: AppTextStyles.caption.copyWith(fontSize: 11),
+                  ),
+              ],
+            ),
+            actions: [
+              _buildViewToggle(),
+              _buildMoreMenu(context,
+                  travel: travel, canEdit: canEdit, canManage: canManage),
             ],
           ),
-          actions: [
-            _buildViewToggle(),
-            _buildMoreMenu(context, travel: travel, canEdit: canEdit, canManage: canManage),
-          ],
-        ),
-        floatingActionButton: (_currentTab == 0 && canEdit)
-            ? _buildFab(context, travel)
-            : null,
-        body: IndexedStack(
-          index: _currentTab,
-          children: [
-            ScheduleListPanel(travel: travel, perm: perm),
-            MapTabView(travelId: widget.travelId),
-          ],
-        ),
-      );
+          floatingActionButton:
+              (_currentTab == 0 && canEdit) ? _buildFab(context, travel) : null,
+          body: Stack(
+            children: [
+              IndexedStack(
+                index: _currentTab,
+                children: [
+                  ScheduleListPanel(travel: travel, perm: perm),
+                  MapTabView(travelId: widget.travelId),
+                ],
+              ),
+              // ── Floating Day bar (shared across list & map)
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: DayBar(
+                  totalDays: _totalDays(travel),
+                  selectedDay: ref.watch(selectedDayProvider(widget.travelId)),
+                  travelStartDate: travel.startDate,
+                  enabled: !ref.watch(scheduleSelectionModeProvider(widget.travelId)),
+                  onDaySelected: (d) {
+                    ref
+                        .read(selectedDayProvider(widget.travelId).notifier)
+                        .state = d;
+                    ref
+                        .read(mapSelectedDayProvider(widget.travelId).notifier)
+                        .state = d == 0 ? -1 : d;
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
       },
     );
   }
+
+  static const _dotSize = 30.0;
+  static const _pad = 3.0;
+  static const _trackH = _dotSize + _pad * 2; // 36
+  static const _trackW = _dotSize * 2 + _pad * 3; // 69
 
   Widget _buildViewToggle() {
     return Container(
+      width: _trackW,
+      height: _trackH,
       margin: const EdgeInsets.only(right: 4),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color(0x80FFFFFF),
-              borderRadius: BorderRadius.circular(AppRadius.pill),
-              border: Border.all(color: const Color(0xCCFFFFFF)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _toggleIcon(Icons.format_list_bulleted, 0),
-                _toggleIcon(Icons.map_outlined, 1),
-              ],
+      decoration: BoxDecoration(
+        color: const Color(0x0F1C1C1E),
+        borderRadius: BorderRadius.circular(_trackH),
+      ),
+      child: Stack(
+        children: [
+          // Sliding dark circle
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 400),
+            curve: const Cubic(0.34, 1.3, 0.64, 1.0),
+            left: _pad + _currentTab * (_dotSize + _pad),
+            top: _pad,
+            child: Container(
+              width: _dotSize,
+              height: _dotSize,
+              decoration: const BoxDecoration(
+                color: AppColors.darkPill,
+                shape: BoxShape.circle,
+              ),
             ),
           ),
-        ),
+          // Tappable icons — each centered over its dot position
+          Row(
+            children: [
+              SizedBox(width: _pad), // left edge padding
+              _buildToggleTab(Icons.format_list_bulleted, 0),
+              SizedBox(width: _pad), // gap between
+              _buildToggleTab(Icons.map_outlined, 1),
+              SizedBox(width: _pad), // right edge padding
+            ],
+          ),
+        ],
       ),
     );
   }
 
-  Widget _toggleIcon(IconData icon, int index) {
+  Widget _buildToggleTab(IconData icon, int index) {
     final selected = _currentTab == index;
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () => setState(() => _currentTab = index),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: selected ? AppColors.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(AppRadius.pill),
-        ),
-        child: Icon(
-          icon,
-          size: 22,
-          color: selected ? Colors.white : AppColors.textSecondary,
+      child: SizedBox(
+        width: _dotSize,
+        height: _trackH,
+        child: Center(
+          child: Icon(
+            icon,
+            size: 18,
+            color: selected ? Colors.white : AppColors.inkTertiary,
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildMoreMenu(BuildContext context, {required Travel travel, required bool canEdit, required bool canManage}) {
-    return PopupMenuButton<String>(
-      offset: const Offset(0, 44),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadius.card),
-      ),
-      color: AppColors.surface,
-      elevation: 4,
-      onSelected: (value) {
-        switch (value) {
-          case 'edit':
-            TravelFormSheet.show(context, travel: travel);
-          case 'collaborator':
-            CollaboratorSheet.show(context, widget.travelId);
-          case 'import':
-            CollectImportSheet.show(context, widget.travelId);
-          case 'luggage':
-            context.push('/travel/${widget.travelId}/luggage');
-        }
-      },
-      itemBuilder: (_) => [
-        if (canManage)
-          const PopupMenuItem(
-            value: 'edit',
-            height: 44,
-            child: Row(children: [
-              Icon(Icons.edit_outlined, size: 18, color: AppColors.textPrimary),
-              SizedBox(width: 10),
-              Text('编辑旅程'),
-            ]),
+  Widget _buildMoreMenu(BuildContext context,
+      {required Travel travel,
+      required bool canEdit,
+      required bool canManage}) {
+    return Builder(builder: (ctx) {
+      return GestureDetector(
+        onTap: () {
+          final box = ctx.findRenderObject() as RenderBox;
+          final pos = box.localToGlobal(Offset.zero);
+          showGlassPopover(
+            context: ctx,
+            position: RelativeRect.fromLTRB(pos.dx, pos.dy + 36,
+                MediaQuery.of(ctx).size.width - pos.dx - box.size.width, 0),
+            items: [
+              if (canManage)
+                PopoverItem(
+                    icon: Icons.edit_outlined,
+                    label: '编辑旅程',
+                    onTap: () => TravelFormSheet.show(context, travel: travel)),
+              if (canManage)
+                PopoverItem(
+                    icon: Icons.group_outlined,
+                    label: '协作者',
+                    onTap: () =>
+                        CollaboratorSheet.show(context, widget.travelId)),
+              if (canEdit)
+                PopoverItem(
+                    icon: Icons.download_outlined,
+                    label: '批量导入',
+                    onTap: () =>
+                        CollectImportSheet.show(context, widget.travelId)),
+              PopoverItem(
+                  icon: Icons.luggage_outlined,
+                  label: '行李清单',
+                  onTap: () =>
+                      context.push('/travel/${widget.travelId}/luggage')),
+            ],
+          );
+        },
+        child: Container(
+          width: 36,
+          height: 36,
+          margin: const EdgeInsets.only(right: AppSpacing.pageHorizontal),
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: AppColors.darkPill,
           ),
-        if (canManage)
-          const PopupMenuItem(
-            value: 'collaborator',
-            height: 44,
-            child: Row(children: [
-              Icon(Icons.group_outlined, size: 18, color: AppColors.textPrimary),
-              SizedBox(width: 10),
-              Text('协作者管理'),
-            ]),
-          ),
-        if (canEdit)
-          const PopupMenuItem(
-            value: 'import',
-            height: 44,
-            child: Row(children: [
-              Icon(Icons.download_outlined, size: 18, color: AppColors.textPrimary),
-              SizedBox(width: 10),
-              Text('批量导入'),
-            ]),
-          ),
-        const PopupMenuItem(
-          value: 'luggage',
-          height: 44,
-          child: Row(children: [
-            Icon(Icons.luggage_outlined,
-                size: 18, color: AppColors.textPrimary),
-            SizedBox(width: 10),
-            Text('行李清单'),
-          ]),
+          child: const Icon(Icons.more_vert, size: 18, color: Colors.white),
         ),
-      ],
-      child: Container(
-        width: 36,
-        height: 36,
-        margin: const EdgeInsets.only(right: 8),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: const Color(0x80FFFFFF),
-          border: Border.all(color: const Color(0xCCFFFFFF)),
-          boxShadow: const [
-            BoxShadow(color: Color(0x146478B4), blurRadius: 8, offset: Offset(0, 2)),
-          ],
-        ),
-        child: const Icon(Icons.more_horiz, size: 20, color: AppColors.textSecondary),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildFab(BuildContext context, Travel travel) {
@@ -228,8 +272,10 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
       decoration: const BoxDecoration(
         shape: BoxShape.circle,
         boxShadow: [
-          BoxShadow(color: Color(0x40FF5B2E), blurRadius: 16, offset: Offset(0, 4)),
-          BoxShadow(color: Color(0x20FF5B2E), blurRadius: 4, offset: Offset(0, 1)),
+          BoxShadow(
+              color: Color(0x4DFF6B3D), blurRadius: 16, offset: Offset(0, 4)),
+          BoxShadow(
+              color: Color(0x20FF6B3D), blurRadius: 4, offset: Offset(0, 1)),
         ],
       ),
       child: FloatingActionButton(
@@ -242,7 +288,7 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
         backgroundColor: AppColors.primary,
         shape: const CircleBorder(),
         elevation: 0,
-        child: const Icon(Icons.add, color: Colors.white, size: 28),
+        child: const Icon(Icons.add, size: 22, color: Colors.white),
       ),
     );
   }

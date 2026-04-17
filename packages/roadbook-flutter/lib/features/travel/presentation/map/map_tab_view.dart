@@ -25,90 +25,77 @@ import 'map_info_bar.dart';
 final _mapTimeFmt = DateFormat('HH:mm');
 
 /// Renders a schedule marker: rounded-rect badge with "D{N}" + time/name text beside it.
+/// Renders a coral pill marker: "D{N} · emoji name" + stem + dot below.
 Future<BitmapDescriptor> _buildScheduleMarkerBitmap({
   required Color color,
   required String dayLabel,
   required String time,
   required String name,
 }) async {
-  const double badgeSize = 80;
-  const double badgeRadius = 16;
-  const double badgeFontSize = 36;
-  const double textFontSize = 34;
-  const double gap = 12;
-  const double borderWidth = 4;
-  const double maxTextWidth = 400;
+  // Compose label: "D1·酒店" (no emoji, truncate name to 3 chars)
+  final shortName = name.length > 3 ? '${name.substring(0, 3)}…' : name;
+  final label = '$dayLabel·$shortName';
 
-  // ── Badge label "D1" etc
-  final badgeTextBuilder = ui.ParagraphBuilder(
-    ui.ParagraphStyle(textAlign: TextAlign.center, maxLines: 1),
+  const double fontSize = 38;
+  const double padH = 22;
+  const double padV = 14;
+  const double radius = 24;
+  const double stemH = 18;
+  const double dotR = 9;
+
+  // Measure text width
+  final textBuilder = ui.ParagraphBuilder(
+    ui.ParagraphStyle(textAlign: TextAlign.left, maxLines: 1),
   )
     ..pushStyle(ui.TextStyle(
       color: Colors.white,
-      fontSize: badgeFontSize,
-      fontWeight: ui.FontWeight.w800,
+      fontSize: fontSize,
+      fontWeight: ui.FontWeight.w700,
+      fontFamily: 'PingFang SC',
     ))
-    ..addText(dayLabel);
-  final badgePara = badgeTextBuilder.build()
-    ..layout(const ui.ParagraphConstraints(width: badgeSize));
+    ..addText(label);
+  final textPara = textBuilder.build()
+    ..layout(const ui.ParagraphConstraints(width: 800));
 
-  // ── White-stroke shadows for side text
-  const sw = 3.0;
-  final strokeShadows = [
-    for (final dx in [-sw, 0.0, sw])
-      for (final dy in [-sw, 0.0, sw])
-        if (dx != 0 || dy != 0)
-          ui.Shadow(offset: Offset(dx, dy), blurRadius: sw, color: Colors.white),
-  ];
-
-  // ── Time text (line 1)
-  final timePara = _buildSideParagraph(time, textFontSize, color, strokeShadows, maxTextWidth);
-  // ── Name text (line 2), truncate
-  final displayName = name.length > 6 ? '${name.substring(0, 6)}…' : name;
-  final namePara = _buildSideParagraph(displayName, textFontSize, color, strokeShadows, maxTextWidth);
-
-  final sideTextWidth = timePara.longestLine > namePara.longestLine
-      ? timePara.longestLine
-      : namePara.longestLine;
-  final sideTextHeight = timePara.height + namePara.height;
-
-  final totalW = badgeSize + gap + sideTextWidth + 8;
-  final totalH = badgeSize > sideTextHeight ? badgeSize : sideTextHeight;
+  final textW = textPara.maxIntrinsicWidth;
+  final pillW = textW + padH * 2;
+  final pillH = fontSize + padV * 2;
+  final totalW = (pillW + 8).ceilToDouble(); // shadow margin
+  final totalH = (pillH + stemH + dotR * 2 + 8).ceilToDouble();
 
   final recorder = ui.PictureRecorder();
   final canvas = ui.Canvas(recorder);
 
-  // Draw badge background
-  final badgeRect = ui.RRect.fromRectAndRadius(
-    ui.Rect.fromLTWH(borderWidth, (totalH - badgeSize) / 2 + borderWidth,
-        badgeSize - borderWidth * 2, badgeSize - borderWidth * 2),
-    const ui.Radius.circular(badgeRadius),
-  );
-  canvas.drawRRect(badgeRect, ui.Paint()..color = color);
+  final pillX = (totalW - pillW) / 2;
+  final cx = totalW / 2;
+
+  // Shadow
   canvas.drawRRect(
-    badgeRect,
-    ui.Paint()
-      ..color = Colors.white
-      ..style = ui.PaintingStyle.stroke
-      ..strokeWidth = borderWidth,
-  );
+    ui.RRect.fromRectAndRadius(
+      ui.Rect.fromLTWH(pillX, 6, pillW, pillH), ui.Radius.circular(radius)),
+    ui.Paint()..color = color.withValues(alpha: 0.30)
+      ..maskFilter = const ui.MaskFilter.blur(ui.BlurStyle.normal, 6));
 
-  // Draw badge text
-  canvas.drawParagraph(
-    badgePara,
-    Offset(0, (totalH - badgePara.height) / 2),
-  );
+  // Pill background
+  final pillRect = ui.RRect.fromRectAndRadius(
+    ui.Rect.fromLTWH(pillX, 2, pillW, pillH), ui.Radius.circular(radius));
+  canvas.drawRRect(pillRect, ui.Paint()..color = color);
 
-  // Draw side text
-  final sideX = badgeSize + gap;
-  final sideY = (totalH - sideTextHeight) / 2;
-  if (time.isNotEmpty) {
-    canvas.drawParagraph(timePara, Offset(sideX, sideY));
-  }
-  canvas.drawParagraph(
-    namePara,
-    Offset(sideX, sideY + (time.isNotEmpty ? timePara.height : 0)),
-  );
+  // Text (vertically centered in pill)
+  final textY = 2 + (pillH - textPara.height) / 2;
+  canvas.drawParagraph(textPara, Offset(pillX + padH, textY));
+
+  // Stem (thicker)
+  final stemTop = pillH + 2;
+  canvas.drawLine(
+    Offset(cx, stemTop), Offset(cx, stemTop + stemH),
+    ui.Paint()..color = color..strokeWidth = 5..strokeCap = ui.StrokeCap.round);
+
+  // Dot (larger)
+  final dotCy = stemTop + stemH + dotR;
+  canvas.drawCircle(Offset(cx, dotCy), dotR + 2, ui.Paint()..color = color);
+  canvas.drawCircle(Offset(cx, dotCy), dotR - 1,
+    ui.Paint()..color = Colors.white);
 
   final picture = recorder.endRecording();
   final image = await picture.toImage(totalW.ceil(), totalH.ceil());
@@ -131,34 +118,45 @@ ui.Paragraph _buildSideParagraph(
   return builder.build()..layout(ui.ParagraphConstraints(width: maxWidth));
 }
 
-/// Renders a rounded-rect marker icon (for POI search results).
+/// Renders a coral circle marker with white number label.
 Future<BitmapDescriptor> _buildMarkerBitmap({
   required Color color,
   required String label,
-  double size = 104,
+  double size = 72,
 }) async {
   final recorder = ui.PictureRecorder();
   final canvas = ui.Canvas(recorder);
 
-  final paint = ui.Paint()..color = color;
-  final rrect = ui.RRect.fromRectAndRadius(
-    ui.Rect.fromLTWH(2, 2, size - 4, size - 4),
-    const ui.Radius.circular(20),
-  );
-  canvas.drawRRect(rrect, paint);
+  final center = Offset(size / 2, size / 2);
+  final radius = (size - 4) / 2;
 
-  final borderPaint = ui.Paint()
-    ..color = const Color(0xFFFFFFFF)
-    ..style = ui.PaintingStyle.stroke
-    ..strokeWidth = 5;
-  canvas.drawRRect(rrect, borderPaint);
+  // Shadow
+  canvas.drawCircle(
+    Offset(center.dx, center.dy + 3),
+    radius,
+    ui.Paint()..color = color.withValues(alpha: 0.30)
+      ..maskFilter = const ui.MaskFilter.blur(ui.BlurStyle.normal, 8),
+  );
+
+  // Circle fill
+  canvas.drawCircle(center, radius, ui.Paint()..color = color);
+
+  // White border
+  canvas.drawCircle(
+    center,
+    radius,
+    ui.Paint()
+      ..color = const Color(0xFFFFFFFF)
+      ..style = ui.PaintingStyle.stroke
+      ..strokeWidth = 4,
+  );
 
   final paragraphBuilder = ui.ParagraphBuilder(
     ui.ParagraphStyle(textAlign: TextAlign.center),
   )
     ..pushStyle(ui.TextStyle(
       color: const Color(0xFFFFFFFF),
-      fontSize: label.length == 1 ? 40 : 30,
+      fontSize: label.length == 1 ? 28 : 22,
       fontWeight: ui.FontWeight.w800,
     ))
     ..addText(label);
@@ -270,7 +268,7 @@ class _MapTabViewState extends ConsumerState<MapTabView> {
         label: '$i',
       );
       _iconCache['poi_$i'] = await _buildMarkerBitmap(
-        color: AppColors.textSecondary,
+        color: AppColors.primary,
         label: '$i',
       );
     }
@@ -457,78 +455,37 @@ class _MapTabViewState extends ConsumerState<MapTabView> {
             .firstOrNull
         : null;
 
-    return Stack(
-      children: [
-        // ── Base map layer
-        if (!_platformChecked)
-          const ColoredBox(
-            color: Color(0xFFF5F5F5),
-            child: SizedBox.expand(),
-          )
-        else if (_isSimulator)
-          Container(
-            color: const Color(0xFFE8E8E8),
-            child: const Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.map_outlined, size: 48, color: Color(0xFFAAAAAA)),
-                  SizedBox(height: 8),
-                  Text(
-                    '地图在模拟器上不可用',
-                    style: TextStyle(color: Color(0xFF888888), fontSize: 18),
-                  ),
-                ],
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+          AppSpacing.pageHorizontal, 68, AppSpacing.pageHorizontal,
+          12 + MediaQuery.of(context).padding.bottom),
+      child: Stack(
+        children: [
+          // ── Map container with rounded corners
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0x0F1C1C1E)),
+                ),
+                child: _buildMapLayer(
+                  mapState: mapState,
+                  scheduleMarkers: scheduleMarkers,
+                  poiMarkers: poiMarkers,
+                  polylines: polylines,
+                ),
               ),
             ),
-          )
-        else
-          AMapWidget(
-            privacyStatement: const AMapPrivacyStatement(
-              hasContains: true,
-              hasShow: true,
-              hasAgree: true,
-            ),
-            labelsEnabled: false,
-            onMapCreated: (ctrl) {
-              _mapController = ctrl;
-              WidgetsBinding.instance.addPostFrameCallback(
-                (_) => _fitToCurrentDaySchedules(),
-              );
-            },
-            markers: mapState.mode == MapMode.day ? scheduleMarkers : poiMarkers,
-            polylines: mapState.mode == MapMode.day ? polylines : {},
-            onTap: (_) {
-              final notifier = ref.read(mapStateProvider(widget.travelId).notifier);
-              if (mapState.mode == MapMode.search &&
-                  _searchCtrl.text.trim().isEmpty) {
-                notifier.exitSearchMode();
-              } else {
-                notifier.clearMarker();
-              }
-            },
           ),
 
-        // ── Top floating UI (Day selector OR Search bar)
-        if (mapState.mode == MapMode.day)
-          Positioned(
-            top: 12,
-            right: 12,
-            child: MapDaySelectorBar(
-              travelId: widget.travelId,
-              totalDays: travel != null
-                  ? travel.endDate.difference(travel.startDate).inDays + 1
-                  : 1,
-              onSearchTap: () => ref
-                  .read(mapStateProvider(widget.travelId).notifier)
-                  .enterSearchMode(),
-            ),
-          )
-        else
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
+          // ── Top floating UI (Search bar in search mode only)
+          if (mapState.mode == MapMode.search)
+            Positioned(
+              top: 10,
+              left: 10,
+              right: 10,
             child: MapSearchBar(
               cities: travel?.cities ?? [],
               selectedCity: mapState.searchCity,
@@ -548,42 +505,39 @@ class _MapTabViewState extends ConsumerState<MapTabView> {
             ),
           ),
 
-        // ── Search results bottom panel (search mode)
-        if (mapState.mode == MapMode.search &&
-            (mapState.isSearching ||
-                mapState.poiResults.isNotEmpty ||
-                mapState.searchError != null))
-          Positioned.fill(
-            child: DraggableScrollableSheet(
-              initialChildSize: 0.35,
-              minChildSize: 0.1,
-              maxChildSize: 0.75,
-              snap: true,
-              snapSizes: const [0.1, 0.35, 0.75],
-              builder: (context, scrollController) => Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0x18000000),
-                      blurRadius: 12,
-                      offset: Offset(0, -2),
-                    ),
-                  ],
+          // ── Search results bottom panel (search mode)
+          if (mapState.mode == MapMode.search &&
+              (mapState.isSearching ||
+                  mapState.poiResults.isNotEmpty ||
+                  mapState.searchError != null))
+            Positioned.fill(
+              child: DraggableScrollableSheet(
+                initialChildSize: 0.40,
+                minChildSize: 0.12,
+                maxChildSize: 0.70,
+                snap: true,
+                snapSizes: const [0.12, 0.40, 0.70],
+                builder: (context, scrollController) => Container(
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                    color: const Color(0xE6FFFFFF), // rgba(255,255,255,0.90)
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: const [
+                      BoxShadow(color: Color(0x0F000000), blurRadius: 20, offset: Offset(0, -4)),
+                    ],
+                  ),
+                  child: _buildSearchResults(
+                      context, mapState, travel, scrollController),
                 ),
-                child: _buildSearchResults(
-                    context, mapState, travel, scrollController),
               ),
             ),
-          ),
 
-        // ── Bottom info bar (day mode only)
-        if (mapState.mode == MapMode.day)
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
+          // ── Bottom info bar (day mode only)
+          if (mapState.mode == MapMode.day)
+            Positioned(
+              bottom: 12,
+              left: 12,
+              right: 68,
             child: AnimatedSlide(
               offset: selectedSchedule != null
                   ? Offset.zero
@@ -619,7 +573,81 @@ class _MapTabViewState extends ConsumerState<MapTabView> {
               ),
             ),
           ),
-      ],
+
+          // ── Search FAB (day mode)
+          if (mapState.mode == MapMode.day)
+            Positioned(
+              bottom: 12,
+              right: 12,
+              child: GestureDetector(
+                onTap: () => ref
+                    .read(mapStateProvider(widget.travelId).notifier)
+                    .enterSearchMode(),
+                child: Container(
+                  width: 48, height: 48,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.coralGlow,
+                        blurRadius: 16, offset: const Offset(0, 4)),
+                    ],
+                  ),
+                  child: const Icon(Icons.search, size: 22, color: Colors.white),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMapLayer({
+    required MapState mapState,
+    required Set<Marker> scheduleMarkers,
+    required Set<Marker> poiMarkers,
+    required Set<Polyline> polylines,
+  }) {
+    if (!_platformChecked) {
+      return const ColoredBox(color: AppColors.warmCanvas, child: SizedBox.expand());
+    }
+    if (_isSimulator) {
+      return Container(
+        color: const Color(0xFFE8E4DF),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.map_outlined, size: 48, color: AppColors.inkTertiary),
+              const SizedBox(height: 8),
+              Text('地图在模拟器上不可用',
+                  style: TextStyle(color: AppColors.inkSecondary, fontSize: 14)),
+            ],
+          ),
+        ),
+      );
+    }
+    return AMapWidget(
+      privacyStatement: const AMapPrivacyStatement(
+        hasContains: true, hasShow: true, hasAgree: true,
+      ),
+      labelsEnabled: false,
+      onMapCreated: (ctrl) {
+        _mapController = ctrl;
+        WidgetsBinding.instance.addPostFrameCallback(
+            (_) => _fitToCurrentDaySchedules());
+      },
+      markers: mapState.mode == MapMode.day ? scheduleMarkers : poiMarkers,
+      polylines: mapState.mode == MapMode.day ? polylines : {},
+      onTap: (_) {
+        final notifier = ref.read(mapStateProvider(widget.travelId).notifier);
+        if (mapState.mode == MapMode.search && _searchCtrl.text.trim().isEmpty) {
+          notifier.exitSearchMode();
+        } else {
+          notifier.clearMarker();
+        }
+      },
     );
   }
 
@@ -662,122 +690,384 @@ class _MapTabViewState extends ConsumerState<MapTabView> {
     return ListView.separated(
       controller: scrollController,
       padding: const EdgeInsets.only(bottom: 20),
-      itemCount: mapState.poiResults.length + 1,
-      separatorBuilder: (_, index) => index == 0
+      itemCount: mapState.poiResults.length + 1, // header + items
+      separatorBuilder: (_, index) => index < 1
           ? const SizedBox.shrink()
-          : const Divider(height: 1, indent: 16, endIndent: 16),
+          : Divider(height: 1, color: const Color(0x0A1C1C1E),
+                indent: 16, endIndent: 16),
       itemBuilder: (context, index) {
-        if (index == 0) return _dragHandle();
+        // Header: drag handle + result count
+        if (index == 0) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _dragHandle(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: Text(
+                  '找到 ${mapState.poiResults.length} 个结果',
+                  style: const TextStyle(fontSize: 12, color: AppColors.inkTertiary),
+                ),
+              ),
+            ],
+          );
+        }
         final poi = mapState.poiResults[index - 1];
         final poiIndex = index - 1;
         final selected = poi.id == mapState.selectedPoiId;
-        return ListTile(
-          dense: true,
-          selected: selected,
-          selectedTileColor: AppColors.primaryLight,
-          leading: Container(
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-              color: selected ? AppColors.primary : AppColors.textSecondary,
-              borderRadius: BorderRadius.circular(AppRadius.timeCell),
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              '${poiIndex + 1}',
-              style: AppTextStyles.cardTitle.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-          title: Text(
-            poi.name,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            overflow: TextOverflow.ellipsis,
-          ),
-          subtitle: poi.address.isNotEmpty
-              ? Text(
-                  poi.address,
-                  style: const TextStyle(
-                      fontSize: 16, color: AppColors.textSecondary),
-                  overflow: TextOverflow.ellipsis,
-                )
-              : null,
-          trailing: GestureDetector(
-            onTap: () async {
-              try {
-                await ref
-                    .read(mapStateProvider(widget.travelId).notifier)
-                    .quickAddSchedule(poi);
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('已加入待规划')),
-                  );
-                }
-              } catch (e, st) {
-                debugPrint('=== quickAddSchedule error ===');
-                debugPrint('type: ${e.runtimeType}');
-                debugPrint('error: $e');
-                if (e is DioException) {
-                  debugPrint('dio.message: ${e.message}');
-                  debugPrint('dio.response.statusCode: ${e.response?.statusCode}');
-                  debugPrint('dio.response.data: ${e.response?.data}');
-                }
-                debugPrint('stackTrace: $st');
-                if (context.mounted) {
-                  String msg;
-                  if (e is DioException) {
-                    msg = e.message ?? e.response?.data?.toString() ?? '添加失败';
-                  } else {
-                    msg = e.toString();
-                  }
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(msg),
-                      duration: const Duration(seconds: 6),
-                    ),
-                  );
-                }
-              }
-            },
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.primaryLight,
-                borderRadius: BorderRadius.circular(AppRadius.card),
-              ),
-              child: const Text(
-                '+ 加入',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w600,
+        return GestureDetector(
+          onTap: () => ref
+              .read(mapStateProvider(widget.travelId).notifier)
+              .selectPoi(poi.id),
+          child: Container(
+            color: selected ? AppColors.coralTint : Colors.transparent,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              children: [
+                // Number circle (left)
+                Container(
+                  width: 32, height: 32,
+                  decoration: const BoxDecoration(
+                    color: AppColors.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '${poiIndex + 1}',
+                    style: const TextStyle(
+                        color: Colors.white, fontSize: 14,
+                        fontWeight: FontWeight.w500),
+                  ),
                 ),
-              ),
+                const SizedBox(width: 12),
+                // Name + address
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(poi.name,
+                          style: const TextStyle(fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.inkPrimary),
+                          overflow: TextOverflow.ellipsis),
+                      if (poi.address.isNotEmpty)
+                        Text(poi.address,
+                            style: const TextStyle(fontSize: 12,
+                                color: AppColors.inkTertiary),
+                            overflow: TextOverflow.ellipsis),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Add button (right)
+                GestureDetector(
+                  onTap: () async {
+                    try {
+                      await ref
+                          .read(mapStateProvider(widget.travelId).notifier)
+                          .quickAddSchedule(poi,
+                            selectedDay: ref.read(selectedDayProvider(widget.travelId)),
+                            travelStartDate: travel?.startDate,
+                          );
+                      if (context.mounted) {
+                        final day = ref.read(selectedDayProvider(widget.travelId));
+                        final msg = day > 0 ? '已加入第 $day 天' : '已加入待规划';
+                        _showToast(context, msg);
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        _showToast(context, '添加失败', isError: true);
+                      }
+                    }
+                  },
+                  child: Container(
+                    width: 32, height: 32,
+                    decoration: BoxDecoration(
+                      color: AppColors.coralTint,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: const Color(0x1FFF6B3D)),
+                    ),
+                    child: const Icon(Icons.add, size: 18,
+                        color: AppColors.primary),
+                  ),
+                ),
+              ],
             ),
           ),
-          onTap: () {
-            ref
-                .read(mapStateProvider(widget.travelId).notifier)
-                .selectPoi(poi.id);
-          },
         );
       },
     );
   }
 
+  static void _showToast(BuildContext context, String message, {bool isError = false}) {
+    final overlay = Overlay.of(context);
+    late final OverlayEntry entry;
+    entry = OverlayEntry(builder: (ctx) => _Toast(
+      message: message,
+      isError: isError,
+      onDismiss: () => entry.remove(),
+    ));
+    overlay.insert(entry);
+  }
+
   Widget _dragHandle() {
     return Center(
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 10),
+        margin: const EdgeInsets.only(top: 8, bottom: 6),
         width: 36,
         height: 4,
         decoration: BoxDecoration(
-          color: AppColors.border,
+          color: const Color(0x1F1C1C1E), // rgba(28,28,30,0.12)
           borderRadius: BorderRadius.circular(2),
         ),
+      ),
+    );
+  }
+}
+
+// ── Toast overlay (design spec: dark pill, slide down + fade in, auto dismiss)
+
+class _Toast extends StatefulWidget {
+  const _Toast({required this.message, this.isError = false, required this.onDismiss});
+  final String message;
+  final bool isError;
+  final VoidCallback onDismiss;
+
+  @override
+  State<_Toast> createState() => _ToastState();
+}
+
+class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  late final Animation<double> _opacity;
+  late final Animation<Offset> _slide;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 400));
+    final curve = CurvedAnimation(parent: _ctrl, curve: const Cubic(0.34, 1.3, 0.64, 1.0));
+    _opacity = Tween(begin: 0.0, end: 1.0).animate(curve);
+    _slide = Tween(begin: const Offset(0, -0.3), end: Offset.zero).animate(curve);
+    _ctrl.forward();
+    Future.delayed(const Duration(milliseconds: 2500), _dismiss);
+  }
+
+  void _dismiss() {
+    if (!mounted) return;
+    _ctrl.reverse().then((_) {
+      if (mounted) widget.onDismiss();
+    });
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      top: MediaQuery.of(context).padding.top + 60,
+      left: 0, right: 0,
+      child: SlideTransition(
+        position: _slide,
+        child: FadeTransition(
+          opacity: _opacity,
+          child: Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.darkPill,
+                borderRadius: BorderRadius.circular(AppRadius.pill),
+                boxShadow: const [
+                  BoxShadow(color: Color(0x1A000000), blurRadius: 12, offset: Offset(0, 4)),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    widget.isError ? Icons.error_outline : Icons.check_circle,
+                    size: 18,
+                    color: widget.isError ? AppColors.destructive : AppColors.success,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(widget.message, style: const TextStyle(
+                      fontSize: 14, color: Colors.white)),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Day chip row for map mode (horizontal, scrollable, with indicators) ─────
+
+class _DayChipRow extends StatefulWidget {
+  const _DayChipRow({
+    required this.travelId,
+    required this.totalDays,
+    required this.selectedDay,
+    required this.onDayTap,
+  });
+  final int travelId;
+  final int totalDays;
+  final int selectedDay;
+  final ValueChanged<int> onDayTap;
+
+  @override
+  State<_DayChipRow> createState() => _DayChipRowState();
+}
+
+class _DayChipRowState extends State<_DayChipRow> {
+  final _scrollCtrl = ScrollController();
+  bool _canScrollLeft = false;
+  bool _canScrollRight = false;
+
+  static const _itemWidth = 72.0;
+
+  List<int> get _days => [for (int d = 1; d <= widget.totalDays; d++) d, 0];
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollCtrl.addListener(_updateIndicators);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateIndicators();
+      _scrollToActive();
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant _DayChipRow old) {
+    super.didUpdateWidget(old);
+    if (old.selectedDay != widget.selectedDay) {
+      _scrollToActive();
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateIndicators());
+  }
+
+  void _updateIndicators() {
+    if (!_scrollCtrl.hasClients) return;
+    final pos = _scrollCtrl.position;
+    final l = pos.pixels > 0;
+    final r = pos.pixels < pos.maxScrollExtent - 1;
+    if (l != _canScrollLeft || r != _canScrollRight) {
+      setState(() { _canScrollLeft = l; _canScrollRight = r; });
+    }
+  }
+
+  void _scrollToActive() {
+    if (!_scrollCtrl.hasClients) return;
+    final idx = _days.indexOf(widget.selectedDay);
+    if (idx < 0) return;
+    final viewW = _scrollCtrl.position.viewportDimension;
+    final target = (idx * _itemWidth) - (viewW / 2) + (_itemWidth / 2);
+    _scrollCtrl.animateTo(
+      target.clamp(0, _scrollCtrl.position.maxScrollExtent),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _scrollCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final days = _days;
+    return SizedBox(
+      height: 36,
+      child: Stack(
+        children: [
+          ListView.separated(
+            controller: _scrollCtrl,
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            itemCount: days.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 4),
+            itemBuilder: (context, i) {
+              final d = days[i];
+              final active = d == widget.selectedDay || (d == 0 && widget.selectedDay == -1);
+              return GestureDetector(
+                onTap: () => widget.onDayTap(d == 0 ? -1 : d),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeOutCubic,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: active ? AppColors.primary : const Color(0xB3FFFFFF),
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
+                    border: Border.all(
+                      color: active ? Colors.transparent : const Color(0x33000000),
+                      width: 0.5,
+                    ),
+                  ),
+                  child: Text(
+                    d == 0 ? '待规划' : 'Day $d',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: active ? Colors.white : AppColors.inkSecondary,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+          // Left indicator
+          if (_canScrollLeft)
+            Positioned(
+              left: 0, top: 0, bottom: 0,
+              child: GestureDetector(
+                onTap: () => _scrollCtrl.animateTo(
+                  (_scrollCtrl.offset - 100).clamp(0, _scrollCtrl.position.maxScrollExtent),
+                  duration: const Duration(milliseconds: 300), curve: Curves.easeOut,
+                ),
+                child: Container(
+                  width: 32,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.horizontal(left: Radius.circular(8)),
+                    gradient: LinearGradient(
+                      colors: [Color(0xCCFFFFFF), Color(0x00FFFFFF)],
+                    ),
+                  ),
+                  child: const Icon(Icons.chevron_left_rounded,
+                      size: 20, color: AppColors.inkPrimary),
+                ),
+              ),
+            ),
+          // Right indicator
+          if (_canScrollRight)
+            Positioned(
+              right: 0, top: 0, bottom: 0,
+              child: GestureDetector(
+                onTap: () => _scrollCtrl.animateTo(
+                  (_scrollCtrl.offset + 100).clamp(0, _scrollCtrl.position.maxScrollExtent),
+                  duration: const Duration(milliseconds: 300), curve: Curves.easeOut,
+                ),
+                child: Container(
+                  width: 32,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.horizontal(right: Radius.circular(8)),
+                    gradient: LinearGradient(
+                      colors: [Color(0x00FFFFFF), Color(0xCCFFFFFF)],
+                    ),
+                  ),
+                  child: const Icon(Icons.chevron_right_rounded,
+                      size: 20, color: AppColors.inkPrimary),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

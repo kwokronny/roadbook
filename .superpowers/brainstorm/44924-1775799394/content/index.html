@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>小肥路书 · Design Hub</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Outfit',-apple-system,sans-serif;background:#F2EDE8;margin:0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+  .topbar{
+    padding:12px 24px 10px;
+    background:rgba(242,237,232,0.90);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    display:flex;align-items:center;gap:16px;
+    border-bottom:1px solid rgba(28,28,30,0.04);
+    flex-shrink:0;
+  }
+  .topbar h1{font-size:18px;font-weight:300;letter-spacing:-0.02em;margin-right:16px}
+  .topbar h1 span{color:#FF6B3D}
+
+  .tabs{display:flex;gap:6px}
+  .tab-btn{
+    padding:7px 16px;border-radius:100px;font-size:13px;font-weight:400;
+    border:1px solid transparent;cursor:pointer;
+    background:transparent;color:rgba(28,28,30,0.35);
+    font-family:inherit;
+    transition:all 0.3s cubic-bezier(0.34,1.3,0.64,1);
+  }
+  .tab-btn:hover{color:rgba(28,28,30,0.55)}
+  .tab-btn.active{
+    background:rgba(255,255,255,0.55);
+    border-color:rgba(255,255,255,0.70);
+    color:#FF6B3D;font-weight:500;
+    box-shadow:0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .frame-area{flex:1;overflow:hidden}
+  .frame-area iframe{width:100%;height:100%;border:none}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>小肥路书 <span>Design Hub</span></h1>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(this,'design-system.html')">🎨 Design System</button>
+    <button class="tab-btn" onclick="switchTab(this,'all-screens.html')">📱 All Screens</button>
+    <button class="tab-btn" onclick="switchTab(this,'icons.html')">✦ Icons</button>
+    <button class="tab-btn" onclick="switchTab(this,'dock-bouncy.html')">🧊 Dock Interaction</button>
+  </div>
+</div>
+
+<div class="frame-area">
+  <iframe id="content-frame" src="design-system.html"></iframe>
+</div>
+
+<script>
+function switchTab(btn, url) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('content-frame').src = url;
+}
+</script>
+
+</body>
+</html>

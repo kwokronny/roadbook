@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme.dart';
+
 import '../domain/travel_list_provider.dart';
 import 'widgets/travel_card.dart';
 import 'widgets/travel_form_sheet.dart';
@@ -104,24 +105,14 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
                   const Spacer(),
                   GestureDetector(
                     onTap: () => TravelFormSheet.show(context),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-                        child: Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            color: GlassSpec.cardBg,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: const Color(0xD9FFFFFF), width: 1),
-                            boxShadow: const [
-                              BoxShadow(color: Color(0x146478B4), blurRadius: 8, offset: Offset(0, 2)),
-                            ],
-                          ),
-                          child: const Icon(Icons.add, size: 20, color: AppColors.textPrimary),
-                        ),
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: const BoxDecoration(
+                        color: AppColors.darkPill,
+                        shape: BoxShape.circle,
                       ),
+                      child: const Icon(Icons.add, size: 20, color: Colors.white),
                     ),
                   ),
                 ],
@@ -223,18 +214,15 @@ class _GlassSearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(AppRadius.cardSm),
+      borderRadius: BorderRadius.circular(AppRadius.cover),
       child: BackdropFilter(
         filter: GlassSpec.inputBlur,
         child: Container(
           height: 40,
           decoration: BoxDecoration(
             color: GlassSpec.inputBg,
-            borderRadius: BorderRadius.circular(AppRadius.cardSm),
+            borderRadius: BorderRadius.circular(AppRadius.cover),
             border: Border.all(color: GlassSpec.inputBorder, width: 1),
-            boxShadow: const [
-              BoxShadow(color: Color(0x0F6478B4), blurRadius: 3, offset: Offset(0, 1)),
-            ],
           ),
           child: Row(
             children: [
@@ -275,7 +263,7 @@ class _GlassSearchBar extends StatelessWidget {
                     },
                     child: const Padding(
                       padding: EdgeInsets.only(right: 10),
-                      child: Icon(Icons.cancel, size: 16, color: AppColors.textTertiary),
+                      child: Icon(Icons.close, size: 14, color: AppColors.textTertiary),
                     ),
                   ),
                 ),

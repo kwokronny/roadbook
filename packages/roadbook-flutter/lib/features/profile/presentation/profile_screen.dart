@@ -8,6 +8,7 @@ import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/providers/auth_state_provider.dart';
 import '../../../features/travel/domain/travel_list_provider.dart';
 
+
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
@@ -74,7 +75,7 @@ class ProfileScreen extends ConsumerWidget {
                 onTap: () => context.push('/profile/settings'),
               ),
               _MenuItem(
-                icon: Icons.key_outlined,
+                icon: Icons.key,
                 iconBg: AppColors.hotel,
                 label: 'API Key 管理',
                 onTap: () => context.push('/profile/api-keys'),
@@ -203,7 +204,7 @@ class _Avatar extends StatelessWidget {
         ),
       ),
       child: const Center(
-        child: Icon(Icons.person, color: Colors.white70, size: 24),
+        child: Icon(Icons.person, size: 28, color: Colors.white70),
       ),
     );
 }
@@ -291,7 +292,7 @@ class _MenuItem extends StatelessWidget {
                     color: iconBg,
                     borderRadius: BorderRadius.circular(7),
                   ),
-                  child: Icon(icon, color: Colors.white, size: 14),
+                  child: Center(child: Icon(icon!, size: 14, color: Colors.white)),
                 ),
                 const SizedBox(width: 10),
               ],

@@ -1,4 +1,5 @@
 // lib/features/travel/presentation/map/map_info_bar.dart
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/theme.dart';
@@ -6,8 +7,75 @@ import '../../../../shared/models/schedule.dart';
 import '../../../../shared/models/amap_poi.dart';
 import '../../../../features/schedule/presentation/widgets/schedule_nav_button.dart';
 import '../../../../features/schedule/presentation/schedule_photo_viewer.dart';
+import '../../../../shared/widgets/glass_popover.dart';
 
 final _timeFmt = DateFormat('HH:mm');
+
+void _showNotesDialog(BuildContext context, String title, String notes) {
+  showDialog(
+    context: context,
+    builder: (ctx) => Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xB3FFFFFF),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0x80FFFFFF)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(title,
+                          style: const TextStyle(fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.inkPrimary)),
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(ctx),
+                      child: Container(
+                        width: 26, height: 26,
+                        decoration: const BoxDecoration(
+                          color: Color(0x1A1C1C1E),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.close, size: 12,
+                            color: AppColors.inkSecondary),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEDE5D8),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(notes,
+                      style: const TextStyle(fontSize: 14,
+                          color: AppColors.inkSecondary,
+                          fontStyle: FontStyle.italic, height: 1.6)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
 
 /// 底部信息条：两种工厂构造 — schedule（day 模式）和 poi（search 模式）
 class MapInfoBar extends StatelessWidget {
@@ -69,23 +137,24 @@ class MapInfoBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x18000000),
-            blurRadius: 12,
-            offset: Offset(0, -2),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppRadius.cardSm),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: const Color(0x99FFFFFF), // 60%
+            borderRadius: BorderRadius.circular(AppRadius.cardSm),
+            border: Border.all(color: const Color(0x80FFFFFF)),
+            boxShadow: const [
+              BoxShadow(color: Color(0x0F000000), blurRadius: 12, offset: Offset(0, 2)),
+            ],
           ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: schedule != null
-            ? _buildScheduleContent(context)
-            : _buildPoiContent(context),
+          child: schedule != null
+              ? _buildScheduleContent(context)
+              : _buildPoiContent(context),
+        ),
       ),
     );
   }
@@ -93,127 +162,140 @@ class MapInfoBar extends StatelessWidget {
   Widget _buildScheduleContent(BuildContext context) {
     final s = schedule!;
     final isHotel = s.isHotel;
-    final accentColor = isHotel
-        ? AppColors.hotel
-        : s.startTime != null
-            ? AppColors.primary
-            : AppColors.textSecondary;
+
+    // Time pill colors (same as schedule card)
+    final Color timeBg;
+    final Color timeTxt;
+    if (isHotel) {
+      timeBg = AppColors.lavenderTint;
+      timeTxt = AppColors.lavenderText;
+    } else if (s.startTime != null) {
+      timeBg = AppColors.coralTint;
+      timeTxt = const Color(0xFFD4410A);
+    } else {
+      timeBg = const Color(0x0D1C1C1E);
+      timeTxt = AppColors.inkTertiary;
+    }
 
     String timeLabel;
     if (isHotel) {
-      final start = s.startTime != null ? '入住 ${_timeFmt.format(s.startTime!.toLocal())}' : null;
-      final end = s.endTime != null ? '退房 ${_timeFmt.format(s.endTime!.toLocal())}' : null;
-      timeLabel = start ?? end ?? '住宿';
+      timeLabel = s.startTime != null
+          ? '入住 ${_timeFmt.format(s.startTime!.toLocal())}'
+          : '住宿';
     } else {
       timeLabel = s.startTime != null
           ? _timeFmt.format(s.startTime!.toLocal())
           : '待规划';
     }
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 14, 12, 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Cover image
-          _CoverImage(schedule: s),
-          const SizedBox(width: 10),
-          // Content
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Time row — tappable
-                GestureDetector(
-                  onTap: onEditTimeTap,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        timeLabel,
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: accentColor,
-                          height: 1,
-                          decoration: TextDecoration.underline,
-                          decorationStyle: TextDecorationStyle.dashed,
-                          decorationColor: accentColor.withValues(alpha: 0.4),
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(Icons.schedule, size: 16, color: accentColor),
-                    ],
-                  ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Row: time pill + nav circle
+        Row(
+          children: [
+            // Time pill (tappable to edit)
+            GestureDetector(
+              onTap: onEditTimeTap,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: timeBg,
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
-                const SizedBox(height: 6),
-                // Name + address + nav button
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: onTap,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              s.name,
-                              style: AppTextStyles.appBarTitle,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            if (s.address.isNotEmpty) ...[
-                              const SizedBox(height: 1),
-                              Text(
-                                s.address,
-                                style: AppTextStyles.caption,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    ScheduleNavButton(
-                      coordinate: s.coordinate,
-                      name: s.name,
-                      isHotel: isHotel,
-                    ),
+                    Text(timeLabel,
+                        style: TextStyle(fontSize: 13,
+                            fontWeight: FontWeight.w500, color: timeTxt)),
+                    const SizedBox(width: 3),
+                    Icon(Icons.edit_calendar_outlined, size: 12, color: timeTxt),
                   ],
                 ),
-                // Notes
-                if (s.notes != null && s.notes!.isNotEmpty) ...[
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      const Icon(Icons.notes, size: 14, color: AppColors.textSecondary),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          s.notes!,
-                          style: AppTextStyles.caption,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-                // Screenshots
-                if (s.screenshotList.isNotEmpty) ...[
-                  const SizedBox(height: 6),
-                  _buildScreenshots(context, s),
-                ],
-              ],
+              ),
+            ),
+            const Spacer(),
+            // More button (glass popover)
+            if (onTap != null)
+              Builder(builder: (ctx) {
+                return GestureDetector(
+                  onTap: () {
+                    final box = ctx.findRenderObject() as RenderBox;
+                    final pos = box.localToGlobal(Offset.zero);
+                    showGlassPopover(
+                      context: ctx,
+                      position: RelativeRect.fromLTRB(
+                          pos.dx, pos.dy + 32,
+                          MediaQuery.of(ctx).size.width - pos.dx - box.size.width,
+                          0),
+                      items: [
+                        PopoverItem(icon: Icons.edit_outlined, label: '编辑', onTap: () => onTap!()),
+                        PopoverItem(icon: Icons.delete_outline, label: '删除', isDestructive: true,
+                            onTap: () => onAction?.call()),
+                      ],
+                    );
+                  },
+                  child: const Icon(Icons.more_horiz, size: 24,
+                      color: AppColors.inkTertiary),
+                );
+              }),
+            // Nav circle button
+            if (s.coordinate.isNotEmpty && s.coordinate != '0,0') ...[
+              const SizedBox(width: 8),
+              _NavCircle(coordinate: s.coordinate, name: s.name, isHotel: isHotel),
+            ],
+          ],
+        ),
+        const SizedBox(height: 4),
+        // Name (not tappable — use more button to edit)
+        Text(
+          s.name,
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500,
+              color: AppColors.inkPrimary),
+          maxLines: 2, overflow: TextOverflow.ellipsis,
+        ),
+        // Address
+        if (s.address.isNotEmpty) ...[
+          const SizedBox(height: 2),
+          Text(s.address,
+              style: const TextStyle(fontSize: 12, color: AppColors.inkTertiary),
+              maxLines: 1, overflow: TextOverflow.ellipsis),
+        ],
+        // Screenshots
+        if (s.screenshotList.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Row(children: [
+            for (int i = 0; i < s.screenshotList.take(3).length; i++) ...[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: Image.network(s.screenshotList[i],
+                    width: 40, height: 40, fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      width: 40, height: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0x0D1C1C1E),
+                        borderRadius: BorderRadius.circular(6)))),
+              ),
+              if (i < 2) const SizedBox(width: 6),
+            ],
+          ]),
+        ],
+        // View notes
+        if (s.notes != null && s.notes!.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Align(
+            alignment: Alignment.centerRight,
+            child: GestureDetector(
+              onTap: () => _showNotesDialog(context, s.name, s.notes!),
+              child: const Text('查看备注 ›',
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500,
+                      color: AppColors.primary)),
             ),
           ),
         ],
-      ),
+      ],
     );
   }
 
@@ -262,7 +344,7 @@ class MapInfoBar extends StatelessWidget {
                       '+ 加入待规划',
                       style: AppTextStyles.micro.copyWith(
                         color: AppColors.primary,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
@@ -322,7 +404,7 @@ class MapInfoBar extends StatelessWidget {
             ),
             child: Center(
               child: Text('+$overflow',
-                  style: AppTextStyles.micro.copyWith(fontWeight: FontWeight.w700)),
+                  style: AppTextStyles.micro.copyWith(fontWeight: FontWeight.w500)),
             ),
           ),
       ],
@@ -337,15 +419,15 @@ class _CoverImage extends StatelessWidget {
   final Schedule schedule;
 
   Color get _borderColor {
-    if (schedule.isHotel) return AppColors.hotel;
-    if (schedule.startTime == null) return AppColors.unplanned;
-    return AppColors.primary;
+    if (schedule.isHotel) return const Color(0x268C5CF6);
+    if (schedule.startTime == null) return const Color(0x0F1C1C1E);
+    return const Color(0x1FFF6B3D);
   }
 
   Color get _defaultBg {
-    if (schedule.isHotel) return AppColors.hotelLight;
-    if (schedule.startTime == null) return AppColors.unplannedLight;
-    return const Color(0xFFFEE2C8);
+    if (schedule.isHotel) return AppColors.lavenderTint;
+    if (schedule.startTime == null) return const Color(0x0A1C1C1E);
+    return const Color(0x14FF6B3D);
   }
 
   @override
@@ -384,6 +466,32 @@ class _DefaultIcon extends StatelessWidget {
       child: Text(
         schedule.isHotel ? '🏨' : '📍',
         style: const TextStyle(fontSize: 24),
+      ),
+    );
+  }
+}
+
+// ── Circular navigation button ──────────────────────────────────────────────
+
+class _NavCircle extends StatelessWidget {
+  const _NavCircle({
+    required this.coordinate,
+    required this.name,
+    required this.isHotel,
+  });
+  final String coordinate;
+  final String name;
+  final bool isHotel;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 36, height: 36,
+      child: ScheduleNavButton(
+        coordinate: coordinate,
+        name: name,
+        isHotel: isHotel,
+        compact: true,
       ),
     );
   }

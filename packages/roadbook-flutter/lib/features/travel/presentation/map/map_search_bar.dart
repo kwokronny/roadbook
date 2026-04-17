@@ -1,6 +1,8 @@
 // lib/features/travel/presentation/map/map_search_bar.dart
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../../../core/theme.dart';
+
 
 class MapSearchBar extends StatefulWidget {
   const MapSearchBar({
@@ -53,91 +55,104 @@ class _MapSearchBarState extends State<MapSearchBar> {
   @override
   Widget build(BuildContext context) {
     final allCities = ['全国', ...widget.cities];
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x14000000),
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _ctrl,
-              textInputAction: TextInputAction.search,
-              autofocus: true,
-              decoration: InputDecoration(
-                hintText: '搜索地点、景区、餐厅...',
-                hintStyle: const TextStyle(
-                  fontSize: 18,
-                  color: AppColors.textSecondary,
+    return Row(
+      children: [
+        // Glass search bar
+        Expanded(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(AppRadius.cover),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0x40FFFFFF), // 25% white
+                  borderRadius: BorderRadius.circular(AppRadius.cover),
+                  border: Border.all(color: const Color(0x80FFFFFF)), // 50%
+                  boxShadow: const [
+                    BoxShadow(color: Color(0x0F000000), blurRadius: 12, offset: Offset(0, 2)),
+                    BoxShadow(color: Color(0x8CFFFFFF), blurRadius: 0, offset: Offset(0, -0.5)), // inset top glow
+                  ],
                 ),
-                prefixIcon: _buildCityPrefix(allCities),
-                prefixIconConstraints:
-                    const BoxConstraints(minWidth: 0, minHeight: 0),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.search, size: 20),
-                  color: AppColors.primary,
-                  onPressed: _doSearch,
-                  padding: EdgeInsets.zero,
-                  constraints:
-                      const BoxConstraints(minWidth: 36, minHeight: 36),
+                child: Row(
+                  children: [
+                    _buildCityPrefix(allCities),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: TextField(
+                        controller: _ctrl,
+                        textInputAction: TextInputAction.search,
+                        autofocus: true,
+                        decoration: const InputDecoration(
+                          hintText: '搜索地点、餐厅...',
+                          hintStyle: TextStyle(
+                            fontSize: 14, color: AppColors.inkTertiary,
+                          ),
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          filled: false,
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(vertical: 6),
+                        ),
+                        style: const TextStyle(fontSize: 14, color: AppColors.inkPrimary),
+                        onSubmitted: (_) => _doSearch(),
+                      ),
+                    ),
+                  ],
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppRadius.input),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: AppColors.background,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                isDense: true,
               ),
-              style: const TextStyle(fontSize: 18),
-              onSubmitted: (_) => _doSearch(),
             ),
           ),
-          const SizedBox(width: 4),
-          IconButton(
-            icon: const Icon(Icons.close, size: 20),
-            color: AppColors.textSecondary,
-            onPressed: widget.onClose,
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+        ),
+        const SizedBox(width: 8),
+        // Close circle button
+        GestureDetector(
+          onTap: widget.onClose,
+          child: Container(
+            width: 36, height: 36,
+            decoration: BoxDecoration(
+              color: const Color(0xD9FFFFFF),
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xB3FFFFFF)),
+              boxShadow: const [
+                BoxShadow(color: Color(0x0D000000), blurRadius: 8, offset: Offset(0, 2)),
+              ],
+            ),
+            child: const Icon(Icons.close, size: 14, color: AppColors.inkSecondary),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildCityPrefix(List<String> cities) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+      decoration: BoxDecoration(
+        color: AppColors.coralTint,
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+        border: Border.all(color: const Color(0x2EFF6B3D)), // rgba(255,107,61,0.18)
+      ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: widget.selectedCity,
           items: cities
               .map((c) => DropdownMenuItem(
                     value: c,
-                    child: Text(c, style: const TextStyle(fontSize: 18)),
+                    child: Text(c, style: const TextStyle(fontSize: 11)),
                   ))
               .toList(),
           onChanged: (v) {
             if (v != null) widget.onCityChanged(v);
           },
           style: const TextStyle(
-            fontSize: 18,
-            color: AppColors.primary,
-            fontWeight: FontWeight.w600,
+            fontSize: 11,
+            color: Color(0xFFD4410A),
+            fontWeight: FontWeight.w500,
           ),
-          icon: const Icon(Icons.expand_more,
-              size: 14, color: AppColors.primary),
+          icon: Text(' ▾', style: TextStyle(
+              fontSize: 10, color: AppColors.primary.withValues(alpha: 0.5))),
           isDense: true,
         ),
       ),

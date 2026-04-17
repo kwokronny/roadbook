@@ -97,7 +97,7 @@ class _SchedulePhotoViewerState extends State<SchedulePhotoViewer> {
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -228,7 +228,7 @@ class _ArrowButton extends StatelessWidget {
             color: Colors.black45,
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: Colors.white, size: 20),
+          child: Center(child: Icon(icon, color: Colors.white, size: 20)),
         ),
       ),
     );

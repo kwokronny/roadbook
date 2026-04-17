@@ -145,7 +145,7 @@ class ScheduleTimelineItem extends StatelessWidget {
 
     final hasNotes = schedule.notes != null && schedule.notes!.isNotEmpty;
     final hasPhotos = schedule.screenshotList.isNotEmpty;
-    final hasLower = hasNotes || hasPhotos;
+    final hasLower = !isSelectionMode && (hasNotes || hasPhotos);
 
     // ── Upper card: glass card with cover, time+more row, title, address, nav
     final upperContent = Padding(

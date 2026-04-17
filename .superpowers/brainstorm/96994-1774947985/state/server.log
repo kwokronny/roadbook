@@ -1,0 +1,4 @@
+{"type":"server-started","port":59689,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:59689","screen_dir":"/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/.superpowers/brainstorm/96994-1774947985/content","state_dir":"/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/.superpowers/brainstorm/96994-1774947985/state"}
+{"type":"screen-added","file":"/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/.superpowers/brainstorm/96994-1774947985/content/q1-data-source.html"}
+{"type":"screen-added","file":"/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/.superpowers/brainstorm/96994-1774947985/content/q2-transit-design.html"}
+{"type":"server-stopped","reason":"idle timeout"}

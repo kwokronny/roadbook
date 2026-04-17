@@ -474,18 +474,9 @@ class _CalendarPickerDialogState extends State<_CalendarPickerDialog> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('出行日期',
-                          style: AppTextStyles.title.copyWith(fontSize: 18)),
-                      const SizedBox(height: 2),
-                      Text(_hint(),
-                          style: TextStyle(fontSize: 12, color: AppColors.primary)),
-                    ],
-                  ),
-                ),
+                Text('出行日期',
+                    style: AppTextStyles.title.copyWith(fontSize: 18)),
+                const Spacer(),
                 GestureDetector(
                   onTap: () => Navigator.of(context).pop(),
                   child: Container(
@@ -500,6 +491,16 @@ class _CalendarPickerDialogState extends State<_CalendarPickerDialog> {
               ],
             ),
             const SizedBox(height: 14),
+            // ── Calendar area — white rounded container
+            Container(
+              padding: const EdgeInsets.fromLTRB(12, 16, 12, 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
             // ── Month nav
             Row(
               children: [
@@ -511,8 +512,7 @@ class _CalendarPickerDialogState extends State<_CalendarPickerDialog> {
                     decoration: const BoxDecoration(
                       color: Color(0x0D1C1C1E), shape: BoxShape.circle,
                     ),
-                    child: const Center(child: Text('‹',
-                        style: TextStyle(fontSize: 14, color: AppColors.inkSecondary))),
+                    child: const Icon(Icons.chevron_left, size: 24, color: AppColors.inkSecondary),
                   ),
                 ),
                 Expanded(
@@ -532,8 +532,7 @@ class _CalendarPickerDialogState extends State<_CalendarPickerDialog> {
                     decoration: const BoxDecoration(
                       color: Color(0x0D1C1C1E), shape: BoxShape.circle,
                     ),
-                    child: const Center(child: Text('›',
-                        style: TextStyle(fontSize: 14, color: AppColors.inkSecondary))),
+                    child: const Icon(Icons.chevron_right, size: 24, color: AppColors.inkSecondary),
                   ),
                 ),
               ],
@@ -622,13 +621,16 @@ class _CalendarPickerDialogState extends State<_CalendarPickerDialog> {
                 );
               },
             ),
+                ],
+              ),
+            ), // end white calendar container
             // ── Range summary
             if (_end != null) ...[
               const SizedBox(height: 14),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
-                  color: AppColors.coralTint,
+                  color: const Color(0xFFFFF0EB), // opaque coral tint
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -866,26 +868,7 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
             ),
           ),
 
-          // ── Selected chips ────────────────────────────────────────
-          if (_selected.isNotEmpty)
-            SizedBox(
-              height: 36,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: _selected.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 6),
-                itemBuilder: (_, i) {
-                  final city = _selected.elementAt(i);
-                  return _CityChip(
-                    label: city,
-                    index: i,
-                    onRemove: () => setState(() => _selected.remove(city)),
-                  );
-                },
-              ),
-            ),
-          if (_selected.isNotEmpty) const SizedBox(height: 8),
+          // Selected chips hidden — selection shown via check marks in list
 
           // ── City list grouped by letter ────────────────────────────
           Expanded(

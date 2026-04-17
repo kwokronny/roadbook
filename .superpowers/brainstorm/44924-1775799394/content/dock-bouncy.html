@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Bouncy Glass Dock</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --canvas: #F2EDE8;
+    --ink-primary: rgba(28,28,30,0.90);
+    --ink-tertiary: rgba(28,28,30,0.28);
+    --coral: #FF6B3D;
+    --font: 'Outfit', -apple-system, sans-serif;
+  }
+  body { font-family: var(--font); background: var(--canvas); min-height: 100vh; }
+
+  .page-title { text-align: center; font-size: 26px; font-weight: 200; padding: 40px 0 10px; color: var(--ink-primary); }
+  .page-sub { text-align: center; font-size: 14px; color: rgba(28,28,30,0.45); margin-bottom: 36px; }
+
+  .phone-center { display: flex; justify-content: center; padding: 0 24px 40px; }
+  .phone {
+    width: 375px; border-radius: 40px; overflow: hidden;
+    border: 3px solid rgba(28,28,30,0.06);
+    box-shadow: 0 24px 64px rgba(28,28,30,0.12);
+  }
+  .screen { height: 760px; position: relative; overflow: hidden; background: var(--canvas); }
+  .screen .orb { position: absolute; border-radius: 50%; filter: blur(60px); }
+
+  .fake-bar { padding: 56px 20px 8px; font-size: 34px; font-weight: 200; letter-spacing: -0.02em; position: relative; z-index: 1; }
+  .fake-search {
+    margin: 10px 20px 14px; padding: 10px 14px;
+    background: rgba(255,255,255,0.45); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.60); border-radius: 14px;
+    font-size: 14px; color: rgba(28,28,30,0.30); position: relative; z-index: 1;
+  }
+  .fake-card {
+    margin: 0 20px 12px; padding: 16px; border-radius: 20px;
+    background: rgba(255,255,255,0.52); backdrop-filter: blur(40px) saturate(1.4); -webkit-backdrop-filter: blur(40px) saturate(1.4);
+    border: 1px solid rgba(255,255,255,0.65); position: relative; z-index: 1;
+  }
+  .fc-name { font-size: 16px; font-weight: 500; color: var(--ink-primary); }
+  .fc-sub { font-size: 12px; color: rgba(28,28,30,0.35); margin-top: 3px; }
+
+  /* ═══ Bouncy Dock ═══ */
+  .dock {
+    position: absolute;
+    bottom: 20px; left: 20px; right: 20px;
+    height: 58px;
+    background: rgba(255,255,255,0.30);
+    backdrop-filter: blur(50px) saturate(1.8) brightness(1.05);
+    -webkit-backdrop-filter: blur(50px) saturate(1.8) brightness(1.05);
+    border: 1px solid rgba(255,255,255,0.50);
+    border-radius: 100px;
+    z-index: 10;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.55);
+    /* Bounce animation target */
+    transition: transform 0.65s cubic-bezier(0.34, 1.2, 0.64, 1);
+    transform-origin: center center;
+  }
+  .dock::before {
+    content: ''; position: absolute; top: 0; left: 18%; right: 18%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.80), transparent); z-index: 1;
+  }
+  .dock.bouncing {
+    animation: dockBounce 0.65s cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+  @keyframes dockBounce {
+    0% { transform: scale(1); }
+    15% { transform: scale(0.96, 1.03); }
+    35% { transform: scale(1.02, 0.97); }
+    55% { transform: scale(0.99, 1.01); }
+    100% { transform: scale(1); }
+  }
+
+  .dock-inner {
+    position: relative; height: 100%; padding: 5px;
+    display: flex; align-items: center;
+  }
+
+  /* Glass indicator */
+  .glass-indicator {
+    position: absolute; top: 5px; height: 48px;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.45);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.80);
+    border: 1px solid rgba(255,255,255,0.60);
+    z-index: 2; overflow: hidden;
+    pointer-events: none;
+    /* Slide + blur transition */
+    transition:
+      left 0.6s cubic-bezier(0.34, 1.3, 0.64, 1),
+      width 0.6s cubic-bezier(0.34, 1.3, 0.64, 1),
+      background 0.3s ease,
+      backdrop-filter 0.3s ease,
+      -webkit-backdrop-filter 0.3s ease;
+  }
+  .glass-indicator::after {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(160deg, rgba(255,255,255,0.50) 0%, transparent 45%);
+    pointer-events: none;
+  }
+  /* Blur state during motion — only background blurs, border/shadow stay crisp */
+  .glass-indicator.sliding {
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .tab {
+    flex: 1; height: 48px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; position: relative; z-index: 1;
+    -webkit-tap-highlight-color: transparent; user-select: none;
+    transition: transform 0.5s cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+  .tab:active { transform: scale(0.88); }
+  .tab .icon {
+    font-size: 22px; line-height: 1;
+    transition: color 0.3s ease, transform 0.55s cubic-bezier(0.34, 1.2, 0.64, 1);
+    color: var(--ink-tertiary);
+  }
+  .tab .label {
+    font-size: 10px; font-weight: 400; margin-top: 1px;
+    transition: color 0.3s ease, transform 0.3s ease;
+    color: var(--ink-tertiary);
+  }
+  .tab.active .icon { color: var(--coral); transform: scale(1.12) translateY(-1px); }
+  .tab.active .label { color: var(--coral); font-weight: 500; }
+
+  /* ═══ Zoom ═══ */
+  .zoom-section { max-width: 600px; margin: 0 auto; padding: 0 24px 40px; }
+  .zoom-title { text-align: center; font-size: 14px; font-weight: 500; margin-bottom: 12px; color: rgba(28,28,30,0.55); }
+  .zoom-frame {
+    height: 90px; border-radius: 100px; overflow: hidden;
+    border: 2px solid rgba(28,28,30,0.05); box-shadow: 0 4px 20px rgba(28,28,30,0.08);
+    position: relative; background: var(--canvas);
+  }
+  .zoom-frame .orb { position: absolute; border-radius: 50%; filter: blur(40px); }
+  .zoom-dock {
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,0.30); backdrop-filter: blur(50px) saturate(1.8) brightness(1.05); -webkit-backdrop-filter: blur(50px) saturate(1.8) brightness(1.05);
+    border: 1px solid rgba(255,255,255,0.50); border-radius: 100px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
+    transition: transform 0.65s cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+  .zoom-dock.bouncing { animation: dockBounce 0.65s cubic-bezier(0.34, 1.2, 0.64, 1); }
+  .zoom-dock::before { content:''; position:absolute; top:0; left:18%; right:18%; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.80),transparent); }
+  .zoom-inner { position: relative; height: 100%; padding: 6px; display: flex; align-items: center; }
+  .zoom-glass {
+    position: absolute; top: 6px; height: 78px; border-radius: 100px;
+    background: rgba(255,255,255,0.45);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.80);
+    border: 1px solid rgba(255,255,255,0.60); overflow: hidden;
+    z-index: 2; pointer-events: none;
+    transition: left 0.45s cubic-bezier(0.34,1.56,0.64,1), width 0.45s cubic-bezier(0.34,1.56,0.64,1), filter 0.45s ease, opacity 0.45s ease;
+  }
+  .zoom-glass::after { content:''; position:absolute; inset:0; border-radius:inherit; background:linear-gradient(160deg,rgba(255,255,255,0.50) 0%,transparent 45%); pointer-events:none; }
+  .zoom-glass.sliding { background: rgba(255,255,255,0.25); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+
+  .zoom-tab {
+    flex: 1; height: 78px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; position: relative; z-index: 1; user-select: none;
+    transition: transform 0.5s cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+  .zoom-tab:active { transform: scale(0.88); }
+  .zoom-tab .icon { font-size: 28px; line-height: 1; color: var(--ink-tertiary); transition: color 0.3s ease, transform 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+  .zoom-tab .label { font-size: 13px; margin-top: 2px; color: var(--ink-tertiary); transition: color 0.3s ease; }
+  .zoom-tab.active .icon { color: var(--coral); transform: scale(1.12) translateY(-1px); }
+  .zoom-tab.active .label { color: var(--coral); font-weight: 500; }
+
+  /* Notes */
+  .notes { max-width: 600px; margin: 0 auto; padding: 0 24px 60px; }
+  .note-card {
+    background: rgba(255,255,255,0.52); backdrop-filter: blur(40px) saturate(1.4); -webkit-backdrop-filter: blur(40px) saturate(1.4);
+    border: 1px solid rgba(255,255,255,0.65); border-radius: 20px; padding: 20px; margin-bottom: 12px;
+    position: relative; overflow: hidden;
+  }
+  .note-card::after { content:''; position:absolute; inset:0; border-radius:inherit; background:linear-gradient(160deg,rgba(255,255,255,0.35) 0%,transparent 40%); pointer-events:none; }
+  .note-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(28,28,30,0.30); margin-bottom: 8px; position: relative; z-index: 1; }
+  .note-text { font-size: 13px; color: rgba(28,28,30,0.50); line-height: 1.8; position: relative; z-index: 1; }
+  .note-text b { color: var(--ink-primary); font-weight: 500; }
+
+  @keyframes drift {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(25px,-15px) scale(1.04); }
+    66% { transform: translate(-15px,12px) scale(0.96); }
+  }
+</style>
+</head>
+<body>
+
+<div style="position:fixed;inset:0;z-index:0;overflow:hidden;">
+  <div style="position:absolute;width:350px;height:350px;border-radius:50%;filter:blur(80px);background:rgba(255,107,61,0.12);top:-5%;right:-5%;animation:drift 25s ease-in-out infinite;"></div>
+  <div style="position:absolute;width:280px;height:280px;border-radius:50%;filter:blur(80px);background:rgba(245,210,170,0.18);bottom:10%;left:-5%;animation:drift 25s ease-in-out infinite reverse;"></div>
+</div>
+<div style="position:relative;z-index:1;">
+
+<h1 class="page-title">Bouncy Glass Dock</h1>
+<p class="page-sub">Dock Q弹 · 玻璃片滑动模糊 · 图标同步变色</p>
+
+<div class="phone-center">
+  <div class="phone">
+    <div class="screen">
+      <div class="orb" style="width:280px;height:280px;background:rgba(255,107,61,0.13);top:-8%;right:-15%;"></div>
+      <div class="orb" style="width:220px;height:220px;background:rgba(245,210,170,0.16);bottom:12%;left:-10%;"></div>
+      <div class="fake-bar">旅程</div>
+      <div class="fake-search">🔍 搜索旅行计划...</div>
+      <div class="fake-card"><div class="fc-name">东京自由行</div><div class="fc-sub">04/10 — 04/17 · 7天 · 东京 · 大阪</div></div>
+      <div class="fake-card"><div class="fc-name">清迈之旅</div><div class="fc-sub">05/01 — 05/05 · 4天 · 清迈</div></div>
+      <div class="fake-card"><div class="fc-name">首尔美食团</div><div class="fc-sub">06/12 — 06/16 · 4天 · 首尔</div></div>
+
+      <div class="dock" id="dockShell1">
+        <div class="dock-inner" id="dock1">
+          <div class="glass-indicator" id="ind1"></div>
+          <div class="tab active" onclick="switchBouncy('dock1','ind1','dockShell1',this,0)">
+            <span class="icon">🗺</span><span class="label">旅程</span>
+          </div>
+          <div class="tab" onclick="switchBouncy('dock1','ind1','dockShell1',this,1)">
+            <span class="icon">🔍</span><span class="label">发现</span>
+          </div>
+          <div class="tab" onclick="switchBouncy('dock1','ind1','dockShell1',this,2)">
+            <span class="icon">👤</span><span class="label">我的</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Zoom -->
+<div class="zoom-section">
+  <div class="zoom-title">放大交互细节 · 点击切换</div>
+  <div class="zoom-frame">
+    <div class="orb" style="width:200px;height:200px;background:rgba(255,107,61,0.10);top:-60%;right:10%;"></div>
+    <div class="orb" style="width:160px;height:160px;background:rgba(245,210,170,0.14);bottom:-50%;left:15%;"></div>
+    <div class="zoom-dock" id="dockShell2">
+      <div class="zoom-inner" id="dock2">
+        <div class="zoom-glass" id="ind2"></div>
+        <div class="zoom-tab active" onclick="switchBouncy('dock2','ind2','dockShell2',this,0)">
+          <span class="icon">🗺</span><span class="label">旅程</span>
+        </div>
+        <div class="zoom-tab" onclick="switchBouncy('dock2','ind2','dockShell2',this,1)">
+          <span class="icon">🔍</span><span class="label">发现</span>
+        </div>
+        <div class="zoom-tab" onclick="switchBouncy('dock2','ind2','dockShell2',this,2)">
+          <span class="icon">👤</span><span class="label">我的</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Notes -->
+<div class="notes">
+  <div class="note-card">
+    <div class="note-label">三层动效叠加</div>
+    <div class="note-text">
+      <b>1. Dock Q弹</b> — 点击时整个 dock 容器执行 squash & stretch 变形（先压扁再拉伸），模拟果冻质感<br><br>
+      <b>2. 玻璃片模糊</b> — 滑动开始时 indicator 加 blur(6px) + opacity 0.65，到达目标后恢复清晰。模拟运动模糊<br><br>
+      <b>3. 图标弹跳</b> — 选中图标 scale 1.12 + translateY -1px，按下时 scale 0.88 回弹
+    </div>
+  </div>
+  <div class="note-card">
+    <div class="note-label">Flutter 实现</div>
+    <div class="note-text">
+      <b>Dock bounce:</b> AnimationController + ScaleTransition 在 X/Y 方向分别 tween<br><br>
+      <b>Indicator blur:</b> AnimatedContainer + ImageFilter.blur sigma 从 0→6→0 过渡<br><br>
+      <b>Indicator slide:</b> AnimatedPositioned with spring curve<br><br>
+      <b>Color sync:</b> ColorTween on icon/text simultaneously
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function switchBouncy(dockId, indId, shellId, tab, index) {
+  const dock = document.getElementById(dockId);
+  const indicator = document.getElementById(indId);
+  const shell = document.getElementById(shellId);
+  const tabs = dock.querySelectorAll('.tab, .zoom-tab');
+
+  // Skip if already active
+  if (tab.classList.contains('active')) return;
+
+  // 1. Dock bounce
+  shell.classList.remove('bouncing');
+  void shell.offsetWidth; // force reflow
+  shell.classList.add('bouncing');
+
+  // 2. Indicator blur during motion
+  indicator.classList.add('sliding');
+
+  // 3. Switch active tab (color change is instant via CSS transition)
+  tabs.forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+
+  // 4. Move indicator
+  const padding = parseFloat(getComputedStyle(dock).paddingLeft) || 5;
+  const dockWidth = dock.offsetWidth - padding * 2;
+  const tabWidth = dockWidth / tabs.length;
+  indicator.style.left = (padding + index * tabWidth + 2) + 'px';
+  indicator.style.width = (tabWidth - 4) + 'px';
+
+  // 5. Clear blur after slide completes
+  setTimeout(() => {
+    indicator.classList.remove('sliding');
+  }, 500);
+}
+
+// Init
+window.addEventListener('load', () => {
+  ['dock1','dock2'].forEach((dockId, i) => {
+    const ind = document.getElementById('ind' + (i+1));
+    const dock = document.getElementById(dockId);
+    const tabs = dock.querySelectorAll('.tab, .zoom-tab');
+    const padding = parseFloat(getComputedStyle(dock).paddingLeft) || 5;
+    const dockWidth = dock.offsetWidth - padding * 2;
+    const tabWidth = dockWidth / tabs.length;
+    ind.style.left = (padding + 2) + 'px';
+    ind.style.width = (tabWidth - 4) + 'px';
+  });
+});
+</script>
+
+</body>
+</html>

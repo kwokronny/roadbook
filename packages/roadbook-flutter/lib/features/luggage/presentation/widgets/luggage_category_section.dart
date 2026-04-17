@@ -40,15 +40,15 @@ class _LuggageCategorySectionState
       margin: const EdgeInsets.symmetric(
           horizontal: AppSpacing.pageHorizontal, vertical: 4),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.contentCard),
+        color: const Color(0xB8FFFFFF), // rgba(255,255,255,0.72)
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: GlassSpec.cardBorder, width: 1),
+        boxShadow: GlassSpec.cardShadow,
       ),
       child: Column(
         children: [
           _buildHeader(),
           if (_expanded) ...[
-            const Divider(
-                height: 0.5, thickness: 0.5, color: AppColors.separator),
             ...widget.category.items.map(_buildItemRow),
             if (widget.canEdit) _buildAddItemRow(),
           ],
@@ -61,45 +61,42 @@ class _LuggageCategorySectionState
     return GestureDetector(
       onTap: () => setState(() => _expanded = !_expanded),
       behavior: HitTestBehavior.opaque,
-      child: SizedBox(
-        height: 44,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          child: Row(
-            children: [
-              Text(widget.category.emoji,
-                  style: const TextStyle(fontSize: 18)),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  widget.category.name,
-                  style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textPrimary),
-                ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Text(widget.category.emoji,
+                style: const TextStyle(fontSize: 18)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                widget.category.name,
+                style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.inkPrimary),
               ),
-              Text(
-                '$_checkedInCat/${widget.category.items.length}',
-                style: AppTextStyles.caption,
-              ),
-              if (widget.canEdit) ...[
-                const SizedBox(width: 4),
-                GestureDetector(
-                  onTap: _confirmDelete,
-                  child: const Icon(Icons.delete_outline,
-                      size: 18, color: AppColors.inkTertiary),
-                ),
-              ],
-              const SizedBox(width: 6),
-              AnimatedRotation(
-                turns: _expanded ? 0 : -0.25,
-                duration: const Duration(milliseconds: 200),
-                child: const Icon(Icons.expand_more,
-                    size: 20, color: AppColors.textSecondary),
+            ),
+            Text(
+              '$_checkedInCat/${widget.category.items.length}',
+              style: AppTextStyles.caption,
+            ),
+            if (widget.canEdit) ...[
+              const SizedBox(width: 4),
+              GestureDetector(
+                onTap: _confirmDelete,
+                child: const Icon(Icons.delete_outline,
+                    size: 18, color: AppColors.inkTertiary),
               ),
             ],
-          ),
+            const SizedBox(width: 6),
+            AnimatedRotation(
+              turns: _expanded ? 0 : -0.25,
+              duration: const Duration(milliseconds: 200),
+              child: const Icon(Icons.expand_more,
+                  size: 20, color: AppColors.inkSecondary),
+            ),
+          ],
         ),
       ),
     );
@@ -122,49 +119,58 @@ class _LuggageCategorySectionState
       onDismissed: (_) => ref
           .read(luggageProvider(widget.travelId).notifier)
           .deleteItem(widget.category.id, item.id),
-      child: SizedBox(
-        height: 44,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          child: Row(
-            children: [
-              GestureDetector(
-                onTap: () => ref
-                    .read(luggageProvider(widget.travelId).notifier)
-                    .toggleCheck(item.id),
-                child: Container(
-                  width: 22,
-                  height: 22,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: checked ? AppColors.primary : Colors.transparent,
-                    border: Border.all(
-                      color: checked ? AppColors.primary : AppColors.border,
-                      width: 1.5,
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(left: 48),
+            child: Divider(height: 0.5, thickness: 0.5, color: AppColors.separator),
+          ),
+          SizedBox(
+            height: 44,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => ref
+                        .read(luggageProvider(widget.travelId).notifier)
+                        .toggleCheck(item.id),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: checked ? AppColors.primary : Colors.transparent,
+                        border: Border.all(
+                          color: checked ? AppColors.primary : AppColors.border,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: checked
+                          ? const Icon(Icons.check,
+                              size: 12, color: Colors.white)
+                          : null,
                     ),
                   ),
-                  child: checked
-                      ? const Icon(Icons.check,
-                          size: 14, color: Colors.white)
-                      : null,
-                ),
+                  const SizedBox(width: 10),
+                  Text(
+                    item.text,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: checked
+                          ? AppColors.textSecondary
+                          : AppColors.textPrimary,
+                      decoration: checked
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 10),
-              Text(
-                item.text,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: checked
-                      ? AppColors.textSecondary
-                      : AppColors.textPrimary,
-                  decoration: checked
-                      ? TextDecoration.lineThrough
-                      : TextDecoration.none,
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -173,20 +179,36 @@ class _LuggageCategorySectionState
     return GestureDetector(
       onTap: widget.onAddItemTap,
       behavior: HitTestBehavior.opaque,
-      child: SizedBox(
-        height: 44,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          child: Row(
-            children: [
-              const Icon(Icons.add, size: 18, color: AppColors.primary),
-              const SizedBox(width: 8),
-              Text('添加物品',
-                  style: const TextStyle(
-                      fontSize: 15, color: AppColors.primary)),
-            ],
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(left: 48),
+            child: Divider(height: 0.5, thickness: 0.5, color: AppColors.separator),
           ),
-        ),
+          SizedBox(
+            height: 44,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Row(
+                children: [
+                  Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.primary, width: 1.5),
+                    ),
+                    child: const Icon(Icons.add, size: 12, color: AppColors.primary),
+                  ),
+                  const SizedBox(width: 10),
+                  Text('添加物品',
+                      style: const TextStyle(
+                          fontSize: 15, color: AppColors.primary)),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

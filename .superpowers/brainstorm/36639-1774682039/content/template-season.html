@@ -1,0 +1,166 @@
+<h2>模板导入 — 季节智能推荐</h2>
+<p class="subtitle">根据旅程出发月份自动判断季节，生成专属建议清单</p>
+
+<style>
+* { box-sizing: border-box; }
+.phone { width: 230px; background: #1C1C1E; border-radius: 30px; padding: 14px 9px; box-shadow: 0 12px 40px rgba(0,0,0,0.35); flex-shrink: 0; }
+.phone-screen { background: #F2F2F7; border-radius: 22px; overflow: hidden; min-height: 460px; position: relative; }
+.appbar { background: #F2F2F7; padding: 12px 14px 8px; display: flex; align-items: center; justify-content: space-between; border-bottom: 0.5px solid rgba(60,60,67,0.12); }
+.appbar-back { font-size: 11px; color: #FF5B2E; }
+.appbar-title { font-size: 13px; font-weight: 700; color: #1C1C1E; }
+.sheet { background: #fff; border-radius: 18px 18px 0 0; padding: 12px 14px 20px; position: absolute; bottom: 0; left: 0; right: 0; z-index: 2; }
+.sheet-handle { width: 30px; height: 3px; background: #E5E5EA; border-radius: 2px; margin: 0 auto 10px; }
+.season-banner { border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+.season-icon { font-size: 26px; }
+.season-info { flex: 1; }
+.season-name { font-size: 13px; font-weight: 800; }
+.season-hint { font-size: 9px; margin-top: 1px; opacity: 0.8; }
+.section-label { font-size: 9px; font-weight: 700; color: #8E8E93; letter-spacing: 0.4px; text-transform: uppercase; margin: 8px 0 4px; }
+.cat-list { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; }
+.cat-row { display: flex; align-items: center; gap: 8px; background: #F2F2F7; border-radius: 8px; padding: 7px 10px; }
+.cat-check { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid #C7C7CC; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.cat-check.on { background: #FF5B2E; border-color: #FF5B2E; }
+.cat-check.on::after { content: "✓"; color: #fff; font-size: 8px; }
+.cat-emoji { font-size: 12px; }
+.cat-name { font-size: 11px; color: #1C1C1E; font-weight: 600; flex: 1; }
+.cat-items { font-size: 9px; color: #8E8E93; }
+.import-btn { border-radius: 10px; padding: 9px; text-align: center; font-size: 11px; font-weight: 700; margin-top: 10px; color: white; }
+.dim { background: rgba(0,0,0,0.3); position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 22px; z-index: 1; }
+.screen-label { text-align: center; font-size: 10px; color: #8E8E93; margin-top: 6px; font-weight: 600; letter-spacing: 0.3px; }
+</style>
+
+<div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap">
+
+  <!-- Summer -->
+  <div>
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="appbar">
+          <span class="appbar-back">取消</span>
+          <span class="appbar-title">导入模板</span>
+          <span></span>
+        </div>
+        <div class="dim"></div>
+        <div class="sheet">
+          <div class="sheet-handle"></div>
+          <div class="season-banner" style="background:linear-gradient(135deg,#FF8C42,#FFB347)">
+            <div class="season-icon">☀️</div>
+            <div class="season-info" style="color:white">
+              <div class="season-name">夏季出行</div>
+              <div class="season-hint">出发于 7月 · 防晒、清凉、轻便</div>
+            </div>
+          </div>
+          <div class="section-label">选择要导入的分类</div>
+          <div class="cat-list">
+            <div class="cat-row"><div class="cat-check on"></div><span class="cat-emoji">📋</span><span class="cat-name">证件</span><span class="cat-items">护照、签证…5项</span></div>
+            <div class="cat-row"><div class="cat-check on"></div><span class="cat-emoji">👕</span><span class="cat-name">衣物</span><span class="cat-items">T恤、短裤、凉鞋…8项</span></div>
+            <div class="cat-row"><div class="cat-check on"></div><span class="cat-emoji">🧴</span><span class="cat-name">防晒护肤</span><span class="cat-items">防晒霜、墨镜、帽子…4项</span></div>
+            <div class="cat-row"><div class="cat-check on"></div><span class="cat-emoji">📱</span><span class="cat-name">电子</span><span class="cat-items">充电宝、转换插头…5项</span></div>
+            <div class="cat-row"><div class="cat-check"></div><span class="cat-emoji">💊</span><span class="cat-name">药品</span><span class="cat-items">肠胃药、防蚊液…4项</span></div>
+            <div class="cat-row"><div class="cat-check"></div><span class="cat-emoji">🧳</span><span class="cat-name">洗漱</span><span class="cat-items">牙刷、洗发水…6项</span></div>
+          </div>
+          <div class="import-btn" style="background:linear-gradient(135deg,#FF8C42,#FFB347)">导入 4 个分类 (22项)</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-label">夏季 (6–8月)</div>
+  </div>
+
+  <!-- Winter -->
+  <div>
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="appbar">
+          <span class="appbar-back">取消</span>
+          <span class="appbar-title">导入模板</span>
+          <span></span>
+        </div>
+        <div class="dim"></div>
+        <div class="sheet">
+          <div class="sheet-handle"></div>
+          <div class="season-banner" style="background:linear-gradient(135deg,#6366F1,#818CF8)">
+            <div class="season-icon">❄️</div>
+            <div class="season-info" style="color:white">
+              <div class="season-name">冬季出行</div>
+              <div class="season-hint">出发于 1月 · 保暖、防风、多层穿搭</div>
+            </div>
+          </div>
+          <div class="section-label">选择要导入的分类</div>
+          <div class="cat-list">
+            <div class="cat-row"><div class="cat-check on"></div><span class="cat-emoji">📋</span><span class="cat-name">证件</span><span class="cat-items">护照、签证…5项</span></div>
+            <div class="cat-row"><div class="cat-check on"></div><span class="cat-emoji">🧥</span><span class="cat-name">御寒衣物</span><span class="cat-items">羽绒服、围巾、手套…9项</span></div>
+            <div class="cat-row"><div class="cat-check on"></div><span class="cat-emoji">📱</span><span class="cat-name">电子</span><span class="cat-items">充电宝、转换插头…5项</span></div>
+            <div class="cat-row"><div class="cat-check on"></div><span class="cat-emoji">💊</span><span class="cat-name">药品</span><span class="cat-items">感冒药、护手霜、暖宝宝…5项</span></div>
+            <div class="cat-row"><div class="cat-check"></div><span class="cat-emoji">🧳</span><span class="cat-name">洗漱</span><span class="cat-items">牙刷、保湿面霜…6项</span></div>
+            <div class="cat-row"><div class="cat-check"></div><span class="cat-emoji">🥾</span><span class="cat-name">鞋包</span><span class="cat-items">雪地靴、防滑鞋…3项</span></div>
+          </div>
+          <div class="import-btn" style="background:linear-gradient(135deg,#6366F1,#818CF8)">导入 4 个分类 (24项)</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-label">冬季 (12–2月)</div>
+  </div>
+
+  <!-- Spring/Autumn -->
+  <div>
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="appbar">
+          <span class="appbar-back">取消</span>
+          <span class="appbar-title">导入模板</span>
+          <span></span>
+        </div>
+        <div class="dim"></div>
+        <div class="sheet">
+          <div class="sheet-handle"></div>
+          <div class="season-banner" style="background:linear-gradient(135deg,#14B8A6,#34D399)">
+            <div class="season-icon">🍂</div>
+            <div class="season-info" style="color:white">
+              <div class="season-name">秋季出行</div>
+              <div class="season-hint">出发于 10月 · 早晚温差大、洋葱穿法</div>
+            </div>
+          </div>
+          <div class="section-label">选择要导入的分类</div>
+          <div class="cat-list">
+            <div class="cat-row"><div class="cat-check on"></div><span class="cat-emoji">📋</span><span class="cat-name">证件</span><span class="cat-items">护照、签证…5项</span></div>
+            <div class="cat-row"><div class="cat-check on"></div><span class="cat-emoji">👕</span><span class="cat-name">衣物</span><span class="cat-items">外套、长袖、针织衫…8项</span></div>
+            <div class="cat-row"><div class="cat-check on"></div><span class="cat-emoji">📱</span><span class="cat-name">电子</span><span class="cat-items">充电宝、转换插头…5项</span></div>
+            <div class="cat-row"><div class="cat-check on"></div><span class="cat-emoji">🧳</span><span class="cat-name">洗漱</span><span class="cat-items">牙刷、洗发水…6项</span></div>
+            <div class="cat-row"><div class="cat-check"></div><span class="cat-emoji">💊</span><span class="cat-name">药品</span><span class="cat-items">感冒药、肠胃药…4项</span></div>
+            <div class="cat-row"><div class="cat-check"></div><span class="cat-emoji">📷</span><span class="cat-name">摄影</span><span class="cat-items">相机、存储卡…4项</span></div>
+          </div>
+          <div class="import-btn" style="background:linear-gradient(135deg,#14B8A6,#34D399)">导入 4 个分类 (24项)</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-label">秋季 (9–11月)</div>
+  </div>
+
+</div>
+
+<div style="margin-top:20px;background:#fff;border-radius:12px;padding:16px;max-width:700px">
+  <div style="font-weight:700;font-size:13px;margin-bottom:10px">季节判断逻辑（纯前端）</div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font-size:11px;color:#636366">
+    <div style="background:#FFF8F0;border-radius:8px;padding:8px;text-align:center">
+      <div style="font-size:18px">🌸</div>
+      <div style="font-weight:700;color:#1C1C1E">春季</div>
+      <div>3–5月</div>
+    </div>
+    <div style="background:#FFF3E0;border-radius:8px;padding:8px;text-align:center">
+      <div style="font-size:18px">☀️</div>
+      <div style="font-weight:700;color:#1C1C1E">夏季</div>
+      <div>6–8月</div>
+    </div>
+    <div style="background:#F0FDF4;border-radius:8px;padding:8px;text-align:center">
+      <div style="font-size:18px">🍂</div>
+      <div style="font-weight:700;color:#1C1C1E">秋季</div>
+      <div>9–11月</div>
+    </div>
+    <div style="background:#EEF2FF;border-radius:8px;padding:8px;text-align:center">
+      <div style="font-size:18px">❄️</div>
+      <div style="font-weight:700;color:#1C1C1E">冬季</div>
+      <div>12–2月</div>
+    </div>
+  </div>
+  <div style="margin-top:10px;font-size:11px;color:#8E8E93">从 <code>travel.startDate.month</code> 推算季节 → 匹配内置模板数据（Dart 常量，无需接口）→ 勾选后追加合并到现有清单</div>
+</div>

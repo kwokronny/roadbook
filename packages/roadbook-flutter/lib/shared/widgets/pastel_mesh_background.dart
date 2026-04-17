@@ -110,11 +110,11 @@ class _OrbPainter extends CustomPainter {
   final List<Offset> toPos;
 
   static const _colors = [
-    Color(0x38F5D2A0), // Sand warm — 22%, brightest
-    Color(0x28FF6B3D), // Coral — 16%, mid
-    Color(0x18F0C878), // Honey — 9%, softest
+    Color(0x50F5D2A0), // Sand warm — 31%, brightest
+    Color(0x40FF6B3D), // Coral — 25%, mid
+    Color(0x30F0C878), // Honey — 19%, softest
   ];
-  static const _radii = [0.65, 0.55, 0.70]; // relative to width
+  static const _radii = [1.0, 0.90, 1.05]; // relative to width — ~half screen diameter
   // Per-orb breathing amplitude and frequency
   static const _bAmpX  = [0.025, 0.020, 0.030];
   static const _bAmpY  = [0.018, 0.022, 0.016];

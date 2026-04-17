@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme.dart';
+
 import '../domain/discover_provider.dart';
 import 'widgets/public_travel_card.dart';
 
@@ -90,11 +91,11 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                   hintStyle: const TextStyle(
                       fontSize: 15, color: AppColors.textSecondary),
                   prefixIcon: const Icon(Icons.search,
-                      color: AppColors.textSecondary, size: 18),
+                      size: 18, color: AppColors.textSecondary),
                   suffixIcon: _searchCtrl.text.isNotEmpty
                       ? IconButton(
-                          icon: const Icon(Icons.clear,
-                              color: AppColors.textSecondary, size: 16),
+                          icon: const Icon(Icons.close,
+                              size: 14, color: AppColors.textSecondary),
                           onPressed: () {
                             _searchCtrl.clear();
                             ref.read(discoverProvider.notifier).search('');
@@ -102,7 +103,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                         )
                       : null,
                   filled: true,
-                  fillColor: const Color(0x1F767680),
+                  fillColor: GlassSpec.inputOnGlassBg,
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(AppRadius.input),
@@ -127,23 +128,27 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                   return GestureDetector(
                     onTap: () => _selectCity(idx),
                     child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 150),
+                      duration: AppAnimations.fast,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 4),
+                          horizontal: 12, vertical: 5),
                       decoration: BoxDecoration(
                         color: active
-                            ? AppColors.primary
-                            : AppColors.border,
-                        borderRadius: BorderRadius.circular(20),
+                            ? AppColors.coralTint
+                            : const Color(0x0D1C1C1E),
+                        border: Border.all(
+                          color: active
+                              ? const Color(0x2EFF6B3D) // rgba(255,107,61,0.18)
+                              : const Color(0x0F1C1C1E), // rgba(28,28,30,0.06)
+                        ),
+                        borderRadius: BorderRadius.circular(AppRadius.pill),
                       ),
                       child: Text(
                         _cities[idx],
                         style: TextStyle(
                           fontSize: 12,
-                          fontWeight: FontWeight.w600,
                           color: active
-                              ? Colors.white
-                              : AppColors.textSecondary,
+                              ? const Color(0xFFD4410A)
+                              : AppColors.inkSecondary,
                         ),
                       ),
                     ),

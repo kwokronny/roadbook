@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme.dart';
+
 import '../../../shared/models/travel.dart';
 import '../../../shared/models/schedule.dart';
 import '../data/schedule_repository.dart';
@@ -80,7 +81,7 @@ class _ScheduleEditSheetState extends ConsumerState<ScheduleEditSheet> {
       endTime: s?.endTime,
       cover: s?.cover,
       dianpingUUID: s?.dianpingUUID,
-      notes: _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
+      notes: _notesCtrl.text.trim(),
       screenshots: _screenshots.isEmpty ? null : _screenshots.join(','),
     );
   }
@@ -158,7 +159,7 @@ class _ScheduleEditSheetState extends ConsumerState<ScheduleEditSheet> {
                             color: Color(0x1A1C1C1E),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.close, size: 12,
+                          child: const Icon(Icons.close, size: 14,
                               color: AppColors.inkSecondary),
                         ),
                       ),

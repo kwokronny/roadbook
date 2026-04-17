@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>配色方案对比</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    background: #f0f4ff;
+    color: rgba(30,36,60,0.92);
+    padding: 32px 24px 60px;
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse 70% 55% at 15% 25%, rgba(180,210,255,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 65% at 85% 15%, rgba(200,185,255,0.35) 0%, transparent 55%),
+      radial-gradient(ellipse 65% 50% at 65% 85%, rgba(160,230,210,0.3) 0%, transparent 60%),
+      #eef2ff;
+  }
+
+  .page-title { text-align: center; font-size: 28px; font-weight: 300; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .page-sub { text-align: center; font-size: 14px; color: rgba(30,36,60,0.5); margin-bottom: 32px; }
+
+  .phone-grid {
+    display: flex;
+    gap: 28px;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 1100px;
+    margin: 0 auto 32px;
+  }
+
+  .phone-col { flex: 0 0 300px; text-align: center; }
+  .col-title { font-size: 16px; font-weight: 500; margin-bottom: 3px; }
+  .col-sub { font-size: 12px; color: rgba(30,36,60,0.4); margin-bottom: 14px; }
+
+  .phone-frame {
+    width: 280px;
+    margin: 0 auto;
+    border-radius: 36px;
+    overflow: hidden;
+    border: 3px solid rgba(30,36,60,0.08);
+    box-shadow: 0 12px 40px rgba(30,36,60,0.12);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .phone-frame:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(30,36,60,0.16); }
+  .phone-frame.selected { border-color: #2A7EF5; box-shadow: 0 0 0 3px rgba(42,126,245,0.25), 0 12px 40px rgba(30,36,60,0.12); }
+
+  .screen {
+    padding: 24px 16px 80px;
+    min-height: 520px;
+    position: relative;
+  }
+
+  /* Mesh backgrounds */
+  .mesh-a {
+    background:
+      radial-gradient(ellipse 70% 55% at 15% 25%, rgba(255,180,160,0.45) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 65% at 85% 15%, rgba(255,140,100,0.30) 0%, transparent 55%),
+      radial-gradient(ellipse 65% 50% at 65% 85%, rgba(255,200,180,0.25) 0%, transparent 60%),
+      #faf5f2;
+  }
+  .mesh-b {
+    background:
+      radial-gradient(ellipse 70% 55% at 15% 25%, rgba(180,210,255,0.55) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 65% at 85% 15%, rgba(200,185,255,0.45) 0%, transparent 55%),
+      radial-gradient(ellipse 65% 50% at 65% 85%, rgba(160,230,210,0.40) 0%, transparent 60%),
+      #eef2ff;
+  }
+  .mesh-c {
+    background:
+      radial-gradient(ellipse 70% 55% at 15% 25%, rgba(255,180,160,0.30) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 65% at 85% 15%, rgba(200,185,255,0.40) 0%, transparent 55%),
+      radial-gradient(ellipse 65% 50% at 65% 85%, rgba(160,230,210,0.30) 0%, transparent 60%),
+      #f2f0ff;
+  }
+
+  /* Glass card */
+  .g-card {
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(28px) saturate(2.2) brightness(1.05);
+    -webkit-backdrop-filter: blur(28px) saturate(2.2) brightness(1.05);
+    border: 1px solid rgba(255,255,255,0.90);
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(100,120,180,0.10), 0 1px 4px rgba(100,120,180,0.07), inset 0 1px 0 rgba(255,255,255,0.95);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .g-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(145deg, rgba(255,255,255,0.50) 0%, transparent 45%);
+    pointer-events: none;
+  }
+
+  /* App bar */
+  .bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .bar-title { font-size: 26px; font-weight: 300; letter-spacing: -0.02em; }
+  .bar-btn {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.85);
+    box-shadow: 0 2px 8px rgba(100,120,200,0.08), inset 0 1px 0 rgba(255,255,255,0.9);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: rgba(30,36,60,0.7);
+  }
+
+  /* Search */
+  .srch {
+    background: rgba(255,255,255,0.50);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.80);
+    border-radius: 14px;
+    padding: 9px 14px;
+    font-size: 13px;
+    color: rgba(30,36,60,0.35);
+    margin-bottom: 14px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.90);
+  }
+
+  /* Card content */
+  .c-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; position: relative; z-index: 1; }
+  .c-name { font-size: 16px; font-weight: 500; }
+  .c-date { font-size: 11px; color: rgba(30,36,60,0.40); margin-top: 2px; }
+  .c-badge { padding: 3px 10px; border-radius: 100px; font-size: 10px; font-weight: 500; }
+  .c-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; position: relative; z-index: 1; }
+  .c-tag { padding: 3px 10px; border-radius: 100px; font-size: 11px; border: 1px solid; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .c-divider { border: none; border-top: 1px dashed rgba(30,36,60,0.10); margin: 10px 0; position: relative; z-index: 1; }
+  .c-foot { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1; }
+  .c-days { font-size: 11px; color: rgba(30,36,60,0.50); }
+
+  /* Avatars */
+  .avs { display: flex; }
+  .av {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.8);
+    margin-left: -5px;
+    font-size: 9px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+  }
+  .av:first-child { margin-left: 0; }
+
+  /* FAB */
+  .fab {
+    position: absolute;
+    bottom: 88px; right: 16px;
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; color: #fff;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    z-index: 2;
+  }
+
+  /* Bottom nav */
+  .bnav {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(40px) saturate(2.2);
+    -webkit-backdrop-filter: blur(40px) saturate(2.2);
+    border-top: 1px solid rgba(255,255,255,0.85);
+    padding: 6px 0 18px;
+    display: flex;
+    justify-content: space-around;
+  }
+  .bnav-item { text-align: center; font-size: 10px; color: rgba(30,36,60,0.35); }
+  .bnav-icon { font-size: 18px; margin-bottom: 1px; }
+
+  /* Scheme colors */
+  /* A - Coral */
+  .tag-coral { background: rgba(255,91,46,0.12); border-color: rgba(255,91,46,0.25); color: #c43d15; }
+  .badge-coral-on { background: rgba(255,91,46,0.14); color: #c43d15; }
+  .badge-coral-plan { background: rgba(255,91,46,0.08); color: rgba(200,60,20,0.55); }
+
+  /* B - Blue */
+  .tag-blue { background: rgba(42,126,245,0.10); border-color: rgba(42,126,245,0.22); color: #1a5fc8; }
+  .badge-teal-on { background: rgba(10,173,136,0.12); color: #0a8a6d; }
+  .badge-blue-plan { background: rgba(42,126,245,0.10); color: #1a5fc8; }
+
+  /* C - Mixed */
+  .tag-purple { background: rgba(124,85,240,0.10); border-color: rgba(124,85,240,0.22); color: #5c38cc; }
+  .tag-teal { background: rgba(10,173,136,0.10); border-color: rgba(10,173,136,0.22); color: #0a8a6d; }
+  .tag-pink { background: rgba(232,56,122,0.10); border-color: rgba(232,56,122,0.22); color: #c02060; }
+
+  /* Comparison table */
+  .cmp-table {
+    max-width: 860px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(28px) saturate(2.2);
+    -webkit-backdrop-filter: blur(28px) saturate(2.2);
+    border: 1px solid rgba(255,255,255,0.90);
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(100,120,180,0.10);
+    overflow: hidden;
+    padding: 20px 24px;
+  }
+  .cmp-table table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .cmp-table th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(30,36,60,0.35); padding: 8px 10px; font-weight: 500; }
+  .cmp-table td { padding: 10px 10px; color: rgba(30,36,60,0.65); border-top: 1px solid rgba(30,36,60,0.06); }
+  .cmp-table td:first-child { font-weight: 500; color: rgba(30,36,60,0.85); }
+
+  /* Selection indicator */
+  .sel-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255,255,255,0.90);
+    padding: 12px;
+    text-align: center;
+    font-size: 13px;
+    color: rgba(30,36,60,0.50);
+    z-index: 100;
+  }
+  .sel-bar .chosen { color: #2A7EF5; font-weight: 500; }
+
+  @media (max-width: 960px) {
+    .phone-grid { flex-direction: column; align-items: center; }
+  }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">主色调方案对比</h1>
+<p class="page-sub">点击手机选择你偏好的配色方案</p>
+
+<div class="phone-grid">
+
+  <!-- A: Coral -->
+  <div class="phone-col">
+    <div class="col-title">A · 保留珊瑚橙</div>
+    <div class="col-sub">品牌色不变，玻璃质感加持</div>
+    <div class="phone-frame" data-choice="a" onclick="select(this)">
+      <div class="screen mesh-a">
+        <div class="bar">
+          <div class="bar-title">旅程</div>
+          <div class="bar-btn">＋</div>
+        </div>
+        <div class="srch">🔍  搜索旅行计划...</div>
+
+        <div class="g-card">
+          <div class="c-head">
+            <div>
+              <div class="c-name">东京自由行</div>
+              <div class="c-date">04/10 – 04/17</div>
+            </div>
+            <div class="c-badge badge-coral-on">进行中</div>
+          </div>
+          <div class="c-tags">
+            <span class="c-tag tag-coral">东京</span>
+            <span class="c-tag tag-coral">大阪</span>
+          </div>
+          <hr class="c-divider">
+          <div class="c-foot">
+            <div class="avs">
+              <div class="av" style="background:#FF5B2E;">R</div>
+              <div class="av" style="background:#E08500;">L</div>
+            </div>
+            <div class="c-days">7天</div>
+          </div>
+        </div>
+
+        <div class="g-card">
+          <div class="c-head">
+            <div>
+              <div class="c-name">清迈之旅</div>
+              <div class="c-date">05/01 – 05/05</div>
+            </div>
+            <div class="c-badge badge-coral-plan">计划中</div>
+          </div>
+          <div class="c-tags">
+            <span class="c-tag tag-coral">清迈</span>
+          </div>
+          <hr class="c-divider">
+          <div class="c-foot">
+            <div class="avs">
+              <div class="av" style="background:#FF5B2E;">R</div>
+            </div>
+            <div class="c-days">4天</div>
+          </div>
+        </div>
+
+        <div class="fab" style="background:#FF5B2E;">＋</div>
+        <div class="bnav">
+          <div class="bnav-item" style="color:#FF5B2E;"><div class="bnav-icon">🗺</div>旅程</div>
+          <div class="bnav-item"><div class="bnav-icon">🔍</div>发现</div>
+          <div class="bnav-item"><div class="bnav-icon">👤</div>我的</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B: Blue -->
+  <div class="phone-col">
+    <div class="col-title">B · Sky Blue 全面替换</div>
+    <div class="col-sub">完全融入 Liquid Glass 色彩</div>
+    <div class="phone-frame" data-choice="b" onclick="select(this)">
+      <div class="screen mesh-b">
+        <div class="bar">
+          <div class="bar-title">旅程</div>
+          <div class="bar-btn">＋</div>
+        </div>
+        <div class="srch">🔍  搜索旅行计划...</div>
+
+        <div class="g-card">
+          <div class="c-head">
+            <div>
+              <div class="c-name">东京自由行</div>
+              <div class="c-date">04/10 – 04/17</div>
+            </div>
+            <div class="c-badge badge-teal-on">进行中</div>
+          </div>
+          <div class="c-tags">
+            <span class="c-tag tag-blue">东京</span>
+            <span class="c-tag tag-blue">大阪</span>
+          </div>
+          <hr class="c-divider">
+          <div class="c-foot">
+            <div class="avs">
+              <div class="av" style="background:#2A7EF5;">R</div>
+              <div class="av" style="background:#7C55F0;">L</div>
+            </div>
+            <div class="c-days">7天</div>
+          </div>
+        </div>
+
+        <div class="g-card">
+          <div class="c-head">
+            <div>
+              <div class="c-name">清迈之旅</div>
+              <div class="c-date">05/01 – 05/05</div>
+            </div>
+            <div class="c-badge badge-blue-plan">计划中</div>
+          </div>
+          <div class="c-tags">
+            <span class="c-tag tag-blue">清迈</span>
+          </div>
+          <hr class="c-divider">
+          <div class="c-foot">
+            <div class="avs">
+              <div class="av" style="background:#2A7EF5;">R</div>
+            </div>
+            <div class="c-days">4天</div>
+          </div>
+        </div>
+
+        <div class="fab" style="background:rgba(30,36,60,0.88);">＋</div>
+        <div class="bnav">
+          <div class="bnav-item" style="color:#2A7EF5;"><div class="bnav-icon">🗺</div>旅程</div>
+          <div class="bnav-item"><div class="bnav-icon">🔍</div>发现</div>
+          <div class="bnav-item"><div class="bnav-icon">👤</div>我的</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C: Mixed -->
+  <div class="phone-col">
+    <div class="col-title">C · 混合方案</div>
+    <div class="col-sub">珊瑚橙品牌色 + Liquid Glass 多色板</div>
+    <div class="phone-frame" data-choice="c" onclick="select(this)">
+      <div class="screen mesh-c">
+        <div class="bar">
+          <div class="bar-title">旅程</div>
+          <div class="bar-btn">＋</div>
+        </div>
+        <div class="srch">🔍  搜索旅行计划...</div>
+
+        <div class="g-card">
+          <div class="c-head">
+            <div>
+              <div class="c-name">东京自由行</div>
+              <div class="c-date">04/10 – 04/17</div>
+            </div>
+            <div class="c-badge badge-teal-on">进行中</div>
+          </div>
+          <div class="c-tags">
+            <span class="c-tag tag-purple">东京</span>
+            <span class="c-tag tag-teal">大阪</span>
+          </div>
+          <hr class="c-divider">
+          <div class="c-foot">
+            <div class="avs">
+              <div class="av" style="background:#FF5B2E;">R</div>
+              <div class="av" style="background:#7C55F0;">L</div>
+            </div>
+            <div class="c-days">7天</div>
+          </div>
+        </div>
+
+        <div class="g-card">
+          <div class="c-head">
+            <div>
+              <div class="c-name">清迈之旅</div>
+              <div class="c-date">05/01 – 05/05</div>
+            </div>
+            <div class="c-badge badge-blue-plan">计划中</div>
+          </div>
+          <div class="c-tags">
+            <span class="c-tag tag-pink">清迈</span>
+          </div>
+          <hr class="c-divider">
+          <div class="c-foot">
+            <div class="avs">
+              <div class="av" style="background:#FF5B2E;">R</div>
+            </div>
+            <div class="c-days">4天</div>
+          </div>
+        </div>
+
+        <div class="fab" style="background:#FF5B2E;">＋</div>
+        <div class="bnav">
+          <div class="bnav-item" style="color:#FF5B2E;"><div class="bnav-icon">🗺</div>旅程</div>
+          <div class="bnav-item"><div class="bnav-icon">🔍</div>发现</div>
+          <div class="bnav-item"><div class="bnav-icon">👤</div>我的</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Comparison table -->
+<div class="cmp-table">
+  <table>
+    <tr>
+      <th></th>
+      <th>A · 珊瑚橙</th>
+      <th>B · Sky Blue</th>
+      <th>C · 混合</th>
+    </tr>
+    <tr>
+      <td>背景网格</td>
+      <td>暖色珊瑚渐变</td>
+      <td>冷色蓝紫绿渐变</td>
+      <td>暖冷混合渐变</td>
+    </tr>
+    <tr>
+      <td>城市标签</td>
+      <td>统一珊瑚色</td>
+      <td>统一蓝色</td>
+      <td>多色（紫/绿/粉…）</td>
+    </tr>
+    <tr>
+      <td>CTA / FAB</td>
+      <td>珊瑚橙</td>
+      <td>深色 dark glass</td>
+      <td>珊瑚橙品牌色</td>
+    </tr>
+    <tr>
+      <td>品牌辨识度</td>
+      <td>⭐⭐⭐ 最强</td>
+      <td>⭐ 最弱</td>
+      <td>⭐⭐ 中等</td>
+    </tr>
+    <tr>
+      <td>Liquid Glass 纯度</td>
+      <td>⭐⭐ 中等</td>
+      <td>⭐⭐⭐ 最强</td>
+      <td>⭐⭐⭐ 最强</td>
+    </tr>
+  </table>
+</div>
+
+<div class="sel-bar">
+  <span id="sel-text">点击上方手机选择方案，然后回到终端告诉我</span>
+</div>
+
+<script>
+  function select(el) {
+    document.querySelectorAll('.phone-frame').forEach(f => f.classList.remove('selected'));
+    el.classList.add('selected');
+    const choice = el.dataset.choice;
+    const labels = { a: 'A · 保留珊瑚橙', b: 'B · Sky Blue 全面替换', c: 'C · 混合方案' };
+    document.getElementById('sel-text').innerHTML = '已选择: <span class="chosen">' + labels[choice] + '</span>';
+
+    // Send event to state dir
+    if (window.__sendEvent) window.__sendEvent({ type: 'click', choice: choice, text: labels[choice] });
+  }
+</script>
+
+</body>
+</html>

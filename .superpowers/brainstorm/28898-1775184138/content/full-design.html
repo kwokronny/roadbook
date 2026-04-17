@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Liquid Glass 完整设计方案</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    color: rgba(30,36,60,0.92);
+    min-height: 100vh;
+    padding: 32px 24px 48px;
+    background:
+      radial-gradient(ellipse 70% 55% at 15% 25%, rgba(180,210,255,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 65% at 85% 15%, rgba(200,185,255,0.35) 0%, transparent 55%),
+      radial-gradient(ellipse 65% 50% at 65% 85%, rgba(160,230,210,0.3) 0%, transparent 60%),
+      #eef2ff;
+  }
+
+  .page-title { text-align: center; font-size: 32px; font-weight: 300; letter-spacing: -0.025em; margin-bottom: 6px; }
+  .page-sub { text-align: center; font-size: 14px; color: rgba(30,36,60,0.45); margin-bottom: 40px; }
+
+  .section { margin-bottom: 48px; max-width: 900px; margin-left: auto; margin-right: auto; }
+  .section-num { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(30,36,60,0.30); margin-bottom: 6px; }
+  .section-title { font-size: 20px; font-weight: 400; letter-spacing: -0.015em; margin-bottom: 20px; }
+
+  /* Phone frame */
+  .phone-center { display: flex; justify-content: center; margin-bottom: 20px; }
+  .phone {
+    width: 320px;
+    border-radius: 40px;
+    overflow: hidden;
+    border: 3px solid rgba(30,36,60,0.08);
+    box-shadow: 0 16px 48px rgba(30,36,60,0.12);
+  }
+  .screen {
+    min-height: 600px;
+    position: relative;
+    padding: 28px 16px 0;
+    background:
+      radial-gradient(ellipse 70% 55% at 15% 25%, rgba(255,180,160,0.30) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 65% at 85% 15%, rgba(200,185,255,0.40) 0%, transparent 55%),
+      radial-gradient(ellipse 65% 50% at 65% 85%, rgba(160,230,210,0.30) 0%, transparent 60%),
+      #f2f0ff;
+  }
+
+  /* App bar */
+  .bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .bar-title { font-size: 28px; font-weight: 300; letter-spacing: -0.025em; }
+  .bar-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.85);
+    box-shadow: 0 2px 8px rgba(100,120,200,0.08), inset 0 1px 0 rgba(255,255,255,0.9);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: rgba(30,36,60,0.65);
+  }
+
+  /* Search */
+  .srch {
+    background: rgba(255,255,255,0.50);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.80);
+    border-radius: 14px;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: rgba(30,36,60,0.35);
+    margin-bottom: 16px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.90), 0 1px 3px rgba(100,120,200,0.06);
+  }
+
+  /* Glass card base */
+  .g-card {
+    backdrop-filter: blur(28px) saturate(2.2) brightness(1.05);
+    -webkit-backdrop-filter: blur(28px) saturate(2.2) brightness(1.05);
+    border: 1px solid rgba(255,255,255,0.90);
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(100,120,180,0.10), 0 1px 4px rgba(100,120,180,0.07), inset 0 1px 0 rgba(255,255,255,0.95);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .g-card::after {
+    content: '';
+    position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(145deg, rgba(255,255,255,0.50) 0%, transparent 45%);
+    pointer-events: none;
+  }
+
+  /* Tint overlays for status */
+  .tint-ongoing { background: rgba(255,255,255,0.48); }
+  .tint-ongoing::before {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(135deg, rgba(10,173,136,0.06) 0%, rgba(10,173,136,0.02) 100%);
+    pointer-events: none;
+  }
+  .tint-planning { background: rgba(255,255,255,0.50); }
+  .tint-planning::before {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(135deg, rgba(42,126,245,0.05) 0%, rgba(42,126,245,0.02) 100%);
+    pointer-events: none;
+  }
+  .tint-upcoming { background: rgba(255,255,255,0.48); }
+  .tint-upcoming::before {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(135deg, rgba(224,133,0,0.06) 0%, rgba(224,133,0,0.02) 100%);
+    pointer-events: none;
+  }
+  .tint-ended { background: rgba(255,255,255,0.55); }
+
+  /* Card content */
+  .c-head { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1; }
+  .c-name { font-size: 17px; font-weight: 500; letter-spacing: -0.01em; }
+  .c-date { font-size: 12px; color: rgba(30,36,60,0.40); margin-top: 2px; font-weight: 400; }
+  .c-badge { padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 500; border: 1px solid; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .badge-ongoing { background: rgba(10,173,136,0.10); border-color: rgba(10,173,136,0.22); color: #0a8a6d; }
+  .badge-planning { background: rgba(42,126,245,0.10); border-color: rgba(42,126,245,0.22); color: #1a5fc8; }
+  .badge-upcoming { background: rgba(224,133,0,0.10); border-color: rgba(224,133,0,0.22); color: #b56800; }
+  .badge-ended { background: rgba(30,36,60,0.05); border-color: rgba(30,36,60,0.12); color: rgba(30,36,60,0.40); }
+
+  .c-tags { display: flex; gap: 6px; margin-top: 10px; position: relative; z-index: 1; flex-wrap: wrap; }
+  .c-tag { padding: 3px 10px; border-radius: 100px; font-size: 11px; border: 1px solid; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .tag-purple { background: rgba(124,85,240,0.10); border-color: rgba(124,85,240,0.22); color: #5c38cc; }
+  .tag-teal { background: rgba(10,173,136,0.10); border-color: rgba(10,173,136,0.22); color: #0a8a6d; }
+  .tag-pink { background: rgba(232,56,122,0.10); border-color: rgba(232,56,122,0.22); color: #c02060; }
+  .tag-amber { background: rgba(224,133,0,0.10); border-color: rgba(224,133,0,0.22); color: #b56800; }
+  .tag-blue { background: rgba(42,126,245,0.10); border-color: rgba(42,126,245,0.22); color: #1a5fc8; }
+
+  .c-divider { border: none; border-top: 1px dashed rgba(30,36,60,0.08); margin: 10px 0; position: relative; z-index: 1; }
+  .c-foot { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1; }
+  .c-days { font-size: 12px; color: rgba(30,36,60,0.45); font-weight: 400; }
+
+  .avs { display: flex; }
+  .av {
+    width: 24px; height: 24px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.8);
+    margin-left: -6px; font-size: 10px; font-weight: 500;
+    display: flex; align-items: center; justify-content: center; color: #fff;
+  }
+  .av:first-child { margin-left: 0; }
+
+  /* FAB */
+  .fab {
+    position: absolute;
+    bottom: 88px; right: 18px;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; color: #fff;
+    background: #FF5B2E;
+    box-shadow: 0 4px 16px rgba(255,91,46,0.30);
+    z-index: 2;
+  }
+
+  /* Floating island nav */
+  .island-nav {
+    position: absolute;
+    bottom: 16px; left: 20px; right: 20px;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(40px) saturate(2.2) brightness(1.05);
+    -webkit-backdrop-filter: blur(40px) saturate(2.2) brightness(1.05);
+    border: 1px solid rgba(255,255,255,0.90);
+    border-radius: 100px;
+    box-shadow: 0 4px 24px rgba(100,120,180,0.12), 0 1px 4px rgba(100,120,180,0.08), inset 0 1px 0 rgba(255,255,255,0.95);
+    padding: 8px 8px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    overflow: hidden;
+    z-index: 3;
+  }
+  .island-nav::after {
+    content: '';
+    position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255,255,255,0.45) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .island-nav .ni {
+    text-align: center;
+    position: relative; z-index: 1;
+    padding: 4px 0;
+  }
+  .island-nav .ni-icon { font-size: 22px; display: block; margin-bottom: 1px; }
+  .island-nav .ni-label { font-size: 10px; font-weight: 400; }
+  .island-nav .ni.off { color: rgba(30,36,60,0.30); }
+  .island-nav .ni.on { color: #FF5B2E; }
+  .island-nav .ni.on .ni-label { font-weight: 500; }
+
+  /* ===== Token section ===== */
+  .token-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+  .token-card {
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(20px) saturate(2.0);
+    -webkit-backdrop-filter: blur(20px) saturate(2.0);
+    border: 1px solid rgba(255,255,255,0.80);
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(100,120,180,0.08), inset 0 1px 0 rgba(255,255,255,0.90);
+    padding: 16px;
+    position: relative; overflow: hidden;
+  }
+  .token-card::after {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(145deg, rgba(255,255,255,0.45) 0%, transparent 40%);
+    pointer-events: none;
+  }
+  .token-swatch { height: 36px; border-radius: 10px; margin-bottom: 10px; border: 1px solid rgba(100,120,200,0.10); }
+  .token-name { font-size: 12px; font-weight: 500; margin-bottom: 2px; position: relative; z-index: 1; }
+  .token-val { font-size: 11px; color: rgba(30,36,60,0.35); font-family: 'Courier New', monospace; position: relative; z-index: 1; }
+
+  /* Type scale */
+  .type-list {
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(28px) saturate(2.2);
+    -webkit-backdrop-filter: blur(28px) saturate(2.2);
+    border: 1px solid rgba(255,255,255,0.90);
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(100,120,180,0.10);
+    padding: 24px;
+    overflow: hidden;
+    position: relative;
+  }
+  .type-list::after {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(145deg, rgba(255,255,255,0.50) 0%, transparent 45%);
+    pointer-events: none;
+  }
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid rgba(30,36,60,0.05); position: relative; z-index: 1; }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { width: 100px; flex-shrink: 0; }
+  .type-style { font-size: 10px; color: rgba(30,36,60,0.35); letter-spacing: 0.06em; text-transform: uppercase; }
+  .type-spec { font-size: 10px; color: rgba(30,36,60,0.30); font-family: monospace; margin-top: 2px; }
+  .type-sample { flex: 1; }
+
+  /* Status cards grid */
+  .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .status-card {
+    backdrop-filter: blur(28px) saturate(2.2) brightness(1.05);
+    -webkit-backdrop-filter: blur(28px) saturate(2.2) brightness(1.05);
+    border: 1px solid rgba(255,255,255,0.90);
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(100,120,180,0.08), inset 0 1px 0 rgba(255,255,255,0.90);
+    padding: 16px;
+    position: relative; overflow: hidden;
+  }
+  .status-card::after {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(145deg, rgba(255,255,255,0.45) 0%, transparent 40%);
+    pointer-events: none;
+  }
+  .sc-label { font-size: 13px; font-weight: 500; margin-bottom: 4px; position: relative; z-index: 1; }
+  .sc-desc { font-size: 11px; color: rgba(30,36,60,0.45); position: relative; z-index: 1; }
+
+  /* Annotation callouts */
+  .notes {
+    background: rgba(255,255,255,0.45);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.75);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-top: 16px;
+    font-size: 13px;
+    color: rgba(30,36,60,0.60);
+    line-height: 1.7;
+  }
+  .notes b { color: rgba(30,36,60,0.85); font-weight: 500; }
+
+  .divider { height: 1px; background: rgba(30,36,60,0.06); margin: 48px auto; max-width: 200px; }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Liquid Glass · 小肥路书</h1>
+<p class="page-sub">完整设计方案预览</p>
+
+<!-- 01: Final Mockup -->
+<div class="section">
+  <div class="section-num">01 — 最终效果</div>
+  <div class="section-title">旅行列表页</div>
+
+  <div class="phone-center">
+    <div class="phone">
+      <div class="screen">
+        <div class="bar">
+          <div class="bar-title">旅程</div>
+          <div class="bar-btn">＋</div>
+        </div>
+        <div class="srch">🔍  搜索旅行计划...</div>
+
+        <!-- Ongoing card with teal tint -->
+        <div class="g-card tint-ongoing">
+          <div class="c-head">
+            <div><div class="c-name">东京自由行</div><div class="c-date">04/10 – 04/17</div></div>
+            <div class="c-badge badge-ongoing">进行中</div>
+          </div>
+          <div class="c-tags">
+            <span class="c-tag tag-purple">东京</span>
+            <span class="c-tag tag-teal">大阪</span>
+          </div>
+          <hr class="c-divider">
+          <div class="c-foot">
+            <div class="avs"><div class="av" style="background:#FF5B2E;">R</div><div class="av" style="background:#7C55F0;">L</div></div>
+            <div class="c-days">7天</div>
+          </div>
+        </div>
+
+        <!-- Planning card with blue tint -->
+        <div class="g-card tint-planning">
+          <div class="c-head">
+            <div><div class="c-name">清迈之旅</div><div class="c-date">05/01 – 05/05</div></div>
+            <div class="c-badge badge-planning">计划中</div>
+          </div>
+          <div class="c-tags">
+            <span class="c-tag tag-pink">清迈</span>
+          </div>
+          <hr class="c-divider">
+          <div class="c-foot">
+            <div class="avs"><div class="av" style="background:#FF5B2E;">R</div></div>
+            <div class="c-days">4天</div>
+          </div>
+        </div>
+
+        <!-- Upcoming card with amber tint -->
+        <div class="g-card tint-upcoming">
+          <div class="c-head">
+            <div><div class="c-name">首尔美食团</div><div class="c-date">04/18 – 04/22</div></div>
+            <div class="c-badge badge-upcoming">即将出发</div>
+          </div>
+          <div class="c-tags">
+            <span class="c-tag tag-blue">首尔</span>
+          </div>
+          <hr class="c-divider">
+          <div class="c-foot">
+            <div class="avs"><div class="av" style="background:#FF5B2E;">R</div><div class="av" style="background:#0AAD88;">M</div><div class="av" style="background:#E08500;">J</div></div>
+            <div class="c-days">4天</div>
+          </div>
+        </div>
+
+        <div class="fab">＋</div>
+
+        <!-- Floating island nav -->
+        <div class="island-nav">
+          <div class="ni on">
+            <span class="ni-icon">🗺️</span>
+            <div class="ni-label">旅程</div>
+          </div>
+          <div class="ni off">
+            <span class="ni-icon">🔍</span>
+            <div class="ni-label">发现</div>
+          </div>
+          <div class="ni off">
+            <span class="ni-icon">👤</span>
+            <div class="ni-label">我的</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <b>Pastel mesh 背景</b> — 暖冷混合渐变（珊瑚 + 薰衣草 + 薄荷），让 glass 表面有丰富的折射内容<br>
+    <b>浮动岛导航</b> — 左右圆角 100px，脱离屏幕边缘 20px，glass 材质 + specular highlight<br>
+    <b>状态色调</b> — 进行中(绿)、计划中(蓝)、即将出发(琥珀) 各有微弱 tint overlay<br>
+    <b>城市标签</b> — Liquid Glass 多色板，每个城市随机分配色彩
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- 02: Status tints -->
+<div class="section">
+  <div class="section-num">02 — 卡片状态</div>
+  <div class="section-title">Glass Tint Overlay</div>
+
+  <div class="status-grid">
+    <div class="status-card tint-ongoing" style="background:rgba(255,255,255,0.48);">
+      <div class="sc-label">进行中 <span class="c-badge badge-ongoing" style="font-size:10px;">Ongoing</span></div>
+      <div class="sc-desc">Spearmint tint · rgba(10,173,136,0.06)</div>
+    </div>
+    <div class="status-card tint-upcoming" style="background:rgba(255,255,255,0.48);">
+      <div class="sc-label">即将出发 <span class="c-badge badge-upcoming" style="font-size:10px;">Upcoming</span></div>
+      <div class="sc-desc">Sunstone tint · rgba(224,133,0,0.06)</div>
+    </div>
+    <div class="status-card tint-planning" style="background:rgba(255,255,255,0.50);">
+      <div class="sc-label">计划中 <span class="c-badge badge-planning" style="font-size:10px;">Planning</span></div>
+      <div class="sc-desc">Sky Blue tint · rgba(42,126,245,0.05)</div>
+    </div>
+    <div class="status-card tint-ended" style="background:rgba(255,255,255,0.55);">
+      <div class="sc-label" style="color:rgba(30,36,60,0.50);">已结束 <span class="c-badge badge-ended" style="font-size:10px;">Ended</span></div>
+      <div class="sc-desc">No tint · neutral glass</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- 03: Typography -->
+<div class="section">
+  <div class="section-num">03 — 字体</div>
+  <div class="section-title">轻字重体系</div>
+
+  <div class="type-list">
+    <div class="type-row">
+      <div class="type-meta"><div class="type-style">Large Title</div><div class="type-spec">34 / w300</div></div>
+      <div class="type-sample" style="font-size:34px;font-weight:300;letter-spacing:-0.025em;">旅程</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta"><div class="type-style">Title 1</div><div class="type-spec">28 / w400</div></div>
+      <div class="type-sample" style="font-size:28px;font-weight:400;letter-spacing:-0.02em;">东京自由行</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta"><div class="type-style">Title 2</div><div class="type-spec">22 / w400</div></div>
+      <div class="type-sample" style="font-size:22px;font-weight:400;letter-spacing:-0.015em;">行程规划</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta"><div class="type-style">Headline</div><div class="type-spec">17 / w500</div></div>
+      <div class="type-sample" style="font-size:17px;font-weight:500;">清迈之旅</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta"><div class="type-style">Body</div><div class="type-spec">17 / w400</div></div>
+      <div class="type-sample" style="font-size:17px;font-weight:400;color:rgba(30,36,60,0.55);">在清透的玻璃表面上呈现内容文字</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta"><div class="type-style">Caption</div><div class="type-spec">12 / w400</div></div>
+      <div class="type-sample" style="font-size:12px;font-weight:400;color:rgba(30,36,60,0.35);">04/10 – 04/17 · 7天 · 2人</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- 04: Color tokens -->
+<div class="section">
+  <div class="section-num">04 — 色彩 Token</div>
+  <div class="section-title">混合色板</div>
+
+  <div class="token-grid">
+    <div class="token-card">
+      <div class="token-swatch" style="background:#FF5B2E;"></div>
+      <div class="token-name">Brand Coral</div>
+      <div class="token-val">#FF5B2E · FAB / Nav</div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background:#2A7EF5;"></div>
+      <div class="token-name">Sky Blue</div>
+      <div class="token-val">#2A7EF5 · 计划中</div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background:#0AAD88;"></div>
+      <div class="token-name">Spearmint</div>
+      <div class="token-val">#0AAD88 · 进行中</div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background:#E08500;"></div>
+      <div class="token-name">Sunstone</div>
+      <div class="token-val">#E08500 · 即将出发</div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background:#E8387A;"></div>
+      <div class="token-name">Petal Pink</div>
+      <div class="token-val">#E8387A · Tag accent</div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background:#7C55F0;"></div>
+      <div class="token-name">Lavender</div>
+      <div class="token-val">#7C55F0 · Tag accent</div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background:rgba(255,255,255,0.55); border:1px solid rgba(255,255,255,0.90);"></div>
+      <div class="token-name">Glass BG</div>
+      <div class="token-val">rgba(255,255,255,0.55)</div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background:rgba(30,36,60,0.92);"></div>
+      <div class="token-name">Text Primary</div>
+      <div class="token-val">rgba(30,36,60,0.92)</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- 05: Glass anatomy -->
+<div class="section">
+  <div class="section-num">05 — Glass 参数</div>
+  <div class="section-title">BackdropFilter 配置</div>
+  <div class="token-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+    <div class="token-card">
+      <div class="token-name">Card / Sheet</div>
+      <div class="token-val" style="margin-top:6px;">blur: 28px<br>saturate: 2.2<br>brightness: 1.05<br>radius: 20px</div>
+    </div>
+    <div class="token-card">
+      <div class="token-name">Navigation Island</div>
+      <div class="token-val" style="margin-top:6px;">blur: 40px<br>saturate: 2.2<br>brightness: 1.05<br>radius: 100px (pill)</div>
+    </div>
+    <div class="token-card">
+      <div class="token-name">Input / Search</div>
+      <div class="token-val" style="margin-top:6px;">blur: 16px<br>saturate: 2.0<br>brightness: 1.04<br>radius: 14px</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

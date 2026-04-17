@@ -1,0 +1,101 @@
+<h2>实现方案</h2>
+<p style="color:#8E8E93;margin-bottom:20px">范围：发现页（真实 API）+ 我的页 + 编辑资料 + 设置</p>
+
+<style>
+.approach { background:#fff; border-radius:14px; padding:20px; margin-bottom:16px; border:2px solid #E5E5EA; cursor:pointer; transition:all 0.2s; }
+.approach:hover { border-color:#FF5B2E; }
+.approach.selected { border-color:#FF5B2E; background:#FFF8F6; }
+.approach-header { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+.approach-num { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#FF5B2E,#FF8C42); color:#fff; font-weight:800; font-size:15px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.approach-title { font-size:17px; font-weight:700; color:#1C1C1E; }
+.approach-subtitle { font-size:13px; color:#8E8E93; margin-top:2px; }
+.tag-row { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+.tag { font-size:11px; font-weight:600; padding:3px 8px; border-radius:20px; }
+.tag.green { background:#E8F5E9; color:#2E7D32; }
+.tag.orange { background:#FFF3E0; color:#E65100; }
+.tag.blue { background:#E3F2FD; color:#1565C0; }
+.tag.red { background:#FFEBEE; color:#C62828; }
+.pros-cons { display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:13px; }
+.pros { color:#34C759; }
+.cons { color:#FF3B30; }
+.pros-cons li { list-style:none; padding-left:16px; position:relative; margin-bottom:4px; }
+.pros li::before { content:"✓"; position:absolute; left:0; }
+.cons li::before { content:"✗"; position:absolute; left:0; }
+.recommend { background:linear-gradient(135deg,#FF5B2E,#FF8C42); color:#fff; font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; margin-left:8px; }
+</style>
+
+<div class="approach selectable" data-value="A">
+  <div class="approach-header">
+    <div class="approach-num">A</div>
+    <div>
+      <div class="approach-title">两屏并行，一个 Plan <span class="recommend">推荐</span></div>
+      <div class="approach-subtitle">Discover + Profile 同时规划，一次交付</div>
+    </div>
+  </div>
+  <div class="tag-row">
+    <span class="tag green">后端 1 个新接口</span>
+    <span class="tag blue">前端 5 个新文件</span>
+    <span class="tag orange">约 4-5 小时</span>
+  </div>
+  <div class="pros-cons">
+    <ul class="pros">
+      <li>一次性完成两个 Tab</li>
+      <li>共享新增用户 API</li>
+      <li>路由结构一起规划</li>
+    </ul>
+    <ul class="cons">
+      <li>Plan 较大</li>
+      <li>需同时新增后端</li>
+    </ul>
+  </div>
+</div>
+
+<div class="approach selectable" data-value="B">
+  <div class="approach-header">
+    <div class="approach-num">B</div>
+    <div>
+      <div class="approach-title">先 Profile，再 Discover</div>
+      <div class="approach-subtitle">分两个 Plan，Profile 无需新后端先交付</div>
+    </div>
+  </div>
+  <div class="tag-row">
+    <span class="tag green">Plan 1：纯前端</span>
+    <span class="tag orange">Plan 2：后端 + 前端</span>
+  </div>
+  <div class="pros-cons">
+    <ul class="pros">
+      <li>Profile 快速交付</li>
+      <li>每个 Plan 更小更清晰</li>
+    </ul>
+    <ul class="cons">
+      <li>需写两个 Plan</li>
+      <li>后端修改推迟</li>
+    </ul>
+  </div>
+</div>
+
+<div class="approach selectable" data-value="C">
+  <div class="approach-header">
+    <div class="approach-num">C</div>
+    <div>
+      <div class="approach-title">Profile 完整 + Discover 仅 UI</div>
+      <div class="approach-subtitle">Discover 用 mock 数据，后端接口单独迭代</div>
+    </div>
+  </div>
+  <div class="tag-row">
+    <span class="tag green">无后端改动</span>
+    <span class="tag red">Discover 需二次开发接 API</span>
+  </div>
+  <div class="pros-cons">
+    <ul class="pros">
+      <li>零后端依赖</li>
+      <li>UI 先验证</li>
+    </ul>
+    <ul class="cons">
+      <li>Discover 做两遍</li>
+      <li>与你选择"真实数据"矛盾</li>
+    </ul>
+  </div>
+</div>
+
+<p style="margin-top:16px;font-size:13px;color:#8E8E93">推荐 A：Profile 和 Discover 共享后端用户接口，一次规划更高效</p>

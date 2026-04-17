@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme.dart';
 import '../../../shared/widgets/glass_card.dart';
 
+
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -264,7 +265,7 @@ class _RowItem extends StatelessWidget {
                 if (trailing != null) trailing!,
                 if (onTap != null)
                   const Icon(Icons.chevron_right,
-                      color: AppColors.textTertiary, size: 18),
+                      size: 18, color: AppColors.textTertiary),
               ],
             ),
           ),
@@ -324,6 +325,6 @@ class _IconBox extends StatelessWidget {
           color: bg,
           borderRadius: BorderRadius.circular(AppRadius.iconBox),
         ),
-        child: Icon(icon, color: Colors.white, size: 14),
+        child: Center(child: Icon(icon, size: 14, color: Colors.white)),
       );
 }

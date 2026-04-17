@@ -50,10 +50,15 @@
   .comp-card{padding:20px}
   .comp-label{font-size:10px;letter-spacing:0.10em;text-transform:uppercase;color:var(--ink3);margin-bottom:14px;position:relative;z-index:1}
 
-  .btn-dark{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:100px;background:var(--dark);color:#fff;font-size:14px;font-weight:400;border:none;cursor:pointer;font-family:inherit}
-  .btn-coral{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:100px;background:var(--coral);color:#fff;font-size:14px;font-weight:400;border:none;cursor:pointer;font-family:inherit}
-  .btn-frost{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:100px;background:var(--frost);border:1px solid var(--frost-border);color:var(--ink);font-size:14px;font-weight:400;cursor:pointer;font-family:inherit}
-  .btn-ghost{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:100px;background:transparent;border:1px solid rgba(28,28,30,0.12);color:var(--ink2);font-size:14px;font-weight:400;cursor:pointer;font-family:inherit}
+  .btn-dark,.btn-coral,.btn-frost,.btn-ghost{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:100px;font-size:14px;font-weight:400;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;user-select:none;transition:transform 0.5s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.5s cubic-bezier(0.34,1.56,0.64,1),filter 0.3s ease}
+  .btn-dark{background:var(--dark);color:#fff;border:none}
+  .btn-coral{background:var(--coral);color:#fff;border:none;box-shadow:0 4px 14px rgba(255,107,61,0.25)}
+  .btn-frost{background:var(--frost);border:1px solid var(--frost-border);color:var(--ink)}
+  .btn-ghost{background:transparent;border:1px solid rgba(28,28,30,0.12);color:var(--ink2)}
+  .btn-dark:hover,.btn-coral:hover,.btn-frost:hover,.btn-ghost:hover{transform:translateY(-1px)}
+  .btn-dark:active,.btn-frost:active,.btn-ghost:active{transform:scale(0.92);transition-duration:0.12s,0.12s,0.12s}
+  .btn-coral:active{transform:scale(0.92);box-shadow:0 2px 8px rgba(255,107,61,0.18);transition-duration:0.12s,0.12s,0.12s}
+  @keyframes btn-bounce{0%{transform:scale(0.92)}40%{transform:scale(1.06)}70%{transform:scale(0.98)}100%{transform:scale(1)}}
 
   .input-f{width:100%;padding:10px 14px;background:rgba(255,255,255,0.45);border:1px solid rgba(255,255,255,0.60);border-radius:14px;font-size:13px;font-family:inherit;color:var(--ink);outline:none;margin-bottom:8px}
   .input-f::placeholder{color:var(--ink3)}
@@ -82,6 +87,71 @@
   .motion-card:nth-child(3) .motion-demo:hover{transform:rotate(180deg) scale(1.1)}
   .motion-name{font-size:13px;font-weight:500;margin-bottom:3px;position:relative;z-index:1}
   .motion-spec{font-size:10px;color:var(--ink3);font-family:monospace;position:relative;z-index:1}
+
+  /* Skeleton */
+  .skel-phone{width:280px;height:520px;border-radius:36px;background:var(--canvas);border:1px solid rgba(28,28,30,0.06);overflow:hidden;position:relative;margin:0 auto}
+  .skel-phone-inner{padding:20px 16px;height:100%;overflow:hidden}
+  .bone{background:rgba(28,28,30,0.04);position:relative;overflow:hidden;flex-shrink:0}
+  .bone::after{content:'';position:absolute;inset:0;background:linear-gradient(120deg,transparent 25%,rgba(255,255,255,0.50) 50%,transparent 75%);background-size:200% 100%;animation:shimmer 1.6s ease-in-out infinite}
+  .bone-text{height:14px;border-radius:6px}
+  .bone-text-sm{height:10px;border-radius:5px}
+  .bone-avatar{border-radius:50%}
+  .bone-img{border-radius:14px}
+  .bone-pill{border-radius:100px}
+  .bone-sq{border-radius:14px}
+  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+  .skel-card{background:var(--frost);backdrop-filter:blur(40px) saturate(1.4);-webkit-backdrop-filter:blur(40px) saturate(1.4);border:1px solid var(--frost-border);border-radius:20px;padding:14px;position:relative;overflow:hidden}
+  .skel-card::after{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(160deg,rgba(255,255,255,0.30) 0%,transparent 40%);pointer-events:none}
+
+  .skel-row{display:flex;align-items:center;gap:10px}
+  .skel-col{display:flex;flex-direction:column;gap:6px;flex:1}
+  .skel-tags{display:flex;gap:6px;margin-top:4px}
+  .skel-divider{border-top:1px dashed rgba(28,28,30,0.08);margin:8px 0}
+  .skel-avatars{display:flex;gap:-4px}
+  .skel-avatars .bone{margin-left:-4px}
+  .skel-avatars .bone:first-child{margin-left:0}
+
+  /* Stagger shimmer delay */
+  .skel-delay-1 .bone::after{animation-delay:0.1s}
+  .skel-delay-2 .bone::after{animation-delay:0.2s}
+  .skel-delay-3 .bone::after{animation-delay:0.3s}
+
+  /* Motion demo expanded */
+  .anim-table{width:100%;border-collapse:collapse;position:relative;z-index:1}
+  .anim-table th{font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink3);font-weight:400;text-align:left;padding:8px 6px;border-bottom:1px solid rgba(28,28,30,0.06)}
+  .anim-table td{font-size:12px;color:var(--ink2);padding:8px 6px;border-bottom:1px solid rgba(28,28,30,0.03);vertical-align:top}
+  .anim-table td:first-child{color:var(--ink);font-weight:500}
+  .anim-table code{font-size:10px;background:rgba(28,28,30,0.04);padding:2px 6px;border-radius:4px;font-family:monospace;color:var(--ink2)}
+
+  /* Live demo blocks */
+  .live-demo{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;position:relative;z-index:1}
+  .demo-item{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .demo-label{font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.08em}
+
+  /* Interactive button demos */
+  .demo-btn{cursor:pointer;transition:transform 0.12s ease;-webkit-tap-highlight-color:transparent;user-select:none}
+  .demo-btn:active{transform:scale(0.92)}
+  .demo-btn-spring{transition:transform 0.4s cubic-bezier(0.34,1.3,0.64,1)}
+
+  /* Card appear demo */
+  .demo-card-appear{opacity:0;transform:translateY(24px);transition:all 0.38s cubic-bezier(0.22,1,0.36,1)}
+  .demo-card-appear.visible{opacity:1;transform:translateY(0)}
+
+  /* Toast demo */
+  .demo-toast{transform:translateY(-20px);opacity:0;transition:all 0.4s cubic-bezier(0.34,1.3,0.64,1)}
+  .demo-toast.show{transform:translateY(0);opacity:1}
+
+  /* FAB demo */
+  .demo-fab{transform:scale(0);transition:transform 0.5s cubic-bezier(0.34,1.3,0.64,1)}
+  .demo-fab.show{transform:scale(1)}
+
+  /* Skeleton to content transition demo */
+  .skel-transition{position:relative;height:80px;overflow:hidden}
+  .skel-transition .skel-layer,.skel-transition .content-layer{position:absolute;inset:0;transition:opacity 0.2s ease-out}
+  .skel-transition .content-layer{opacity:0;transform:translateY(12px);transition:all 0.32s cubic-bezier(0.22,1,0.36,1)}
+  .skel-transition.loaded .skel-layer{opacity:0}
+  .skel-transition.loaded .content-layer{opacity:1;transform:translateY(0)}
 
   @media(max-width:700px){.comp-grid,.spec-grid{grid-template-columns:1fr}.motion-grid{grid-template-columns:1fr 1fr}}
 </style>
@@ -171,6 +241,83 @@
         </div>
       </div>
     </div>
+
+    <!-- Pill Toggle -->
+    <div style="margin-top:12px">
+      <div class="comp-grid" style="grid-template-columns:1fr 1fr;gap:12px">
+        <div class="frost comp-card">
+          <div class="comp-label">Pill Toggle <span style="font-size:9px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--ink3)">— click to switch</span></div>
+          <div style="display:flex;flex-direction:column;gap:16px;align-items:center;position:relative;z-index:1">
+            <!-- Toggle: List / Map -->
+            <div id="pillToggle1" onclick="switchPillToggle(1)" style="
+              display:inline-flex;position:relative;
+              padding:3px;border-radius:100px;cursor:pointer;
+              background:rgba(255,255,255,0.48);backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4);
+              border:1px solid rgba(255,255,255,0.60);
+              box-shadow:0 2px 8px rgba(0,0,0,0.04),inset 0 1px 0 rgba(255,255,255,0.55);
+              user-select:none;-webkit-tap-highlight-color:transparent;
+            ">
+              <!-- Glass indicator -->
+              <div id="pillInd1" style="
+                position:absolute;top:3px;left:3px;height:calc(100% - 6px);
+                width:calc(50% - 3px);border-radius:100px;
+                background:rgba(28,28,30,0.88);
+                box-shadow:0 2px 8px rgba(0,0,0,0.12);
+                transition:transform 0.5s cubic-bezier(0.34,1.56,0.64,1),
+                           width 0.4s cubic-bezier(0.34,1.3,0.64,1);
+                z-index:0;overflow:hidden;
+              ">
+                <div style="position:absolute;inset:0;border-radius:inherit;background:linear-gradient(160deg,rgba(255,255,255,0.12) 0%,transparent 40%);pointer-events:none"></div>
+              </div>
+              <div id="pillOpt1_0" style="position:relative;z-index:1;padding:6px 14px;display:flex;align-items:center;gap:5px;transition:color 0.3s ease">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              </div>
+              <div id="pillOpt1_1" style="position:relative;z-index:1;padding:6px 14px;display:flex;align-items:center;gap:5px;transition:color 0.3s ease">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+              </div>
+            </div>
+
+            <!-- Toggle: 3-segment (wider) -->
+            <div id="pillToggle2" onclick="switchPillToggle3(event)" style="
+              display:inline-flex;position:relative;
+              padding:3px;border-radius:100px;cursor:pointer;
+              background:rgba(255,255,255,0.48);backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4);
+              border:1px solid rgba(255,255,255,0.60);
+              box-shadow:0 2px 8px rgba(0,0,0,0.04),inset 0 1px 0 rgba(255,255,255,0.55);
+              user-select:none;-webkit-tap-highlight-color:transparent;
+            ">
+              <div id="pillInd2" style="
+                position:absolute;top:3px;left:3px;height:calc(100% - 6px);
+                width:calc(33.33% - 2px);border-radius:100px;
+                background:rgba(28,28,30,0.88);
+                box-shadow:0 2px 8px rgba(0,0,0,0.12);
+                transition:transform 0.5s cubic-bezier(0.34,1.56,0.64,1),
+                           width 0.4s cubic-bezier(0.34,1.3,0.64,1);
+                z-index:0;overflow:hidden;
+              ">
+                <div style="position:absolute;inset:0;border-radius:inherit;background:linear-gradient(160deg,rgba(255,255,255,0.12) 0%,transparent 40%);pointer-events:none"></div>
+              </div>
+              <div data-seg="0" style="position:relative;z-index:1;padding:5px 12px;font-size:12px;transition:color 0.3s ease">全部</div>
+              <div data-seg="1" style="position:relative;z-index:1;padding:5px 12px;font-size:12px;transition:color 0.3s ease">进行中</div>
+              <div data-seg="2" style="position:relative;z-index:1;padding:5px 12px;font-size:12px;transition:color 0.3s ease">已结束</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="frost comp-card">
+          <div class="comp-label">Toggle Spec</div>
+          <div style="position:relative;z-index:1;font-size:11px;color:var(--ink2);line-height:2">
+            <b style="color:var(--ink)">Track</b>: frost glass, pill 100px, 3px inner padding<br>
+            <b style="color:var(--ink)">Indicator</b>: Dark Pill bg, inner specular highlight<br>
+            <b style="color:var(--ink)">Slide</b>: spring <code style="font-size:9px;background:rgba(28,28,30,0.04);padding:1px 4px;border-radius:3px">(0.34, 1.56, 0.64, 1)</code> 500ms<br>
+            <b style="color:var(--ink)">Press</b>: track <code style="font-size:9px;background:rgba(28,28,30,0.04);padding:1px 4px;border-radius:3px">scale(0.95)</code> → bounce back<br>
+            <b style="color:var(--ink)">During slide</b>: indicator width squish 92% (rubber feel)<br>
+            <b style="color:var(--ink)">Text</b>: selected = white, unselected = Ink Tertiary<br>
+            <b style="color:var(--ink)">Icon</b>: selected stroke = white, unselected = Ink Tertiary
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- 04 Glass Surfaces -->
@@ -189,9 +336,340 @@
     <div class="section-num">05 — Motion</div>
     <div class="section-title">Animation Curves</div>
     <div class="motion-grid">
-      <div class="frost motion-card"><div class="motion-demo" style="background:rgba(255,107,61,0.12);border:1px solid rgba(255,107,61,0.20)"></div><div class="motion-name">Spring</div><div class="motion-spec">500-600ms · bounce</div></div>
-      <div class="frost motion-card"><div class="motion-demo" style="background:rgba(28,28,30,0.06);border:1px solid rgba(28,28,30,0.10)"></div><div class="motion-name">Ease Out</div><div class="motion-spec">280ms · smooth</div></div>
-      <div class="frost motion-card"><div class="motion-demo" style="background:rgba(140,92,246,0.10);border:1px solid rgba(140,92,246,0.18)"></div><div class="motion-name">Expressive</div><div class="motion-spec">380ms · dramatic</div></div>
+      <div class="frost motion-card"><div class="motion-demo" style="background:rgba(255,107,61,0.12);border:1px solid rgba(255,107,61,0.20)"></div><div class="motion-name">Spring</div><div class="motion-spec">500-600ms · bounce<br><code style="font-size:9px">(0.34, 1.3, 0.64, 1)</code></div></div>
+      <div class="frost motion-card"><div class="motion-demo" style="background:rgba(28,28,30,0.06);border:1px solid rgba(28,28,30,0.10)"></div><div class="motion-name">Ease Out</div><div class="motion-spec">280ms · smooth<br><code style="font-size:9px">(0.22, 0, 0.36, 1)</code></div></div>
+      <div class="frost motion-card"><div class="motion-demo" style="background:rgba(140,92,246,0.10);border:1px solid rgba(140,92,246,0.18)"></div><div class="motion-name">Expressive</div><div class="motion-spec">380ms · dramatic<br><code style="font-size:9px">(0.22, 1.0, 0.36, 1)</code></div></div>
+    </div>
+
+    <!-- Micro-interactions -->
+    <div style="margin-top:20px">
+      <div style="font-size:13px;font-weight:500;margin-bottom:12px;position:relative;z-index:1">Micro-interactions</div>
+      <div class="frost" style="padding:16px;overflow-x:auto">
+        <table class="anim-table">
+          <tr><th>Element</th><th>Action</th><th>Transform</th><th>Curve</th><th>Duration</th></tr>
+          <tr><td>Button</td><td>Press</td><td><code>scale(0.92)</code></td><td>Spring</td><td>120ms ↓ 400ms ↑</td></tr>
+          <tr><td>Tab icon</td><td>Press</td><td><code>scale(0.88)</code></td><td>Spring</td><td>100ms ↓ 500ms ↑</td></tr>
+          <tr><td>Card</td><td>Long press</td><td><code>scale(0.97)</code></td><td>Ease Out</td><td>200ms</td></tr>
+          <tr><td>Toggle</td><td>Switch</td><td>thumb slide</td><td>Spring</td><td>350ms</td></tr>
+          <tr><td>Checkbox</td><td>Check</td><td><code>scale(0→1)</code> + fade</td><td>Spring</td><td>400ms</td></tr>
+          <tr><td>FAB</td><td>Press</td><td><code>scale(0.88)</code></td><td>Spring</td><td>400ms</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Live micro-interaction demos -->
+    <div style="margin-top:16px">
+      <div style="font-size:13px;font-weight:500;margin-bottom:12px;position:relative;z-index:1">Interactive Demo <span style="font-size:10px;color:var(--ink3);font-weight:400">— click / tap elements</span></div>
+      <div class="frost" style="padding:20px">
+        <div class="live-demo">
+          <div class="demo-item">
+            <button class="btn-dark demo-btn demo-btn-spring" onclick="this.style.transform='scale(0.92)';setTimeout(()=>this.style.transform='',400)">Press me →</button>
+            <div class="demo-label">Button Press</div>
+          </div>
+          <div class="demo-item">
+            <div class="demo-btn" onclick="this.style.transform='scale(0.88)';setTimeout(()=>this.style.transform='',500)" style="width:44px;height:44px;border-radius:50%;background:var(--coral);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;transition:transform 0.5s cubic-bezier(0.34,1.3,0.64,1)">▲</div>
+            <div class="demo-label">FAB Press</div>
+          </div>
+          <div class="demo-item">
+            <div class="demo-btn" onclick="this.style.transform='scale(0.88)';setTimeout(()=>this.style.transform='',500)" style="width:36px;height:36px;border-radius:50%;background:var(--dark);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;transition:transform 0.5s cubic-bezier(0.34,1.3,0.64,1)">＋</div>
+            <div class="demo-label">Circle Press</div>
+          </div>
+          <div class="demo-item">
+            <div id="toggleDemo" class="demo-btn" onclick="toggleSwitch()" style="width:51px;height:31px;border-radius:16px;background:rgba(28,28,30,0.10);position:relative;transition:background 0.35s cubic-bezier(0.34,1.3,0.64,1)">
+              <div id="toggleThumb" style="width:27px;height:27px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;box-shadow:0 2px 6px rgba(0,0,0,0.12);transition:transform 0.35s cubic-bezier(0.34,1.3,0.64,1)"></div>
+            </div>
+            <div class="demo-label">Toggle</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page & Navigation Transitions -->
+    <div style="margin-top:20px">
+      <div style="font-size:13px;font-weight:500;margin-bottom:12px;position:relative;z-index:1">Page & Navigation Transitions</div>
+      <div class="frost" style="padding:16px;overflow-x:auto">
+        <table class="anim-table">
+          <tr><th>Transition</th><th>Animation</th><th>Curve</th><th>Duration</th></tr>
+          <tr><td>Page push</td><td>Slide right→left + parallax</td><td>Ease Out</td><td>350ms</td></tr>
+          <tr><td>Page pop</td><td>Slide left→right + parallax</td><td>Ease Out</td><td>300ms</td></tr>
+          <tr><td>Tab switch</td><td>Cross-fade + slide 8px</td><td>Ease Out</td><td>280ms</td></tr>
+          <tr><td>Sheet enter</td><td>Slide up from bottom</td><td>Expressive</td><td>380ms</td></tr>
+          <tr><td>Sheet dismiss</td><td>Slide down + fade</td><td>Ease Out</td><td>280ms</td></tr>
+          <tr><td>Dialog enter</td><td><code>scale(0.92→1.0)</code> + fade</td><td>Spring</td><td>350ms</td></tr>
+          <tr><td>Dialog dismiss</td><td><code>scale(1.0→0.95)</code> + fade</td><td>Ease Out</td><td>200ms</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- List & Card Animations -->
+    <div style="margin-top:20px">
+      <div style="font-size:13px;font-weight:500;margin-bottom:12px;position:relative;z-index:1">List & Card Animations</div>
+      <div class="frost" style="padding:16px;overflow-x:auto">
+        <table class="anim-table">
+          <tr><th>Element</th><th>Animation</th><th>Stagger</th><th>Curve</th><th>Duration</th></tr>
+          <tr><td>Card appear</td><td><code>translateY(24)→0</code> + fade</td><td>50ms/item, max 6</td><td>Expressive</td><td>380ms</td></tr>
+          <tr><td>Card delete</td><td>Slide out → height collapse</td><td>—</td><td>Ease Out</td><td>280ms + 200ms</td></tr>
+          <tr><td>Card reorder</td><td>Float up → slide → settle</td><td>—</td><td>Spring</td><td>500ms</td></tr>
+          <tr><td>Pull refresh</td><td>Overscroll → indicator → dismiss</td><td>—</td><td>Spring</td><td>600ms</td></tr>
+        </table>
+      </div>
+      <!-- Card appear demo -->
+      <div style="margin-top:12px;text-align:center">
+        <button class="btn-coral demo-btn demo-btn-spring" onclick="replayCardAppear()" style="font-size:12px;padding:8px 16px;margin-bottom:12px">Replay Card Stagger ↻</button>
+        <div id="cardAppearDemo" style="display:flex;flex-direction:column;gap:8px;max-width:260px;margin:0 auto">
+          <div class="demo-card-appear skel-delay-0" style="background:var(--frost);backdrop-filter:blur(40px) saturate(1.4);border:1px solid var(--frost-border);border-radius:16px;padding:12px;display:flex;align-items:center;gap:10px">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,107,61,0.10);display:flex;align-items:center;justify-content:center;font-size:16px">🏯</div>
+            <div><div style="font-size:13px;font-weight:500">浅草寺</div><div style="font-size:10px;color:var(--ink3)">09:00 · 东京</div></div>
+          </div>
+          <div class="demo-card-appear skel-delay-1" style="background:var(--frost);backdrop-filter:blur(40px) saturate(1.4);border:1px solid var(--frost-border);border-radius:16px;padding:12px;display:flex;align-items:center;gap:10px">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(140,92,246,0.10);display:flex;align-items:center;justify-content:center;font-size:16px">🍜</div>
+            <div><div style="font-size:13px;font-weight:500">一兰拉面</div><div style="font-size:10px;color:var(--ink3)">12:00 · 新宿</div></div>
+          </div>
+          <div class="demo-card-appear skel-delay-2" style="background:var(--frost);backdrop-filter:blur(40px) saturate(1.4);border:1px solid var(--frost-border);border-radius:16px;padding:12px;display:flex;align-items:center;gap:10px">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(28,28,30,0.05);display:flex;align-items:center;justify-content:center;font-size:16px">🛍</div>
+            <div><div style="font-size:13px;font-weight:500">涩谷 109</div><div style="font-size:10px;color:var(--ink3)">14:30 · 涩谷</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overlay Animations -->
+    <div style="margin-top:20px">
+      <div style="font-size:13px;font-weight:500;margin-bottom:12px;position:relative;z-index:1">Overlay Animations</div>
+      <div class="frost" style="padding:16px;overflow-x:auto">
+        <table class="anim-table">
+          <tr><th>Element</th><th>Enter</th><th>Exit</th><th>Duration</th></tr>
+          <tr><td>Toast</td><td>Slide down + fade in (Spring)</td><td>Slide up + fade out</td><td>400ms / 250ms · 2.5s auto</td></tr>
+          <tr><td>Popover</td><td><code>scale(0.85)</code> from anchor + fade</td><td><code>scale(0.92)</code> + fade</td><td>300ms / 200ms</td></tr>
+          <tr><td>Action Sheet</td><td>Slide up + backdrop fade</td><td>Slide down + backdrop fade</td><td>380ms / 280ms</td></tr>
+          <tr><td>FAB appear</td><td><code>scale(0→1)</code> + bounce</td><td><code>scale(1→0)</code></td><td>500ms / 200ms</td></tr>
+        </table>
+      </div>
+      <!-- Toast + FAB demo -->
+      <div style="margin-top:12px">
+        <div class="live-demo">
+          <div class="demo-item">
+            <button class="btn-dark demo-btn demo-btn-spring" onclick="showToastDemo()" style="font-size:12px;padding:8px 16px">Show Toast</button>
+            <div id="toastDemo" class="demo-toast" style="display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:100px;background:var(--dark);color:#fff;font-size:12px;margin-top:4px">
+              <span style="width:16px;height:16px;border-radius:50%;background:#34C759;display:flex;align-items:center;justify-content:center;font-size:9px">✓</span>保存成功
+            </div>
+          </div>
+          <div class="demo-item">
+            <button class="btn-coral demo-btn demo-btn-spring" onclick="showFabDemo()" style="font-size:12px;padding:8px 16px">FAB Appear</button>
+            <div id="fabDemo" class="demo-fab" style="width:44px;height:44px;border-radius:50%;background:var(--coral);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;box-shadow:0 4px 16px rgba(255,107,61,0.30);margin-top:4px">＋</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05b Skeleton Screens -->
+  <div class="section">
+    <div class="section-num">05b — Skeleton</div>
+    <div class="section-title">骨架屏 Loading States</div>
+
+    <!-- Shimmer tokens -->
+    <div class="frost" style="padding:16px;margin-bottom:16px">
+      <div style="font-size:13px;font-weight:500;margin-bottom:10px;position:relative;z-index:1">Shimmer Tokens</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;position:relative;z-index:1">
+        <div>
+          <div style="width:100%;height:28px;border-radius:6px;margin-bottom:6px" class="bone bone-text"></div>
+          <div style="font-size:10px;color:var(--ink3)"><b>Bone Base</b><br>rgba(28,28,30,0.04)</div>
+        </div>
+        <div>
+          <div style="width:100%;height:28px;border-radius:6px;margin-bottom:6px;background:rgba(28,28,30,0.04);position:relative;overflow:hidden">
+            <div style="position:absolute;inset:0;background:linear-gradient(120deg,transparent 25%,rgba(255,255,255,0.50) 50%,transparent 75%);background-size:200% 100%;animation:shimmer 1.6s ease-in-out infinite"></div>
+          </div>
+          <div style="font-size:10px;color:var(--ink3)"><b>Shimmer</b><br>white 50%, 120deg, 1.6s</div>
+        </div>
+        <div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <div style="width:28px;height:28px;border-radius:6px" class="bone"></div>
+            <div style="width:28px;height:28px;border-radius:50%" class="bone"></div>
+            <div style="width:28px;height:28px;border-radius:100px;flex:1" class="bone"></div>
+          </div>
+          <div style="font-size:10px;color:var(--ink3)"><b>Shapes</b><br>r6 text · r50% avatar · pill</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Travel List Skeleton -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div>
+        <div style="font-size:12px;font-weight:500;margin-bottom:8px;position:relative;z-index:1">Travel List</div>
+        <div class="skel-phone">
+          <div class="skel-phone-inner">
+            <!-- Title bone -->
+            <div class="bone bone-text" style="width:60px;height:28px;border-radius:8px;margin-bottom:16px"></div>
+            <!-- Search bar -->
+            <div class="bone" style="width:100%;height:36px;border-radius:14px;margin-bottom:16px"></div>
+            <!-- Card 1 -->
+            <div class="skel-card" style="margin-bottom:14px">
+              <div class="skel-row" style="margin-bottom:8px">
+                <div class="bone bone-text" style="width:120px"></div>
+                <div style="flex:1"></div>
+                <div class="bone bone-pill" style="width:48px;height:18px"></div>
+              </div>
+              <div class="bone bone-text-sm" style="width:90px;margin-bottom:10px"></div>
+              <div class="skel-tags">
+                <div class="bone bone-pill" style="width:42px;height:18px"></div>
+                <div class="bone bone-pill" style="width:42px;height:18px"></div>
+              </div>
+              <div class="skel-divider"></div>
+              <div class="skel-row">
+                <div class="bone bone-avatar" style="width:24px;height:24px"></div>
+                <div class="bone bone-avatar" style="width:24px;height:24px;margin-left:-4px"></div>
+                <div class="bone bone-avatar" style="width:24px;height:24px;margin-left:-4px"></div>
+              </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="skel-card skel-delay-1" style="margin-bottom:14px">
+              <div class="skel-row" style="margin-bottom:8px">
+                <div class="bone bone-text" style="width:100px"></div>
+                <div style="flex:1"></div>
+                <div class="bone bone-pill" style="width:52px;height:18px"></div>
+              </div>
+              <div class="bone bone-text-sm" style="width:110px;margin-bottom:10px"></div>
+              <div class="skel-tags">
+                <div class="bone bone-pill" style="width:48px;height:18px"></div>
+                <div class="bone bone-pill" style="width:36px;height:18px"></div>
+                <div class="bone bone-pill" style="width:44px;height:18px"></div>
+              </div>
+              <div class="skel-divider"></div>
+              <div class="skel-row">
+                <div class="bone bone-avatar" style="width:24px;height:24px"></div>
+                <div class="bone bone-avatar" style="width:24px;height:24px;margin-left:-4px"></div>
+              </div>
+            </div>
+            <!-- Card 3 -->
+            <div class="skel-card skel-delay-2" style="margin-bottom:14px">
+              <div class="skel-row" style="margin-bottom:8px">
+                <div class="bone bone-text" style="width:80px"></div>
+                <div style="flex:1"></div>
+                <div class="bone bone-pill" style="width:44px;height:18px"></div>
+              </div>
+              <div class="bone bone-text-sm" style="width:70px;margin-bottom:10px"></div>
+              <div class="skel-tags">
+                <div class="bone bone-pill" style="width:40px;height:18px"></div>
+              </div>
+              <div class="skel-divider"></div>
+              <div class="skel-row">
+                <div class="bone bone-avatar" style="width:24px;height:24px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schedule List Skeleton -->
+      <div>
+        <div style="font-size:12px;font-weight:500;margin-bottom:8px;position:relative;z-index:1">Schedule Detail</div>
+        <div class="skel-phone">
+          <div class="skel-phone-inner">
+            <!-- App bar -->
+            <div class="skel-row" style="margin-bottom:16px">
+              <div class="bone bone-avatar" style="width:32px;height:32px;border-radius:50%"></div>
+              <div class="bone bone-text" style="width:100px"></div>
+              <div style="flex:1"></div>
+              <div class="bone bone-avatar" style="width:32px;height:32px;border-radius:50%"></div>
+            </div>
+            <!-- Day bar -->
+            <div style="display:flex;gap:8px;margin-bottom:16px;overflow:hidden">
+              <div class="bone bone-pill" style="width:52px;height:40px"></div>
+              <div class="bone bone-pill" style="width:52px;height:40px"></div>
+              <div class="bone bone-pill" style="width:52px;height:40px"></div>
+              <div class="bone bone-pill" style="width:52px;height:40px"></div>
+              <div class="bone bone-pill" style="width:52px;height:40px"></div>
+            </div>
+            <!-- Schedule card 1 -->
+            <div class="skel-card" style="margin-bottom:20px">
+              <div class="skel-row">
+                <div class="bone bone-sq" style="width:48px;height:48px"></div>
+                <div class="skel-col">
+                  <div class="bone bone-text" style="width:110px"></div>
+                  <div class="bone bone-text-sm" style="width:80px"></div>
+                  <div class="bone bone-pill" style="width:50px;height:16px"></div>
+                </div>
+              </div>
+            </div>
+            <!-- Schedule card 2 -->
+            <div class="skel-card skel-delay-1" style="margin-bottom:20px">
+              <div class="skel-row">
+                <div class="bone bone-sq" style="width:48px;height:48px"></div>
+                <div class="skel-col">
+                  <div class="bone bone-text" style="width:90px"></div>
+                  <div class="bone bone-text-sm" style="width:120px"></div>
+                  <div class="bone bone-pill" style="width:60px;height:16px"></div>
+                </div>
+              </div>
+            </div>
+            <!-- Schedule card 3 -->
+            <div class="skel-card skel-delay-2" style="margin-bottom:20px">
+              <div class="skel-row">
+                <div class="bone bone-sq" style="width:48px;height:48px"></div>
+                <div class="skel-col">
+                  <div class="bone bone-text" style="width:100px"></div>
+                  <div class="bone bone-text-sm" style="width:70px"></div>
+                  <div class="bone bone-pill" style="width:44px;height:16px"></div>
+                </div>
+              </div>
+            </div>
+            <!-- Schedule card 4 -->
+            <div class="skel-card skel-delay-3" style="margin-bottom:20px">
+              <div class="skel-row">
+                <div class="bone bone-sq" style="width:48px;height:48px"></div>
+                <div class="skel-col">
+                  <div class="bone bone-text" style="width:80px"></div>
+                  <div class="bone bone-text-sm" style="width:95px"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skeleton → Content Transition -->
+    <div style="margin-top:20px">
+      <div style="font-size:13px;font-weight:500;margin-bottom:12px;position:relative;z-index:1">Skeleton → Content Transition <span style="font-size:10px;color:var(--ink3);font-weight:400">— click to simulate loading</span></div>
+      <div class="frost" style="padding:20px;cursor:pointer" onclick="replaySkeletonTransition()">
+        <div id="skelTransDemo" class="skel-transition" style="position:relative;z-index:1">
+          <!-- Skeleton layer -->
+          <div class="skel-layer" style="display:flex;flex-direction:column;gap:8px">
+            <div class="skel-card" style="padding:10px">
+              <div class="skel-row">
+                <div class="bone bone-sq" style="width:40px;height:40px;border-radius:10px"></div>
+                <div class="skel-col"><div class="bone bone-text" style="width:100px"></div><div class="bone bone-text-sm" style="width:70px"></div></div>
+              </div>
+            </div>
+          </div>
+          <!-- Content layer -->
+          <div class="content-layer">
+            <div style="background:var(--frost);backdrop-filter:blur(40px) saturate(1.4);border:1px solid var(--frost-border);border-radius:16px;padding:10px;display:flex;align-items:center;gap:10px">
+              <div style="width:40px;height:40px;border-radius:10px;background:rgba(255,107,61,0.10);display:flex;align-items:center;justify-content:center;font-size:18px">🏯</div>
+              <div><div style="font-size:14px;font-weight:500">浅草寺 雷门</div><div style="font-size:11px;color:var(--ink3)">09:00 · 台东区浅草2-3-1</div></div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:10px;font-size:10px;color:var(--ink3);position:relative;z-index:1">
+          Skeleton fade out (200ms ease-out) → Content fade in + translateY(12→0) (320ms expressive) · min skeleton display 300ms
+        </div>
+      </div>
+    </div>
+
+    <!-- Skeleton Anti-Patterns -->
+    <div style="margin-top:16px">
+      <div class="frost" style="padding:16px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:8px;position:relative;z-index:1">Skeleton Anti-Patterns</div>
+        <div style="position:relative;z-index:1;font-size:11px;color:var(--ink3);line-height:2;columns:2;column-gap:20px">
+          ✕ Cold gray <code style="font-size:9px">#E5E5EA</code> bone color<br>
+          ✕ Circular spinning indicators<br>
+          ✕ Layout mismatch with content<br>
+          ✕ Skeleton visible &lt; 300ms (flash)<br>
+          ✕ Sharp-corner bone blocks<br>
+          ✕ Full-screen skeleton without glass cards<br>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -227,72 +705,175 @@
   <!-- 08 Overlays -->
   <div class="section">
     <div class="section-num">08 — Overlays</div>
-    <div class="section-title">Popover · Toast · Dialog</div>
+    <div class="section-title">Popover · Toast · Dialog · Sheet</div>
+
+    <!-- Interactive overlay demos -->
     <div class="comp-grid" style="grid-template-columns:1fr 1fr 1fr;gap:12px">
-      <!-- Toast -->
-      <div class="frost" style="padding:20px;text-align:center">
-        <div class="comp-label">Toast</div>
-        <div style="position:relative;z-index:1;display:flex;flex-direction:column;gap:10px;align-items:center">
-          <div style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:100px;background:var(--dark);color:#fff;font-size:13px"><span style="width:18px;height:18px;border-radius:50%;background:#34C759;display:flex;align-items:center;justify-content:center;font-size:10px">✓</span>保存成功</div>
-          <div style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:100px;background:var(--dark);color:#fff;font-size:13px"><span style="width:18px;height:18px;border-radius:50%;background:#FF3B30;display:flex;align-items:center;justify-content:center;font-size:10px">✕</span>操作失败</div>
-        </div>
-      </div>
-      <!-- Confirm -->
-      <div class="frost" style="padding:20px">
-        <div class="comp-label">Confirm</div>
-        <div style="position:relative;z-index:1">
-          <div style="background:rgba(255,255,255,0.80);border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,0.08)">
-            <div style="text-align:center;font-size:24px;margin-bottom:6px">⚠️</div>
-            <div style="text-align:center;font-size:14px;font-weight:500;margin-bottom:3px">删除旅程</div>
-            <div style="text-align:center;font-size:11px;color:var(--ink3);margin-bottom:12px">此操作无法撤销</div>
-            <div style="display:flex;gap:6px">
-              <div style="flex:1;padding:8px;border-radius:100px;background:rgba(28,28,30,0.06);text-align:center;font-size:13px;color:var(--ink2)">取消</div>
-              <div style="flex:1;padding:8px;border-radius:100px;background:#FF3B30;text-align:center;font-size:13px;color:#fff;font-weight:500">删除</div>
-            </div>
+
+      <!-- Popover (interactive) -->
+      <div class="frost" style="padding:20px;min-height:220px;overflow:visible">
+        <div class="comp-label">Popover <span style="font-size:9px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--ink3)">— click ⋯</span></div>
+        <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:12px">
+          <!-- Trigger -->
+          <div id="popoverAnchor" onclick="togglePopover(event)" style="width:28px;height:28px;border-radius:50%;background:rgba(28,28,30,0.06);display:flex;align-items:center;justify-content:center;font-size:13px;color:rgba(28,28,30,0.45);cursor:pointer;user-select:none;transition:transform 0.4s cubic-bezier(0.34,1.3,0.64,1);position:relative;z-index:3">⋯</div>
+          <!-- Popover panel (absolute, below anchor) -->
+          <div id="popoverPanel" style="
+            position:absolute;top:38px;left:50%;margin-left:-70px;z-index:10;
+            transform-origin:top center;
+            background:rgba(255,255,255,0.85);backdrop-filter:blur(40px) saturate(1.6);-webkit-backdrop-filter:blur(40px) saturate(1.6);
+            border-radius:14px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.10),0 1px 3px rgba(0,0,0,0.05);width:140px;
+            border:1px solid rgba(255,255,255,0.70);
+          ">
+            <div style="display:flex;align-items:center;gap:6px;padding:9px 12px;font-size:13px;cursor:pointer;transition:background 0.15s ease" onpointerenter="this.style.background='rgba(28,28,30,0.04)'" onpointerleave="this.style.background='transparent'">✏️ 编辑</div>
+            <div style="height:0.5px;background:rgba(28,28,30,0.06);margin-left:32px"></div>
+            <div style="display:flex;align-items:center;gap:6px;padding:9px 12px;font-size:13px;cursor:pointer;transition:background 0.15s ease" onpointerenter="this.style.background='rgba(28,28,30,0.04)'" onpointerleave="this.style.background='transparent'">📋 克隆</div>
+            <div style="height:0.5px;background:rgba(28,28,30,0.06)"></div>
+            <div style="display:flex;align-items:center;gap:6px;padding:9px 12px;font-size:13px;color:#FF3B30;cursor:pointer;transition:background 0.15s ease" onpointerenter="this.style.background='rgba(255,59,48,0.05)'" onpointerleave="this.style.background='transparent'">🗑 删除</div>
+          </div>
+          <div style="font-size:10px;color:var(--ink3);font-family:monospace;text-align:center;line-height:1.6;margin-top:110px">
+            enter: scale(0.85→1.06→1) + blur(4→0)<br>
+            exit: scale(1→0.92) + blur(0→4) + fade<br>
+            spring 350ms · origin: anchor
           </div>
         </div>
       </div>
-      <!-- Popover -->
-      <div class="frost" style="padding:20px">
-        <div class="comp-label">Popover</div>
-        <div style="position:relative;z-index:1">
-          <div style="background:rgba(255,255,255,0.82);border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.08);width:140px">
-            <div style="display:flex;align-items:center;gap:6px;padding:9px 12px;font-size:13px">✏️ 编辑</div>
-            <div style="height:0.5px;background:rgba(28,28,30,0.06);margin-left:32px"></div>
-            <div style="display:flex;align-items:center;gap:6px;padding:9px 12px;font-size:13px">📋 克隆</div>
-            <div style="height:0.5px;background:rgba(28,28,30,0.06)"></div>
-            <div style="display:flex;align-items:center;gap:6px;padding:9px 12px;font-size:13px;color:#FF3B30">🗑 删除</div>
+
+      <!-- Confirm Dialog (interactive) -->
+      <div class="frost" style="padding:20px;min-height:220px">
+        <div class="comp-label">Confirm <span style="font-size:9px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--ink3)">— click button</span></div>
+        <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:10px">
+          <button class="btn-ghost" onclick="showConfirmDemo()" style="font-size:12px;padding:7px 14px">删除旅程</button>
+          <div id="confirmBackdrop" style="
+            position:absolute;inset:-20px;border-radius:20px;
+            background:rgba(28,28,30,0.00);
+            opacity:0;pointer-events:none;
+            transition:background 0.3s ease,opacity 0.3s ease;
+            display:flex;align-items:center;justify-content:center;
+            z-index:2;
+          ">
+            <div id="confirmDialog" style="
+              transform:scale(0.88);opacity:0;filter:blur(6px);
+              transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s ease,filter 0.4s ease;
+              background:rgba(255,255,255,0.90);backdrop-filter:blur(40px) saturate(1.6);-webkit-backdrop-filter:blur(40px) saturate(1.6);
+              border-radius:16px;padding:16px;box-shadow:0 12px 40px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06);
+              border:1px solid rgba(255,255,255,0.70);width:180px;
+            ">
+              <div style="text-align:center;font-size:22px;margin-bottom:4px">⚠️</div>
+              <div style="text-align:center;font-size:13px;font-weight:500;margin-bottom:2px">删除旅程</div>
+              <div style="text-align:center;font-size:10px;color:var(--ink3);margin-bottom:10px">此操作无法撤销</div>
+              <div style="display:flex;gap:6px">
+                <div onclick="hideConfirmDemo()" style="flex:1;padding:7px;border-radius:100px;background:rgba(28,28,30,0.06);text-align:center;font-size:12px;color:var(--ink2);cursor:pointer;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1)" onpointerdown="this.style.transform='scale(0.92)'" onpointerup="this.style.transform=''">取消</div>
+                <div onclick="hideConfirmDemo()" style="flex:1;padding:7px;border-radius:100px;background:#FF3B30;text-align:center;font-size:12px;color:#fff;font-weight:500;cursor:pointer;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1)" onpointerdown="this.style.transform='scale(0.92)'" onpointerup="this.style.transform=''">删除</div>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:10px;color:var(--ink3);font-family:monospace;text-align:center;line-height:1.6">
+            enter: scale(0.88→1.06→1) + blur(6→0)<br>
+            exit: scale(1→0.95) + fade + blur<br>
+            backdrop: opacity 0→0.20<br>
+            spring 400ms
+          </div>
+        </div>
+      </div>
+
+      <!-- Toast (interactive) -->
+      <div class="frost" style="padding:20px;min-height:220px">
+        <div class="comp-label">Toast <span style="font-size:9px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--ink3)">— click button</span></div>
+        <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:10px">
+          <div style="display:flex;gap:6px">
+            <button class="btn-dark" onclick="showOverlayToast('success')" style="font-size:11px;padding:7px 12px">Success</button>
+            <button class="btn-ghost" onclick="showOverlayToast('error')" style="font-size:11px;padding:7px 12px">Error</button>
+          </div>
+          <div style="position:relative;height:44px;width:100%">
+            <div id="overlayToast" style="
+              position:absolute;top:0;left:50%;
+              transform:translateX(-50%) translateY(-16px) scale(0.92);
+              opacity:0;filter:blur(4px);pointer-events:none;
+              transition:transform 0.45s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s ease,filter 0.4s ease;
+              display:inline-flex;align-items:center;gap:8px;padding:9px 18px;
+              border-radius:100px;background:var(--dark);color:#fff;font-size:12px;white-space:nowrap;
+              box-shadow:0 8px 24px rgba(0,0,0,0.12);
+            ">
+              <span id="overlayToastIcon" style="width:16px;height:16px;border-radius:50%;background:#34C759;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0">✓</span>
+              <span id="overlayToastText">保存成功</span>
+            </div>
+          </div>
+          <div style="font-size:10px;color:var(--ink3);font-family:monospace;text-align:center;line-height:1.6">
+            enter: translateY(-16→4→0) + blur(4→0)<br>
+            exit: translateY(0→-12) + fade + blur<br>
+            spring 450ms · auto-dismiss 2.5s
           </div>
         </div>
       </div>
     </div>
+
     <div style="height:12px"></div>
+
     <div class="comp-grid">
-      <!-- Action Sheet -->
-      <div class="frost" style="padding:20px">
-        <div class="comp-label">Action Sheet</div>
+      <!-- Action Sheet (interactive) -->
+      <div class="frost" style="padding:20px;min-height:260px">
+        <div class="comp-label">Action Sheet <span style="font-size:9px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--ink3)">— click button</span></div>
         <div style="position:relative;z-index:1">
-          <div style="background:rgba(255,255,255,0.82);border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.08);margin-bottom:6px">
-            <div style="padding:8px;text-align:center;font-size:11px;color:var(--ink3)">选择导航方式</div>
-            <div style="height:0.5px;background:rgba(28,28,30,0.06)"></div>
-            <div style="padding:10px;text-align:center;font-size:14px;color:var(--ink)">🚗 驾车</div>
-            <div style="height:0.5px;background:rgba(28,28,30,0.06)"></div>
-            <div style="padding:10px;text-align:center;font-size:14px;color:var(--ink)">🚌 公交</div>
-            <div style="height:0.5px;background:rgba(28,28,30,0.06)"></div>
-            <div style="padding:10px;text-align:center;font-size:14px;color:var(--ink)">🚶 步行</div>
+          <div style="text-align:center;margin-bottom:10px">
+            <button class="btn-coral" onclick="showActionSheet()" style="font-size:12px;padding:7px 14px">导航方式</button>
           </div>
-          <div style="background:rgba(255,255,255,0.85);border-radius:14px;padding:10px;text-align:center;font-size:14px;color:var(--ink2);font-weight:500">取消</div>
+          <div id="sheetWrap" style="position:relative;height:190px;overflow:hidden;border-radius:14px;background:rgba(28,28,30,0.02)">
+            <div id="sheetBackdrop" style="position:absolute;inset:0;background:rgba(28,28,30,0);transition:background 0.38s ease;pointer-events:none;z-index:1"></div>
+            <div id="sheetPanel" style="
+              position:absolute;bottom:0;left:0;right:0;z-index:2;
+              transform:translateY(100%);
+              transition:transform 0.42s cubic-bezier(0.22,1.0,0.36,1);
+            ">
+              <div style="background:rgba(255,255,255,0.88);backdrop-filter:blur(50px) saturate(1.8);-webkit-backdrop-filter:blur(50px) saturate(1.8);border-radius:14px 14px 0 0;overflow:hidden;box-shadow:0 -8px 32px rgba(0,0,0,0.08);border-top:1px solid rgba(255,255,255,0.55)">
+                <div style="width:36px;height:4px;border-radius:2px;background:rgba(28,28,30,0.16);margin:8px auto"></div>
+                <div style="padding:4px 0 2px;text-align:center;font-size:10px;color:var(--ink3)">选择导航方式</div>
+                <div style="height:0.5px;background:rgba(28,28,30,0.06)"></div>
+                <div onclick="hideActionSheet()" style="padding:10px;text-align:center;font-size:13px;cursor:pointer;transition:background 0.15s ease" onpointerenter="this.style.background='rgba(28,28,30,0.03)'" onpointerleave="this.style.background=''">🚗 驾车</div>
+                <div style="height:0.5px;background:rgba(28,28,30,0.06)"></div>
+                <div onclick="hideActionSheet()" style="padding:10px;text-align:center;font-size:13px;cursor:pointer;transition:background 0.15s ease" onpointerenter="this.style.background='rgba(28,28,30,0.03)'" onpointerleave="this.style.background=''">🚌 公交</div>
+                <div style="height:0.5px;background:rgba(28,28,30,0.06)"></div>
+                <div onclick="hideActionSheet()" style="padding:10px;text-align:center;font-size:13px;cursor:pointer;transition:background 0.15s ease" onpointerenter="this.style.background='rgba(28,28,30,0.03)'" onpointerleave="this.style.background=''">🚶 步行</div>
+              </div>
+              <div style="height:6px"></div>
+              <div onclick="hideActionSheet()" style="background:rgba(255,255,255,0.92);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);border-radius:14px;padding:10px;text-align:center;font-size:13px;color:var(--ink2);font-weight:500;cursor:pointer;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1)" onpointerdown="this.style.transform='scale(0.97)'" onpointerup="this.style.transform=''">取消</div>
+            </div>
+          </div>
+          <div style="font-size:10px;color:var(--ink3);font-family:monospace;text-align:center;margin-top:6px;line-height:1.6">
+            enter: translateY(100%→0) expressive 420ms<br>
+            exit: translateY(0→100%) ease-out 280ms<br>
+            backdrop: 0→rgba(0,0,0,0.10)
+          </div>
         </div>
       </div>
-      <!-- Info Alert -->
-      <div class="frost" style="padding:20px">
-        <div class="comp-label">Info Alert</div>
-        <div style="position:relative;z-index:1">
-          <div style="background:rgba(255,255,255,0.80);border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,0.08)">
-            <div style="text-align:center;font-size:14px;font-weight:500;margin-bottom:3px">API Key 已创建</div>
-            <div style="text-align:center;font-size:11px;color:var(--ink3);margin-bottom:10px">关闭后无法再次查看</div>
-            <div style="padding:8px 10px;border-radius:10px;background:rgba(28,28,30,0.04);font-family:monospace;font-size:11px;color:var(--ink2);margin-bottom:10px;display:flex;align-items:center"><span style="flex:1">rb_sk_a3f8x9k2m...</span><span style="font-size:13px">📋</span></div>
-            <div style="padding:8px;border-radius:100px;background:var(--dark);text-align:center;font-size:13px;color:#fff">我已保存</div>
+
+      <!-- Info Alert (interactive) -->
+      <div class="frost" style="padding:20px;min-height:260px">
+        <div class="comp-label">Info Alert <span style="font-size:9px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--ink3)">— click button</span></div>
+        <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:10px">
+          <button class="btn-dark" onclick="showInfoAlert()" style="font-size:12px;padding:7px 14px">创建 API Key</button>
+          <div id="infoBackdrop" style="
+            position:absolute;inset:-20px;border-radius:20px;
+            background:rgba(28,28,30,0.00);opacity:0;pointer-events:none;
+            transition:background 0.3s ease,opacity 0.3s ease;
+            display:flex;align-items:center;justify-content:center;z-index:2;
+          ">
+            <div id="infoDialog" style="
+              transform:scale(0.88);opacity:0;filter:blur(6px);
+              transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s ease,filter 0.4s ease;
+              background:rgba(255,255,255,0.92);backdrop-filter:blur(40px) saturate(1.6);-webkit-backdrop-filter:blur(40px) saturate(1.6);
+              border-radius:16px;padding:14px;box-shadow:0 12px 40px rgba(0,0,0,0.12),0 2px 6px rgba(0,0,0,0.06);
+              border:1px solid rgba(255,255,255,0.70);width:200px;
+            ">
+              <div style="text-align:center;font-size:13px;font-weight:500;margin-bottom:2px">API Key 已创建</div>
+              <div style="text-align:center;font-size:10px;color:var(--ink3);margin-bottom:8px">关闭后无法再次查看</div>
+              <div style="padding:6px 8px;border-radius:8px;background:rgba(28,28,30,0.04);font-family:monospace;font-size:10px;color:var(--ink2);margin-bottom:8px;display:flex;align-items:center"><span style="flex:1">rb_sk_a3f8x9k2m...</span><span style="font-size:12px;cursor:pointer">📋</span></div>
+              <div onclick="hideInfoAlert()" style="padding:7px;border-radius:100px;background:var(--dark);text-align:center;font-size:12px;color:#fff;cursor:pointer;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1)" onpointerdown="this.style.transform='scale(0.92)'" onpointerup="this.style.transform=''">我已保存</div>
+            </div>
+          </div>
+          <div style="font-size:10px;color:var(--ink3);font-family:monospace;text-align:center;line-height:1.6">
+            enter: scale(0.88→1.06→1) + blur(6→0)<br>
+            exit: scale(1→0.95) + fade + blur<br>
+            spring 400ms
           </div>
         </div>
       </div>
@@ -320,6 +901,304 @@
   </div>
 
 </div>
+
+<script>
+// ── Pill Toggle (2-segment) ──
+let pillState1 = 0;
+function switchPillToggle(id) {
+  const toggle = document.getElementById('pillToggle' + id);
+  const ind = document.getElementById('pillInd' + id);
+  const opt0 = document.getElementById('pillOpt' + id + '_0');
+  const opt1 = document.getElementById('pillOpt' + id + '_1');
+  pillState1 = pillState1 === 0 ? 1 : 0;
+
+  // Press squish on track
+  toggle.style.transition = 'transform 0.12s ease';
+  toggle.style.transform = 'scale(0.95)';
+  setTimeout(() => {
+    toggle.style.transition = 'transform 0.5s cubic-bezier(0.34,1.56,0.64,1)';
+    toggle.style.transform = 'scale(1)';
+  }, 120);
+
+  // Slide indicator with rubber squish
+  const offset = pillState1 === 0 ? '0px' : 'calc(100% - 0px)';
+  ind.style.width = 'calc(50% - 6px)'; // squish narrower during slide
+  ind.style.transform = pillState1 === 0 ? 'translateX(0)' : 'translateX(calc(100% + 3px))';
+  setTimeout(() => {
+    ind.style.width = 'calc(50% - 3px)'; // restore width
+  }, 200);
+
+  // Color swap
+  opt0.style.color = pillState1 === 0 ? '#fff' : 'var(--ink3)';
+  opt1.style.color = pillState1 === 1 ? '#fff' : 'var(--ink3)';
+}
+// Init colors
+document.addEventListener('DOMContentLoaded', () => {
+  const opt0 = document.getElementById('pillOpt1_0');
+  const opt1 = document.getElementById('pillOpt1_1');
+  if (opt0) opt0.style.color = '#fff';
+  if (opt1) opt1.style.color = 'var(--ink3)';
+});
+
+// ── Pill Toggle (3-segment) ──
+let pillState2 = 0;
+function switchPillToggle3(e) {
+  const seg = e.target.closest('[data-seg]');
+  if (!seg) return;
+  const idx = parseInt(seg.dataset.seg);
+  if (idx === pillState2) return;
+  pillState2 = idx;
+
+  const toggle = document.getElementById('pillToggle2');
+  const ind = document.getElementById('pillInd2');
+
+  // Track bounce
+  toggle.style.transition = 'transform 0.12s ease';
+  toggle.style.transform = 'scale(0.95)';
+  setTimeout(() => {
+    toggle.style.transition = 'transform 0.5s cubic-bezier(0.34,1.56,0.64,1)';
+    toggle.style.transform = 'scale(1)';
+  }, 120);
+
+  // Slide with squish
+  const pct = idx * 100;
+  ind.style.width = 'calc(33.33% - 5px)';
+  ind.style.transform = 'translateX(' + pct + '%)';
+  setTimeout(() => { ind.style.width = 'calc(33.33% - 2px)'; }, 200);
+
+  // Color swap
+  toggle.querySelectorAll('[data-seg]').forEach((s, i) => {
+    s.style.color = i === idx ? '#fff' : 'var(--ink3)';
+  });
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const t2 = document.getElementById('pillToggle2');
+  if (!t2) return;
+  t2.querySelectorAll('[data-seg]').forEach((s, i) => {
+    s.style.color = i === 0 ? '#fff' : 'var(--ink3)';
+  });
+});
+
+// Bouncy button release — spring overshoot on pointerup
+document.querySelectorAll('.btn-dark,.btn-coral,.btn-frost,.btn-ghost').forEach(btn => {
+  btn.addEventListener('pointerdown', () => {
+    btn.style.animation = 'none';
+  });
+  btn.addEventListener('pointerup', () => {
+    btn.style.animation = 'btn-bounce 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards';
+  });
+  btn.addEventListener('pointerleave', () => {
+    btn.style.animation = 'btn-bounce 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards';
+  });
+});
+
+// Toggle switch demo
+let toggleOn = false;
+function toggleSwitch() {
+  toggleOn = !toggleOn;
+  const track = document.getElementById('toggleDemo');
+  const thumb = document.getElementById('toggleThumb');
+  if (toggleOn) {
+    track.style.background = 'var(--coral)';
+    thumb.style.transform = 'translateX(20px)';
+  } else {
+    track.style.background = 'rgba(28,28,30,0.10)';
+    thumb.style.transform = 'translateX(0)';
+  }
+}
+
+// Card appear stagger demo
+function replayCardAppear() {
+  const cards = document.querySelectorAll('#cardAppearDemo .demo-card-appear');
+  cards.forEach(c => c.classList.remove('visible'));
+  cards.forEach((c, i) => {
+    setTimeout(() => c.classList.add('visible'), 80 + i * 80);
+  });
+}
+// Auto-play on scroll into view
+const cardObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) replayCardAppear(); });
+}, { threshold: 0.5 });
+document.addEventListener('DOMContentLoaded', () => {
+  const el = document.getElementById('cardAppearDemo');
+  if (el) cardObserver.observe(el);
+});
+
+// Toast demo
+function showToastDemo() {
+  const t = document.getElementById('toastDemo');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// FAB demo
+function showFabDemo() {
+  const f = document.getElementById('fabDemo');
+  f.classList.remove('show');
+  void f.offsetWidth; // force reflow
+  f.classList.add('show');
+  setTimeout(() => f.classList.remove('show'), 2000);
+}
+
+// ── Popover ──
+let popoverOpen = false;
+let popoverSkipClose = false;
+function openPopover() {
+  const panel = document.getElementById('popoverPanel');
+  const anchor = document.getElementById('popoverAnchor');
+  popoverOpen = true;
+  panel.style.transform = 'scale(1.06) translateY(0)';
+  panel.style.opacity = '1';
+  panel.style.filter = 'blur(0)';
+  panel.style.pointerEvents = 'auto';
+  anchor.style.transform = 'scale(0.88)';
+  setTimeout(() => { panel.style.transform = 'scale(1) translateY(0)'; }, 200);
+  setTimeout(() => { anchor.style.transform = ''; }, 400);
+}
+function closePopover() {
+  const panel = document.getElementById('popoverPanel');
+  popoverOpen = false;
+  panel.style.transform = 'scale(0.92) translateY(-4px)';
+  panel.style.opacity = '0';
+  panel.style.filter = 'blur(4px)';
+  panel.style.pointerEvents = 'none';
+}
+function togglePopover(e) {
+  if (e) e.stopPropagation();
+  if (popoverOpen) { closePopover(); } else { openPopover(); }
+}
+// Close popover on outside click
+document.addEventListener('click', (e) => {
+  if (popoverOpen && !e.target.closest('#popoverPanel') && !e.target.closest('#popoverAnchor')) {
+    closePopover();
+  }
+});
+
+// ── Confirm Dialog ──
+function showConfirmDemo() {
+  const bd = document.getElementById('confirmBackdrop');
+  const dlg = document.getElementById('confirmDialog');
+  bd.style.opacity = '1';
+  bd.style.pointerEvents = 'auto';
+  bd.style.background = 'rgba(28,28,30,0.18)';
+  dlg.style.transform = 'scale(1.06)';
+  dlg.style.opacity = '1';
+  dlg.style.filter = 'blur(0)';
+  setTimeout(() => { dlg.style.transform = 'scale(1)'; }, 180);
+}
+function hideConfirmDemo() {
+  const bd = document.getElementById('confirmBackdrop');
+  const dlg = document.getElementById('confirmDialog');
+  dlg.style.transform = 'scale(0.95)';
+  dlg.style.opacity = '0';
+  dlg.style.filter = 'blur(6px)';
+  bd.style.background = 'rgba(28,28,30,0.00)';
+  setTimeout(() => { bd.style.opacity = '0'; bd.style.pointerEvents = 'none'; }, 250);
+}
+
+// ── Toast ──
+let toastTimer = null;
+function showOverlayToast(type) {
+  const t = document.getElementById('overlayToast');
+  const icon = document.getElementById('overlayToastIcon');
+  const text = document.getElementById('overlayToastText');
+  if (toastTimer) clearTimeout(toastTimer);
+  // Reset
+  t.style.transition = 'none';
+  t.style.transform = 'translateX(-50%) translateY(-16px) scale(0.92)';
+  t.style.opacity = '0';
+  t.style.filter = 'blur(4px)';
+  void t.offsetWidth;
+  t.style.transition = 'transform 0.45s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s ease,filter 0.4s ease';
+  if (type === 'error') {
+    icon.style.background = '#FF3B30'; icon.textContent = '✕';
+    text.textContent = '操作失败';
+  } else {
+    icon.style.background = '#34C759'; icon.textContent = '✓';
+    text.textContent = '保存成功';
+  }
+  // Enter — overshoot then settle
+  requestAnimationFrame(() => {
+    t.style.transform = 'translateX(-50%) translateY(4px) scale(1.04)';
+    t.style.opacity = '1';
+    t.style.filter = 'blur(0)';
+    setTimeout(() => { t.style.transform = 'translateX(-50%) translateY(0) scale(1)'; }, 200);
+  });
+  // Auto dismiss
+  toastTimer = setTimeout(() => {
+    t.style.transition = 'transform 0.25s ease,opacity 0.2s ease,filter 0.25s ease';
+    t.style.transform = 'translateX(-50%) translateY(-12px) scale(0.95)';
+    t.style.opacity = '0';
+    t.style.filter = 'blur(4px)';
+  }, 2500);
+}
+
+// ── Action Sheet ──
+let sheetOpen = false;
+function showActionSheet() {
+  if (sheetOpen) return;
+  sheetOpen = true;
+  const panel = document.getElementById('sheetPanel');
+  const bd = document.getElementById('sheetBackdrop');
+  bd.style.background = 'rgba(28,28,30,0.10)';
+  bd.style.pointerEvents = 'auto';
+  panel.style.transform = 'translateY(0)';
+}
+function hideActionSheet() {
+  const panel = document.getElementById('sheetPanel');
+  const bd = document.getElementById('sheetBackdrop');
+  panel.style.transition = 'transform 0.28s cubic-bezier(0.22,0,0.36,1)';
+  panel.style.transform = 'translateY(100%)';
+  bd.style.background = 'rgba(28,28,30,0)';
+  bd.style.pointerEvents = 'none';
+  setTimeout(() => {
+    panel.style.transition = 'transform 0.42s cubic-bezier(0.22,1.0,0.36,1)';
+    sheetOpen = false;
+  }, 300);
+}
+
+// ── Info Alert ──
+function showInfoAlert() {
+  const bd = document.getElementById('infoBackdrop');
+  const dlg = document.getElementById('infoDialog');
+  bd.style.opacity = '1';
+  bd.style.pointerEvents = 'auto';
+  bd.style.background = 'rgba(28,28,30,0.18)';
+  dlg.style.transform = 'scale(1.06)';
+  dlg.style.opacity = '1';
+  dlg.style.filter = 'blur(0)';
+  setTimeout(() => { dlg.style.transform = 'scale(1)'; }, 180);
+}
+function hideInfoAlert() {
+  const bd = document.getElementById('infoBackdrop');
+  const dlg = document.getElementById('infoDialog');
+  dlg.style.transform = 'scale(0.95)';
+  dlg.style.opacity = '0';
+  dlg.style.filter = 'blur(6px)';
+  bd.style.background = 'rgba(28,28,30,0.00)';
+  setTimeout(() => { bd.style.opacity = '0'; bd.style.pointerEvents = 'none'; }, 250);
+}
+
+// Skeleton → content transition demo
+function replaySkeletonTransition() {
+  const el = document.getElementById('skelTransDemo');
+  el.classList.remove('loaded');
+  void el.offsetWidth;
+  setTimeout(() => el.classList.add('loaded'), 800);
+}
+// Auto-play
+const skelObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      setTimeout(() => replaySkeletonTransition(), 600);
+    }
+  });
+}, { threshold: 0.5 });
+document.addEventListener('DOMContentLoaded', () => {
+  const el = document.getElementById('skelTransDemo');
+  if (el) skelObserver.observe(el);
+});
+</script>
 
 </body>
 </html>

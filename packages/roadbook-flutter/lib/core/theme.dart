@@ -137,17 +137,17 @@ enum TravelStatusType { ongoing, upcoming, planning, ended }
 abstract class GlassSpec {
   // Card / Schedule Item
   static ImageFilter cardBlur = ImageFilter.blur(sigmaX: 20, sigmaY: 20);
-  static const Color cardBg     = Color(0x80FFFFFF); // rgba(255,255,255,0.50)
-  static const Color cardBorder = Color(0xA6FFFFFF); // rgba(255,255,255,0.65)
+  static const Color cardBg     = Color(0x85FFFFFF); // rgba(255,255,255,0.52)
+  static const Color cardBorder = Color(0x40FFFFFF); // rgba(255,255,255,0.25) — barely visible
   static const List<BoxShadow> cardShadow = [
-    BoxShadow(color: Color(0x1A000000), blurRadius: 24, offset: Offset(0, 6)),
-    BoxShadow(color: Color(0x0D000000), blurRadius: 4,  offset: Offset(0, 1)),
+    BoxShadow(color: Color(0x14000000), blurRadius: 32, offset: Offset(0, 8)),  // soft diffused
+    BoxShadow(color: Color(0x0A000000), blurRadius: 4,  offset: Offset(0, 2)),  // contact shadow
   ];
 
-  // Bottom Sheet — blur(50) saturate(1.8), translucent for glass feel
-  static ImageFilter sheetBlur = ImageFilter.blur(sigmaX: 30, sigmaY: 30);
-  static const Color sheetBg     = Color(0x80FFFFFF); // rgba(255,255,255,0.50) — more translucent
-  static const Color sheetBorder = Color(0xA6FFFFFF); // rgba(255,255,255,0.65)
+  // Bottom Sheet — blur(40) saturate(1.8)
+  static ImageFilter sheetBlur = ImageFilter.blur(sigmaX: 40, sigmaY: 40);
+  static const Color sheetBg     = Color(0xB8FFFFFF); // rgba(255,255,255,0.72)
+  static const Color sheetBorder = Color(0xE6FFFFFF); // rgba(255,255,255,0.90)
   static const List<BoxShadow> sheetShadow = [
     BoxShadow(color: Color(0x0F000000), blurRadius: 32, offset: Offset(0, -8)),
   ];

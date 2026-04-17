@@ -1,0 +1,109 @@
+<h2>Marker 样式 + 弹出卡设计</h2>
+<p class="subtitle">点击 marker 后弹出什么信息？marker 长什么样？</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#e8f4e8;padding:16px;height:240px;position:relative;display:flex;align-items:center;justify-content:center;">
+      <!-- Map bg hint -->
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,#e8f4e8 0%,#d4edd4 100%);border-radius:8px 8px 0 0"></div>
+
+      <!-- Markers: numbered circles -->
+      <div style="position:absolute;top:28%;left:30%;z-index:2">
+        <div style="width:28px;height:28px;background:#F97316;border-radius:50%;border:2.5px solid white;box-shadow:0 2px 6px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:800">1</div>
+      </div>
+      <div style="position:absolute;top:45%;left:52%;z-index:2">
+        <div style="width:28px;height:28px;background:#F97316;border-radius:50%;border:2.5px solid white;box-shadow:0 2px 6px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:800">2</div>
+      </div>
+      <div style="position:absolute;top:60%;left:42%;z-index:2">
+        <div style="width:28px;height:28px;background:#8B5CF6;border-radius:50%;border:2.5px solid white;box-shadow:0 2px 6px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:800">🏨</div>
+      </div>
+
+      <!-- Popup card on marker 1 -->
+      <div style="position:absolute;top:6%;left:18%;z-index:5;background:white;border-radius:12px;padding:10px 12px;box-shadow:0 4px 16px rgba(0,0,0,.18);min-width:140px">
+        <div style="font-size:11px;font-weight:700;color:#1a1a1a;margin-bottom:2px">故宫博物院</div>
+        <div style="font-size:10px;color:#F97316;margin-bottom:4px;font-weight:600">09:00 — 12:00</div>
+        <div style="font-size:9px;color:#999">景区 · Day 1 · 第 1 站</div>
+        <!-- small triangle -->
+        <div style="position:absolute;bottom:-6px;left:16px;width:12px;height:6px;overflow:hidden">
+          <div style="width:12px;height:12px;background:white;transform:rotate(45deg);margin-top:-6px;box-shadow:2px 2px 4px rgba(0,0,0,.1)"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — 数字编号圆形 Marker</h3>
+      <p>普通地点用橙色圆圈 + 序号，酒店用紫色圆圈 + 🏨。弹出卡显示名称、时间段、类型和第几站。简洁清晰，一眼知道顺序。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#e8f4e8;padding:16px;height:240px;position:relative;">
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,#e8f4e8 0%,#d4edd4 100%);border-radius:8px 8px 0 0"></div>
+
+      <!-- Pin markers -->
+      <div style="position:absolute;top:26%;left:28%;z-index:2;display:flex;flex-direction:column;align-items:center">
+        <div style="width:32px;height:32px;background:#F97316;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2.5px solid white;box-shadow:0 2px 6px rgba(0,0,0,.25)"></div>
+        <div style="font-size:9px;font-weight:700;color:#1a1a1a;background:white;padding:1px 5px;border-radius:4px;margin-top:2px;box-shadow:0 1px 3px rgba(0,0,0,.15)">故宫</div>
+      </div>
+      <div style="position:absolute;top:44%;left:54%;z-index:2;display:flex;flex-direction:column;align-items:center">
+        <div style="width:28px;height:28px;background:#F97316;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2.5px solid white;box-shadow:0 2px 6px rgba(0,0,0,.25)"></div>
+        <div style="font-size:9px;font-weight:700;color:#1a1a1a;background:white;padding:1px 5px;border-radius:4px;margin-top:2px;box-shadow:0 1px 3px rgba(0,0,0,.15)">南锣鼓巷</div>
+      </div>
+      <div style="position:absolute;top:60%;left:44%;z-index:2;display:flex;flex-direction:column;align-items:center">
+        <div style="width:28px;height:28px;background:#8B5CF6;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2.5px solid white;box-shadow:0 2px 6px rgba(0,0,0,.25)"></div>
+        <div style="font-size:9px;font-weight:700;color:#1a1a1a;background:white;padding:1px 5px;border-radius:4px;margin-top:2px;box-shadow:0 1px 3px rgba(0,0,0,.15)">北京饭店</div>
+      </div>
+
+      <!-- Rich popup -->
+      <div style="position:absolute;top:4%;left:38%;z-index:5;background:white;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.18);min-width:150px">
+        <div style="height:56px;background:linear-gradient(135deg,#FFF7ED,#FBBF24);display:flex;align-items:center;justify-content:center;font-size:22px">🏛️</div>
+        <div style="padding:8px 10px">
+          <div style="font-size:11px;font-weight:700;margin-bottom:2px">故宫博物院</div>
+          <div style="font-size:9px;color:#F97316;font-weight:600">09:00 — 12:00</div>
+          <div style="font-size:9px;color:#999;margin-top:1px">景区</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — 水滴形 Marker + 名称标签</h3>
+      <p>经典地图图钉样式，每个 marker 下方始终显示名称标签。弹出卡更丰富，有封面图区域。视觉更传统，但标签可能重叠。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#e8f4e8;padding:16px;height:240px;position:relative;">
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,#e8f4e8 0%,#d4edd4 100%);border-radius:8px 8px 0 0"></div>
+
+      <!-- Step markers with line -->
+      <svg style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:1" viewBox="0 0 280 240">
+        <path d="M 90 72 Q 130 100 154 116 Q 148 138 140 155" stroke="#F97316" stroke-width="2" stroke-dasharray="5,4" fill="none" opacity="0.6"/>
+      </svg>
+      <div style="position:absolute;top:25%;left:28%;z-index:2;display:flex;align-items:center;gap:4px">
+        <div style="width:24px;height:24px;background:#F97316;border-radius:6px;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;color:white;font-size:10px;font-weight:800">1</div>
+      </div>
+      <div style="position:absolute;top:44%;left:52%;z-index:2">
+        <div style="width:24px;height:24px;background:#F97316;border-radius:6px;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;color:white;font-size:10px;font-weight:800">2</div>
+      </div>
+      <div style="position:absolute;top:59%;left:44%;z-index:2">
+        <div style="width:24px;height:24px;background:#8B5CF6;border-radius:6px;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;font-size:11px">🏨</div>
+      </div>
+
+      <!-- Bottom card strip (not popup, but bottom-anchored mini card) -->
+      <div style="position:absolute;bottom:0;left:0;right:0;background:white;border-radius:10px 10px 0 0;padding:10px 12px;box-shadow:0 -2px 8px rgba(0,0,0,.1);z-index:5">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:36px;height:36px;background:#FFF7ED;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🏛️</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">故宫博物院</div>
+            <div style="font-size:9px;color:#F97316;font-weight:600">09:00 — 12:00 · Day 1 · 第 1 站</div>
+          </div>
+          <div style="font-size:9px;color:#bbb">›</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — 圆角方形 Marker + 虚线路径 + 底部信息条</h3>
+      <p>Marker 为圆角方块，站点间用虚线连接表示行进顺序。点击 marker 后底部出现信息条（不遮挡地图）。路书感最强。</p>
+    </div>
+  </div>
+
+</div>

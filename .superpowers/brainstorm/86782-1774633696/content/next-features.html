@@ -1,0 +1,87 @@
+<h2>下一步开发什么？</h2>
+<p style="color:#8E8E93;margin-bottom:24px">当前 <strong>发现</strong> 和 <strong>我的</strong> 是占位符，<strong>行李清单</strong> 入口存在但无实现。选择你想先做的功能：</p>
+
+<style>
+.feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 680px; }
+.feature-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px;
+  border: 2px solid #E5E5EA;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.feature-card:hover { border-color: #FF5B2E; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,91,46,0.12); }
+.feature-card.selected { border-color: #FF5B2E; background: #FFF8F6; }
+.feature-card.wide { grid-column: span 2; }
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+.tag.placeholder { background: #FFF3E0; color: #E65100; }
+.tag.new { background: #E8F5E9; color: #2E7D32; }
+.tag.enhancement { background: #EDE7F6; color: #4527A0; }
+.feature-icon { font-size: 32px; margin-bottom: 10px; }
+.feature-title { font-size: 17px; font-weight: 700; color: #1C1C1E; margin-bottom: 6px; }
+.feature-desc { font-size: 13px; color: #8E8E93; line-height: 1.5; }
+.feature-items { margin-top: 10px; padding-top: 10px; border-top: 1px solid #F2F2F7; }
+.feature-items li { font-size: 12px; color: #636366; margin-bottom: 3px; list-style: none; padding-left: 16px; position: relative; }
+.feature-items li::before { content: "·"; position: absolute; left: 4px; color: #FF5B2E; }
+</style>
+
+<div class="feature-grid">
+  <div class="feature-card selectable" data-value="discover">
+    <span class="tag placeholder">占位符待实现</span>
+    <div class="feature-icon">🔍</div>
+    <div class="feature-title">发现 Tab</div>
+    <div class="feature-desc">探索热门旅游目的地、精选路书</div>
+    <ul class="feature-items">
+      <li>热门城市 / 目的地卡片</li>
+      <li>精选路书推荐</li>
+      <li>搜索目的地</li>
+    </ul>
+  </div>
+
+  <div class="feature-card selectable" data-value="profile">
+    <span class="tag placeholder">占位符待实现</span>
+    <div class="feature-icon">👤</div>
+    <div class="feature-title">我的 Tab</div>
+    <div class="feature-desc">用户信息、设置、退出登录</div>
+    <ul class="feature-items">
+      <li>头像 / 昵称展示</li>
+      <li>设置项（主题、通知等）</li>
+      <li>退出登录</li>
+    </ul>
+  </div>
+
+  <div class="feature-card selectable" data-value="luggage">
+    <span class="tag new">新功能</span>
+    <div class="feature-icon">🧳</div>
+    <div class="feature-title">行李清单</div>
+    <div class="feature-desc">旅行必带物品管理，支持模板和勾选</div>
+    <ul class="feature-items">
+      <li>分类物品清单（衣物、证件、电子…）</li>
+      <li>勾选已打包</li>
+      <li>预设模板快速导入</li>
+    </ul>
+  </div>
+
+  <div class="feature-card selectable" data-value="schedule-edit">
+    <span class="tag enhancement">体验增强</span>
+    <div class="feature-icon">✏️</div>
+    <div class="feature-title">行程编辑优化</div>
+    <div class="feature-desc">改善现有行程编辑体验</div>
+    <ul class="feature-items">
+      <li>行程拖拽排序</li>
+      <li>批量删除</li>
+      <li>备注 Markdown 支持</li>
+    </ul>
+  </div>
+</div>
+
+<p style="margin-top:20px;font-size:13px;color:#8E8E93">点击卡片选择，或告诉我你有其他想法</p>

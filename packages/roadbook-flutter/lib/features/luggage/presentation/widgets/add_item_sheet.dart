@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme.dart';
+
 import '../../../../shared/constants/luggage_presets.dart';
 import '../../../../shared/models/luggage.dart';
 import '../../domain/luggage_provider.dart';
@@ -170,8 +171,8 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
                         _searchCtrl.clear();
                         setState(() => _query = '');
                       },
-                      child: const Icon(Icons.cancel,
-                          size: 18, color: AppColors.textSecondary),
+                      child: const Icon(Icons.close,
+                          size: 14, color: AppColors.textSecondary),
                     )
                   : null,
               border: InputBorder.none,
@@ -273,8 +274,8 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
     return ListTile(
       dense: true,
       onTap: _showCustomInput,
-      leading: const Icon(Icons.add_circle_outline,
-          size: 22, color: AppColors.primary),
+      leading: const Icon(Icons.add,
+          size: 20, color: AppColors.primary),
       title: const Text('输入自定义物品…',
           style: TextStyle(fontSize: 15, color: AppColors.primary)),
     );

@@ -1,0 +1,215 @@
+<h2>方案 B6 — 时间行内联编辑</h2>
+<p class="subtitle">时间右侧加编辑图标，点击时间区域弹出快捷时间选择器，确认后直接提交</p>
+
+<div style="display:flex;gap:24px;margin-top:20px;align-items:flex-start;flex-wrap:wrap;justify-content:center">
+
+  <!-- 手机预览 -->
+  <div style="background:#1c1917;border-radius:32px;padding:12px;width:310px;flex-shrink:0;box-shadow:0 8px 32px rgba(0,0,0,0.3)">
+    <div style="background:#FDFAF6;border-radius:22px;overflow:hidden;min-height:620px;display:flex;flex-direction:column">
+
+      <!-- AppBar -->
+      <div style="background:#FDFAF6;padding:12px 14px 8px;border-bottom:1px solid #F0EBE3;display:flex;align-items:center;gap:8px">
+        <div style="font-size:11px;font-weight:700;color:#1C1917;flex:1">日本九州之旅</div>
+        <div style="display:flex;border:1px solid #F0EBE3;border-radius:8px;overflow:hidden">
+          <div style="padding:4px 6px"><span style="font-size:10px;color:#A8A29E">🗺</span></div>
+          <div style="padding:4px 6px;background:#F97316"><span style="font-size:10px;color:white">☰</span></div>
+        </div>
+      </div>
+
+      <!-- 主体 -->
+      <div style="display:flex;flex:1">
+        <div style="flex:1;padding:14px 10px 14px 14px;position:relative">
+          <div style="position:absolute;left:27px;top:14px;bottom:14px;width:2px;background:#F0EBE3;border-radius:1px"></div>
+
+          <!-- 站点 1 -->
+          <div style="display:flex;gap:10px;margin-bottom:18px;align-items:flex-start">
+            <div style="flex-shrink:0;width:40px;z-index:1">
+              <div style="width:40px;height:40px;border-radius:10px;overflow:hidden;border:2px solid #FDFAF6;box-shadow:0 0 0 2px #F97316">
+                <div style="width:100%;height:100%;background:linear-gradient(135deg,#FBBF24,#F97316);display:flex;align-items:center;justify-content:center;font-size:18px">⛩️</div>
+              </div>
+            </div>
+            <div style="flex:1;min-width:0;padding-top:2px">
+              <!-- 时间行：时间 + 编辑小图标 + 导航图标 -->
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px">
+                <span style="font-size:15px;font-weight:700;color:#F97316;line-height:1">09:00</span>
+                <!-- 编辑图标（紧贴时间） -->
+                <div style="width:18px;height:18px;border-radius:5px;background:#FFF7ED;border:1px solid #FED7AA;display:flex;align-items:center;justify-content:center;flex-shrink:0" title="快速修改时间">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </div>
+                <div style="flex:1"></div>
+                <!-- 导航图标 -->
+                <div style="width:26px;height:26px;border-radius:8px;background:#FFF7ED;border:1px solid #FED7AA;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2L19.5 20L12 16.5L4.5 20L12 2Z" fill="#F97316"/></svg>
+                </div>
+              </div>
+              <div style="font-size:12px;font-weight:700;color:#1C1917;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">太宰府天满宫</div>
+              <div style="font-size:10px;color:#A8A29E;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">福冈县太宰府市宰府4丁目2番地</div>
+              <div style="display:flex;gap:4px;margin-top:6px">
+                <div style="width:36px;height:36px;border-radius:6px;overflow:hidden"><div style="width:100%;height:100%;background:linear-gradient(135deg,#FDE68A,#F59E0B);display:flex;align-items:center;justify-content:center;font-size:14px">🌸</div></div>
+                <div style="width:36px;height:36px;border-radius:6px;overflow:hidden"><div style="width:100%;height:100%;background:linear-gradient(135deg,#BBF7D0,#16A34A);display:flex;align-items:center;justify-content:center;font-size:14px">🎋</div></div>
+                <div style="width:36px;height:36px;border-radius:6px;overflow:hidden"><div style="width:100%;height:100%;background:linear-gradient(135deg,#BFDBFE,#3B82F6);display:flex;align-items:center;justify-content:center;font-size:14px">🏯</div></div>
+                <div style="width:36px;height:36px;border-radius:6px;background:#F0EBE3;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;font-weight:700;color:#78716C">+2</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 站点 2 住宿（无编辑图标，住宿时间不可快捷改） -->
+          <div style="display:flex;gap:10px;margin-bottom:18px;align-items:flex-start">
+            <div style="flex-shrink:0;width:40px;z-index:1">
+              <div style="width:40px;height:40px;border-radius:10px;overflow:hidden;border:2px solid #FDFAF6;box-shadow:0 0 0 2px #8B5CF6">
+                <div style="width:100%;height:100%;background:linear-gradient(135deg,#C4B5FD,#8B5CF6);display:flex;align-items:center;justify-content:center;font-size:18px">🏨</div>
+              </div>
+            </div>
+            <div style="flex:1;min-width:0;padding-top:2px">
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px">
+                <span style="font-size:15px;font-weight:700;color:#8B5CF6;line-height:1">住宿</span>
+                <div style="flex:1"></div>
+                <div style="width:26px;height:26px;border-radius:8px;background:#F5F3FF;border:1px solid #DDD6FE;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2L19.5 20L12 16.5L4.5 20L12 2Z" fill="#8B5CF6"/></svg>
+                </div>
+              </div>
+              <div style="font-size:12px;font-weight:700;color:#1C1917;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">博多阿维斯塔酒店</div>
+              <div style="font-size:10px;color:#A8A29E;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">福冈市博多区博多站前3-23</div>
+            </div>
+          </div>
+
+          <!-- 站点 3 -->
+          <div style="display:flex;gap:10px;margin-bottom:18px;align-items:flex-start">
+            <div style="flex-shrink:0;width:40px;z-index:1">
+              <div style="width:40px;height:40px;border-radius:10px;background:#FEE2C8;border:2px solid #FDFAF6;box-shadow:0 0 0 2px #F97316;display:flex;align-items:center;justify-content:center;font-size:18px">📍</div>
+            </div>
+            <div style="flex:1;min-width:0;padding-top:2px">
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px">
+                <span style="font-size:15px;font-weight:700;color:#A8A29E;line-height:1">待规划</span>
+                <!-- 待规划也有编辑图标，可以设置时间 -->
+                <div style="width:18px;height:18px;border-radius:5px;background:#F5F5F4;border:1px solid #E8E0D8;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </div>
+                <div style="flex:1"></div>
+                <div style="width:26px;height:26px;border-radius:8px;background:#F5F5F4;border:1px solid #E8E0D8;display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:0.4">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2L19.5 20L12 16.5L4.5 20L12 2Z" fill="#A8A29E"/></svg>
+                </div>
+              </div>
+              <div style="font-size:12px;font-weight:700;color:#78716C;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">柳川川下り</div>
+              <div style="font-size:10px;color:#A8A29E;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">福冈县柳川市三橋町高畑329-1</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 右侧天数栏 -->
+        <div style="width:56px;border-left:1px solid #F0EBE3;padding:10px 5px;display:flex;flex-direction:column;gap:5px">
+          <div style="height:58px;border-radius:10px;background:#FFF7ED;border:1px solid #FED7AA;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
+            <span style="font-size:7px;font-weight:600;color:#F97316;letter-spacing:0.5px">DAY</span>
+            <span style="font-size:18px;font-weight:900;color:#F97316;line-height:1">1</span>
+            <span style="font-size:8px;color:#F97316;opacity:0.6">周一</span>
+          </div>
+          <div style="height:58px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
+            <span style="font-size:7px;color:#C4B8B0">DAY</span>
+            <span style="font-size:18px;font-weight:700;color:#C4B8B0;line-height:1">2</span>
+            <span style="font-size:8px;color:#C4B8B0">周二</span>
+          </div>
+          <div style="height:58px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
+            <span style="font-size:7px;color:#C4B8B0">DAY</span>
+            <span style="font-size:18px;font-weight:700;color:#C4B8B0;line-height:1">3</span>
+            <span style="font-size:8px;color:#C4B8B0">周三</span>
+          </div>
+          <div style="height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center">
+            <span style="font-size:7px;font-weight:600;color:#C4B8B0">待规划</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;padding:0 14px 14px">
+        <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#F97316,#FBBF24);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(249,115,22,0.4)">
+          <span style="color:white;font-size:22px;line-height:1">+</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右侧：弹窗示意 + 说明 -->
+  <div style="flex:1;min-width:200px;max-width:320px;display:flex;flex-direction:column;gap:16px">
+
+    <!-- 快捷时间弹窗 -->
+    <div class="section">
+      <div class="label">点击时间区域后 — 快捷时间弹窗</div>
+      <div style="margin-top:10px;background:#fff;border-radius:16px;border:1px solid #F0EBE3;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.12)">
+        <!-- 标题栏 -->
+        <div style="padding:14px 16px 10px;border-bottom:1px solid #F0EBE3;display:flex;align-items:center">
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#1C1917">修改出发时间</div>
+            <div style="font-size:10px;color:#A8A29E;margin-top:1px">太宰府天满宫</div>
+          </div>
+          <div style="flex:1"></div>
+          <span style="font-size:14px;color:#A8A29E;cursor:pointer">✕</span>
+        </div>
+
+        <!-- 时间选择器区域 -->
+        <div style="padding:16px">
+          <!-- 天选择（横向滚动，当前天已选中） -->
+          <div style="font-size:10px;font-weight:600;color:#A8A29E;margin-bottom:8px;letter-spacing:0.5px">出行日</div>
+          <div style="display:flex;gap:6px;overflow:hidden;margin-bottom:14px">
+            <div style="height:38px;padding:0 10px;border-radius:8px;background:#FFF7ED;border:1px solid #FED7AA;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+              <span style="font-size:8px;font-weight:600;color:#F97316">DAY</span>
+              <span style="font-size:13px;font-weight:800;color:#F97316;line-height:1">1</span>
+            </div>
+            <div style="height:38px;padding:0 10px;border-radius:8px;background:#F5F5F4;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+              <span style="font-size:8px;color:#A8A29E">DAY</span>
+              <span style="font-size:13px;font-weight:700;color:#A8A29E;line-height:1">2</span>
+            </div>
+            <div style="height:38px;padding:0 10px;border-radius:8px;background:#F5F5F4;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+              <span style="font-size:8px;color:#A8A29E">DAY</span>
+              <span style="font-size:13px;font-weight:700;color:#A8A29E;line-height:1">3</span>
+            </div>
+            <div style="height:38px;padding:0 12px;border-radius:8px;background:#F5F5F4;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <span style="font-size:9px;font-weight:600;color:#A8A29E">待规划</span>
+            </div>
+          </div>
+
+          <!-- 小时选择（6列宫格） -->
+          <div style="font-size:10px;font-weight:600;color:#A8A29E;margin-bottom:8px;letter-spacing:0.5px">出发时间（可选）</div>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:16px">
+            <!-- 0-11 -->
+            <div style="height:28px;border-radius:6px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;color:#A8A29E">0</span></div>
+            <div style="height:28px;border-radius:6px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;color:#A8A29E">1</span></div>
+            <div style="height:28px;border-radius:6px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;color:#A8A29E">2</span></div>
+            <div style="height:28px;border-radius:6px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;color:#A8A29E">3</span></div>
+            <div style="height:28px;border-radius:6px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;color:#A8A29E">4</span></div>
+            <div style="height:28px;border-radius:6px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;color:#A8A29E">5</span></div>
+            <div style="height:28px;border-radius:6px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;color:#A8A29E">6</span></div>
+            <div style="height:28px;border-radius:6px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;color:#A8A29E">7</span></div>
+            <div style="height:28px;border-radius:6px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;color:#A8A29E">8</span></div>
+            <!-- 9 = 选中 -->
+            <div style="height:28px;border-radius:6px;background:#FFF7ED;border:1px solid #FED7AA;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;font-weight:700;color:#F97316">9</span></div>
+            <div style="height:28px;border-radius:6px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;color:#A8A29E">10</span></div>
+            <div style="height:28px;border-radius:6px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;color:#A8A29E">11</span></div>
+            <div style="height:28px;border-radius:6px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;color:#A8A29E">12</span></div>
+            <div style="height:28px;border-radius:6px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;color:#A8A29E">13</span></div>
+            <div style="height:28px;border-radius:6px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;color:#A8A29E">14</span></div>
+          </div>
+
+          <!-- 确认按钮 -->
+          <div style="height:40px;border-radius:10px;background:linear-gradient(135deg,#F97316,#FBBF24);display:flex;align-items:center;justify-content:center;cursor:pointer">
+            <span style="color:white;font-size:13px;font-weight:700">确认修改</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 设计说明 -->
+    <div class="section">
+      <div class="label">设计要点</div>
+      <ul style="margin:8px 0 0;padding-left:18px;line-height:2;font-size:13px">
+        <li>时间文字 + 编辑小图标（18×18）构成可点击区域，<b>整体触发</b>弹窗</li>
+        <li>弹窗复用已有天格 + 小时格交互，轻量无需输入键盘</li>
+        <li>点「确认修改」后直接 PATCH 接口，乐观更新列表</li>
+        <li><b>住宿类型不显示编辑图标</b>（入住/退房涉及两天，进完整编辑表单）</li>
+        <li>待规划行程显示编辑图标（可通过弹窗分配日期和时间）</li>
+      </ul>
+    </div>
+
+  </div>
+
+</div>

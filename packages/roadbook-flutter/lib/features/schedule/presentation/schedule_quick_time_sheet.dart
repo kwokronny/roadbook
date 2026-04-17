@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme.dart';
+
 import '../../../shared/models/schedule.dart';
 import '../../../shared/models/travel.dart';
 import '../domain/schedule_provider.dart';
@@ -231,22 +232,46 @@ class _ScheduleQuickTimeSheetState
     return Padding(
       padding:
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: Container(
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          borderRadius:
-              BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-        ),
-        child: SafeArea(
+      child: ClipRRect(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+        child: BackdropFilter(
+          filter: GlassSpec.sheetBlur,
+          child: Container(
+            decoration: const BoxDecoration(
+              color: GlassSpec.sheetBg,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+              border: Border(top: BorderSide(color: GlassSpec.sheetBorder, width: 1)),
+            ),
+            child: SafeArea(
           top: false,
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(
-                AppSpacing.pageHorizontal, 20,
+                AppSpacing.pageHorizontal, 0,
                 AppSpacing.pageHorizontal, 24),
-            child: widget.schedule.isHotel
-                ? _buildHotelContent()
-                : _buildRegularContent(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Drag handle
+                Center(
+                  child: Container(
+                    width: 36, height: 4,
+                    margin: const EdgeInsets.only(top: 10, bottom: 14),
+                    decoration: BoxDecoration(
+                      color: GlassSpec.dragHandle,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                if (widget.schedule.isHotel)
+                  _buildHotelContent()
+                else
+                  _buildRegularContent(),
+              ],
+            ),
           ),
+        ),
+      ),
         ),
       ),
     );
@@ -258,11 +283,11 @@ class _ScheduleQuickTimeSheetState
       mainAxisSize: MainAxisSize.min,
       children: [
         _SheetHeader(
-          title: '修改出发时间',
+          title: '修改时间',
           subtitle: widget.schedule.name,
         ),
         const SizedBox(height: 16),
-        Text('出行日', style: AppTextStyles.micro.copyWith(letterSpacing: 0.5)),
+        Text('选择日期', style: TextStyle(fontSize: 11, color: AppColors.inkTertiary)),
         const SizedBox(height: 8),
         _DayScrollRow(
           totalDays: _totalDays,
@@ -274,8 +299,8 @@ class _ScheduleQuickTimeSheetState
           onTap: (d) => setState(() => _selectedDay = d),
         ),
         const SizedBox(height: 16),
-        Text('出发时间（可选）',
-            style: AppTextStyles.micro.copyWith(letterSpacing: 0.5)),
+        const Text('选择时间',
+            style: TextStyle(fontSize: 11, color: AppColors.inkTertiary)),
         const SizedBox(height: 8),
         _HourGrid(
           selectedHour: _selectedHour,
@@ -284,7 +309,11 @@ class _ScheduleQuickTimeSheetState
               setState(() => _selectedHour = h == _selectedHour ? null : h),
         ),
         const SizedBox(height: 20),
-        _ConfirmButton(isHotel: false, saving: _saving, onTap: _submit),
+        _ConfirmButton(
+          label: _selectedHour != null
+              ? '确认 ${_selectedHour.toString().padLeft(2, '0')}:30'
+              : '确认修改',
+          saving: _saving, onTap: _submit),
       ],
     );
   }
@@ -337,7 +366,7 @@ class _ScheduleQuickTimeSheetState
           if (dayPrompt.isNotEmpty)
             Text(dayPrompt,
                 style: AppTextStyles.micro
-                    .copyWith(color: AppColors.hotel, fontWeight: FontWeight.w600)),
+                    .copyWith(color: AppColors.hotel, fontWeight: FontWeight.w500)),
         ]),
         const SizedBox(height: 8),
         _DayScrollRow(
@@ -357,7 +386,7 @@ class _ScheduleQuickTimeSheetState
           if (hourPrompt.isNotEmpty)
             Text(hourPrompt,
                 style: AppTextStyles.micro
-                    .copyWith(color: AppColors.hotel, fontWeight: FontWeight.w600)),
+                    .copyWith(color: AppColors.hotel, fontWeight: FontWeight.w500)),
         ]),
         const SizedBox(height: 8),
         _HourGrid(
@@ -374,7 +403,7 @@ class _ScheduleQuickTimeSheetState
           nightsLabel: nightsLabel,
         ),
         const SizedBox(height: 20),
-        _ConfirmButton(isHotel: true, saving: _saving, onTap: _submit),
+        _ConfirmButton(label: '确认修改', saving: _saving, onTap: _submit),
       ],
     );
   }
@@ -391,19 +420,22 @@ class _SheetHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(children: [
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(title, style: AppTextStyles.appBarTitle),
+        Text(title, style: AppTextStyles.title.copyWith(fontSize: 20)),
         const SizedBox(height: 2),
         Text(subtitle,
-            style:
-                AppTextStyles.caption.copyWith(color: AppColors.textSecondary)),
+            style: const TextStyle(fontSize: 13, color: AppColors.inkSecondary)),
       ]),
       const Spacer(),
-      IconButton(
-        icon: const Icon(Icons.close, size: 20),
-        onPressed: () => Navigator.of(context).pop(),
-        color: AppColors.textSecondary,
-        padding: EdgeInsets.zero,
-        constraints: const BoxConstraints(),
+      GestureDetector(
+        onTap: () => Navigator.of(context).pop(),
+        child: Container(
+          width: 26, height: 26,
+          decoration: const BoxDecoration(
+            color: Color(0x1A1C1C1E),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Icons.close, size: 14, color: AppColors.inkSecondary),
+        ),
       ),
     ]);
   }
@@ -454,23 +486,23 @@ class _DayScrollRow extends StatelessWidget {
 
           final bg = isSelected
               ? (isHotel ? AppColors.hotelLight : AppColors.primaryLight)
-              : const Color(0xFFF5F5F4);
+              : const Color(0x0A1C1C1E);
           final border = isSelected
               ? (isHotel ? AppColors.hotelBorder : AppColors.primaryBorder)
               : Colors.transparent;
           final textColor = isSelected
-              ? (isHotel ? AppColors.hotel : AppColors.primary)
-              : AppColors.textSecondary;
+              ? (isHotel ? AppColors.lavenderText : const Color(0xFFD4410A))
+              : AppColors.inkTertiary;
 
           return GestureDetector(
             onTap: () => onTap(day),
             child: Container(
               margin: const EdgeInsets.only(right: 6),
-              width: day == 0 ? 72 : 58,
-              height: 72,
+              width: day == 0 ? 72 : 52,
+              height: 60,
               decoration: BoxDecoration(
                 color: bg,
-                borderRadius: BorderRadius.circular(AppRadius.input),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: border),
               ),
               child: Column(
@@ -479,36 +511,30 @@ class _DayScrollRow extends StatelessWidget {
                     ? [
                         Text('待规划',
                             style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
                                 color: textColor)),
                       ]
                     : [
                         Text('DAY',
                             style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
                                 color: textColor,
                                 height: 1.1)),
                         Text('$day',
                             style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w800,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w300,
                                 color: textColor,
-                                height: 1.0)),
-                        Text(_weekLabel(day),
-                            style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: textColor.withValues(alpha: 0.8),
                                 height: 1.2)),
-                        // 始终占位，避免 tag 出现时引起格子内容位移
-                        Text(tag ?? '',
-                            style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: textColor,
-                                height: 1.1)),
+                        if (tag != null && tag!.isNotEmpty)
+                          Text(tag!,
+                              style: TextStyle(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w500,
+                                  color: textColor,
+                                  height: 1.1)),
                       ],
               ),
             ),
@@ -556,29 +582,29 @@ class _HourGrid extends StatelessWidget {
 
         final bg = isSelected
             ? (isHotel ? AppColors.hotelLight : AppColors.primaryLight)
-            : const Color(0xFFF5F5F4);
+            : const Color(0x0A1C1C1E);
         final border = isSelected
             ? (isHotel ? AppColors.hotelBorder : AppColors.primaryBorder)
             : Colors.transparent;
         final textColor = isSelected
-            ? (isHotel ? AppColors.hotel : AppColors.primary)
-            : AppColors.textSecondary;
+            ? (isHotel ? AppColors.lavenderText : const Color(0xFFD4410A))
+            : AppColors.inkTertiary;
 
         return GestureDetector(
           onTap: () => onTap(h),
           child: Container(
             decoration: BoxDecoration(
               color: bg,
-              borderRadius: BorderRadius.circular(AppRadius.timeCell),
+              borderRadius: BorderRadius.circular(8),
               border: Border.all(color: border),
             ),
             child: Center(
               child: Text(
-                '$h',
+                '$h'.padLeft(2, '0'),
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 12,
                   fontWeight:
-                      isSelected ? FontWeight.w700 : FontWeight.w500,
+                      isSelected ? FontWeight.w500 : FontWeight.w400,
                   color: textColor,
                 ),
               ),
@@ -619,14 +645,14 @@ class _HotelSummaryBar extends StatelessWidget {
       child: Row(children: [
         Text('${_dayStr(checkInDay)} 入住 ${_hourStr(checkInHour)}',
             style: AppTextStyles.caption
-                .copyWith(color: AppColors.hotel, fontWeight: FontWeight.w600)),
+                .copyWith(color: AppColors.hotel, fontWeight: FontWeight.w500)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6),
           child: Text('→', style: AppTextStyles.caption),
         ),
         Text('${_dayStr(checkOutDay)} 退房 ${_hourStr(checkOutHour)}',
             style: AppTextStyles.caption
-                .copyWith(color: AppColors.hotel, fontWeight: FontWeight.w600)),
+                .copyWith(color: AppColors.hotel, fontWeight: FontWeight.w500)),
         const Spacer(),
         if (nightsLabel != null)
           Text('· $nightsLabel', style: AppTextStyles.caption),
@@ -636,38 +662,41 @@ class _HotelSummaryBar extends StatelessWidget {
 }
 
 class _ConfirmButton extends StatelessWidget {
-  const _ConfirmButton(
-      {required this.isHotel, required this.saving, required this.onTap});
-  final bool isHotel;
+  const _ConfirmButton({
+    required this.label,
+    required this.saving,
+    required this.onTap,
+  });
+  final String label;
   final bool saving;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 44,
-      decoration: BoxDecoration(
-        gradient: isHotel
-            ? const LinearGradient(
-                colors: [Color(0xFF8B5CF6), Color(0xFFA78BFA)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              )
-            : AppColors.primaryGradient,
-        borderRadius: BorderRadius.circular(AppRadius.fab),
-      ),
-      child: TextButton(
-        onPressed: saving ? null : onTap,
-        child: saving
-            ? const SizedBox(
-                width: 18, height: 18,
-                child: CircularProgressIndicator(
-                    strokeWidth: 2, color: Colors.white))
-            : const Text('确认修改',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700)),
+    return GestureDetector(
+      onTap: saving ? null : onTap,
+      child: Container(
+        height: 48,
+        decoration: BoxDecoration(
+          color: AppColors.darkPill,
+          borderRadius: BorderRadius.circular(AppRadius.pill),
+        ),
+        child: Center(
+          child: saving
+              ? const SizedBox(
+                  width: 18, height: 18,
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: Colors.white))
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(label,
+                        style: const TextStyle(color: Colors.white, fontSize: 16)),
+                    const SizedBox(width: 6),
+                    const Text('→', style: TextStyle(color: Colors.white, fontSize: 16)),
+                  ],
+                ),
+        ),
       ),
     );
   }

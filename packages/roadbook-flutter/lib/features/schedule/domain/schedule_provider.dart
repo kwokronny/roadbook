@@ -107,3 +107,7 @@ final selectedDayProvider =
 /// Map tab day selector: -1 = 全部，1-N = 第 N 天
 final mapSelectedDayProvider =
     StateProvider.autoDispose.family<int, int>((ref, travelId) => 1);
+
+/// Whether the schedule list is in multi-select mode
+final scheduleSelectionModeProvider =
+    StateProvider.autoDispose.family<bool, int>((ref, travelId) => false);

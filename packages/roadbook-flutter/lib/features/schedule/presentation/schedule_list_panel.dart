@@ -1,5 +1,6 @@
 // lib/features/schedule/presentation/schedule_list_panel.dart
 // NOTE: 不含 Scaffold — FAB 由父级 TravelDetailScreen 管理
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -13,6 +14,7 @@ import 'widgets/day_sidebar.dart';
 import 'widgets/schedule_timeline_item.dart';
 import 'schedule_edit_sheet.dart';
 import 'schedule_quick_time_sheet.dart';
+import '../../luggage/domain/luggage_provider.dart';
 
 class _LuggageMarker {
   const _LuggageMarker();
@@ -34,7 +36,10 @@ class ScheduleListPanel extends ConsumerStatefulWidget {
 
 class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
   final Set<int> _selectedIds = {};
-  bool _isSelectionMode = false;
+
+  bool get _isSelectionMode => ref.read(scheduleSelectionModeProvider(travel.id!));
+  set _isSelectionModeValue(bool v) =>
+      ref.read(scheduleSelectionModeProvider(travel.id!).notifier).state = v;
 
   Travel get travel => widget.travel;
   RoleType get perm => widget.perm;
@@ -70,7 +75,7 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
 
   void _enterSelectionMode(int scheduleId) {
     setState(() {
-      _isSelectionMode = true;
+      _isSelectionModeValue = true;
       _selectedIds.clear();
       _selectedIds.add(scheduleId);
     });
@@ -78,7 +83,7 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
 
   void _exitSelectionMode() {
     setState(() {
-      _isSelectionMode = false;
+      _isSelectionModeValue = false;
       _selectedIds.clear();
     });
   }
@@ -87,7 +92,7 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
     setState(() {
       if (_selectedIds.contains(id)) {
         _selectedIds.remove(id);
-        if (_selectedIds.isEmpty) _isSelectionMode = false;
+        if (_selectedIds.isEmpty) _isSelectionModeValue = false;
       } else {
         _selectedIds.add(id);
       }
@@ -192,25 +197,13 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
   Widget build(BuildContext context) {
     final listAsync = ref.watch(scheduleProvider(travel.id!));
     final selectedDay = ref.watch(selectedDayProvider(travel.id!));
+    // Watch selection mode so UI rebuilds when it changes
+    ref.watch(scheduleSelectionModeProvider(travel.id!));
 
-    return Column(
+    return Stack(
       children: [
-        // ── Top: Day bar
-        IgnorePointer(
-          ignoring: _isSelectionMode,
-          child: Opacity(
-            opacity: _isSelectionMode ? 0.4 : 1.0,
-            child: DayBar(
-              totalDays: _totalDays,
-              selectedDay: selectedDay,
-              travelStartDate: travel.startDate,
-              onDaySelected: (d) =>
-                  ref.read(selectedDayProvider(travel.id!).notifier).state = d,
-            ),
-          ),
-        ),
-        // ── Bottom: Timeline list (full width)
-        Expanded(
+        // ── Timeline list (full height, padded top for day bar)
+        Positioned.fill(
           child: listAsync.when(
             loading: () => const Center(
                 child: CircularProgressIndicator(color: AppColors.primary)),
@@ -244,46 +237,95 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
 
               final allSelected = items.every((s) => _selectedIds.contains(s.id));
 
-              return Column(
+              return Padding(
+                padding: EdgeInsets.only(top: _isSelectionMode ? 68 : 0),
+                child: Column(
                 children: [
                   // ── Selection toolbar
                   if (_isSelectionMode)
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        border: Border(bottom: BorderSide(color: AppColors.border)),
-                      ),
-                      child: Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () => _toggleSelectAll(items),
-                            child: Icon(
-                              allSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-                              size: 22,
-                              color: allSelected ? AppColors.primary : AppColors.textSecondary,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.pageHorizontal, vertical: 4),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(AppRadius.cover),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: const Color(0x99FFFFFF), // 60% white
+                              borderRadius: BorderRadius.circular(AppRadius.cover),
+                              border: Border.all(color: const Color(0xA6FFFFFF)),
                             ),
-                          ),
-                          const SizedBox(width: 10),
-                          Text('已选 ${_selectedIds.length} 项', style: AppTextStyles.caption),
-                          const SizedBox(width: 12),
-                          GestureDetector(
-                            onTap: _selectedIds.isNotEmpty ? _batchMove : null,
-                            child: Icon(Icons.drive_file_move_outline, size: 22,
-                                color: _selectedIds.isNotEmpty ? AppColors.primary : AppColors.textDisabled),
-                          ),
-                          const SizedBox(width: 12),
-                          GestureDetector(
-                            onTap: _selectedIds.isNotEmpty ? _batchDelete : null,
-                            child: Icon(Icons.delete_outline, size: 22,
-                                color: _selectedIds.isNotEmpty ? Colors.red : AppColors.textDisabled),
-                          ),
-                          const Spacer(),
-                          GestureDetector(
-                            onTap: _exitSelectionMode,
-                            child: const Icon(Icons.close, size: 20, color: AppColors.textSecondary),
-                          ),
-                        ],
+                        child: Row(
+                          children: [
+                            // Check all circle
+                            GestureDetector(
+                              onTap: () => _toggleSelectAll(items),
+                              child: Container(
+                                width: 22, height: 22,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: allSelected ? AppColors.primary : Colors.transparent,
+                                  border: allSelected ? null
+                                      : Border.all(color: AppColors.inkTertiary, width: 2),
+                                ),
+                                child: allSelected
+                                    ? const Icon(Icons.check, size: 14, color: Colors.white)
+                                    : null,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text('已选 ${_selectedIds.length} 项',
+                                style: const TextStyle(fontSize: 12, color: AppColors.inkSecondary)),
+                            const Spacer(),
+                            // Move
+                            GestureDetector(
+                              onTap: _selectedIds.isNotEmpty ? _batchMove : null,
+                              child: Container(
+                                width: 28, height: 28,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: const Color(0x0F1C1C1E),
+                                ),
+                                child: Icon(Icons.drive_file_move_outline, size: 16,
+                                    color: _selectedIds.isNotEmpty
+                                        ? AppColors.inkSecondary : AppColors.textDisabled),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            // Delete
+                            GestureDetector(
+                              onTap: _selectedIds.isNotEmpty ? _batchDelete : null,
+                              child: Container(
+                                width: 28, height: 28,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: const Color(0x14FF3B30),
+                                ),
+                                child: Icon(Icons.delete_outline, size: 16,
+                                    color: _selectedIds.isNotEmpty
+                                        ? AppColors.destructive : AppColors.textDisabled),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            // Close
+                            GestureDetector(
+                              onTap: _exitSelectionMode,
+                              child: Container(
+                                width: 28, height: 28,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: const Color(0x0F1C1C1E),
+                                ),
+                                child: const Icon(Icons.close, size: 14,
+                                    color: AppColors.inkSecondary),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                        ),
                       ),
                     ),
 
@@ -294,8 +336,9 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
                       onRefresh: () async =>
                           ref.invalidate(scheduleProvider(travel.id!)),
                       child: ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(
-                            AppSpacing.pageHorizontal, 8,
+                        padding: EdgeInsets.fromLTRB(
+                            AppSpacing.pageHorizontal,
+                            _isSelectionMode ? 8 : 76,
                             AppSpacing.pageHorizontal, 100),
                         itemCount: displayItems.length + 1,
                         itemBuilder: (context, i) {
@@ -305,15 +348,17 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
 
                           final entry = displayItems[i];
 
+                          Widget child;
                           if (entry is _LuggageMarker) {
                             if (_isSelectionMode) return const SizedBox.shrink();
-                            return _LuggageCheckItem(
+                            child = _LuggageCheckItemLive(
+                              travelId: travel.id!,
                               onTap: () => context.push('/travel/${travel.id}/luggage'),
                             );
-                          }
+                          } else {
 
                           final s = entry as Schedule;
-                          return ScheduleTimelineItem(
+                          child = ScheduleTimelineItem(
                             schedule: s,
                             travelStartDate: travel.startDate,
                             canEdit: _canEdit,
@@ -344,15 +389,25 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
                                 ? () => _confirmDelete(context, ref, s)
                                 : null,
                           );
+                          }
+
+                          // Stagger entrance animation
+                          final delay = (i.clamp(0, 6)) * 50;
+                          return _StaggerItem(
+                            delay: Duration(milliseconds: delay),
+                            child: child,
+                          );
                         },
                       ),
                     ),
                   ),
                 ],
+              ),
               );
             },
           ),
         ),
+        // Day bar moved to TravelDetailScreen (shared with map)
       ],
     );
   }
@@ -383,39 +438,192 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
   }
 }
 
-class _LuggageCheckItem extends StatelessWidget {
-  const _LuggageCheckItem({required this.onTap});
+class _LuggageCheckItemLive extends ConsumerWidget {
+  const _LuggageCheckItemLive({required this.travelId, required this.onTap});
+  final int travelId;
   final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final luggageAsync = ref.watch(luggageProvider(travelId));
+    final checked = luggageAsync.valueOrNull?.checkedCount ?? 0;
+    final total = luggageAsync.valueOrNull?.totalItems ?? 0;
+    final progress = total > 0 ? checked / total : 0.0;
+
+    return _LuggageCheckItem(
+      onTap: onTap,
+      checkedCount: checked,
+      totalCount: total,
+      progress: progress,
+    );
+  }
+}
+
+class _LuggageCheckItem extends StatelessWidget {
+  const _LuggageCheckItem({
+    required this.onTap,
+    this.checkedCount = 0,
+    this.totalCount = 0,
+    this.progress = 0,
+  });
+  final VoidCallback onTap;
+  final int checkedCount;
+  final int totalCount;
+  final double progress;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
-          color: AppColors.primaryLight,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: AppSpacing.scheduleGap),
+        child: ClipRRect(
           borderRadius: BorderRadius.circular(AppRadius.card),
-          border: Border.all(color: AppColors.primaryBorder),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.luggage_outlined,
-                size: 18, color: AppColors.primary),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                '清点行李',
-                style: AppTextStyles.body.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w600,
-                ),
+          child: BackdropFilter(
+            filter: GlassSpec.cardBlur,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: const Color(0x7AFFFFFF), // rgba(255,255,255,0.48)
+                borderRadius: BorderRadius.circular(AppRadius.card),
+                border: Border.all(color: const Color(0x99FFFFFF)), // 0.60
+              ),
+              child: Stack(
+                children: [
+                  // Specular
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(AppRadius.card),
+                          gradient: GlassSpec.specularHighlight,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      // Emoji icon box
+                      Container(
+                        width: 36, height: 36,
+                        decoration: BoxDecoration(
+                          color: const Color(0x14FF6B3D), // rgba(255,107,61,0.08)
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: const Color(0x1FFF6B3D)), // 0.12
+                        ),
+                        child: const Center(
+                          child: Text('🧳', style: TextStyle(fontSize: 18)),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      // Title + subtitle
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('出发行李清单',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w500,
+                                    color: AppColors.inkPrimary)),
+                            const SizedBox(height: 2),
+                            Text('$checkedCount/$totalCount 已准备',
+                                style: TextStyle(
+                                    fontSize: 12, color: AppColors.inkTertiary)),
+                          ],
+                        ),
+                      ),
+                      // Progress bar + chevron
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Track
+                          Container(
+                            width: 48, height: 4,
+                            decoration: BoxDecoration(
+                              color: const Color(0x0F1C1C1E),
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                            alignment: Alignment.centerLeft,
+                            child: FractionallySizedBox(
+                              widthFactor: progress.clamp(0, 1),
+                              child: Container(
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary,
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Icon(Icons.chevron_right,
+                              size: 18, color: AppColors.inkTertiary),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            const Icon(Icons.chevron_right, size: 18, color: AppColors.primary),
-          ],
+          ),
         ),
+      ),
+    );
+  }
+}
+
+// ── Stagger entrance animation ──────────────────────────────────────────────
+
+class _StaggerItem extends StatefulWidget {
+  const _StaggerItem({required this.delay, required this.child});
+  final Duration delay;
+  final Widget child;
+
+  @override
+  State<_StaggerItem> createState() => _StaggerItemState();
+}
+
+class _StaggerItemState extends State<_StaggerItem>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  late final Animation<double> _opacity;
+  late final Animation<Offset> _slide;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 380),
+    );
+    final curve = CurvedAnimation(
+      parent: _ctrl,
+      curve: const Cubic(0.22, 1.0, 0.36, 1.0), // expressive
+    );
+    _opacity = Tween<double>(begin: 0, end: 1).animate(curve);
+    _slide = Tween<Offset>(
+      begin: const Offset(0, 0.08),
+      end: Offset.zero,
+    ).animate(curve);
+
+    Future.delayed(widget.delay, () {
+      if (mounted) _ctrl.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _opacity,
+      child: SlideTransition(
+        position: _slide,
+        child: widget.child,
       ),
     );
   }

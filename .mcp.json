@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "roadbook": {
+      "command": "node",
+      "args": ["/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/packages/roadbook-mcp/index.js"],
+      "env": {
+        "ROADBOOK_API_URL": "http://localhost:3000",
+        "ROADBOOK_API_KEY": "rb_dc23369500661c7212de7f5bc9f3e024"
+      }
+    }
+  }
+}

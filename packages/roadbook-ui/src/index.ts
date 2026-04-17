@@ -13,5 +13,20 @@ export { Icon } from './components/icon'
 export { iconPaths } from './components/icons'
 export { Skeleton } from './components/skeleton'
 
+// Drawer
+export {
+  // Primitives
+  DrawerOverlay, DrawerHandle, DrawerClose, DrawerHeader, DrawerFooter,
+  DrawerContent, StaggerChild, BottomSheetRoot, SideDrawerRoot,
+  // Action Sheet
+  ActionSheet, ActionItem, ConfirmSheet,
+  // Form Sheet
+  FormSheet, FormGroup, FormRow, FormInput, FormTextarea, FormSelector, FormToggle,
+  // Picker Sheet
+  PickerSheet, PickerSearch, PickerItem, SectionHeader, LetterIndex, FilterChips,
+  // Side Drawer
+  SideDrawer, SideDrawerHeader,
+} from './components/drawer'
+
 // Utils
 export { cn } from './lib/utils'

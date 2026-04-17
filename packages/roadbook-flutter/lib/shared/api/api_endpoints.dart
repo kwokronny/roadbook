@@ -30,7 +30,7 @@ abstract class ApiEndpoints {
   static const String apiKeyRemove = '/api/user/apikey/remove';
 
   // Upload
-  static const String upload = '/upload';
+  static const String upload = '/api/upload';
 
   // Equip (Luggage)
   static const String equipSet = '/api/travel/equip/set';

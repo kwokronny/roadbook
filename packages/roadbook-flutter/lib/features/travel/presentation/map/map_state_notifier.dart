@@ -180,13 +180,22 @@ class MapStateNotifier extends AutoDisposeFamilyNotifier<MapState, int> {
         .toList();
   }
 
-  Future<void> quickAddSchedule(AmapPoi poi) async {
+  Future<void> quickAddSchedule(AmapPoi poi, {
+    int? selectedDay,
+    DateTime? travelStartDate,
+  }) async {
+    DateTime? startTime;
+    if (selectedDay != null && selectedDay > 0 && travelStartDate != null) {
+      final date = travelStartDate.add(Duration(days: selectedDay - 1));
+      startTime = DateTime(date.year, date.month, date.day, 9, 0);
+    }
     final form = ScheduleFormData(
       tId: arg,
       name: poi.name,
       coordinate: '${poi.longitude},${poi.latitude}',
       address: poi.address,
       isHotel: poi.type?.contains('住宿服务') ?? false,
+      startTime: startTime,
     );
     await ref.read(scheduleProvider(arg).notifier).add(form);
     exitSearchMode();

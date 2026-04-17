@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme.dart';
+
 import '../data/collect_import_service.dart';
 import '../data/schedule_repository.dart';
 import '../domain/schedule_provider.dart';
@@ -98,20 +99,36 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: Container(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.85,
-        ),
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          borderRadius:
-              BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-        ),
-        child: SafeArea(
+      child: ClipRRect(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+        child: BackdropFilter(
+          filter: GlassSpec.sheetBlur,
+          child: Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.85,
+            ),
+            decoration: const BoxDecoration(
+              color: GlassSpec.sheetBg,
+              borderRadius:
+                  BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+              border: Border(top: BorderSide(color: GlassSpec.sheetBorder, width: 1)),
+            ),
+            child: SafeArea(
           top: false,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // Drag handle
+              Center(
+                child: Container(
+                  width: 36, height: 4,
+                  margin: const EdgeInsets.only(top: 10, bottom: 4),
+                  decoration: BoxDecoration(
+                    color: GlassSpec.dragHandle,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
               _buildHeader(),
               Flexible(
                 child: _phase == _Phase.input
@@ -120,6 +137,8 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
               ),
             ],
           ),
+        ),
+      ),
         ),
       ),
     );
@@ -131,11 +150,19 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
           AppSpacing.pageHorizontal, 20, AppSpacing.pageHorizontal, 0),
       child: Row(
         children: [
-          const Text('批量导入', style: AppTextStyles.appBarTitle),
+          Text('批量导入', style: AppTextStyles.title.copyWith(fontSize: 20)),
           const Spacer(),
-          IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () => Navigator.of(context).pop(),
+          GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
+            child: Container(
+              width: 26, height: 26,
+              decoration: const BoxDecoration(
+                color: Color(0x1A1C1C1E),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.close, size: 14,
+                  color: AppColors.inkSecondary),
+            ),
           ),
         ],
       ),
@@ -163,7 +190,7 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
             decoration: InputDecoration(
               hintText: '粘贴点评收藏分享链接…',
               filled: true,
-              fillColor: const Color(0xFFF5F5F4),
+              fillColor: const Color(0x0A1C1C1E),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppRadius.input),
                 borderSide: BorderSide.none,
@@ -173,20 +200,24 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
           ),
           const SizedBox(height: 16),
           // ── 导入按钮
-          Container(
-            height: 48,
-            decoration: BoxDecoration(
-              gradient: AppColors.primaryGradient,
-              borderRadius: BorderRadius.circular(AppRadius.fab),
-            ),
-            child: TextButton(
-              onPressed: _phase == _Phase.input ? _startImport : null,
-              child: const Text(
-                '开始导入',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 19,
-                    fontWeight: FontWeight.w600),
+          GestureDetector(
+            onTap: _phase == _Phase.input ? _startImport : null,
+            child: Container(
+              height: 44,
+              decoration: BoxDecoration(
+                color: AppColors.darkPill,
+                borderRadius: BorderRadius.circular(AppRadius.pill),
+              ),
+              child: const Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('开始导入',
+                        style: TextStyle(color: Colors.white, fontSize: 15)),
+                    SizedBox(width: 6),
+                    Text('→', style: TextStyle(color: Colors.white, fontSize: 15)),
+                  ],
+                ),
               ),
             ),
           ),
@@ -269,11 +300,18 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
           Padding(
             padding: const EdgeInsets.fromLTRB(
                 AppSpacing.pageHorizontal, 8, AppSpacing.pageHorizontal, 16),
-            child: SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('关闭'),
+            child: GestureDetector(
+              onTap: () => Navigator.of(context).pop(),
+              child: Container(
+                height: 44,
+                decoration: BoxDecoration(
+                  border: Border.all(color: const Color(0x1F1C1C1E)),
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                ),
+                child: const Center(
+                  child: Text('关闭', style: TextStyle(
+                    fontSize: 15, color: AppColors.inkSecondary)),
+                ),
               ),
             ),
           ),
@@ -299,7 +337,7 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
         return const Icon(Icons.check_circle,
             size: 20, color: AppColors.success);
       case _ItemStatus.error:
-        return const Icon(Icons.cancel, size: 20, color: Colors.red);
+        return const Icon(Icons.close, size: 20, color: Colors.red);
     }
   }
 }

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>小肥路书 · Frosted Warmth Design System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --canvas:#F2EDE8;--frost:rgba(255,255,255,0.52);--frost-border:rgba(255,255,255,0.65);
+    --ink:rgba(28,28,30,0.90);--ink2:rgba(28,28,30,0.50);--ink3:rgba(28,28,30,0.28);
+    --coral:#FF6B3D;--dark:rgba(28,28,30,0.88);--lav:rgba(140,92,246,0.10);
+    --font:'Outfit',-apple-system,sans-serif;
+  }
+  body{font-family:var(--font);background:var(--canvas);color:var(--ink);min-height:100vh}
+
+  .ambient{position:fixed;inset:0;z-index:0;overflow:hidden}
+  .ambient .orb{position:absolute;border-radius:50%;filter:blur(80px);animation:drift 25s ease-in-out infinite}
+  @keyframes drift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(25px,-15px) scale(1.04)}66%{transform:translate(-15px,12px) scale(0.96)}}
+
+  .wrap{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:40px 24px 80px}
+
+  h1{text-align:center;font-size:36px;font-weight:200;margin-bottom:6px}
+  h1 span{color:var(--coral)}
+  .sub{text-align:center;font-size:14px;color:var(--ink2);margin-bottom:48px}
+
+  .section{margin-bottom:48px}
+  .section-num{font-size:11px;font-weight:400;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px}
+  .section-title{font-size:24px;font-weight:200;letter-spacing:-0.02em;margin-bottom:20px}
+
+  .frost{background:var(--frost);backdrop-filter:blur(40px) saturate(1.4);-webkit-backdrop-filter:blur(40px) saturate(1.4);border:1px solid var(--frost-border);border-radius:20px;position:relative;overflow:hidden}
+  .frost::after{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(160deg,rgba(255,255,255,0.35) 0%,transparent 40%);pointer-events:none}
+
+  /* Palette */
+  .pal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+  .pal-item{padding:14px;position:relative;z-index:1}
+  .pal-dot{width:32px;height:32px;border-radius:50%;margin-bottom:8px;border:1px solid rgba(0,0,0,0.06)}
+  .pal-name{font-size:12px;font-weight:500;margin-bottom:1px}
+  .pal-val{font-size:10px;color:var(--ink3);font-family:monospace}
+
+  /* Type */
+  .type-row{display:flex;align-items:baseline;gap:16px;padding:12px 0;border-bottom:1px solid rgba(28,28,30,0.04);position:relative;z-index:1}
+  .type-row:last-child{border-bottom:none}
+  .type-meta{width:80px;flex-shrink:0}
+  .type-label{font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink3)}
+  .type-spec{font-size:10px;color:var(--ink3);font-family:monospace;margin-top:1px}
+
+  /* Components */
+  .comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .comp-card{padding:20px}
+  .comp-label{font-size:10px;letter-spacing:0.10em;text-transform:uppercase;color:var(--ink3);margin-bottom:14px;position:relative;z-index:1}
+
+  .btn-dark{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:100px;background:var(--dark);color:#fff;font-size:14px;font-weight:400;border:none;cursor:pointer;font-family:inherit}
+  .btn-coral{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:100px;background:var(--coral);color:#fff;font-size:14px;font-weight:400;border:none;cursor:pointer;font-family:inherit}
+  .btn-frost{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:100px;background:var(--frost);border:1px solid var(--frost-border);color:var(--ink);font-size:14px;font-weight:400;cursor:pointer;font-family:inherit}
+  .btn-ghost{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:100px;background:transparent;border:1px solid rgba(28,28,30,0.12);color:var(--ink2);font-size:14px;font-weight:400;cursor:pointer;font-family:inherit}
+
+  .input-f{width:100%;padding:10px 14px;background:rgba(255,255,255,0.45);border:1px solid rgba(255,255,255,0.60);border-radius:14px;font-size:13px;font-family:inherit;color:var(--ink);outline:none;margin-bottom:8px}
+  .input-f::placeholder{color:var(--ink3)}
+  .input-f:focus{border-color:rgba(255,107,61,0.40);background:rgba(255,255,255,0.60)}
+
+  .tag-group{display:flex;flex-wrap:wrap;gap:6px;position:relative;z-index:1}
+  .tag{padding:3px 10px;border-radius:100px;font-size:11px;font-weight:400;border:1px solid}
+  .tag-coral{background:rgba(255,107,61,0.08);border-color:rgba(255,107,61,0.18);color:#D4410A}
+  .tag-dark{background:rgba(28,28,30,0.05);border-color:rgba(28,28,30,0.08);color:var(--ink2)}
+  .tag-lav{background:rgba(140,92,246,0.08);border-color:rgba(140,92,246,0.18);color:#6D3FC0}
+
+  /* Spec grid */
+  .spec-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .spec-card{padding:16px;position:relative;z-index:1}
+  .spec-name{font-size:13px;font-weight:500;margin-bottom:6px}
+  .spec-val{font-size:11px;color:rgba(28,28,30,0.40);line-height:1.7;font-family:monospace}
+
+  /* Motion */
+  .motion-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .motion-card{padding:18px;text-align:center}
+  .motion-demo{width:40px;height:40px;border-radius:12px;margin:0 auto 10px;cursor:pointer;transition:transform 0.3s cubic-bezier(0.34,1.3,0.64,1)}
+  .motion-demo:hover{transform:scale(1.15)}
+  .motion-card:nth-child(2) .motion-demo{transition:transform 0.28s ease-out}
+  .motion-card:nth-child(2) .motion-demo:hover{transform:translateY(-6px)}
+  .motion-card:nth-child(3) .motion-demo{transition:transform 0.38s cubic-bezier(0.22,1,0.36,1)}
+  .motion-card:nth-child(3) .motion-demo:hover{transform:rotate(180deg) scale(1.1)}
+  .motion-name{font-size:13px;font-weight:500;margin-bottom:3px;position:relative;z-index:1}
+  .motion-spec{font-size:10px;color:var(--ink3);font-family:monospace;position:relative;z-index:1}
+
+  @media(max-width:700px){.comp-grid,.spec-grid{grid-template-columns:1fr}.motion-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div class="ambient">
+  <div class="orb" style="width:350px;height:350px;background:rgba(245,210,170,0.18);top:-5%;right:-5%"></div>
+  <div class="orb" style="width:300px;height:300px;background:rgba(255,180,140,0.12);bottom:5%;left:-5%;animation-delay:-10s"></div>
+</div>
+
+<div class="wrap">
+
+  <h1>小肥路书<br><span>Frosted Warmth</span></h1>
+  <p class="sub">Design System · Warm canvas · Frost glass · Dark accents · Coral energy</p>
+
+  <!-- 01 Palette -->
+  <div class="section">
+    <div class="section-num">01 — Palette</div>
+    <div class="section-title">Color Calibration</div>
+    <div class="pal-grid">
+      <div class="frost pal-item"><div class="pal-dot" style="background:#F2EDE8"></div><div class="pal-name">Warm Canvas</div><div class="pal-val">#F2EDE8</div></div>
+      <div class="frost pal-item"><div class="pal-dot" style="background:rgba(255,255,255,0.52);border:1px solid rgba(0,0,0,0.08)"></div><div class="pal-name">Card Frost</div><div class="pal-val">white 52%</div></div>
+      <div class="frost pal-item"><div class="pal-dot" style="background:rgba(255,255,255,0.72);border:1px solid rgba(0,0,0,0.06)"></div><div class="pal-name">Sheet Frost</div><div class="pal-val">white 72%</div></div>
+      <div class="frost pal-item"><div class="pal-dot" style="background:rgba(28,28,30,0.90)"></div><div class="pal-name">Ink Primary</div><div class="pal-val">#1C1C1E · 90%</div></div>
+      <div class="frost pal-item"><div class="pal-dot" style="background:rgba(28,28,30,0.50)"></div><div class="pal-name">Ink Secondary</div><div class="pal-val">#1C1C1E · 50%</div></div>
+      <div class="frost pal-item"><div class="pal-dot" style="background:#FF6B3D"></div><div class="pal-name">Coral Ember</div><div class="pal-val">#FF6B3D</div></div>
+      <div class="frost pal-item"><div class="pal-dot" style="background:rgba(28,28,30,0.88)"></div><div class="pal-name">Dark Pill</div><div class="pal-val">rgba(28,28,30,0.88)</div></div>
+      <div class="frost pal-item"><div class="pal-dot" style="background:rgba(140,92,246,0.60)"></div><div class="pal-name">Lavender</div><div class="pal-val">#8C5CF6</div></div>
+    </div>
+  </div>
+
+  <!-- 02 Typography -->
+  <div class="section">
+    <div class="section-num">02 — Typography</div>
+    <div class="section-title">Type Architecture</div>
+    <div class="frost" style="padding:20px">
+      <div class="type-row"><div class="type-meta"><div class="type-label">Display</div><div class="type-spec">34 / 200</div></div><div style="font-size:34px;font-weight:200;letter-spacing:-0.03em">旅程</div></div>
+      <div class="type-row"><div class="type-meta"><div class="type-label">Title</div><div class="type-spec">22 / 300</div></div><div style="font-size:22px;font-weight:300;letter-spacing:-0.02em">新建旅程</div></div>
+      <div class="type-row"><div class="type-meta"><div class="type-label">App Bar</div><div class="type-spec">18 / 500</div></div><div style="font-size:18px;font-weight:500;letter-spacing:-0.01em">东京自由行</div></div>
+      <div class="type-row"><div class="type-meta"><div class="type-label">Headline</div><div class="type-spec">17 / 500</div></div><div style="font-size:17px;font-weight:500">一兰拉面 新宿店</div></div>
+      <div class="type-row"><div class="type-meta"><div class="type-label">Body</div><div class="type-spec">15 / 400</div></div><div style="font-size:15px;font-weight:400;color:var(--ink2)">记得提前在机器点餐，选硬面、浓汤</div></div>
+      <div class="type-row"><div class="type-meta"><div class="type-label">Caption</div><div class="type-spec">12 / 400</div></div><div style="font-size:12px;font-weight:400;color:var(--ink3)">04/10 — 04/17 · 7天</div></div>
+      <div class="type-row"><div class="type-meta"><div class="type-label">Micro</div><div class="type-spec">10 / 400</div></div><div style="font-size:10px;font-weight:400;color:var(--ink3)">@ronny · 最近使用</div></div>
+    </div>
+  </div>
+
+  <!-- 03 Components -->
+  <div class="section">
+    <div class="section-num">03 — Components</div>
+    <div class="section-title">Core Elements</div>
+    <div class="comp-grid">
+      <div class="frost comp-card">
+        <div class="comp-label">Buttons</div>
+        <div style="display:flex;flex-direction:column;gap:8px;position:relative;z-index:1">
+          <button class="btn-dark">创建旅程 →</button>
+          <button class="btn-coral">▲ 导航至目标</button>
+          <button class="btn-frost">取消</button>
+          <button class="btn-ghost">更多</button>
+        </div>
+      </div>
+      <div class="frost comp-card">
+        <div class="comp-label">Inputs</div>
+        <div style="position:relative;z-index:1">
+          <input class="input-f" placeholder="搜索旅行计划...">
+          <input class="input-f" placeholder="目的地城市">
+          <input class="input-f" placeholder="旅程名称">
+        </div>
+      </div>
+      <div class="frost comp-card">
+        <div class="comp-label">Tags & Badges</div>
+        <div class="tag-group">
+          <span class="tag tag-coral">旅行中</span>
+          <span class="tag tag-dark">规划中</span>
+          <span class="tag tag-lav">酒店</span>
+          <span class="tag tag-dark">东京</span>
+          <span class="tag tag-dark">大阪</span>
+          <span class="tag tag-coral">即将出发</span>
+        </div>
+      </div>
+      <div class="frost comp-card">
+        <div class="comp-label">Accent Elements</div>
+        <div style="display:flex;flex-direction:column;gap:10px;position:relative;z-index:1">
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:32px;height:32px;border-radius:50%;background:var(--dark);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px">＋</div><span style="font-size:12px;color:var(--ink3)">Dark Pill Circle</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:32px;height:32px;border-radius:50%;background:var(--coral);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px">▲</div><span style="font-size:12px;color:var(--ink3)">Coral Nav Circle</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:50%;background:rgba(28,28,30,0.06);display:flex;align-items:center;justify-content:center;font-size:13px;color:rgba(28,28,30,0.35)">⋯</div><span style="font-size:12px;color:var(--ink3)">More Button</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 Glass Surfaces -->
+  <div class="section">
+    <div class="section-num">04 — Glass Surfaces</div>
+    <div class="section-title">Frosted Parameters</div>
+    <div class="spec-grid">
+      <div class="frost spec-card"><div class="spec-name">Card</div><div class="spec-val">blur: 40px<br>saturate: 1.4<br>bg: white 52%<br>border: white 65%<br>radius: 24px</div></div>
+      <div class="frost spec-card"><div class="spec-name">Sheet</div><div class="spec-val">blur: 50px<br>saturate: 1.8<br>bg: white 72%<br>border-top: white 55%<br>radius: top 24px</div></div>
+      <div class="frost spec-card"><div class="spec-name">Dock</div><div class="spec-val">blur: 50px<br>sat: 1.8 bright: 1.05<br>bg: white 30%<br>border: white 50%<br>radius: pill 100px</div></div>
+    </div>
+  </div>
+
+  <!-- 05 Motion -->
+  <div class="section">
+    <div class="section-num">05 — Motion</div>
+    <div class="section-title">Animation Curves</div>
+    <div class="motion-grid">
+      <div class="frost motion-card"><div class="motion-demo" style="background:rgba(255,107,61,0.12);border:1px solid rgba(255,107,61,0.20)"></div><div class="motion-name">Spring</div><div class="motion-spec">500-600ms · bounce</div></div>
+      <div class="frost motion-card"><div class="motion-demo" style="background:rgba(28,28,30,0.06);border:1px solid rgba(28,28,30,0.10)"></div><div class="motion-name">Ease Out</div><div class="motion-spec">280ms · smooth</div></div>
+      <div class="frost motion-card"><div class="motion-demo" style="background:rgba(140,92,246,0.10);border:1px solid rgba(140,92,246,0.18)"></div><div class="motion-name">Expressive</div><div class="motion-spec">380ms · dramatic</div></div>
+    </div>
+  </div>
+
+  <!-- 06 Ambient Canvas -->
+  <div class="section">
+    <div class="section-num">06 — Ambient Canvas</div>
+    <div class="section-title">Background Orbs</div>
+    <div class="frost" style="padding:20px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;position:relative;z-index:1">
+        <div style="text-align:center"><div style="width:48px;height:48px;border-radius:50%;background:rgba(245,230,200,0.50);margin:0 auto 8px;filter:blur(4px)"></div><div style="font-size:12px;font-weight:500">Sand</div><div style="font-size:10px;color:var(--ink3);font-family:monospace">#F5E6C8 · 19%</div></div>
+        <div style="text-align:center"><div style="width:48px;height:48px;border-radius:50%;background:rgba(240,216,152,0.50);margin:0 auto 8px;filter:blur(4px)"></div><div style="font-size:12px;font-weight:500">Honey</div><div style="font-size:10px;color:var(--ink3);font-family:monospace">#F0D898 · 16%</div></div>
+        <div style="text-align:center"><div style="width:48px;height:48px;border-radius:50%;background:rgba(245,224,176,0.50);margin:0 auto 8px;filter:blur(4px)"></div><div style="font-size:12px;font-weight:500">Cream</div><div style="font-size:10px;color:var(--ink3);font-family:monospace">#F5E0B0 · 13%</div></div>
+      </div>
+      <div style="margin-top:14px;font-size:12px;color:var(--ink3);position:relative;z-index:1">Base: #F2EDE8 · 20s drift loop · unique freq/phase per orb</div>
+    </div>
+  </div>
+
+  <!-- 07 Dock Interaction -->
+  <div class="section">
+    <div class="section-num">07 — Dock Interaction</div>
+    <div class="section-title">Sliding Glass</div>
+    <div class="frost" style="padding:20px">
+      <div style="position:relative;z-index:1;font-size:13px;color:var(--ink2);line-height:1.8">
+        <b style="color:var(--ink)">Glass indicator</b> slides to selected tab with spring curve (600ms)<br>
+        <b style="color:var(--ink)">During slide</b>: backdrop-filter blur(16px) + opacity drop (motion blur)<br>
+        <b style="color:var(--ink)">Dock body</b>: squash & stretch bounce animation (650ms)<br>
+        <b style="color:var(--ink)">Icon/text</b>: simultaneously switch to coral (300ms ease)<br>
+        <b style="color:var(--ink)">Indicator z-index</b>: above icons, pointer-events none
+      </div>
+    </div>
+  </div>
+
+  <!-- 08 Overlays -->
+  <div class="section">
+    <div class="section-num">08 — Overlays</div>
+    <div class="section-title">Popover · Toast · Dialog</div>
+    <div class="comp-grid" style="grid-template-columns:1fr 1fr 1fr;gap:12px">
+      <!-- Toast -->
+      <div class="frost" style="padding:20px;text-align:center">
+        <div class="comp-label">Toast</div>
+        <div style="position:relative;z-index:1;display:flex;flex-direction:column;gap:10px;align-items:center">
+          <div style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:100px;background:var(--dark);color:#fff;font-size:13px"><span style="width:18px;height:18px;border-radius:50%;background:#34C759;display:flex;align-items:center;justify-content:center;font-size:10px">✓</span>保存成功</div>
+          <div style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:100px;background:var(--dark);color:#fff;font-size:13px"><span style="width:18px;height:18px;border-radius:50%;background:#FF3B30;display:flex;align-items:center;justify-content:center;font-size:10px">✕</span>操作失败</div>
+        </div>
+      </div>
+      <!-- Confirm -->
+      <div class="frost" style="padding:20px">
+        <div class="comp-label">Confirm</div>
+        <div style="position:relative;z-index:1">
+          <div style="background:rgba(255,255,255,0.80);border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,0.08)">
+            <div style="text-align:center;font-size:24px;margin-bottom:6px">⚠️</div>
+            <div style="text-align:center;font-size:14px;font-weight:500;margin-bottom:3px">删除旅程</div>
+            <div style="text-align:center;font-size:11px;color:var(--ink3);margin-bottom:12px">此操作无法撤销</div>
+            <div style="display:flex;gap:6px">
+              <div style="flex:1;padding:8px;border-radius:100px;background:rgba(28,28,30,0.06);text-align:center;font-size:13px;color:var(--ink2)">取消</div>
+              <div style="flex:1;padding:8px;border-radius:100px;background:#FF3B30;text-align:center;font-size:13px;color:#fff;font-weight:500">删除</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Popover -->
+      <div class="frost" style="padding:20px">
+        <div class="comp-label">Popover</div>
+        <div style="position:relative;z-index:1">
+          <div style="background:rgba(255,255,255,0.82);border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.08);width:140px">
+            <div style="display:flex;align-items:center;gap:6px;padding:9px 12px;font-size:13px">✏️ 编辑</div>
+            <div style="height:0.5px;background:rgba(28,28,30,0.06);margin-left:32px"></div>
+            <div style="display:flex;align-items:center;gap:6px;padding:9px 12px;font-size:13px">📋 克隆</div>
+            <div style="height:0.5px;background:rgba(28,28,30,0.06)"></div>
+            <div style="display:flex;align-items:center;gap:6px;padding:9px 12px;font-size:13px;color:#FF3B30">🗑 删除</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="height:12px"></div>
+    <div class="comp-grid">
+      <!-- Action Sheet -->
+      <div class="frost" style="padding:20px">
+        <div class="comp-label">Action Sheet</div>
+        <div style="position:relative;z-index:1">
+          <div style="background:rgba(255,255,255,0.82);border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.08);margin-bottom:6px">
+            <div style="padding:8px;text-align:center;font-size:11px;color:var(--ink3)">选择导航方式</div>
+            <div style="height:0.5px;background:rgba(28,28,30,0.06)"></div>
+            <div style="padding:10px;text-align:center;font-size:14px;color:var(--ink)">🚗 驾车</div>
+            <div style="height:0.5px;background:rgba(28,28,30,0.06)"></div>
+            <div style="padding:10px;text-align:center;font-size:14px;color:var(--ink)">🚌 公交</div>
+            <div style="height:0.5px;background:rgba(28,28,30,0.06)"></div>
+            <div style="padding:10px;text-align:center;font-size:14px;color:var(--ink)">🚶 步行</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.85);border-radius:14px;padding:10px;text-align:center;font-size:14px;color:var(--ink2);font-weight:500">取消</div>
+        </div>
+      </div>
+      <!-- Info Alert -->
+      <div class="frost" style="padding:20px">
+        <div class="comp-label">Info Alert</div>
+        <div style="position:relative;z-index:1">
+          <div style="background:rgba(255,255,255,0.80);border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,0.08)">
+            <div style="text-align:center;font-size:14px;font-weight:500;margin-bottom:3px">API Key 已创建</div>
+            <div style="text-align:center;font-size:11px;color:var(--ink3);margin-bottom:10px">关闭后无法再次查看</div>
+            <div style="padding:8px 10px;border-radius:10px;background:rgba(28,28,30,0.04);font-family:monospace;font-size:11px;color:var(--ink2);margin-bottom:10px;display:flex;align-items:center"><span style="flex:1">rb_sk_a3f8x9k2m...</span><span style="font-size:13px">📋</span></div>
+            <div style="padding:8px;border-radius:100px;background:var(--dark);text-align:center;font-size:13px;color:#fff">我已保存</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 09 Anti-Patterns -->
+  <div class="section">
+    <div class="section-num">09 — Anti-Patterns</div>
+    <div class="section-title">Banned</div>
+    <div class="frost" style="padding:20px">
+      <div style="position:relative;z-index:1;font-size:12px;color:var(--ink3);line-height:2;columns:2;column-gap:24px">
+        ✕ Pure black #000000<br>
+        ✕ Font weight w600+<br>
+        ✕ Multi-color tag cycles<br>
+        ✕ Blue-tinted text hue<br>
+        ✕ Gradient text on typography<br>
+        ✕ Neon/outer glow shadows<br>
+        ✕ iOS system gray #F2F2F7<br>
+        ✕ Circular spinners in empty states<br>
+        ✕ Competing accent colors<br>
+        ✕ Solid opaque cards<br>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

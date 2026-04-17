@@ -1,0 +1,52 @@
+<h2>长途交通信息来源</h2>
+<p class="subtitle">用户如何快速获取高铁/飞机的起终点、时间等信息？</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>12306 / 航司截图 OCR</h3>
+      <p>用户截图订单页面，通过 OCR 识别车次/航班号、起终点、出发到达时间</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>优势</h4><ul><li>信息最完整准确</li><li>用户操作直观</li></ul></div>
+        <div class="cons"><h4>劣势</h4><ul><li>需要接入 OCR 服务（成本）</li><li>不同 App 截图格式差异大</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>车次 / 航班号查询</h3>
+      <p>用户输入 G1234 或 CA1234，自动查询时刻表获取起终点站和时间</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>优势</h4><ul><li>输入简单，体验流畅</li><li>数据结构化</li></ul></div>
+        <div class="cons"><h4>劣势</h4><ul><li>需要接入时刻表 API</li><li>临时调整的班次可能不准</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>手动填写专用表单</h3>
+      <p>专门设计一个长途交通表单，用户手动选择交通方式、输入起终点和时间</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>优势</h4><ul><li>实现简单，无外部依赖</li><li>用户完全可控</li></ul></div>
+        <div class="cons"><h4>劣势</h4><ul><li>输入繁琐</li><li>体验一般</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="d" onclick="toggleSelect(this)">
+    <div class="letter">D</div>
+    <div class="content">
+      <h3>剪贴板 / 短信文本解析</h3>
+      <p>用户粘贴 12306 短信或购票确认文本，自动提取车次、时间、起终点等关键信息</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>优势</h4><ul><li>信息来源可靠（官方短信）</li><li>解析规则相对固定</li></ul></div>
+        <div class="cons"><h4>劣势</h4><ul><li>仅覆盖短信/邮件场景</li><li>格式变更需维护</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

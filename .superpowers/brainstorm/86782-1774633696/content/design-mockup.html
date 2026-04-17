@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>发现 & 我的 — 设计稿</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #1C1C1E; font-family: -apple-system, "PingFang SC", sans-serif; padding: 24px; }
+  h1 { color: #fff; font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .subtitle { color: #8E8E93; font-size: 13px; margin-bottom: 24px; }
+  .screens { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+  .screen-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .screen-label { color: #8E8E93; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+
+  /* Phone frame */
+  .phone {
+    width: 220px;
+    height: 440px;
+    background: #F2F2F7;
+    border-radius: 28px;
+    overflow: hidden;
+    position: relative;
+    border: 6px solid #2C2C2E;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .phone.white { background: #fff; }
+  .status-bar { height: 24px; background: transparent; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; position: absolute; top: 0; left: 0; right: 0; z-index: 10; }
+  .status-bar .time { font-size: 9px; font-weight: 700; color: #1C1C1E; }
+  .status-bar .icons { font-size: 8px; color: #1C1C1E; display: flex; gap: 3px; align-items: center; }
+  .screen-content { position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow: hidden; }
+
+  /* ── DISCOVER ─────────────────────────────────────────────── */
+  .discover-body { padding-top: 24px; }
+  .large-title { font-size: 24px; font-weight: 800; color: #1C1C1E; padding: 0 12px; letter-spacing: -0.5px; }
+  .search-bar {
+    margin: 8px 12px;
+    background: rgba(118,118,128,0.12);
+    border-radius: 10px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 5px;
+  }
+  .search-bar span { font-size: 10px; color: #8E8E93; }
+  .chips { display: flex; gap: 6px; padding: 4px 12px; overflow-x: auto; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: #E5E5EA;
+    color: #8E8E93;
+    white-space: nowrap;
+  }
+  .chip.active { background: #FF5B2E; color: #fff; }
+  .discover-list { padding: 6px 12px; display: flex; flex-direction: column; gap: 8px; }
+  .discover-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .card-cover { height: 48px; }
+  .card-body { padding: 8px; }
+  .card-title { font-size: 12px; font-weight: 700; color: #1C1C1E; margin-bottom: 2px; }
+  .card-meta { font-size: 9px; color: #8E8E93; display: flex; align-items: center; gap: 4px; }
+  .card-author { display: flex; align-items: center; gap: 3px; margin-top: 4px; }
+  .avatar-xs { width: 14px; height: 14px; border-radius: 50%; background: #FF5B2E; }
+  .author-name { font-size: 9px; color: #8E8E93; }
+  .view-count { margin-left: auto; font-size: 9px; color: #C7C7CC; }
+  .grad1 { background: linear-gradient(135deg, #FF5B2E, #FF8C42); }
+  .grad2 { background: linear-gradient(135deg, #6366F1, #4F46E5); }
+  .grad3 { background: linear-gradient(135deg, #14B8A6, #0D9488); }
+  .grad4 { background: linear-gradient(135deg, #F59E0B, #D97706); }
+
+  /* ── PROFILE ─────────────────────────────────────────────── */
+  .profile-body { padding-top: 24px; }
+  .user-card {
+    margin: 8px 12px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .avatar-lg { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg,#FF5B2E,#FF8C42); flex-shrink:0; }
+  .user-info { flex: 1; }
+  .user-name { font-size: 14px; font-weight: 700; color: #1C1C1E; }
+  .user-stats { display: flex; gap: 10px; margin-top: 4px; }
+  .stat { text-align: center; }
+  .stat-num { font-size: 13px; font-weight: 800; color: #1C1C1E; }
+  .stat-label { font-size: 8px; color: #8E8E93; }
+  .chevron { color: #C7C7CC; font-size: 12px; }
+
+  .menu-group { margin: 6px 12px; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .menu-item { display: flex; align-items: center; gap: 8px; padding: 0 10px; height: 38px; border-bottom: 0.5px solid rgba(60,60,67,0.1); }
+  .menu-item:last-child { border-bottom: none; }
+  .menu-icon { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; }
+  .menu-text { font-size: 12px; color: #1C1C1E; flex: 1; }
+  .menu-badge { background: #FF3B30; color: #fff; font-size: 8px; font-weight: 700; padding: 1px 5px; border-radius: 10px; }
+  .icon-msg { background: #FF5B2E; color: #fff; }
+  .icon-edit { background: #34C759; color: #fff; }
+  .icon-setting { background: #8E8E93; color: #fff; }
+
+  .logout-group { margin: 6px 12px; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .logout-item { display: flex; align-items: center; justify-content: center; height: 38px; }
+  .logout-text { font-size: 13px; color: #FF3B30; font-weight: 600; }
+
+  /* ── EDIT PROFILE ─────────────────────────────────────────── */
+  .edit-body { background: #F2F2F7; height: 100%; }
+  .nav-bar { height: 36px; background: rgba(249,249,249,0.94); display: flex; align-items: center; justify-content: space-between; padding: 0 12px; border-bottom: 0.5px solid rgba(0,0,0,0.1); }
+  .nav-back { font-size: 11px; color: #FF5B2E; display: flex; align-items: center; gap: 2px; }
+  .nav-title { font-size: 13px; font-weight: 700; color: #1C1C1E; }
+  .nav-action { font-size: 11px; color: #FF5B2E; font-weight: 600; }
+  .avatar-section { display: flex; flex-direction: column; align-items: center; padding: 16px 0; }
+  .avatar-edit-wrap { position: relative; }
+  .avatar-edit { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg,#FF5B2E,#FF8C42); }
+  .camera-badge { position: absolute; bottom: 0; right: 0; width: 18px; height: 18px; border-radius: 50%; background: #1C1C1E; border: 2px solid #F2F2F7; display: flex; align-items: center; justify-content: center; font-size: 9px; }
+  .form-group { margin: 8px 12px; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .form-row { display: flex; align-items: center; padding: 0 10px; height: 38px; border-bottom: 0.5px solid rgba(60,60,67,0.1); gap: 8px; }
+  .form-row:last-child { border-bottom: none; }
+  .form-label { font-size: 11px; color: #8E8E93; width: 40px; flex-shrink: 0; }
+  .form-value { font-size: 12px; color: #1C1C1E; flex: 1; }
+  .form-placeholder { font-size: 12px; color: #C7C7CC; flex: 1; }
+
+  /* ── SETTINGS ─────────────────────────────────────────────── */
+  .settings-body { background: #F2F2F7; height: 100%; }
+  .toggle { width: 28px; height: 16px; border-radius: 8px; background: #E5E5EA; position: relative; }
+  .toggle.on { background: #34C759; }
+  .toggle-knob { width: 14px; height: 14px; border-radius: 50%; background: #fff; position: absolute; top: 1px; left: 1px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); transition: left 0.2s; }
+  .toggle.on .toggle-knob { left: 13px; }
+  .settings-section-title { font-size: 10px; color: #8E8E93; font-weight: 600; padding: 8px 12px 4px; letter-spacing: 0.5px; text-transform: uppercase; }
+
+  /* Tab bar */
+  .tab-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 42px;
+    background: rgba(249,249,249,0.94);
+    border-top: 0.5px solid rgba(0,0,0,0.1);
+    display: flex;
+  }
+  .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
+  .tab-icon { font-size: 16px; }
+  .tab-label { font-size: 8px; font-weight: 500; color: #8E8E93; }
+  .tab.active .tab-label { color: #FF5B2E; font-weight: 700; }
+</style>
+</head>
+<body>
+<h1>发现 & 我的 — 设计稿</h1>
+<p class="subtitle">基于 iOS+Klook 设计语言，点击查看交互细节</p>
+
+<div class="screens">
+
+  <!-- DISCOVER -->
+  <div class="screen-wrap">
+    <div class="screen-label">发现 Tab</div>
+    <div class="phone">
+      <div class="screen-content">
+        <div class="discover-body">
+          <div style="height:24px"></div>
+          <div class="large-title">发现</div>
+          <div class="search-bar">
+            <span>🔍</span><span>搜索旅程、目的地</span>
+          </div>
+          <div class="chips">
+            <div class="chip active">热门</div>
+            <div class="chip">日本</div>
+            <div class="chip">泰国</div>
+            <div class="chip">韩国</div>
+            <div class="chip">欧洲</div>
+            <div class="chip">东南亚</div>
+          </div>
+          <div class="discover-list">
+            <div class="discover-card">
+              <div class="card-cover grad1"></div>
+              <div class="card-body">
+                <div class="card-title">东京7日深度游</div>
+                <div class="card-meta">🗺 东京 · 大阪 · 京都 &nbsp;·&nbsp; 7天</div>
+                <div class="card-author">
+                  <div class="avatar-xs"></div>
+                  <span class="author-name">旅行达人小李</span>
+                  <span class="view-count">👁 1.2k</span>
+                </div>
+              </div>
+            </div>
+            <div class="discover-card">
+              <div class="card-cover grad2"></div>
+              <div class="card-body">
+                <div class="card-title">清迈慢生活5日</div>
+                <div class="card-meta">🗺 清迈 &nbsp;·&nbsp; 5天</div>
+                <div class="card-author">
+                  <div class="avatar-xs" style="background:#6366F1"></div>
+                  <span class="author-name">背包客阿明</span>
+                  <span class="view-count">👁 876</span>
+                </div>
+              </div>
+            </div>
+            <div class="discover-card">
+              <div class="card-cover grad3"></div>
+              <div class="card-body">
+                <div class="card-title">首尔购物攻略</div>
+                <div class="card-meta">🗺 首尔 &nbsp;·&nbsp; 4天</div>
+                <div class="card-author">
+                  <div class="avatar-xs" style="background:#14B8A6"></div>
+                  <span class="author-name">购物女王</span>
+                  <span class="view-count">👁 2.3k</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab"><div class="tab-icon">🗺</div><div class="tab-label">旅程</div></div>
+          <div class="tab active"><div class="tab-icon" style="color:#FF5B2E">🔍</div><div class="tab-label">发现</div></div>
+          <div class="tab"><div class="tab-icon">👤</div><div class="tab-label">我的</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="screen-wrap">
+    <div class="screen-label">我的 Tab</div>
+    <div class="phone">
+      <div class="screen-content">
+        <div class="profile-body">
+          <div style="height:24px"></div>
+          <div class="large-title">我的</div>
+          <div class="user-card">
+            <div class="avatar-lg"></div>
+            <div class="user-info">
+              <div class="user-name">旅行达人小王</div>
+              <div class="user-stats">
+                <div class="stat"><div class="stat-num">12</div><div class="stat-label">旅程</div></div>
+                <div class="stat"><div class="stat-num">8</div><div class="stat-label">城市</div></div>
+                <div class="stat"><div class="stat-num">43</div><div class="stat-label">天数</div></div>
+              </div>
+            </div>
+            <div class="chevron">›</div>
+          </div>
+          <div class="menu-group">
+            <div class="menu-item">
+              <div class="menu-icon icon-msg">✉</div>
+              <div class="menu-text">消息中心</div>
+              <div class="menu-badge">3</div>
+              <div class="chevron">›</div>
+            </div>
+            <div class="menu-item">
+              <div class="menu-icon icon-edit">✎</div>
+              <div class="menu-text">编辑资料</div>
+              <div class="chevron">›</div>
+            </div>
+            <div class="menu-item">
+              <div class="menu-icon icon-setting">⚙</div>
+              <div class="menu-text">设置</div>
+              <div class="chevron">›</div>
+            </div>
+          </div>
+          <div class="logout-group">
+            <div class="logout-item">
+              <div class="logout-text">退出登录</div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab"><div class="tab-icon">🗺</div><div class="tab-label">旅程</div></div>
+          <div class="tab"><div class="tab-icon">🔍</div><div class="tab-label">发现</div></div>
+          <div class="tab active"><div class="tab-icon" style="color:#FF5B2E">👤</div><div class="tab-label">我的</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT PROFILE -->
+  <div class="screen-wrap">
+    <div class="screen-label">编辑资料</div>
+    <div class="phone">
+      <div class="screen-content edit-body">
+        <div style="height:24px"></div>
+        <div class="nav-bar">
+          <div class="nav-back">‹ 我的</div>
+          <div class="nav-title">编辑资料</div>
+          <div class="nav-action">保存</div>
+        </div>
+        <div class="avatar-section">
+          <div class="avatar-edit-wrap">
+            <div class="avatar-edit"></div>
+            <div class="camera-badge">📷</div>
+          </div>
+          <div style="font-size:10px;color:#FF5B2E;margin-top:6px">更换头像</div>
+        </div>
+        <div class="form-group">
+          <div class="form-row">
+            <div class="form-label">用户名</div>
+            <div class="form-value">xiaowang</div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">昵称</div>
+            <div class="form-value">旅行达人小王</div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">密码</div>
+            <div class="form-placeholder">修改密码 ›</div>
+          </div>
+        </div>
+        <div style="padding:0 12px;margin-top:4px">
+          <div style="font-size:10px;color:#8E8E93">用户名仅用于登录，昵称显示在旅程中</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="screen-wrap">
+    <div class="screen-label">设置</div>
+    <div class="phone">
+      <div class="screen-content settings-body">
+        <div style="height:24px"></div>
+        <div class="nav-bar">
+          <div class="nav-back">‹ 我的</div>
+          <div class="nav-title">设置</div>
+          <div></div>
+        </div>
+        <div class="settings-section-title">通用</div>
+        <div class="menu-group" style="margin-top:0">
+          <div class="menu-item">
+            <div class="menu-icon" style="background:#1C1C1E;color:#fff">🌙</div>
+            <div class="menu-text">深色模式</div>
+            <div class="toggle"><div class="toggle-knob"></div></div>
+          </div>
+          <div class="menu-item">
+            <div class="menu-icon" style="background:#007AFF;color:#fff">🌐</div>
+            <div class="menu-text">语言</div>
+            <div style="font-size:11px;color:#8E8E93;margin-right:4px">简体中文</div>
+            <div class="chevron">›</div>
+          </div>
+        </div>
+        <div class="settings-section-title">存储</div>
+        <div class="menu-group" style="margin-top:0">
+          <div class="menu-item">
+            <div class="menu-icon" style="background:#FF9500;color:#fff">🗑</div>
+            <div class="menu-text">清除缓存</div>
+            <div style="font-size:11px;color:#8E8E93;margin-right:4px">2.3 MB</div>
+            <div class="chevron">›</div>
+          </div>
+        </div>
+        <div class="settings-section-title">关于</div>
+        <div class="menu-group" style="margin-top:0">
+          <div class="menu-item">
+            <div class="menu-icon" style="background:#FF5B2E;color:#fff">ℹ</div>
+            <div class="menu-text">版本号</div>
+            <div style="font-size:11px;color:#8E8E93;margin-right:4px">v1.0.0</div>
+          </div>
+          <div class="menu-item">
+            <div class="menu-icon" style="background:#34C759;color:#fff">💬</div>
+            <div class="menu-text">意见反馈</div>
+            <div class="chevron">›</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top:28px;background:#2C2C2E;border-radius:14px;padding:16px;max-width:920px;margin-left:auto;margin-right:auto">
+  <div style="color:#fff;font-size:14px;font-weight:700;margin-bottom:12px">架构概览</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:12px">
+    <div>
+      <div style="color:#FF5B2E;font-weight:700;margin-bottom:6px">后端新增</div>
+      <div style="color:#E5E5EA;line-height:1.8">
+        POST /api/travel/discover<br>
+        &nbsp;&nbsp;↳ 公开旅程列表（分页 + 城市筛选）<br>
+        &nbsp;&nbsp;↳ 返回旅程 + 作者信息 + 浏览数<br><br>
+        POST /api/user/update<br>
+        &nbsp;&nbsp;↳ 修改昵称（现有字段扩展）<br><br>
+        POST /api/user/avatar<br>
+        &nbsp;&nbsp;↳ 上传头像（复用截图上传逻辑）
+      </div>
+    </div>
+    <div>
+      <div style="color:#FF5B2E;font-weight:700;margin-bottom:6px">前端新增</div>
+      <div style="color:#E5E5EA;line-height:1.8">
+        discover/presentation/discover_screen.dart<br>
+        discover/data/discover_repository.dart<br>
+        discover/domain/discover_provider.dart<br>
+        profile/presentation/profile_screen.dart<br>
+        profile/presentation/edit_profile_screen.dart<br>
+        profile/presentation/settings_screen.dart<br>
+        profile/data/profile_repository.dart<br>
+        profile/domain/profile_provider.dart<br>
+        shared/widgets/public_travel_card.dart
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
