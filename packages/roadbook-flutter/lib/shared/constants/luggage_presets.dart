@@ -5,7 +5,7 @@ enum LuggageSeason { spring, summer, autumn, winter }
 
 const _uuid = Uuid();
 
-/// Returns a fresh list of LuggageCategory for [season].
+/// Returns a fresh list of LuggageCategory for [season].z
 /// Each call generates new UUIDs so templates can be merged without id collision.
 List<LuggageCategory> seasonTemplate(LuggageSeason season) {
   LuggageItem item(String text) =>

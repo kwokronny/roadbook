@@ -86,6 +86,7 @@ class ScheduleNavButton extends StatelessWidget {
     showGlassPopover(
       context: context,
       position: position,
+      width: button.size.width,
       items: _modes
           .map((m) => PopoverItem(
                 emoji: m['emoji'],

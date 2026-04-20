@@ -57,6 +57,15 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
     super.dispose();
   }
 
+  /// Auto-fill name based on cities + days when creating (not editing)
+  void _autoFillName() {
+    if (widget.travel != null) return; // don't overwrite when editing
+    if (_selectedCities.isEmpty) return;
+    final days = _endDate.difference(_startDate).inDays + 1;
+    final city = _selectedCities.first;
+    _nameCtrl.text = '$city ${days}日游';
+  }
+
   Future<void> _pickDateRange() async {
     final picked = await showDialog<DateTimeRange>(
       context: context,
@@ -67,6 +76,7 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
       setState(() {
         _startDate = picked.start;
         _endDate = picked.end;
+        _autoFillName();
       });
     }
   }
@@ -86,10 +96,11 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
 
     try {
       final repo = ref.read(travelRepositoryProvider);
-      final saved = await repo.save(form);
-      ref.read(travelListProvider.notifier).upsert(saved);
-      if (saved.id != null) {
-        ref.invalidate(travelDetailProvider(saved.id!));
+      await repo.save(form);
+      // Refresh the full travel list (save returns incomplete data without Users/Schedules)
+      ref.invalidate(travelListProvider);
+      if (form.id != null) {
+        ref.invalidate(travelDetailProvider(form.id!));
       }
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
@@ -179,33 +190,6 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                         ),
                     child: Column(
                       children: [
-                        // 旅程名称
-                        _FormRow(
-                          label: '名称',
-                          child: TextFormField(
-                            controller: _nameCtrl,
-                            textInputAction: TextInputAction.next,
-                            style: const TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w400,
-                              color: AppColors.textPrimary,
-                            ),
-                            textAlign: TextAlign.end,
-                            decoration: const InputDecoration(
-                              hintText: '输入旅程名称',
-                              hintStyle: TextStyle(
-                                  color: AppColors.textTertiary, fontSize: 15),
-                              border: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              filled: false,
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(vertical: 2),
-                            ),
-                            validator: (v) =>
-                                (v == null || v.trim().isEmpty) ? '请输入名称' : null,
-                          ),
-                        ),
-                        const _FormDivider(),
                         // 目的地
                         _FormRow(
                           label: '目的地',
@@ -215,7 +199,10 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                               selected: _selectedCities,
                             );
                             if (result != null) {
-                              setState(() => _selectedCities = result);
+                              setState(() {
+                                _selectedCities = result;
+                                _autoFillName();
+                              });
                             }
                           },
                           crossAlign: _selectedCities.length > 2
@@ -270,6 +257,33 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                               const Icon(Icons.chevron_right,
                                   size: 16, color: AppColors.textTertiary),
                             ],
+                          ),
+                        ),
+                        const _FormDivider(),
+                        // 旅程名称
+                        _FormRow(
+                          label: '名称',
+                          child: TextFormField(
+                            controller: _nameCtrl,
+                            textInputAction: TextInputAction.next,
+                            style: const TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.w400,
+                              color: AppColors.textPrimary,
+                            ),
+                            textAlign: TextAlign.end,
+                            decoration: const InputDecoration(
+                              hintText: '输入旅程名称',
+                              hintStyle: TextStyle(
+                                  color: AppColors.textTertiary, fontSize: 15),
+                              border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              filled: false,
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(vertical: 2),
+                            ),
+                            validator: (v) =>
+                                (v == null || v.trim().isEmpty) ? '请输入名称' : null,
                           ),
                         ),
                         const _FormDivider(),

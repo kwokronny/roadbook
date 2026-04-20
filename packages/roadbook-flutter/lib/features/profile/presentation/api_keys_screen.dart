@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme.dart';
-
+import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/models/api_key.dart';
 import '../domain/api_key_provider.dart';
 
@@ -160,7 +160,7 @@ class _ApiKeysScreenState extends ConsumerState<ApiKeysScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: Padding(
-          padding: const EdgeInsets.only(left: 12),
+          padding: const EdgeInsets.only(left: AppSpacing.pageHorizontal),
           child: Center(
             child: GestureDetector(
               onTap: () => Navigator.pop(context),
@@ -177,7 +177,7 @@ class _ApiKeysScreenState extends ConsumerState<ApiKeysScreen> {
         title: const Text('API Key 管理', style: AppTextStyles.appBarTitle),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 12),
+            padding: const EdgeInsets.only(right: AppSpacing.pageHorizontal),
             child: GestureDetector(
               onTap: _createKey,
               child: Container(
@@ -262,19 +262,8 @@ class _ApiKeyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GlassCard(
       padding: const EdgeInsets.all(AppSpacing.cardPadding),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.contentCard),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 4,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
       child: Row(
         children: [
           Container(

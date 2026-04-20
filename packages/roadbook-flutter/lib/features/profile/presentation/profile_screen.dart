@@ -140,34 +140,54 @@ class _UserCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlassCard(
       margin: const EdgeInsets.symmetric(horizontal: AppSpacing.pageHorizontal),
-      padding: const EdgeInsets.all(AppSpacing.cardPadding),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
       onTap: onTap,
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _Avatar(avatarUrl: user?.avatar),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  user?.name ?? user?.username ?? '未登录',
-                  style: AppTextStyles.headline,
-                ),
-                const SizedBox(height: 6),
-                Row(
+          // ── Row: Avatar + Name/Username + edit button
+          Row(
+            children: [
+              _Avatar(avatarUrl: user?.avatar),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _Stat(value: travelCount, label: '旅程'),
-                    const SizedBox(width: 16),
-                    _Stat(value: cityCount, label: '城市'),
-                    const SizedBox(width: 16),
-                    _Stat(value: totalDays, label: '天数'),
+                    Text(
+                      user?.name ?? user?.username ?? '未登录',
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: AppColors.inkPrimary),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '@${user?.username ?? ''}',
+                      style: const TextStyle(fontSize: 13, color: AppColors.inkTertiary),
+                    ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              GestureDetector(
+                onTap: onTap,
+                child: Container(
+                  width: 32, height: 32,
+                  decoration: BoxDecoration(
+                    color: const Color(0x0D1C1C1E),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.edit_outlined, size: 16, color: AppColors.inkSecondary),
+                ),
+              ),
+            ],
           ),
-          const Text('›', style: TextStyle(fontSize: 14, color: AppColors.inkTertiary)),
+          const SizedBox(height: 16),
+          // ── Stats row
+          Row(
+            children: [
+              Expanded(child: _Stat(value: travelCount, label: '旅程')),
+              Expanded(child: _Stat(value: cityCount, label: '城市')),
+              Expanded(child: _Stat(value: totalDays, label: '天数')),
+            ],
+          ),
         ],
       ),
     );
@@ -182,8 +202,8 @@ class _Avatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipOval(
       child: SizedBox(
-        width: 44,
-        height: 44,
+        width: 56,
+        height: 56,
         child: avatarUrl != null
             ? Image.network(avatarUrl!, fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => _placeholder())
@@ -219,12 +239,13 @@ class _Stat extends StatelessWidget {
         children: [
           Text('$value',
               style: const TextStyle(
-                  fontSize: 15,
+                  fontSize: 22,
                   fontWeight: FontWeight.w500,
                   color: AppColors.inkPrimary)),
+          const SizedBox(height: 2),
           Text(label,
               style: const TextStyle(
-                  fontSize: 10, color: AppColors.inkTertiary)),
+                  fontSize: 13, color: AppColors.inkTertiary)),
         ],
       );
 }

@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme.dart';
 
 import '../domain/travel_list_provider.dart';
+import '../../luggage/domain/luggage_provider.dart';
 import 'widgets/travel_card.dart';
 import 'widgets/travel_form_sheet.dart';
 
@@ -183,14 +184,21 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
                           );
                         }
                         final travel = state.items[index];
-                        return TravelCard(
-                          travel: travel,
-                          onTap: () => context.go('/travel/${travel.id}'),
-                          onEdit: () => TravelFormSheet.show(context, travel: travel),
-                          onDelete: travel.id != null
-                              ? () => _confirmDelete(travel.id!, travel.name)
-                              : null,
-                        );
+                        return Consumer(builder: (_, ref, __) {
+                          final luggage = travel.id != null
+                              ? ref.watch(luggageProvider(travel.id!)).valueOrNull
+                              : null;
+                          return TravelCard(
+                            travel: travel,
+                            luggageChecked: luggage?.checkedCount ?? 0,
+                            luggageTotal: luggage?.totalItems ?? 0,
+                            onTap: () => context.go('/travel/${travel.id}'),
+                            onEdit: () => TravelFormSheet.show(context, travel: travel),
+                            onDelete: travel.id != null
+                                ? () => _confirmDelete(travel.id!, travel.name)
+                                : null,
+                          );
+                        });
                       },
                     ),
                   );

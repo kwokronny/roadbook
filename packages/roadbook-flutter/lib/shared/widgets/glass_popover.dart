@@ -19,24 +19,27 @@ class PopoverItem {
   final VoidCallback onTap;
 }
 
-/// Shows a glass popover menu with spring scale + blur animation.
-/// enter: scale(0.85→1.06→1) + blur(4→0), 350ms spring
-/// exit: scale(1→0.92) + blur(0→4) + fade, 200ms
+/// Shows a glass popover menu that expands downward from the trigger.
+/// enter: scaleY(0→1) + fade, 280ms expressive
+/// exit: scaleY(1→0) + fade, 200ms easeOut
 Future<void> showGlassPopover({
   required BuildContext context,
   required RelativeRect position,
   required List<PopoverItem> items,
+  double? width,
 }) {
   return Navigator.of(context).push(_PopoverRoute(
     position: position,
     items: items,
+    width: width,
   ));
 }
 
 class _PopoverRoute extends PopupRoute<void> {
-  _PopoverRoute({required this.position, required this.items});
+  _PopoverRoute({required this.position, required this.items, this.width});
   final RelativeRect position;
   final List<PopoverItem> items;
+  final double? width;
 
   @override
   Color? get barrierColor => Colors.transparent;
@@ -45,44 +48,34 @@ class _PopoverRoute extends PopupRoute<void> {
   @override
   String? get barrierLabel => 'Dismiss';
   @override
-  Duration get transitionDuration => const Duration(milliseconds: 350);
+  Duration get transitionDuration => const Duration(milliseconds: 280);
   @override
   Duration get reverseTransitionDuration => const Duration(milliseconds: 200);
+
+  static const _enterCurve = Cubic(0.22, 1.0, 0.36, 1.0); // expressive
+  static const _exitCurve = Cubic(0.22, 0.0, 0.36, 1.0);  // easeOut
 
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {
-    // Enter: spring overshoot scale 0.85→1.06→1
-    // Exit: scale 1→0.92 + fade
     final isForward = animation.status == AnimationStatus.forward ||
         animation.status == AnimationStatus.completed;
+    final curve = isForward ? _enterCurve : _exitCurve;
 
-    final scaleValue = isForward
-        ? TweenSequence<double>([
-            TweenSequenceItem(tween: Tween(begin: 0.85, end: 1.06), weight: 60),
-            TweenSequenceItem(tween: Tween(begin: 1.06, end: 1.0), weight: 40),
-          ]).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut))
-        : Tween<double>(begin: 0.92, end: 1.0).animate(animation);
-
-    final opacity = CurvedAnimation(parent: animation, curve: Curves.easeOut);
-
-    // Blur: 4→0 on enter, 0→4 on exit
-    final blurValue = Tween<double>(begin: 4.0, end: 0.0)
-        .animate(CurvedAnimation(parent: animation, curve: Curves.easeOut));
+    final scaleY = Tween<double>(begin: 0.0, end: 1.0)
+        .animate(CurvedAnimation(parent: animation, curve: curve));
+    final opacity = Tween<double>(begin: 0.0, end: 1.0)
+        .animate(CurvedAnimation(parent: animation, curve: curve));
 
     return AnimatedBuilder(
       animation: animation,
       builder: (context, _) {
-        return FadeTransition(
-          opacity: opacity,
-          child: Transform.scale(
-            scale: scaleValue.value,
-            alignment: Alignment.topRight,
-            child: ImageFiltered(
-              imageFilter: blurValue.value > 0.1
-                  ? ImageFilter.blur(
-                      sigmaX: blurValue.value, sigmaY: blurValue.value)
-                  : ImageFilter.blur(sigmaX: 0.01, sigmaY: 0.01),
+        return Opacity(
+          opacity: opacity.value.clamp(0.0, 1.0),
+          child: ClipRect(
+            child: Align(
+              alignment: Alignment.topCenter,
+              heightFactor: scaleY.value.clamp(0.0, 1.0),
               child: child,
             ),
           ),
@@ -96,7 +89,7 @@ class _PopoverRoute extends PopupRoute<void> {
       Animation<double> secondaryAnimation) {
     return CustomSingleChildLayout(
       delegate: _PopoverLayoutDelegate(position),
-      child: _PopoverMenu(items: items),
+      child: _PopoverMenu(items: items, width: width),
     );
   }
 }
@@ -127,15 +120,16 @@ class _PopoverLayoutDelegate extends SingleChildLayoutDelegate {
 }
 
 class _PopoverMenu extends StatelessWidget {
-  const _PopoverMenu({required this.items});
+  const _PopoverMenu({required this.items, this.width});
   final List<PopoverItem> items;
+  final double? width;
 
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
       child: Container(
-        width: 180,
+        width: width ?? 180,
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(14),

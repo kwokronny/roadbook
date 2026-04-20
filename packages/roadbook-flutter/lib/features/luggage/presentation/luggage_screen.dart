@@ -288,11 +288,16 @@ class _AddCategorySheetState extends State<_AddCategorySheet> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 8),
-                const Divider(height: 0.5, thickness: 0.5, color: AppColors.separator),
-                // ── List
+                const SizedBox(height: 12),
+                // ── List (white card)
                 Flexible(
-                  child: ListView.builder(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: ListView.builder(
                     shrinkWrap: true,
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     itemCount: _categoryTemplates.length + 1, // +1 for custom
@@ -373,6 +378,7 @@ class _AddCategorySheetState extends State<_AddCategorySheet> {
                       );
                     },
                   ),
+                  ),
                 ),
                 // ── Add button
                 Consumer(
@@ -425,42 +431,58 @@ class _AddCategorySheetState extends State<_AddCategorySheet> {
   }
 
   Widget _buildCustomRow() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      child: Column(
-        children: [
-          GestureDetector(
-            onTap: () => setState(() => _showCustomInput = !_showCustomInput),
-            behavior: HitTestBehavior.opaque,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(
-                children: [
-                  Icon(Icons.add_circle_outline, size: 22, color: AppColors.primary),
-                  const SizedBox(width: 12),
-                  Text('自定义分类', style: TextStyle(fontSize: 15, color: AppColors.primary)),
-                ],
-              ),
-            ),
-          ),
-          if (_showCustomInput) ...[
-            const SizedBox(height: 8),
-            TextField(
-              controller: _ctrl,
-              autofocus: true,
-              onChanged: (_) => setState(() {}),
-              decoration: InputDecoration(
-                hintText: '输入分类名称',
-                filled: true,
-                fillColor: AppColors.background,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppRadius.input),
-                  borderSide: BorderSide.none,
+    final hasText = _ctrl.text.trim().isNotEmpty;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _showCustomInput = !_showCustomInput;
+        });
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Row(
+          children: [
+            // Checkbox
+            Container(
+              width: 22, height: 22,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: _showCustomInput && hasText ? AppColors.primary : Colors.transparent,
+                border: Border.all(
+                  color: _showCustomInput && hasText ? AppColors.primary : AppColors.border,
+                  width: 1.5,
                 ),
               ),
+              child: _showCustomInput && hasText
+                  ? const Icon(Icons.check, size: 14, color: Colors.white)
+                  : null,
+            ),
+            const SizedBox(width: 12),
+            // Text or input
+            Expanded(
+              child: _showCustomInput
+                  ? TextField(
+                      controller: _ctrl,
+                      autofocus: true,
+                      onChanged: (_) => setState(() {}),
+                      style: const TextStyle(fontSize: 15, color: AppColors.textPrimary),
+                      decoration: const InputDecoration(
+                        hintText: '输入自定义分类名称',
+                        hintStyle: TextStyle(color: AppColors.textTertiary, fontSize: 15),
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        filled: false,
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    )
+                  : const Text('自定义分类',
+                      style: TextStyle(fontSize: 15, color: AppColors.primary)),
             ),
           ],
-        ],
+        ),
       ),
     );
   }

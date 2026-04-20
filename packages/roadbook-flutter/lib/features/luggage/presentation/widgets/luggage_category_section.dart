@@ -125,17 +125,18 @@ class _LuggageCategorySectionState
             padding: EdgeInsets.only(left: 48),
             child: Divider(height: 0.5, thickness: 0.5, color: AppColors.separator),
           ),
-          SizedBox(
-            height: 44,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => ref
-                        .read(luggageProvider(widget.travelId).notifier)
-                        .toggleCheck(item.id),
-                    child: AnimatedContainer(
+          GestureDetector(
+            onTap: () => ref
+                .read(luggageProvider(widget.travelId).notifier)
+                .toggleCheck(item.id),
+            behavior: HitTestBehavior.opaque,
+            child: SizedBox(
+              height: 44,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                child: Row(
+                  children: [
+                    AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       width: 20,
                       height: 20,
@@ -152,21 +153,21 @@ class _LuggageCategorySectionState
                               size: 12, color: Colors.white)
                           : null,
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    item.text,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: checked
-                          ? AppColors.textSecondary
-                          : AppColors.textPrimary,
-                      decoration: checked
-                          ? TextDecoration.lineThrough
-                          : TextDecoration.none,
+                    const SizedBox(width: 10),
+                    Text(
+                      item.text,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: checked
+                            ? AppColors.textSecondary
+                            : AppColors.textPrimary,
+                        decoration: checked
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

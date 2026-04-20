@@ -176,37 +176,60 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // ── 说明文字
-          Text(
-            '粘贴大众点评收藏夹的分享链接',
-            style: AppTextStyles.caption,
-          ),
-          const SizedBox(height: 10),
-          // ── 输入框
-          TextField(
-            controller: _urlCtrl,
-            maxLines: 3,
-            style: const TextStyle(fontSize: 16),
-            decoration: InputDecoration(
-              hintText: '粘贴点评收藏分享链接…',
-              filled: true,
-              fillColor: const Color(0x0A1C1C1E),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(AppRadius.input),
-                borderSide: BorderSide.none,
-              ),
-              errorText: _parseError,
+          // ── 白色卡片包裹内容
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '粘贴大众点评收藏夹的分享链接',
+                  style: AppTextStyles.caption,
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _urlCtrl,
+                  maxLines: 3,
+                  style: const TextStyle(fontSize: 15, color: AppColors.inkPrimary),
+                  decoration: InputDecoration(
+                    hintText: '粘贴点评收藏分享链接…',
+                    hintStyle: const TextStyle(color: AppColors.inkTertiary, fontSize: 15),
+                    filled: false,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.cover),
+                      borderSide: BorderSide(color: const Color(0x1A1C1C1E)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.cover),
+                      borderSide: BorderSide(color: const Color(0x1A1C1C1E)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.cover),
+                      borderSide: BorderSide(color: AppColors.primary.withValues(alpha: 0.40)),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    errorText: _parseError,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 16),
-          // ── 导入按钮
+          // ── 导入按钮 (coral)
           GestureDetector(
             onTap: _phase == _Phase.input ? _startImport : null,
             child: Container(
-              height: 44,
+              height: 48,
               decoration: BoxDecoration(
-                color: AppColors.darkPill,
+                color: AppColors.primary,
                 borderRadius: BorderRadius.circular(AppRadius.pill),
+                boxShadow: const [
+                  BoxShadow(color: AppColors.coralGlow, blurRadius: 8, offset: Offset(0, 2)),
+                ],
               ),
               child: const Center(
                 child: Row(
