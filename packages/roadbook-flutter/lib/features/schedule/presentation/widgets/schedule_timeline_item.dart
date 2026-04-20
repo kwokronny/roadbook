@@ -237,50 +237,62 @@ class ScheduleTimelineItem extends StatelessWidget {
           )
         : BorderRadius.circular(AppRadius.card);
 
-    // Build upper card manually to control border radius per lower-section state
-    final Widget upperCardWrapped = Container(
+    // Build upper card manually to control border radius per lower-section state.
+    // Shadow lives on the outer DecoratedBox so ClipRRect doesn't cut it off.
+    final Widget upperCardWrapped = DecoratedBox(
       decoration: BoxDecoration(
-        color: GlassSpec.cardBg,
         borderRadius: upperRadius,
-        border: Border.all(
-          color: isHotel ? AppColors.lavenderFrostBorder : GlassSpec.cardBorder,
-          width: 1,
-        ),
         boxShadow: GlassSpec.cardShadow,
       ),
-      child: Stack(
-        children: [
-          // Tint overlay for hotel
-          if (isHotel)
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: upperRadius,
-                  gradient: LinearGradient(
-                    begin: const Alignment(-0.5, -0.5),
-                    end: const Alignment(0.5, 0.5),
-                    colors: [
-                      AppColors.lavenderFrost,
-                      AppColors.lavenderFrost.withValues(alpha: AppColors.lavenderFrost.a * 0.33),
-                    ],
+      child: ClipRRect(
+        borderRadius: upperRadius,
+        child: BackdropFilter(
+          filter: GlassSpec.cardBlur,
+          child: Container(
+            decoration: BoxDecoration(
+              color: GlassSpec.cardBg,
+              borderRadius: upperRadius,
+              border: Border.all(
+                color: isHotel ? AppColors.lavenderFrostBorder : GlassSpec.cardBorder,
+                width: 1,
+              ),
+            ),
+            child: Stack(
+              children: [
+                // Tint overlay for hotel
+                if (isHotel)
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        borderRadius: upperRadius,
+                        gradient: LinearGradient(
+                          begin: const Alignment(-0.5, -0.5),
+                          end: const Alignment(0.5, 0.5),
+                          colors: [
+                            AppColors.lavenderFrost,
+                            AppColors.lavenderFrost.withValues(alpha: AppColors.lavenderFrost.a * 0.33),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                // Specular highlight
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        borderRadius: upperRadius,
+                        gradient: GlassSpec.specularHighlight,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          // Specular highlight
-          Positioned.fill(
-            child: IgnorePointer(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: upperRadius,
-                  gradient: GlassSpec.specularHighlight,
-                ),
-              ),
+                // Content
+                upperContent,
+              ],
             ),
           ),
-          // Content
-          upperContent,
-        ],
+        ),
       ),
     );
 

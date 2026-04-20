@@ -93,7 +93,6 @@ class _PastelMeshBgState extends State<PastelMeshBackground>
     );
   }
 }
-
 // ─── Painter ────────────────────────────────────────────────────────────────
 
 class _OrbPainter extends CustomPainter {
@@ -155,3 +154,4 @@ class _OrbPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _OrbPainter old) => true;
 }
+
