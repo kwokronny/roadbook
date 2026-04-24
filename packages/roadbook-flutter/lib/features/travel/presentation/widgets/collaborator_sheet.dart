@@ -1,11 +1,15 @@
 // lib/features/travel/presentation/widgets/collaborator_sheet.dart
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import '../../../../core/theme.dart';
 import '../../../../shared/models/user_travel.dart';
 import '../../../../shared/providers/auth_state_provider.dart';
+import '../../../../shared/widgets/app_toast.dart';
+import '../../../../shared/widgets/glass_drawer.dart';
+import '../../../../shared/widgets/glass_popover.dart';
+import '../../data/invite_code_cache.dart';
 import '../../domain/travel_list_provider.dart';
 import '../../domain/travel_detail_provider.dart';
 
@@ -14,10 +18,9 @@ class CollaboratorSheet extends ConsumerStatefulWidget {
   final int travelId;
 
   static Future<void> show(BuildContext context, int travelId) {
-    return showModalBottomSheet(
+    return showGlassDrawer<void>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      title: '协作者管理',
       builder: (_) => CollaboratorSheet(travelId: travelId),
     );
   }
@@ -30,33 +33,87 @@ class _CollaboratorSheetState extends ConsumerState<CollaboratorSheet> {
   String? _inviteToken;
   bool _loadingInvite = false;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadInvite());
+  }
+
   Future<void> _loadInvite() async {
     setState(() => _loadingInvite = true);
     try {
       final token =
           await ref.read(travelRepositoryProvider).invite(widget.travelId);
+      InviteCodeCache.put(token);
       setState(() => _inviteToken = token);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(e.toString())));
-      }
+      if (mounted) AppToast.error(context, e.toString());
     } finally {
       if (mounted) setState(() => _loadingInvite = false);
     }
   }
 
-  Future<void> _copyInvite() async {
-    if (_inviteToken == null) {
-      await _loadInvite();
-      if (_inviteToken == null) return;
+  void _showRolePopover(BuildContext triggerCtx, UserWithRole c) {
+    final box = triggerCtx.findRenderObject() as RenderBox;
+    final pos = box.localToGlobal(Offset.zero);
+    final screenWidth = MediaQuery.of(triggerCtx).size.width;
+
+    Future<void> updateRole(String role) async {
+      try {
+        await ref
+            .read(travelDetailProvider(widget.travelId).notifier)
+            .updateCollab(c.user.id, role);
+      } catch (e) {
+        if (mounted) AppToast.error(context, e.toString());
+      }
     }
-    await Clipboard.setData(
-        ClipboardData(text: 'roadbook://accept?inviteToken=$_inviteToken'));
-    if (mounted) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('邀请链接已复制')));
+
+    Future<void> removeCollab() async {
+      try {
+        await ref
+            .read(travelDetailProvider(widget.travelId).notifier)
+            .removeCollab(c.user.id);
+      } catch (e) {
+        if (mounted) AppToast.error(context, e.toString());
+      }
     }
+
+    showGlassPopover(
+      context: triggerCtx,
+      position: RelativeRect.fromLTRB(
+        pos.dx,
+        pos.dy + box.size.height + 6,
+        screenWidth - pos.dx - box.size.width,
+        0,
+      ),
+      width: 160,
+      items: [
+        PopoverItem(
+            icon: Icons.admin_panel_settings_outlined,
+            label: '管理者',
+            onTap: () => updateRole('manage')),
+        PopoverItem(
+            icon: Icons.edit_outlined,
+            label: '编辑者',
+            onTap: () => updateRole('edit')),
+        PopoverItem(
+            icon: Icons.visibility_outlined,
+            label: '查看者',
+            onTap: () => updateRole('view')),
+        PopoverItem(
+            icon: Icons.person_remove_outlined,
+            label: '移除',
+            isDestructive: true,
+            onTap: removeCollab),
+      ],
+    );
+  }
+
+  Future<void> _copyCode() async {
+    if (_inviteToken == null) return;
+    final code = InviteCodeCache.deriveShortCode(_inviteToken!);
+    await Clipboard.setData(ClipboardData(text: code));
+    if (mounted) AppToast.success(context, '邀请码已复制');
   }
 
   @override
@@ -65,221 +122,173 @@ class _CollaboratorSheetState extends ConsumerState<CollaboratorSheet> {
     final currentUserId =
         ref.watch(authStateProvider).valueOrNull?.user?.id;
 
-    return ClipRRect(
-      borderRadius:
-          const BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-      child: BackdropFilter(
-        filter: GlassSpec.sheetBlur,
-        child: Container(
-          decoration: const BoxDecoration(
-            color: GlassSpec.sheetBg,
-            borderRadius:
-                BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-            border: Border(
-              top: BorderSide(color: GlassSpec.sheetBorder, width: 1),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(
+          AppSpacing.pageHorizontal, 0, AppSpacing.pageHorizontal, 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _InviteCard(
+            token: _inviteToken,
+            loading: _loadingInvite,
+            onCopy: _copyCode,
+          ),
+          const SizedBox(height: 16),
+          const Padding(
+            padding: EdgeInsets.only(bottom: 8),
+            child: Text(
+              '参与者',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: AppColors.inkSecondary,
+              ),
             ),
           ),
-          child: SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.pageHorizontal, 0, AppSpacing.pageHorizontal, 24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // ── Drag handle
-                  Center(
-                    child: Container(
-                      width: 36, height: 4,
-                      margin: const EdgeInsets.only(top: 10, bottom: 14),
-                      decoration: BoxDecoration(
-                        color: GlassSpec.dragHandle,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
+          travelAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, _) => Text(e.toString(), style: AppTextStyles.caption),
+            data: (travel) {
+              final collabs = travel.collaborators;
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 320),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.zero,
+                    itemCount: collabs.length,
+                    separatorBuilder: (_, __) => const Padding(
+                      padding: EdgeInsets.only(left: 64),
+                      child: Divider(
+                          height: 0.5,
+                          thickness: 0.5,
+                          color: Color(0x0F1C1C1E)),
                     ),
-                  ),
-                  // ── Title bar
-                  Row(
-                    children: [
-                      Text('协作者管理',
-                          style: AppTextStyles.title.copyWith(fontSize: 20)),
-                      const Spacer(),
-                      GestureDetector(
-                        onTap: () => Navigator.of(context).pop(),
-                        child: Container(
-                          width: 26, height: 26,
-                          decoration: BoxDecoration(
-                            color: const Color(0x1A1C1C1E),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.close, size: 14,
-                              color: AppColors.inkSecondary),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-                  // ── Invite link pill
-                  GestureDetector(
-                    onTap: _loadingInvite ? null : _copyInvite,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(AppRadius.pill),
-                        boxShadow: const [
-                          BoxShadow(color: AppColors.coralGlow, blurRadius: 8, offset: Offset(0, 2)),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (_loadingInvite)
-                            const SizedBox(
-                                width: 14, height: 14,
-                                child: CircularProgressIndicator(
-                                    strokeWidth: 2, color: Colors.white))
-                          else
-                            const Icon(Icons.link, size: 18,
-                                color: Colors.white),
-                          const SizedBox(width: 6),
-                          const Text('复制邀请链接',
-                              style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w400, color: Colors.white)),
-                        ],
-                      ),
-                    ),
-                  ),
-              const SizedBox(height: 16),
-              // ── 协作者列表 (白色圆角卡片)
-              travelAsync.when(
-                loading: () =>
-                    const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Text(e.toString(),
-                    style: AppTextStyles.caption),
-                data: (travel) {
-                  final collabs = travel.collaborators;
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxHeight: 320),
-                      child: ListView.separated(
-                        shrinkWrap: true,
-                        padding: EdgeInsets.zero,
-                        itemCount: collabs.length,
-                        separatorBuilder: (_, __) => const Padding(
-                          padding: EdgeInsets.only(left: 64),
-                          child: Divider(height: 0.5, thickness: 0.5, color: Color(0x0F1C1C1E)),
-                        ),
-                        itemBuilder: (context, i) {
-                          final c = collabs[i];
-                          final isSelf = c.user.id == currentUserId;
-                          final avatarColor = isSelf ? AppColors.primary : AppColors.lavender;
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                            child: Row(
-                              children: [
-                                // Avatar
-                                Container(
-                                  width: 40, height: 40,
-                                  decoration: BoxDecoration(
-                                    color: avatarColor,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      (c.user.username).substring(0, 1).toUpperCase(),
-                                      style: const TextStyle(
-                                        color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                // Name
-                                Expanded(
-                                  child: Text(
-                                    c.user.name ?? c.user.username,
-                                    style: const TextStyle(
-                                      fontSize: 16, fontWeight: FontWeight.w500,
-                                      color: AppColors.inkPrimary),
-                                  ),
-                                ),
-                                // Role badge
-                                if (isSelf)
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.coralTint,
-                                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                                    ),
-                                    child: Text(_roleLabel(c.role),
-                                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500,
-                                        color: Color(0xFFD4410A))),
-                                  )
-                                else
-                                  PopupMenuButton<String>(
-                                    padding: EdgeInsets.zero,
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.lavenderTint,
-                                        borderRadius: BorderRadius.circular(AppRadius.pill),
+                    itemBuilder: (context, i) {
+                      final c = collabs[i];
+                      final isSelf = c.user.id == currentUserId;
+                      final avatarColor =
+                          isSelf ? AppColors.primary : AppColors.lavender;
+                      final avatarUrl = c.user.avatar;
+                      final hasAvatar =
+                          avatarUrl != null && avatarUrl.isNotEmpty;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 12),
+                        child: Row(
+                          children: [
+                            ClipOval(
+                              child: Container(
+                                width: 40,
+                                height: 40,
+                                color: avatarColor,
+                                child: hasAvatar
+                                    ? Image.network(
+                                        avatarUrl,
+                                        width: 40,
+                                        height: 40,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) => Center(
+                                          child: Text(
+                                            c.user.username
+                                                .substring(0, 1)
+                                                .toUpperCase(),
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w500),
+                                          ),
+                                        ),
+                                      )
+                                    : Center(
+                                        child: Text(
+                                          c.user.username
+                                              .substring(0, 1)
+                                              .toUpperCase(),
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500),
+                                        ),
                                       ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(_roleLabel(c.role),
-                                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500,
-                                              color: AppColors.lavenderText)),
-                                          const SizedBox(width: 2),
-                                          const Text('▾', style: TextStyle(
-                                            fontSize: 10, color: AppColors.lavenderText)),
-                                        ],
-                                      ),
-                                    ),
-                                    itemBuilder: (_) => const [
-                                      PopupMenuItem(value: 'manage', child: Text('管理者')),
-                                      PopupMenuItem(value: 'edit', child: Text('编辑者')),
-                                      PopupMenuItem(value: 'view', child: Text('查看者')),
-                                      PopupMenuDivider(),
-                                      PopupMenuItem(value: 'delete',
-                                        child: Text('移除', style: TextStyle(color: Colors.red))),
-                                    ],
-                                    onSelected: (role) async {
-                                      try {
-                                        if (role == 'delete') {
-                                          await ref.read(travelDetailProvider(widget.travelId).notifier)
-                                              .removeCollab(c.user.id);
-                                        } else {
-                                          await ref.read(travelDetailProvider(widget.travelId).notifier)
-                                              .updateCollab(c.user.id, role);
-                                        }
-                                      } catch (e) {
-                                        if (context.mounted) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(content: Text(e.toString())));
-                                        }
-                                      }
-                                    },
-                                  ),
-                              ],
+                              ),
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ],
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                c.user.name ?? c.user.username,
+                                style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.inkPrimary),
+                              ),
+                            ),
+                            if (isSelf)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: AppColors.coralTint,
+                                  borderRadius:
+                                      BorderRadius.circular(AppRadius.pill),
+                                ),
+                                child: Text(
+                                  _roleLabel(c.role),
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: Color(0xFFD4410A)),
+                                ),
+                              )
+                            else
+                              Builder(builder: (triggerCtx) {
+                                return GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: () =>
+                                      _showRolePopover(triggerCtx, c),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.lavenderTint,
+                                      borderRadius: BorderRadius.circular(
+                                          AppRadius.pill),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          _roleLabel(c.role),
+                                          style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                              color: AppColors.lavenderText),
+                                        ),
+                                        const SizedBox(width: 2),
+                                        const Text('▾',
+                                            style: TextStyle(
+                                                fontSize: 10,
+                                                color: AppColors.lavenderText)),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
           ),
-        ),
-      ),
-        ),
+        ],
       ),
     );
   }
@@ -293,5 +302,127 @@ class _CollaboratorSheetState extends ConsumerState<CollaboratorSheet> {
       case RoleType.view:
         return '查看者';
     }
+  }
+}
+
+class _InviteCard extends StatelessWidget {
+  const _InviteCard({
+    required this.token,
+    required this.loading,
+    required this.onCopy,
+  });
+
+  final String? token;
+  final bool loading;
+  final VoidCallback onCopy;
+
+  @override
+  Widget build(BuildContext context) {
+    final shortCode =
+        token == null ? '----' : InviteCodeCache.deriveShortCode(token!);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 140,
+            height: 140,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.separator, width: 0.5),
+            ),
+            padding: const EdgeInsets.all(8),
+            child: token == null
+                ? const Center(
+                    child: SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: AppColors.primary),
+                    ),
+                  )
+                : QrImageView(
+                    data: token!,
+                    version: QrVersions.auto,
+                    backgroundColor: Colors.white,
+                    eyeStyle: const QrEyeStyle(
+                      eyeShape: QrEyeShape.square,
+                      color: AppColors.inkPrimary,
+                    ),
+                    dataModuleStyle: const QrDataModuleStyle(
+                      dataModuleShape: QrDataModuleShape.square,
+                      color: AppColors.inkPrimary,
+                    ),
+                  ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('邀请码',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.inkSecondary,
+                    )),
+                const SizedBox(height: 6),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      shortCode,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.inkPrimary,
+                        letterSpacing: 3,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: token == null ? null : onCopy,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: token == null
+                              ? GlassSpec.inputOnGlassBg
+                              : AppColors.darkPill,
+                          borderRadius:
+                              BorderRadius.circular(AppRadius.pill),
+                        ),
+                        child: Text(
+                          '复制',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: token == null
+                                ? AppColors.inkTertiary
+                                : Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  loading ? '生成中...' : '有效期 7 天',
+                  style: AppTextStyles.caption,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

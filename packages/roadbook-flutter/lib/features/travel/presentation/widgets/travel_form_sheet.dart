@@ -10,6 +10,8 @@ import '../../../../features/travel/data/travel_repository.dart';
 import '../../../../features/travel/domain/travel_list_provider.dart';
 import '../../../../features/travel/domain/travel_detail_provider.dart';
 import '../../../../shared/models/travel.dart';
+import '../../../../shared/widgets/app_toast.dart';
+import '../../../../shared/widgets/glass_drawer.dart';
 
 class TravelFormSheet extends ConsumerStatefulWidget {
   const TravelFormSheet({super.key, this.travel});
@@ -18,11 +20,9 @@ class TravelFormSheet extends ConsumerStatefulWidget {
   final Travel? travel;
 
   static Future<void> show(BuildContext context, {Travel? travel}) {
-    return showModalBottomSheet(
+    return showGlassDrawer<void>(
       context: context,
-      isScrollControlled: true,
-      useRootNavigator: true,
-      backgroundColor: Colors.transparent,
+      title: travel != null ? '编辑旅程' : '新建旅程',
       builder: (_) => TravelFormSheet(travel: travel),
     );
   }
@@ -38,6 +38,7 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
   late DateTime _startDate;
   late DateTime _endDate;
   late bool _isPublic;
+  late bool _isAbroad;
   bool _saving = false;
 
   @override
@@ -49,12 +50,26 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
     _startDate = t?.startDate ?? DateTime.now();
     _endDate = t?.endDate ?? DateTime.now().add(const Duration(days: 3));
     _isPublic = t?.isPublic ?? false;
+    _isAbroad = t?.isAbroad ?? false;
   }
 
   @override
   void dispose() {
     _nameCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _openCityPicker() async {
+    final result = await _CityPickerSheet.show(
+      context,
+      selected: _selectedCities,
+    );
+    if (result != null) {
+      setState(() {
+        _selectedCities = result;
+        _autoFillName();
+      });
+    }
   }
 
   /// Auto-fill name based on cities + days when creating (not editing)
@@ -91,6 +106,7 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
       startDate: _startDate,
       endDate: _endDate,
       isPublic: _isPublic,
+      isAbroad: _isAbroad,
       cities: _selectedCities,
     );
 
@@ -104,10 +120,7 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
       }
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(e.toString())));
-      }
+      if (mounted) AppToast.error(context, e.toString());
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -118,70 +131,15 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
     final fmt = DateFormat('yyyy/MM/dd');
     final isEdit = widget.travel != null;
 
-    return Padding(
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: ClipRRect(
-        borderRadius:
-            const BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
-          child: Container(
-            decoration: const BoxDecoration(
-              color: Color(0xB8FFFFFF), // rgba(255,255,255,0.72)
-              borderRadius:
-                  BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-              border: Border(
-                top: BorderSide(color: Color(0xE6FFFFFF), width: 1),
-              ),
-              boxShadow: [
-                BoxShadow(color: Color(0x0F000000), blurRadius: 32, offset: Offset(0, -8)),
-              ],
-            ),
-            child: SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.pageHorizontal, 16, AppSpacing.pageHorizontal, 24),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // ── Drag handle ───────────────────────────────────────
-                      Center(
-                        child: Container(
-                          width: 36, height: 4,
-                          margin: const EdgeInsets.only(bottom: 16),
-                          decoration: BoxDecoration(
-                            color: const Color(0x281C1C1E),
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                      ),
-                      // ── Title bar ─────────────────────────────────────────
-                      Row(
-                        children: [
-                          Text(isEdit ? '编辑旅程' : '新建旅程',
-                              style: AppTextStyles.title.copyWith(fontSize: 20)),
-                          const Spacer(),
-                          GestureDetector(
-                            onTap: () => Navigator.of(context).pop(),
-                            child: Container(
-                              width: 26, height: 26,
-                              decoration: const BoxDecoration(
-                                color: Color(0x1A1C1C1E), // rgba(28,28,30,0.10)
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(Icons.close, size: 12,
-                                  color: AppColors.inkSecondary),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(
+          AppSpacing.pageHorizontal, 0, AppSpacing.pageHorizontal, 24),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
                       // ── Grouped form card ─────────────────────────────────
                       Container(
                         decoration: BoxDecoration(
@@ -193,21 +151,10 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                         // 目的地
                         _FormRow(
                           label: '目的地',
-                          onTap: () async {
-                            final result = await _CityPickerSheet.show(
-                              context,
-                              selected: _selectedCities,
-                            );
-                            if (result != null) {
-                              setState(() {
-                                _selectedCities = result;
-                                _autoFillName();
-                              });
-                            }
-                          },
-                          crossAlign: _selectedCities.length > 2
-                              ? CrossAxisAlignment.start
-                              : CrossAxisAlignment.center,
+                          onTap: _selectedCities.isEmpty ? _openCityPicker : null,
+                          crossAlign: _selectedCities.isEmpty
+                              ? CrossAxisAlignment.center
+                              : CrossAxisAlignment.start,
                           child: _selectedCities.isEmpty
                               ? const Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
@@ -229,14 +176,33 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                                       _CityChip(
                                         label: _selectedCities[i],
                                         onRemove: () {
+                                          final city = _selectedCities[i];
                                           setState(() {
                                             _selectedCities = _selectedCities
-                                                .where((c) => c != _selectedCities[i])
+                                                .where((c) => c != city)
                                                 .toList();
                                           });
                                         },
                                         index: i,
                                       ),
+                                    GestureDetector(
+                                      onTap: _openCityPicker,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0x08000000),
+                                          borderRadius: BorderRadius.circular(
+                                              AppRadius.pill),
+                                          border: Border.all(
+                                              color: const Color(0x1E1C1C1E),
+                                              width: 1),
+                                        ),
+                                        child: const Icon(Icons.add,
+                                            size: 14,
+                                            color: AppColors.inkSecondary),
+                                      ),
+                                    ),
                                   ],
                                 ),
                         ),
@@ -287,22 +253,24 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                           ),
                         ),
                         const _FormDivider(),
-                        // 公开
+                        // 地图选择
                         _FormRow(
-                          label: '公开',
+                          label: '地图',
                           child: Align(
                             alignment: Alignment.centerRight,
-                            child: Transform.scale(
-                              scale: 0.9,
-                              child: Switch(
-                                value: _isPublic,
-                                activeThumbColor: AppColors.success,
-                                activeTrackColor: AppColors.success.withValues(alpha: 0.22),
-                                inactiveThumbColor: const Color(0x381C1C1E),
-                                inactiveTrackColor: const Color(0x121C1C1E),
-                                trackOutlineColor: const WidgetStatePropertyAll(Colors.transparent),
-                                onChanged: (v) => setState(() => _isPublic = v),
-                              ),
+                            child: _MapToggle(
+                              isAbroad: _isAbroad,
+                              onChanged: (v) => setState(() => _isAbroad = v),
+                            ),
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.fromLTRB(14, 0, 14, 10),
+                          child: Text(
+                            '国外旅游请选择 Google',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.inkTertiary,
                             ),
                           ),
                         ),
@@ -345,12 +313,7 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                       ),
                     ),
                   ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
+          ],
         ),
       ),
     );
@@ -687,7 +650,7 @@ class _FormRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+      behavior: onTap != null ? HitTestBehavior.opaque : HitTestBehavior.deferToChild,
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -725,7 +688,22 @@ class _FormDivider extends StatelessWidget {
   }
 }
 
-// ─── City Picker Sheet (grouped by pinyin letter, searchable, multi-select) ──
+// ─── City Picker Sheet (tabbed: 国内·港澳台 / 国际) ────────────────────────────
+
+enum _IntlItemKind { regionHeader, city }
+
+class _IntlItem {
+  const _IntlItem.region(this.text)
+      : kind = _IntlItemKind.regionHeader,
+        country = null;
+  _IntlItem.city(this.text, String c)
+      : kind = _IntlItemKind.city,
+        country = c;
+
+  final String text;
+  final _IntlItemKind kind;
+  final String? country;
+}
 
 class _CityPickerSheet extends StatefulWidget {
   const _CityPickerSheet({required this.selected});
@@ -745,44 +723,55 @@ class _CityPickerSheet extends StatefulWidget {
   State<_CityPickerSheet> createState() => _CityPickerSheetState();
 }
 
-class _CityPickerSheetState extends State<_CityPickerSheet> {
+class _CityPickerSheetState extends State<_CityPickerSheet>
+    with SingleTickerProviderStateMixin {
   late Set<String> _selected;
   final _searchCtrl = TextEditingController();
-  final _scrollCtrl = ScrollController();
+  final _domesticScrollCtrl = ScrollController();
+  final _intlScrollCtrl = ScrollController();
+  late final TabController _tabController;
   String _query = '';
 
-  // Grouped data: letter → cities
   late final Map<String, List<String>> _grouped;
   late final List<String> _letters;
+  final List<String> _regions = kIntlCitiesGrouped.keys.toList();
 
   @override
   void initState() {
     super.initState();
     _selected = Set<String>.from(widget.selected);
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() { if (mounted) setState(() {}); });
     _grouped = _buildGroups();
     _letters = _grouped.keys.toList()..sort();
   }
 
   @override
   void dispose() {
+    _tabController.dispose();
     _searchCtrl.dispose();
-    _scrollCtrl.dispose();
+    _domesticScrollCtrl.dispose();
+    _intlScrollCtrl.dispose();
     super.dispose();
   }
 
-  void _scrollToLetter(String letter) {
-    const double headerHeight = 32;
-    const double itemHeight = 41;
+  // ── Domestic helpers ──────────────────────────────────────────────────────
 
+  void _scrollToLetter(String letter) {
+    const double headerHeight = 34;
+    const double itemHeight = 38.75;
+    const double dividerH = 0.5;
     double offset = 0;
     for (final l in _letters) {
-      final cities = _filteredCities(_grouped[l]!);
+      final cities = _filteredDomestic(_grouped[l]!);
       if (cities.isEmpty) continue;
       if (l == letter) break;
-      offset += headerHeight + cities.length * itemHeight;
+      offset += headerHeight +
+          cities.length * itemHeight +
+          (cities.length > 1 ? (cities.length - 1) * dividerH : 0);
     }
-    _scrollCtrl.animateTo(
-      offset.clamp(0, _scrollCtrl.position.maxScrollExtent),
+    _domesticScrollCtrl.animateTo(
+      offset.clamp(0, _domesticScrollCtrl.position.maxScrollExtent),
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeOut,
     );
@@ -798,7 +787,7 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
     return map;
   }
 
-  List<String> _filteredCities(List<String> cities) {
+  List<String> _filteredDomestic(List<String> cities) {
     if (_query.isEmpty) return cities;
     return cities.where((c) {
       if (c.contains(_query)) return true;
@@ -810,17 +799,81 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
     }).toList();
   }
 
+  // ── International helpers ─────────────────────────────────────────────────
+
+  void _scrollToRegion(String region) {
+    const double regionH = 28.0;
+    const double cityH = 38.75;
+    const double dividerH = 0.5;
+    double offset = 0;
+    for (final regionEntry in kIntlCitiesGrouped.entries) {
+      if (regionEntry.key == region) break;
+      offset += regionH;
+      int cityCount = 0;
+      for (final c in regionEntry.value.values) {
+        cityCount += c.length;
+      }
+      offset += cityCount * cityH + (cityCount - 1) * dividerH;
+    }
+    _intlScrollCtrl.animateTo(
+      offset.clamp(0, _intlScrollCtrl.position.maxScrollExtent),
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+    );
+  }
+
+  List<_IntlItem> _buildIntlItems() {
+    if (_query.isEmpty) {
+      final items = <_IntlItem>[];
+      for (final regionEntry in kIntlCitiesGrouped.entries) {
+        items.add(_IntlItem.region(regionEntry.key));
+        for (final countryEntry in regionEntry.value.entries) {
+          for (final city in countryEntry.value) {
+            items.add(_IntlItem.city(city, countryEntry.key));
+          }
+        }
+      }
+      return items;
+    }
+    final items = <_IntlItem>[];
+    for (final regionEntry in kIntlCitiesGrouped.entries) {
+      for (final countryEntry in regionEntry.value.entries) {
+        final country = countryEntry.key;
+        final matched = countryEntry.value
+            .where((c) => c.contains(_query) || country.contains(_query))
+            .toList();
+        for (final city in matched) {
+          items.add(_IntlItem.city(city, country));
+        }
+      }
+    }
+    return items;
+  }
+
+  void _toggle(String city) {
+    setState(() {
+      if (_selected.contains(city)) {
+        _selected.remove(city);
+      } else {
+        _selected.add(city);
+      }
+    });
+  }
+
+  // ── Build ─────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
+    final isIntl = _tabController.index == 1;
     return Container(
-          height: MediaQuery.of(context).size.height * 0.75,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-          ),
+      height: MediaQuery.of(context).size.height * 0.90,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+      ),
       child: Column(
         children: [
-          // ── Header ────────────────────────────────────────────────
+          // Header
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 8, 0),
             child: Row(
@@ -844,7 +897,24 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
             ),
           ),
 
-          // ── Search bar ────────────────────────────────────────────
+          // Tabs
+          TabBar(
+            controller: _tabController,
+            labelColor: AppColors.primary,
+            unselectedLabelColor: AppColors.inkTertiary,
+            labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            unselectedLabelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+            indicatorColor: AppColors.primary,
+            indicatorWeight: 2,
+            indicatorSize: TabBarIndicatorSize.tab,
+            dividerColor: const Color(0x0F1C1C1E),
+            tabs: const [
+              Tab(text: '国内·港澳台'),
+              Tab(text: '国际'),
+            ],
+          ),
+
+          // Search bar
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: Container(
@@ -865,15 +935,15 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
                       controller: _searchCtrl,
                       onChanged: (v) => setState(() => _query = v.trim().toLowerCase()),
                       style: const TextStyle(fontSize: 15, color: AppColors.textPrimary),
-                      decoration: const InputDecoration(
-                        hintText: '搜索城市或拼音',
-                        hintStyle: TextStyle(color: AppColors.textTertiary, fontSize: 14),
+                      decoration: InputDecoration(
+                        hintText: isIntl ? '搜索城市或国家' : '搜索城市或拼音',
+                        hintStyle: const TextStyle(color: AppColors.textTertiary, fontSize: 14),
                         border: InputBorder.none,
                         enabledBorder: InputBorder.none,
                         focusedBorder: InputBorder.none,
                         filled: false,
                         isDense: true,
-                        contentPadding: EdgeInsets.symmetric(vertical: 8),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 8),
                       ),
                     ),
                   ),
@@ -882,71 +952,130 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
             ),
           ),
 
-          // Selected chips hidden — selection shown via check marks in list
-
-          // ── City list grouped by letter ────────────────────────────
+          // Tab content
           Expanded(
-            child: Stack(
+            child: TabBarView(
+              controller: _tabController,
+              physics: const NeverScrollableScrollPhysics(),
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 20),
-                  child: ListView.builder(
-                    controller: _scrollCtrl,
-                    padding: EdgeInsets.zero,
-                    itemCount: _letters.length,
-                    itemBuilder: (context, sectionIndex) {
-                      final letter = _letters[sectionIndex];
-                      final cities = _filteredCities(_grouped[letter]!);
-                      if (cities.isEmpty) return const SizedBox.shrink();
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Section header
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(14, 12, 14, 4),
-                            child: Text(letter, style: const TextStyle(
-                              fontSize: 13, fontWeight: FontWeight.w500,
-                              color: AppColors.textTertiary,
-                            )),
-                          ),
-                          // City items with dividers
-                          for (int i = 0; i < cities.length; i++) ...[
-                            _CityItem(
-                              city: cities[i],
-                              selected: _selected.contains(cities[i]),
-                              onTap: () {
-                                setState(() {
-                                  if (_selected.contains(cities[i])) {
-                                    _selected.remove(cities[i]);
-                                  } else {
-                                    _selected.add(cities[i]);
-                                  }
-                                });
-                              },
-                            ),
-                            if (i < cities.length - 1)
-                              const Divider(height: 0.5, thickness: 0.5, indent: 14, color: Color(0x0F1C1C1E)),
-                          ],
-                        ],
-                      );
-                    },
-                  ),
-                ),
-                Positioned(
-                  right: 2,
-                  top: 0,
-                  bottom: 0,
-                  child: _LetterBar(
-                    letters: _letters,
-                    onSelect: _scrollToLetter,
-                  ),
-                ),
+                _buildDomesticTab(),
+                _buildIntlTab(),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildDomesticTab() {
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(right: 28),
+          child: ListView.builder(
+            controller: _domesticScrollCtrl,
+            padding: EdgeInsets.zero,
+            itemCount: _letters.length,
+            itemBuilder: (context, i) {
+              final letter = _letters[i];
+              final cities = _filteredDomestic(_grouped[letter]!);
+              if (cities.isEmpty) return const SizedBox.shrink();
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 12, 14, 4),
+                    child: Text(letter, style: const TextStyle(
+                      fontSize: 13, fontWeight: FontWeight.w500,
+                      color: AppColors.textTertiary,
+                    )),
+                  ),
+                  for (int j = 0; j < cities.length; j++) ...[
+                    _CityItem(
+                      city: cities[j],
+                      selected: _selected.contains(cities[j]),
+                      onTap: () => _toggle(cities[j]),
+                    ),
+                    if (j < cities.length - 1)
+                      const Divider(height: 0.5, thickness: 0.5, indent: 14,
+                          color: Color(0x0F1C1C1E)),
+                  ],
+                ],
+              );
+            },
+          ),
+        ),
+        Positioned(
+          right: 2, top: 0, bottom: 0,
+          child: _LetterBar(letters: _letters, onSelect: _scrollToLetter),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildIntlTab() {
+    final items = _buildIntlItems();
+    if (items.isEmpty) {
+      return Center(
+        child: Text(
+          '未找到"$_query"相关城市',
+          style: const TextStyle(fontSize: 14, color: AppColors.textTertiary),
+        ),
+      );
+    }
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(right: 40),
+          child: ListView.builder(
+            controller: _intlScrollCtrl,
+            padding: EdgeInsets.zero,
+            itemCount: items.length,
+            itemBuilder: (context, i) {
+        final item = items[i];
+        switch (item.kind) {
+          case _IntlItemKind.regionHeader:
+            return Container(
+              width: double.infinity,
+              color: const Color(0x061C1C1E),
+              padding: const EdgeInsets.fromLTRB(14, 8, 14, 6),
+              child: Text(
+                item.text,
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textTertiary,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            );
+          case _IntlItemKind.city:
+            final isLast = i + 1 >= items.length ||
+                items[i + 1].kind != _IntlItemKind.city;
+            return Column(
+              children: [
+                _CityItem(
+                  city: item.text,
+                  selected: _selected.contains(item.text),
+                  trailingLabel: item.country,
+                  onTap: () => _toggle(item.text),
+                ),
+                if (!isLast)
+                  const Divider(height: 0.5, thickness: 0.5, indent: 14,
+                      color: Color(0x0F1C1C1E)),
+              ],
+            );
+        }
+      },
+          ),
+        ),
+        if (_query.isEmpty)
+          Positioned(
+            right: 2, top: 0, bottom: 0,
+            child: _RegionBar(regions: _regions, onSelect: _scrollToRegion),
+          ),
+      ],
     );
   }
 }
@@ -956,10 +1085,12 @@ class _CityItem extends StatelessWidget {
     required this.city,
     required this.selected,
     required this.onTap,
+    this.trailingLabel,
   });
   final String city;
   final bool selected;
   final VoidCallback onTap;
+  final String? trailingLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -969,14 +1100,33 @@ class _CityItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         child: Row(
           children: [
-            Text(city, style: TextStyle(
-              fontSize: 15,
-              fontWeight: selected ? FontWeight.w500 : FontWeight.w400,
-              color: selected ? AppColors.textPrimary : AppColors.textSecondary,
-            )),
-            const Spacer(),
-            if (selected)
+            Expanded(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: Text(city,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: selected ? FontWeight.w500 : FontWeight.w400,
+                        color: selected ? AppColors.textPrimary : AppColors.textSecondary,
+                      )),
+                  ),
+                  if (trailingLabel != null) ...[
+                    const SizedBox(width: 6),
+                    Text(trailingLabel!, style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textTertiary,
+                    )),
+                  ],
+                ],
+              ),
+            ),
+            if (selected) ...[
+              const SizedBox(width: 6),
               const Icon(Icons.check_circle, size: 20, color: AppColors.success),
+            ],
           ],
         ),
       ),
@@ -1022,48 +1172,203 @@ class _CityChip extends StatelessWidget {
   }
 }
 
+// ─── Map provider toggle (高德 / Google) with sliding pill ────────────────────
+
+class _MapToggle extends StatelessWidget {
+  const _MapToggle({required this.isAbroad, required this.onChanged});
+  final bool isAbroad;
+  final ValueChanged<bool> onChanged;
+
+  static const _segW = 64.0;
+  static const _pad = 2.0;
+  static const _height = 30.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: _segW * 2 + _pad * 2,
+      height: _height,
+      child: Container(
+        padding: const EdgeInsets.all(_pad),
+        decoration: BoxDecoration(
+          color: const Color(0x0F1C1C1E),
+          borderRadius: BorderRadius.circular(9),
+        ),
+        child: Stack(
+          children: [
+            // Sliding pill
+            AnimatedAlign(
+              duration: const Duration(milliseconds: 240),
+              curve: Curves.easeInOut,
+              alignment:
+                  isAbroad ? Alignment.centerRight : Alignment.centerLeft,
+              child: Container(
+                width: _segW,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(7),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x18000000),
+                      blurRadius: 5,
+                      offset: Offset(0, 1),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // Labels
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () => onChanged(false),
+                  behavior: HitTestBehavior.opaque,
+                  child: SizedBox(
+                    width: _segW,
+                    child: Center(
+                      child: AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 200),
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight:
+                              !isAbroad ? FontWeight.w500 : FontWeight.w400,
+                          color: !isAbroad
+                              ? AppColors.inkPrimary
+                              : AppColors.inkTertiary,
+                        ),
+                        child: const Text('高德'),
+                      ),
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => onChanged(true),
+                  behavior: HitTestBehavior.opaque,
+                  child: SizedBox(
+                    width: _segW,
+                    child: Center(
+                      child: AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 200),
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight:
+                              isAbroad ? FontWeight.w500 : FontWeight.w400,
+                          color: isAbroad
+                              ? AppColors.inkPrimary
+                              : AppColors.inkTertiary,
+                        ),
+                        child: const Text('Google'),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _LetterBar extends StatelessWidget {
   const _LetterBar({required this.letters, required this.onSelect});
   final List<String> letters;
   final void Function(String letter) onSelect;
 
+  static const double _labelH = 15.0;
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onVerticalDragUpdate: (details) {
-        final box = context.findRenderObject() as RenderBox;
-        final pos = box.globalToLocal(details.globalPosition);
-        final index = (pos.dy / (box.size.height / letters.length))
-            .clamp(0, letters.length - 1)
-            .toInt();
-        onSelect(letters[index]);
+    return LayoutBuilder(
+      builder: (_, constraints) {
+        final barH = constraints.maxHeight;
+        final totalH = letters.length * _labelH;
+        final topOffset = totalH < barH ? (barH - totalH) / 2 : 0.0;
+
+        void pick(double dy) {
+          final adjustedDy = (dy - topOffset).clamp(0.0, totalH - 0.01);
+          final idx = (adjustedDy / _labelH).clamp(0, letters.length - 1).toInt();
+          onSelect(letters[idx]);
+        }
+
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onVerticalDragUpdate: (d) => pick(d.localPosition.dy),
+          onTapDown: (d) => pick(d.localPosition.dy),
+          child: SizedBox(
+            width: 28,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: letters
+                  .map((l) => SizedBox(
+                        height: _labelH,
+                        child: Center(
+                          child: Text(l,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.inkTertiary,
+                              )),
+                        ),
+                      ))
+                  .toList(),
+            ),
+          ),
+        );
       },
-      onTapDown: (details) {
-        final box = context.findRenderObject() as RenderBox;
-        final pos = box.globalToLocal(details.globalPosition);
-        final index = (pos.dy / (box.size.height / letters.length))
-            .clamp(0, letters.length - 1)
-            .toInt();
-        onSelect(letters[index]);
+    );
+  }
+}
+
+class _RegionBar extends StatelessWidget {
+  const _RegionBar({required this.regions, required this.onSelect});
+  final List<String> regions;
+  final void Function(String region) onSelect;
+
+  static const double _labelH = 26.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (_, constraints) {
+        final barH = constraints.maxHeight;
+        final totalH = regions.length * _labelH;
+        final topOffset = totalH < barH ? (barH - totalH) / 2 : 0.0;
+
+        void pick(double dy) {
+          final adjustedDy = (dy - topOffset).clamp(0.0, totalH - 0.01);
+          final idx = (adjustedDy / _labelH).clamp(0, regions.length - 1).toInt();
+          onSelect(regions[idx]);
+        }
+
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onVerticalDragUpdate: (d) => pick(d.localPosition.dy),
+          onTapDown: (d) => pick(d.localPosition.dy),
+          child: SizedBox(
+            width: 40,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: regions
+                  .map((r) => SizedBox(
+                        height: _labelH,
+                        child: Center(
+                          child: Text(
+                            r.length > 2 ? r.substring(0, 2) : r,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.inkTertiary,
+                            ),
+                          ),
+                        ),
+                      ))
+                  .toList(),
+            ),
+          ),
+        );
       },
-      child: Container(
-        width: 16,
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: letters
-              .map((l) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 0.5),
-                    child: Text(l,
-                        style: const TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.inkTertiary,
-                        )),
-                  ))
-              .toList(),
-        ),
-      ),
     );
   }
 }

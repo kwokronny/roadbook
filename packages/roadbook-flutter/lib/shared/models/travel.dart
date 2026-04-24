@@ -9,6 +9,7 @@ class Travel {
     required this.startDate,
     required this.endDate,
     required this.isPublic,
+    required this.isAbroad,
     required this.cities,
     required this.collaborators,
     required this.schedules,
@@ -20,6 +21,7 @@ class Travel {
   final DateTime startDate;
   final DateTime endDate;
   final bool isPublic;
+  final bool isAbroad;
   final List<String> cities;
   final List<UserWithRole> collaborators;
   final List<Schedule> schedules;
@@ -38,6 +40,7 @@ class Travel {
       startDate: DateTime.parse(json['startDate'] as String),
       endDate: DateTime.parse(json['endDate'] as String),
       isPublic: json['public'] as bool? ?? false,          // backend field: public
+      isAbroad: json['isAbroad'] as bool? ?? false,
       cities: cities,
       collaborators: (json['Users'] as List<dynamic>? ?? [])    // backend field: Users
           .map((e) => UserWithRole.fromJson(e as Map<String, dynamic>))

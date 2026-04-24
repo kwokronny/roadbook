@@ -12,9 +12,12 @@ import '../../../shared/utils/schedule_day_helper.dart';
 import '../domain/schedule_provider.dart';
 import 'widgets/day_sidebar.dart';
 import 'widgets/schedule_timeline_item.dart';
+import '../../../shared/widgets/app_confirm_dialog.dart';
 import 'schedule_edit_sheet.dart';
 import 'schedule_quick_time_sheet.dart';
 import '../../luggage/domain/luggage_provider.dart';
+import '../../../shared/widgets/skeleton.dart';
+import 'widgets/schedule_item_skeleton.dart';
 
 class _LuggageMarker {
   const _LuggageMarker();
@@ -58,10 +61,10 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
       result.add(const _LuggageMarker());
     }
     for (final s in items) {
-      result.add(s);
       if (_isCheckoutDay(s, selectedDay)) {
         result.add(const _LuggageMarker());
       }
+      result.add(s);
     }
     return result;
   }
@@ -112,23 +115,13 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
 
   Future<void> _batchDelete() async {
     final count = _selectedIds.length;
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showAppConfirmDialog(
       context: context,
-      builder: (dialogCtx) => AlertDialog(
-        title: const Text('批量删除'),
-        content: Text('确定删除选中的 $count 个行程？'),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.of(dialogCtx).pop(false),
-              child: const Text('取消')),
-          TextButton(
-              onPressed: () => Navigator.of(dialogCtx).pop(true),
-              child: const Text('删除',
-                  style: TextStyle(color: Colors.red))),
-        ],
-      ),
+      title: '批量删除',
+      message: '确定删除选中的 $count 个行程？',
+      confirmLabel: '删除',
     );
-    if (confirmed != true) return;
+    if (!confirmed) return;
 
     final notifier = ref.read(scheduleProvider(travel.id!).notifier);
     for (final id in _selectedIds.toList()) {
@@ -205,8 +198,15 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
         // ── Timeline list (full height, padded top for day bar)
         Positioned.fill(
           child: listAsync.when(
-            loading: () => const Center(
-                child: CircularProgressIndicator(color: AppColors.primary)),
+            loading: () => SkeletonLoader(
+              child: ListView.builder(
+                padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.pageHorizontal, 76,
+                    AppSpacing.pageHorizontal, 100),
+                itemCount: 5,
+                itemBuilder: (_, __) => const ScheduleItemSkeleton(),
+              ),
+            ),
             error: (e, _) => Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -365,6 +365,7 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
                             displayDay: selectedDay,
                             isSelectionMode: _isSelectionMode,
                             isSelected: _selectedIds.contains(s.id),
+                            isAbroad: travel.isAbroad,
                             onLongPress: _canEdit ? () => _enterSelectionMode(s.id!) : null,
                             onToggleSelect: () => _toggleSelect(s.id!),
                             onEditTimeTap: _canEdit
@@ -414,23 +415,13 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
 
   Future<void> _confirmDelete(
       BuildContext context, WidgetRef ref, Schedule s) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showAppConfirmDialog(
       context: context,
-      builder: (dialogCtx) => AlertDialog(
-        title: const Text('删除行程'),
-        content: Text('确定删除「${s.name}」？'),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.of(dialogCtx).pop(false),
-              child: const Text('取消')),
-          TextButton(
-              onPressed: () => Navigator.of(dialogCtx).pop(true),
-              child: const Text('删除',
-                  style: TextStyle(color: Colors.red))),
-        ],
-      ),
+      title: '删除行程',
+      message: '确定删除「${s.name}」？',
+      confirmLabel: '删除',
     );
-    if (confirmed == true) {
+    if (confirmed) {
       await ref
           .read(scheduleProvider(travel.id!).notifier)
           .remove(s.id!);

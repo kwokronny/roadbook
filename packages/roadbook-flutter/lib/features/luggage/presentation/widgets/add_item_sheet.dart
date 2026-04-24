@@ -2,9 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme.dart';
-
 import '../../../../shared/constants/luggage_presets.dart';
 import '../../../../shared/models/luggage.dart';
+import '../../../../shared/widgets/glass_drawer.dart';
 import '../../domain/luggage_provider.dart';
 
 class AddItemSheet extends ConsumerStatefulWidget {
@@ -28,10 +28,9 @@ class AddItemSheet extends ConsumerStatefulWidget {
     required String categoryName,
     required List<LuggageItem> existingItems,
   }) {
-    return showModalBottomSheet(
+    return showGlassDrawer<void>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      title: '添加物品',
       builder: (_) => AddItemSheet(
         travelId: travelId,
         categoryId: categoryId,
@@ -47,8 +46,11 @@ class AddItemSheet extends ConsumerStatefulWidget {
 
 class _AddItemSheetState extends ConsumerState<AddItemSheet> {
   final _searchCtrl = TextEditingController();
+  final List<TextEditingController> _customCtrls = [TextEditingController()];
+  final List<FocusNode> _customFocusNodes = [FocusNode()];
   final Set<String> _selected = {};
   String _query = '';
+  bool _showCustomInput = false;
   late final Set<String> _existingTexts;
 
   @override
@@ -60,7 +62,27 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
   @override
   void dispose() {
     _searchCtrl.dispose();
+    for (final c in _customCtrls) c.dispose();
+    for (final f in _customFocusNodes) f.dispose();
     super.dispose();
+  }
+
+  void _onCustomChanged(int i, String v) {
+    setState(() {
+      if (v.trim().isNotEmpty) {
+        if (i == _customCtrls.length - 1) {
+          _customCtrls.add(TextEditingController());
+          _customFocusNodes.add(FocusNode());
+        }
+      } else {
+        for (var j = _customCtrls.length - 1; j > i; j--) {
+          _customCtrls[j].dispose();
+          _customFocusNodes[j].dispose();
+          _customCtrls.removeAt(j);
+          _customFocusNodes.removeAt(j);
+        }
+      }
+    });
   }
 
   List<String> get _categoryPresets => presetItemsFor(widget.categoryName);
@@ -80,76 +102,21 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final maxHeight = MediaQuery.of(context).size.height * 0.8;
-    return Padding(
-      padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-        child: BackdropFilter(
-          filter: GlassSpec.sheetBlur,
-          child: Container(
-            constraints: BoxConstraints(maxHeight: maxHeight),
-            decoration: const BoxDecoration(
-              color: GlassSpec.sheetBg,
-              borderRadius:
-                  BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-              border: Border(top: BorderSide(color: GlassSpec.sheetBorder, width: 1)),
-            ),
-        child: SafeArea(
-          top: false,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildHandle(),
-              _buildTitleBar(),
-              _buildSearchBar(),
-              const Divider(
-                  height: 0.5, thickness: 0.5, color: AppColors.separator),
-              Flexible(
-                  child: _query.isNotEmpty
-                      ? _buildSearchView()
-                      : _buildPresetView()),
-              _buildAddButton(),
-            ],
-          ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildSearchBar(),
+        const SizedBox(height: 4),
+        Flexible(
+          child: _query.isNotEmpty ? _buildSearchView() : _buildPresetView(),
         ),
-      ),
-        ),
-      ),
+        _buildAddButton(),
+      ],
     );
   }
 
-  Widget _buildHandle() => Container(
-        width: 36,
-        height: 4,
-        margin: const EdgeInsets.only(top: 8, bottom: 4),
-        decoration: BoxDecoration(
-          color: AppColors.textTertiary,
-          borderRadius: BorderRadius.circular(2),
-        ),
-      );
-
-  Widget _buildTitleBar() => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('添加物品',
-                style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.textPrimary)),
-            if (_selected.isNotEmpty)
-              Text('已选 ${_selected.length}',
-                  style: const TextStyle(
-                      fontSize: 14, color: AppColors.primary)),
-          ],
-        ),
-      );
-
   Widget _buildSearchBar() => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
         child: Container(
           height: 36,
           decoration: BoxDecoration(
@@ -162,9 +129,10 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
             style: AppTextStyles.subheadline,
             decoration: InputDecoration(
               hintText: '搜索或输入物品名…',
-              hintStyle: AppTextStyles.caption,
+              hintStyle: const TextStyle(fontSize: 15, color: AppColors.textSecondary),
               prefixIcon: const Icon(Icons.search,
                   size: 18, color: AppColors.textSecondary),
+              prefixIconConstraints: const BoxConstraints(minWidth: 36, minHeight: 36),
               suffixIcon: _query.isNotEmpty
                   ? GestureDetector(
                       onTap: () {
@@ -182,18 +150,165 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
         ),
       );
 
+  // ── White card list ──────────────────────────────────────────────────────
+
+  Widget _wrapInCard(Widget child) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: child,
+          ),
+        ),
+      );
+
+  Widget _buildPresetView() {
+    final allPresets = {..._categoryPresets, ...universalPresets}.toList();
+    allPresets.sort((a, b) {
+      final aExists = _existingTexts.contains(a);
+      final bExists = _existingTexts.contains(b);
+      if (aExists == bExists) return 0;
+      return aExists ? 1 : -1;
+    });
+    final items = ['__custom__', ...allPresets];
+    return _wrapInCard(
+      ListView.separated(
+        shrinkWrap: false,
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        itemCount: items.length,
+        separatorBuilder: (_, __) => const Padding(
+          padding: EdgeInsets.only(left: 50),
+          child: Divider(
+              height: 0.5, thickness: 0.5, color: Color(0x0F1C1C1E)),
+        ),
+        itemBuilder: (_, i) {
+          if (items[i] == '__custom__') return _buildCustomInputRow();
+          return _buildSelectRow(items[i] as String);
+        },
+      ),
+    );
+  }
+
   Widget _buildSearchView() {
-    return ListView(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      children: [
-        ..._searchResults.map(_buildSelectRow),
-        if (_queryIsNew)
-          ListTile(
-            onTap: () => setState(() => _selected.add(_query)),
-            title: RichText(
+    final rows = <Widget>[..._searchResults.map(_buildSelectRow)];
+    if (_queryIsNew) rows.add(_buildAddNewRow());
+    if (rows.isEmpty) {
+      return _wrapInCard(
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 24),
+          child: Center(
+            child: Text('无结果', style: AppTextStyles.caption),
+          ),
+        ),
+      );
+    }
+    return _wrapInCard(
+      ListView.separated(
+        shrinkWrap: false,
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        itemCount: rows.length,
+        separatorBuilder: (_, __) => const Padding(
+          padding: EdgeInsets.only(left: 50),
+          child: Divider(
+              height: 0.5, thickness: 0.5, color: Color(0x0F1C1C1E)),
+        ),
+        itemBuilder: (_, i) => rows[i],
+      ),
+    );
+  }
+
+  Widget _buildSelectRow(String text) {
+    final alreadyHas = _existingTexts.contains(text);
+    final selected = _selected.contains(text);
+    return GestureDetector(
+      onTap: alreadyHas
+          ? null
+          : () => setState(() {
+                if (selected) {
+                  _selected.remove(text);
+                } else {
+                  _selected.add(text);
+                }
+              }),
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Row(
+          children: [
+            Container(
+              width: 22,
+              height: 22,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: alreadyHas
+                    ? AppColors.background
+                    : selected
+                        ? AppColors.primary
+                        : Colors.transparent,
+                border: Border.all(
+                  color: alreadyHas
+                      ? AppColors.textTertiary
+                      : selected
+                          ? AppColors.primary
+                          : AppColors.border,
+                  width: 1.5,
+                ),
+              ),
+              child: selected
+                  ? const Icon(Icons.check, size: 14, color: Colors.white)
+                  : null,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: alreadyHas
+                      ? AppColors.textTertiary
+                      : AppColors.textPrimary,
+                ),
+              ),
+            ),
+            if (alreadyHas)
+              const Text('已有',
+                  style: TextStyle(
+                      fontSize: 12, color: AppColors.textTertiary)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAddNewRow() {
+    return GestureDetector(
+      onTap: () => setState(() => _selected.add(_query)),
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Row(
+          children: [
+            Container(
+              width: 22,
+              height: 22,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.primary, width: 1.5),
+              ),
+              child: const Icon(Icons.add, size: 14, color: AppColors.primary),
+            ),
+            const SizedBox(width: 12),
+            RichText(
               text: TextSpan(
                 text: '添加 "',
-                style: AppTextStyles.subheadline,
+                style: const TextStyle(
+                    fontSize: 15, color: AppColors.textPrimary),
                 children: [
                   TextSpan(
                       text: _query,
@@ -204,132 +319,125 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
                 ],
               ),
             ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildPresetView() {
-    final allPresets = {..._categoryPresets, ...universalPresets}.toList();
-    return ListView(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      children: [
-        ...allPresets.map(_buildSelectRow),
-        _buildCustomInputRow(),
-      ],
-    );
-  }
-
-  Widget _buildSelectRow(String text) {
-    final alreadyHas = _existingTexts.contains(text);
-    final selected = _selected.contains(text);
-    return ListTile(
-      dense: true,
-      enabled: !alreadyHas,
-      onTap: alreadyHas
-          ? null
-          : () => setState(() {
-                if (selected) {
-                  _selected.remove(text);
-                } else {
-                  _selected.add(text);
-                }
-              }),
-      leading: Container(
-        width: 22,
-        height: 22,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: selected
-              ? AppColors.primary
-              : alreadyHas
-                  ? AppColors.background
-                  : Colors.transparent,
-          border: Border.all(
-            color: alreadyHas
-                ? AppColors.textTertiary
-                : selected
-                    ? AppColors.primary
-                    : AppColors.border,
-            width: 1.5,
-          ),
-        ),
-        child: selected
-            ? const Icon(Icons.check, size: 14, color: Colors.white)
-            : null,
-      ),
-      title: Text(
-        text,
-        style: TextStyle(
-          fontSize: 15,
-          color: alreadyHas
-              ? AppColors.textTertiary
-              : AppColors.textPrimary,
+          ],
         ),
       ),
     );
   }
 
   Widget _buildCustomInputRow() {
-    return ListTile(
-      dense: true,
-      onTap: _showCustomInput,
-      leading: const Icon(Icons.add,
-          size: 20, color: AppColors.primary),
-      title: const Text('输入自定义物品…',
-          style: TextStyle(fontSize: 15, color: AppColors.primary)),
+    if (!_showCustomInput) {
+      return GestureDetector(
+        onTap: () => setState(() => _showCustomInput = true),
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Row(
+            children: [
+              Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.border, width: 1.5),
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Text('自定义物品',
+                  style: TextStyle(fontSize: 15, color: AppColors.primary)),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        for (int i = 0; i < _customCtrls.length; i++) ...[
+          if (i > 0)
+            const Padding(
+              padding: EdgeInsets.only(left: 50),
+              child: Divider(
+                  height: 0.5, thickness: 0.5, color: Color(0x0F1C1C1E)),
+            ),
+          _buildCustomFieldRow(i),
+        ],
+      ],
     );
   }
 
-  Future<void> _showCustomInput() async {
-    final ctrl = TextEditingController();
-    try {
-      final text = await showDialog<String>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Text('自定义物品'),
-          content: TextField(
-            controller: ctrl,
-            autofocus: true,
-            decoration: const InputDecoration(hintText: '物品名称'),
-          ),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: const Text('取消')),
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
-              child: const Text('添加'),
+  Widget _buildCustomFieldRow(int i) {
+    final hasText = _customCtrls[i].text.trim().isNotEmpty;
+    return Padding(
+      key: ObjectKey(_customCtrls[i]),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: Row(
+        children: [
+          Container(
+            width: 22,
+            height: 22,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: hasText ? AppColors.primary : Colors.transparent,
+              border: Border.all(
+                color: hasText ? AppColors.primary : AppColors.border,
+                width: 1.5,
+              ),
             ),
-          ],
-        ),
-      );
-      if (text != null && text.isNotEmpty && !_existingTexts.contains(text)) {
-        setState(() => _selected.add(text));
-      }
-    } finally {
-      ctrl.dispose();
-    }
+            child: hasText
+                ? const Icon(Icons.check, size: 14, color: Colors.white)
+                : null,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: TextField(
+              controller: _customCtrls[i],
+              focusNode: _customFocusNodes[i],
+              autofocus: i == 0,
+              onChanged: (v) => _onCustomChanged(i, v),
+              style: const TextStyle(fontSize: 15, color: AppColors.textPrimary),
+              decoration: const InputDecoration(
+                hintText: '输入自定义物品名称',
+                hintStyle:
+                    TextStyle(color: AppColors.textTertiary, fontSize: 15),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                filled: false,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildAddButton() {
-    final count = _selected.length;
+    final customCount = _showCustomInput
+        ? _customCtrls.where((c) => c.text.trim().isNotEmpty).length
+        : 0;
+    final count = _selected.length + customCount;
     return SafeArea(
+      top: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
         child: SizedBox(
           width: double.infinity,
           height: 48,
           child: ElevatedButton(
             onPressed: count > 0 ? _submit : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
+              backgroundColor: AppColors.darkPill,
               disabledBackgroundColor: AppColors.textTertiary,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppRadius.input)),
+                  borderRadius: BorderRadius.circular(AppRadius.pill)),
             ),
             child: Text(
-              '添加 $count 项到「${widget.categoryName}」',
+              count > 0
+                  ? '添加 $count 项到「${widget.categoryName}」'
+                  : '选择物品',
               style: const TextStyle(
                   color: Colors.white,
                   fontSize: 15,
@@ -342,9 +450,16 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
   }
 
   Future<void> _submit() async {
+    final items = _selected.toList();
+    for (final ctrl in _customCtrls) {
+      final text = ctrl.text.trim();
+      if (text.isNotEmpty && !_existingTexts.contains(text)) {
+        items.add(text);
+      }
+    }
     await ref
         .read(luggageProvider(widget.travelId).notifier)
-        .addItems(widget.categoryId, _selected.toList());
+        .addItems(widget.categoryId, items);
     if (mounted) Navigator.pop(context);
   }
 }

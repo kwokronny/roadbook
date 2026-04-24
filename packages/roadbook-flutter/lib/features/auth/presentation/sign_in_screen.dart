@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme.dart';
+import '../../../shared/widgets/app_toast.dart';
 import '../../../shared/widgets/pastel_mesh_background.dart';
 import '../domain/auth_provider.dart';
 
@@ -39,8 +40,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
     ref.listen(signInProvider, (_, next) {
       if (next is AsyncError && context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(next.error.toString())));
+        AppToast.error(context, next.error.toString());
       }
     });
 

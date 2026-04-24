@@ -85,6 +85,7 @@ class MapInfoBar extends StatelessWidget {
     required this.schedule,
     required this.onEditTimeTap,
     required this.onTap,
+    this.isAbroad = false,
   })  : poi = null,
         onAction = null,
         isLoading = false;
@@ -98,19 +99,22 @@ class MapInfoBar extends StatelessWidget {
   })  : schedule = null,
         onEditTimeTap = null,
         onTap = onAdd,
-        onAction = onAdd;
+        onAction = onAdd,
+        isAbroad = false;
 
   factory MapInfoBar.schedule({
     Key? key,
     required Schedule schedule,
     required VoidCallback onEditTimeTap,
     required VoidCallback onTap,
+    bool isAbroad = false,
   }) {
     return MapInfoBar._schedule(
       key: key,
       schedule: schedule,
       onEditTimeTap: onEditTimeTap,
       onTap: onTap,
+      isAbroad: isAbroad,
     );
   }
 
@@ -134,6 +138,7 @@ class MapInfoBar extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onAction;
   final bool isLoading;
+  final bool isAbroad;
 
   @override
   Widget build(BuildContext context) {
@@ -244,7 +249,7 @@ class MapInfoBar extends StatelessWidget {
             // Nav circle button
             if (s.coordinate.isNotEmpty && s.coordinate != '0,0') ...[
               const SizedBox(width: 8),
-              _NavCircle(coordinate: s.coordinate, name: s.name, isHotel: isHotel),
+              _NavCircle(coordinate: s.coordinate, name: s.name, isHotel: isHotel, isAbroad: isAbroad),
             ],
           ],
         ),
@@ -478,10 +483,12 @@ class _NavCircle extends StatelessWidget {
     required this.coordinate,
     required this.name,
     required this.isHotel,
+    this.isAbroad = false,
   });
   final String coordinate;
   final String name;
   final bool isHotel;
+  final bool isAbroad;
 
   @override
   Widget build(BuildContext context) {
@@ -491,6 +498,7 @@ class _NavCircle extends StatelessWidget {
         coordinate: coordinate,
         name: name,
         isHotel: isHotel,
+        isAbroad: isAbroad,
         compact: true,
       ),
     );

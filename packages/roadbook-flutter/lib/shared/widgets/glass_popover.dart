@@ -58,38 +58,27 @@ class _PopoverRoute extends PopupRoute<void> {
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {
-    final isForward = animation.status == AnimationStatus.forward ||
-        animation.status == AnimationStatus.completed;
-    final curve = isForward ? _enterCurve : _exitCurve;
-
-    final scaleY = Tween<double>(begin: 0.0, end: 1.0)
-        .animate(CurvedAnimation(parent: animation, curve: curve));
-    final opacity = Tween<double>(begin: 0.0, end: 1.0)
-        .animate(CurvedAnimation(parent: animation, curve: curve));
-
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (context, _) {
-        return Opacity(
-          opacity: opacity.value.clamp(0.0, 1.0),
-          child: ClipRect(
-            child: Align(
-              alignment: Alignment.topCenter,
-              heightFactor: scaleY.value.clamp(0.0, 1.0),
-              child: child,
-            ),
-          ),
-        );
-      },
-    );
+    return child; // animation applied inside buildPage on the menu widget
   }
 
   @override
   Widget buildPage(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation) {
+    final curvedAnim = CurvedAnimation(
+      parent: animation,
+      curve: _enterCurve,
+      reverseCurve: _exitCurve,
+    );
     return CustomSingleChildLayout(
       delegate: _PopoverLayoutDelegate(position),
-      child: _PopoverMenu(items: items, width: width),
+      child: FadeTransition(
+        opacity: curvedAnim,
+        child: ScaleTransition(
+          scale: Tween<double>(begin: 0.88, end: 1.0).animate(curvedAnim),
+          alignment: Alignment.topCenter,
+          child: _PopoverMenu(items: items, width: width),
+        ),
+      ),
     );
   }
 }

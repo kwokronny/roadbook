@@ -5,6 +5,8 @@ import '../../../core/theme.dart';
 
 import '../../../shared/models/travel.dart';
 import '../../../shared/models/schedule.dart';
+import '../../../shared/widgets/app_toast.dart';
+import '../../../shared/widgets/glass_drawer.dart';
 import '../data/schedule_repository.dart';
 import '../domain/schedule_provider.dart';
 import 'widgets/screenshot_picker_field.dart';
@@ -27,10 +29,9 @@ class ScheduleEditSheet extends ConsumerStatefulWidget {
     Schedule? schedule,
     int? initialDay,
   }) {
-    return showModalBottomSheet(
+    return showGlassDrawer<void>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      title: schedule != null ? '编辑行程' : '新建行程',
       builder: (_) => ScheduleEditSheet(
         travel: travel,
         schedule: schedule,
@@ -99,10 +100,7 @@ class _ScheduleEditSheetState extends ConsumerState<ScheduleEditSheet> {
       }
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(e.toString())));
-      }
+      if (mounted) AppToast.error(context, e.toString());
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -111,174 +109,122 @@ class _ScheduleEditSheetState extends ConsumerState<ScheduleEditSheet> {
   @override
   Widget build(BuildContext context) {
     final isEdit = widget.schedule != null;
-    return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-        child: BackdropFilter(
-          filter: GlassSpec.sheetBlur,
-          child: Container(
-            decoration: const BoxDecoration(
-              color: GlassSpec.sheetBg,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-              border: Border(top: BorderSide(color: GlassSpec.sheetBorder, width: 1)),
-            ),
-        child: SafeArea(
-          top: false,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.pageHorizontal, 0, AppSpacing.pageHorizontal, 24),
-            child: Form(
-              key: _formKey,
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(
+          AppSpacing.pageHorizontal, 0, AppSpacing.pageHorizontal, 24),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // ── iOS grouped form card
+            Container(
+              decoration: BoxDecoration(
+                color: const Color(0xB0FFFFFF), // 70% white — semi-transparent on glass sheet
+                borderRadius: BorderRadius.circular(14),
+              ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  // ── Drag handle
-                  Center(
-                    child: Container(
-                      width: 36, height: 4,
-                      margin: const EdgeInsets.only(top: 10, bottom: 14),
-                      decoration: BoxDecoration(
-                        color: GlassSpec.dragHandle,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  // ── Title bar
-                  Row(
-                    children: [
-                      Text(isEdit ? '编辑行程' : '新建行程',
-                          style: AppTextStyles.title.copyWith(fontSize: 20)),
-                      const Spacer(),
-                      GestureDetector(
-                        onTap: () => Navigator.of(context).pop(),
-                        child: Container(
-                          width: 26, height: 26,
-                          decoration: const BoxDecoration(
-                            color: Color(0x1A1C1C1E),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.close, size: 14,
-                              color: AppColors.inkSecondary),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  // ── iOS grouped form card
-                  Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xB0FFFFFF), // 70% white — semi-transparent on glass sheet
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Column(
+                  // 类型
+                  _FormRow(
+                    label: '类型',
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        // 类型
-                        _FormRow(
-                          label: '类型',
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              _TypeChip(
-                                emoji: '📍',
-                                label: '地点',
-                                selected: !_isHotel,
-                                color: AppColors.primary,
-                                onTap: () => setState(() => _isHotel = false),
-                              ),
-                              const SizedBox(width: 8),
-                              _TypeChip(
-                                emoji: '🏨',
-                                label: '酒店',
-                                selected: _isHotel,
-                                color: AppColors.lavender,
-                                onTap: () => setState(() => _isHotel = true),
-                              ),
-                            ],
-                          ),
+                        _TypeChip(
+                          emoji: '📍',
+                          label: '地点',
+                          selected: !_isHotel,
+                          color: AppColors.primary,
+                          onTap: () => setState(() => _isHotel = false),
                         ),
-                        const _FormDivider(),
-                        // 名称
-                        _FormRow(
-                          label: '名称',
-                          child: TextFormField(
-                            controller: _nameCtrl,
-                            textAlign: TextAlign.end,
-                            style: const TextStyle(
-                              fontSize: 14, color: AppColors.inkPrimary),
-                            decoration: _noBorderDecoration('输入名称'),
-                            validator: (v) =>
-                                (v == null || v.trim().isEmpty) ? '请输入名称' : null,
-                          ),
-                        ),
-                        const _FormDivider(),
-                        // 截图
-                        _FormRow(
-                          label: '截图',
-                          crossAlign: CrossAxisAlignment.center,
-                          child: ScreenshotPickerField(
-                            value: _screenshots,
-                            onChanged: (v) => setState(() => _screenshots = v),
-                          ),
-                        ),
-                        const _FormDivider(),
-                        // 备注
-                        _FormRow(
-                          label: '备注',
-                          crossAlign: CrossAxisAlignment.start,
-                          child: TextField(
-                            controller: _notesCtrl,
-                            textAlign: TextAlign.end,
-                            style: const TextStyle(
-                              fontSize: 14, color: AppColors.inkSecondary),
-                            maxLines: 4,
-                            minLines: 2,
-                            decoration: _noBorderDecoration('添加备注（可选）'),
-                          ),
+                        const SizedBox(width: 8),
+                        _TypeChip(
+                          emoji: '🏨',
+                          label: '酒店',
+                          selected: _isHotel,
+                          color: AppColors.lavender,
+                          onTap: () => setState(() => _isHotel = true),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 20),
-
-                  // ── Dark CTA
-                  GestureDetector(
-                    onTap: _saving ? null : _submit,
-                    child: Container(
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: AppColors.darkPill,
-                        borderRadius: BorderRadius.circular(AppRadius.pill),
-                      ),
-                      child: Center(
-                        child: _saving
-                            ? const SizedBox(
-                                width: 20, height: 20,
-                                child: CircularProgressIndicator(
-                                    strokeWidth: 2, color: Colors.white))
-                            : Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(isEdit ? '保存修改' : '创建行程',
-                                      style: const TextStyle(
-                                          color: Colors.white, fontSize: 16)),
-                                  const SizedBox(width: 6),
-                                  const Text('→',
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 16)),
-                                ],
-                              ),
-                      ),
+                  const _FormDivider(),
+                  // 名称
+                  _FormRow(
+                    label: '名称',
+                    child: TextFormField(
+                      controller: _nameCtrl,
+                      textAlign: TextAlign.end,
+                      style: const TextStyle(
+                        fontSize: 14, color: AppColors.inkPrimary),
+                      decoration: _noBorderDecoration('输入名称'),
+                      validator: (v) =>
+                          (v == null || v.trim().isEmpty) ? '请输入名称' : null,
+                    ),
+                  ),
+                  const _FormDivider(),
+                  // 截图
+                  _FormRow(
+                    label: '截图',
+                    crossAlign: CrossAxisAlignment.center,
+                    child: ScreenshotPickerField(
+                      value: _screenshots,
+                      onChanged: (v) => setState(() => _screenshots = v),
+                    ),
+                  ),
+                  const _FormDivider(),
+                  // 备注
+                  _FormRow(
+                    label: '备注',
+                    crossAlign: CrossAxisAlignment.start,
+                    child: TextField(
+                      controller: _notesCtrl,
+                      textAlign: TextAlign.end,
+                      style: const TextStyle(
+                        fontSize: 14, color: AppColors.inkSecondary),
+                      maxLines: 4,
+                      minLines: 2,
+                      decoration: _noBorderDecoration('添加备注（可选）'),
                     ),
                   ),
                 ],
               ),
             ),
-          ),
-        ),
-      ),
+            const SizedBox(height: 20),
+
+            // ── Dark CTA
+            GestureDetector(
+              onTap: _saving ? null : _submit,
+              child: Container(
+                height: 48,
+                decoration: BoxDecoration(
+                  color: AppColors.darkPill,
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                ),
+                child: Center(
+                  child: _saving
+                      ? const SizedBox(
+                          width: 20, height: 20,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white))
+                      : Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(isEdit ? '保存修改' : '创建行程',
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 16)),
+                            const SizedBox(width: 6),
+                            const Text('→',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16)),
+                          ],
+                        ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -8,7 +8,12 @@ import '../../../core/theme.dart';
 
 import '../domain/travel_list_provider.dart';
 import '../../luggage/domain/luggage_provider.dart';
+import '../../../shared/widgets/app_confirm_dialog.dart';
+import '../../../shared/widgets/app_toast.dart';
+import '../../../shared/widgets/skeleton.dart';
+import 'widgets/join_travel_sheet.dart';
 import 'widgets/travel_card.dart';
+import 'widgets/travel_card_skeleton.dart';
 import 'widgets/travel_form_sheet.dart';
 
 class TravelListScreen extends ConsumerStatefulWidget {
@@ -54,35 +59,19 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
   }
 
   Future<void> _confirmDelete(int travelId, String name) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showAppConfirmDialog(
       context: context,
-      useRootNavigator: true,
-      builder: (ctx) => AlertDialog(
-        title: const Text('删除旅程'),
-        content: Text('确定删除「$name」？此操作无法撤销。'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('取消'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('删除',
-                style: TextStyle(color: AppColors.destructive)),
-          ),
-        ],
-      ),
+      title: '删除旅程',
+      message: '确定删除「$name」？此操作无法撤销。',
+      confirmLabel: '删除',
     );
-    if (confirmed != true) return;
+    if (!confirmed) return;
 
     try {
       await ref.read(travelRepositoryProvider).remove(travelId);
       ref.read(travelListProvider.notifier).remove(travelId);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(e.toString())));
-      }
+      if (mounted) AppToast.error(context, e.toString());
     }
   }
 
@@ -96,7 +85,7 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Large Title + Add button ──────────────────────────────────
+            // ── Large Title + Join + Add buttons ──────────────────────────
             Padding(
               padding: const EdgeInsets.fromLTRB(
                   AppSpacing.pageHorizontal, 20, AppSpacing.pageHorizontal, 0),
@@ -104,6 +93,35 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
                 children: [
                   const Text('旅程', style: AppTextStyles.largeTitle),
                   const Spacer(),
+                  GestureDetector(
+                    onTap: () => JoinTravelSheet.show(context),
+                    child: Container(
+                      height: 32,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(AppRadius.pill),
+                        border: Border.all(
+                            color: AppColors.inkPrimary, width: 1),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.group_add_outlined,
+                              size: 16, color: AppColors.inkPrimary),
+                          SizedBox(width: 5),
+                          Text('加入',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.inkPrimary,
+                                height: 1.0,
+                              )),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
                   GestureDetector(
                     onTap: () => TravelFormSheet.show(context),
                     child: Container(
@@ -123,7 +141,8 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
 
             // ── Glass search bar ─────────────────────────────────────────
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.pageHorizontal),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.pageHorizontal),
               child: _GlassSearchBar(
                 controller: _searchCtrl,
                 onChanged: _onSearchChanged,
@@ -134,8 +153,15 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
             // ── Travel list ──────────────────────────────────────────────
             Expanded(
               child: listAsync.when(
-                loading: () => const Center(
-                    child: CircularProgressIndicator(color: AppColors.primary)),
+                loading: () => SkeletonLoader(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.pageHorizontal, 4,
+                        AppSpacing.pageHorizontal, 100),
+                    itemCount: 4,
+                    itemBuilder: (_, __) => const TravelCardSkeleton(),
+                  ),
+                ),
                 error: (e, _) => Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,

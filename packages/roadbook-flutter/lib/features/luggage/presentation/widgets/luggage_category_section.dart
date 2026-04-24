@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme.dart';
 import '../../../../shared/models/luggage.dart';
+import '../../../../shared/widgets/app_confirm_dialog.dart';
 import '../../domain/luggage_provider.dart';
 
 class LuggageCategorySection extends ConsumerStatefulWidget {
@@ -38,7 +39,7 @@ class _LuggageCategorySectionState
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.pageHorizontal, vertical: 4),
+          horizontal: AppSpacing.pageHorizontal, vertical: 8),
       decoration: BoxDecoration(
         color: const Color(0xB8FFFFFF), // rgba(255,255,255,0.72)
         borderRadius: BorderRadius.circular(24),
@@ -215,27 +216,13 @@ class _LuggageCategorySectionState
   }
 
   Future<void> _confirmDelete() async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showAppConfirmDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.contentCard)),
-        title: const Text('删除分类'),
-        content: Text('确认删除「${widget.category.name}」及其所有物品？'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('取消'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('删除',
-                style: TextStyle(color: AppColors.destructive)),
-          ),
-        ],
-      ),
+      title: '删除分类',
+      message: '确认删除「${widget.category.name}」及其所有物品？',
+      confirmLabel: '删除',
     );
-    if (confirmed == true && mounted) {
+    if (confirmed && mounted) {
       ref
           .read(luggageProvider(widget.travelId).notifier)
           .deleteCategory(widget.category.id);

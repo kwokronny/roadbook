@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme.dart';
+import '../../../shared/widgets/app_confirm_dialog.dart';
+import '../../../shared/widgets/app_toast.dart';
+import '../../../shared/widgets/glass_drawer.dart';
 import '../domain/luggage_provider.dart';
 import 'widgets/luggage_category_section.dart';
 import 'widgets/add_item_sheet.dart';
@@ -31,11 +34,7 @@ class LuggageScreen extends ConsumerWidget {
       final msg = next.valueOrNull?.errorMessage;
       if (msg != null) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('保存失败：$msg')),
-            );
-          }
+          if (context.mounted) AppToast.error(context, '保存失败：$msg');
         });
       }
     });
@@ -57,8 +56,9 @@ class LuggageScreen extends ConsumerWidget {
       data: (state) => Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
+          leadingWidth: AppSpacing.pageHorizontal + 32 + 8,
           leading: Padding(
-            padding: const EdgeInsets.only(left: 12),
+            padding: const EdgeInsets.only(left: AppSpacing.pageHorizontal),
             child: Center(
               child: GestureDetector(
                 onTap: () => Navigator.pop(context),
@@ -75,11 +75,26 @@ class LuggageScreen extends ConsumerWidget {
           title: const Text('行李清单', style: AppTextStyles.appBarTitle),
           actions: [
             if (state.canEdit)
-              TextButton(
-                onPressed: () => _confirmClearAllChecks(context, ref),
-                child: const Text('重新清点',
-                    style: TextStyle(
-                        color: AppColors.primary, fontSize: 14)),
+              Padding(
+                padding: const EdgeInsets.only(right: AppSpacing.pageHorizontal),
+                child: GestureDetector(
+                  onTap: () => _confirmClearAllChecks(context, ref),
+                  child: Container(
+                    height: 32,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.darkPill,
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                    ),
+                    child: const Center(
+                      child: Text('重新清点',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500)),
+                    ),
+                  ),
+                ),
               ),
           ],
         ),
@@ -117,17 +132,18 @@ class LuggageScreen extends ConsumerWidget {
                     child: Container(
                       height: 44,
                       decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        border: Border.all(color: const Color(0x1F1C1C1E)),
+                        color: AppColors.darkPill,
                         borderRadius: BorderRadius.circular(AppRadius.pill),
                       ),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.add, size: 18, color: AppColors.inkSecondary),
+                          Icon(Icons.add, size: 18, color: Colors.white),
                           SizedBox(width: 6),
                           Text('添加分类', style: TextStyle(
-                            fontSize: 15, color: AppColors.inkSecondary)),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white)),
                         ],
                       ),
                     ),
@@ -183,10 +199,9 @@ class LuggageScreen extends ConsumerWidget {
   void _showAddCategorySheet(BuildContext context, WidgetRef ref, LuggageState state) {
     if (!state.canEdit) return;
     final existingNames = state.categories.map((c) => c.name).toSet();
-    showModalBottomSheet(
+    showGlassDrawer<void>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      title: '添加分类',
       builder: (_) => _AddCategorySheet(
         travelId: travelId,
         existingNames: existingNames,
@@ -195,27 +210,14 @@ class LuggageScreen extends ConsumerWidget {
   }
 
   Future<void> _confirmClearAllChecks(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showAppConfirmDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.contentCard)),
-        title: const Text('确认重新清点？'),
-        content: const Text('将取消所有已打包的勾选'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('取消'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('确认',
-                style: TextStyle(color: AppColors.primary)),
-          ),
-        ],
-      ),
+      title: '重新清点',
+      message: '将取消所有已打包的勾选',
+      confirmLabel: '确认',
+      isDestructive: false,
     );
-    if (confirmed == true) {
+    if (confirmed) {
       ref.read(luggageProvider(travelId).notifier).clearAllChecks();
     }
   }
@@ -236,253 +238,309 @@ class _AddCategorySheet extends StatefulWidget {
 class _AddCategorySheetState extends State<_AddCategorySheet> {
   final Set<int> _selected = {};
   bool _showCustomInput = false;
-  final _ctrl = TextEditingController();
+  final List<TextEditingController> _customCtrls = [TextEditingController()];
+  final List<FocusNode> _customFocusNodes = [FocusNode()];
 
   @override
   void dispose() {
-    _ctrl.dispose();
+    for (final c in _customCtrls) c.dispose();
+    for (final f in _customFocusNodes) f.dispose();
     super.dispose();
+  }
+
+  void _onCustomChanged(int i, String v) {
+    setState(() {
+      if (v.trim().isNotEmpty) {
+        if (i == _customCtrls.length - 1) {
+          _customCtrls.add(TextEditingController());
+          _customFocusNodes.add(FocusNode());
+        }
+      } else {
+        for (var j = _customCtrls.length - 1; j > i; j--) {
+          _customCtrls[j].dispose();
+          _customFocusNodes[j].dispose();
+          _customCtrls.removeAt(j);
+          _customFocusNodes.removeAt(j);
+        }
+      }
+    });
+  }
+
+  List<MapEntry<int, Map<String, String>>> get _sortedTemplateEntries {
+    final entries = _categoryTemplates.asMap().entries.toList();
+    entries.sort((a, b) {
+      final aExists = widget.existingNames.contains(a.value['name']);
+      final bExists = widget.existingNames.contains(b.value['name']);
+      if (aExists == bExists) return 0;
+      return aExists ? 1 : -1;
+    });
+    return entries;
   }
 
   @override
   Widget build(BuildContext context) {
-    final maxHeight = MediaQuery.of(context).size.height * 0.75;
-    return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-        child: BackdropFilter(
-          filter: GlassSpec.sheetBlur,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // ── List (white card)
+        Flexible(
           child: Container(
-            constraints: BoxConstraints(maxHeight: maxHeight),
-            decoration: const BoxDecoration(
-              color: GlassSpec.sheetBg,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-              border: Border(top: BorderSide(color: GlassSpec.sheetBorder, width: 1)),
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // ── Handle
-                Center(
-                  child: Container(
-                    width: 36, height: 4,
-                    margin: const EdgeInsets.only(top: 10, bottom: 14),
-                    decoration: BoxDecoration(
-                      color: AppColors.textTertiary,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                // ── Title bar
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      const Text('添加分类',
-                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColors.textPrimary)),
-                      const Spacer(),
-                      if (_selected.isNotEmpty)
-                        Text('已选 ${_selected.length}',
-                            style: const TextStyle(fontSize: 14, color: AppColors.primary)),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                // ── List (white card)
-                Flexible(
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: ListView.builder(
-                    shrinkWrap: true,
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    itemCount: _categoryTemplates.length + 1, // +1 for custom
-                    itemBuilder: (_, i) {
-                      if (i == _categoryTemplates.length) {
-                        // Custom input row
-                        return _buildCustomRow();
-                      }
-                      final t = _categoryTemplates[i];
-                      final name = t['name']!;
-                      final emoji = t['emoji']!;
-                      final itemsStr = t['items'] ?? '';
-                      final itemCount = itemsStr.isNotEmpty ? itemsStr.split(',').length : 0;
-                      final exists = widget.existingNames.contains(name);
-                      final selected = _selected.contains(i);
+            child: ListView.builder(
+              shrinkWrap: true,
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              itemCount: _categoryTemplates.length + 1,
+              itemBuilder: (_, i) {
+                if (i == 0) {
+                  return _buildCustomRow();
+                }
+                final sortedEntries = _sortedTemplateEntries;
+                final entry = sortedEntries[i - 1];
+                final originalIdx = entry.key;
+                final t = entry.value;
+                final name = t['name']!;
+                final emoji = t['emoji']!;
+                final itemsStr = t['items'] ?? '';
+                final itemCount =
+                    itemsStr.isNotEmpty ? itemsStr.split(',').length : 0;
+                final exists = widget.existingNames.contains(name);
+                final selected = _selected.contains(originalIdx);
 
-                      return GestureDetector(
-                        onTap: exists ? null : () {
+                return GestureDetector(
+                  onTap: exists
+                      ? null
+                      : () {
                           setState(() {
                             if (selected) {
-                              _selected.remove(i);
+                              _selected.remove(originalIdx);
                             } else {
-                              _selected.add(i);
+                              _selected.add(originalIdx);
                             }
                           });
                         },
-                        behavior: HitTestBehavior.opaque,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                          child: Row(
+                  behavior: HitTestBehavior.opaque,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 22,
+                          height: 22,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: exists
+                                ? AppColors.background
+                                : selected
+                                    ? AppColors.primary
+                                    : Colors.transparent,
+                            border: Border.all(
+                              color: exists
+                                  ? AppColors.textTertiary
+                                  : selected
+                                      ? AppColors.primary
+                                      : AppColors.border,
+                              width: 1.5,
+                            ),
+                          ),
+                          child: selected
+                              ? const Icon(Icons.check,
+                                  size: 14, color: Colors.white)
+                              : null,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(emoji,
+                            style: const TextStyle(fontSize: 20)),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Checkbox
-                              Container(
-                                width: 22, height: 22,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
+                              Text(
+                                name,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
                                   color: exists
-                                      ? AppColors.background
-                                      : selected ? AppColors.primary : Colors.transparent,
-                                  border: Border.all(
+                                      ? AppColors.textTertiary
+                                      : AppColors.textPrimary,
+                                ),
+                              ),
+                              if (itemCount > 0)
+                                Text(
+                                  '$itemCount 件常用物品',
+                                  style: TextStyle(
+                                    fontSize: 12,
                                     color: exists
                                         ? AppColors.textTertiary
-                                        : selected ? AppColors.primary : AppColors.border,
-                                    width: 1.5,
+                                        : AppColors.inkTertiary,
                                   ),
                                 ),
-                                child: selected
-                                    ? const Icon(Icons.check, size: 14, color: Colors.white)
-                                    : null,
-                              ),
-                              const SizedBox(width: 12),
-                              // Emoji
-                              Text(emoji, style: const TextStyle(fontSize: 20)),
-                              const SizedBox(width: 10),
-                              // Name + item count
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(name, style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500,
-                                      color: exists ? AppColors.textTertiary : AppColors.textPrimary,
-                                    )),
-                                    if (itemCount > 0)
-                                      Text('$itemCount 件常用物品', style: TextStyle(
-                                        fontSize: 12,
-                                        color: exists ? AppColors.textTertiary : AppColors.inkTertiary,
-                                      )),
-                                  ],
-                                ),
-                              ),
-                              if (exists)
-                                const Text('已添加', style: TextStyle(fontSize: 12, color: AppColors.textTertiary)),
                             ],
                           ),
                         ),
-                      );
-                    },
+                        if (exists)
+                          const Text('已添加',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.textTertiary)),
+                      ],
+                    ),
                   ),
-                  ),
-                ),
-                // ── Add button
-                Consumer(
-                  builder: (_, ref, __) {
-                    final hasCustom = _showCustomInput && _ctrl.text.trim().isNotEmpty;
-                    final total = _selected.length + (hasCustom ? 1 : 0);
-                    return Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                      child: SafeArea(
-                        top: false,
-                        child: SizedBox(
-                          width: double.infinity,
-                          height: 48,
-                          child: ElevatedButton(
-                            onPressed: total == 0 ? null : () async {
-                              Navigator.pop(context);
-                              final notifier = ref.read(luggageProvider(widget.travelId).notifier);
-                              for (final idx in _selected) {
-                                final t = _categoryTemplates[idx];
-                                final itemsStr = t['items'] ?? '';
-                                final presetItems = itemsStr.isNotEmpty ? itemsStr.split(',') : <String>[];
-                                await notifier.addCategory(t['name']!, emoji: t['emoji']!, presetItems: presetItems);
-                              }
-                              if (hasCustom) {
-                                await notifier.addCategory(_ctrl.text.trim());
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              disabledBackgroundColor: AppColors.textTertiary,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(AppRadius.input)),
-                            ),
-                            child: Text(
-                              total > 0 ? '添加 $total 个分类' : '选择分类',
-                              style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
+                );
+              },
             ),
           ),
         ),
-      ),
+        // ── Add button
+        Consumer(
+          builder: (_, ref, __) {
+            final customCount = _showCustomInput
+                ? _customCtrls.where((c) => c.text.trim().isNotEmpty).length
+                : 0;
+            final total = _selected.length + customCount;
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: SafeArea(
+                top: false,
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: total == 0
+                        ? null
+                        : () async {
+                            Navigator.pop(context);
+                            final notifier = ref.read(
+                                luggageProvider(widget.travelId).notifier);
+                            for (final idx in _selected) {
+                              final t = _categoryTemplates[idx];
+                              final itemsStr = t['items'] ?? '';
+                              final presetItems = itemsStr.isNotEmpty
+                                  ? itemsStr.split(',')
+                                  : <String>[];
+                              await notifier.addCategory(t['name']!,
+                                  emoji: t['emoji']!,
+                                  presetItems: presetItems);
+                            }
+                            for (final ctrl in _customCtrls) {
+                              final text = ctrl.text.trim();
+                              if (text.isNotEmpty) {
+                                await notifier.addCategory(text);
+                              }
+                            }
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.darkPill,
+                      disabledBackgroundColor: AppColors.textTertiary,
+                      shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(AppRadius.pill)),
+                    ),
+                    child: Text(
+                      total > 0 ? '添加 $total 个分类' : '选择分类',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 
   Widget _buildCustomRow() {
-    final hasText = _ctrl.text.trim().isNotEmpty;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _showCustomInput = !_showCustomInput;
-        });
-      },
-      behavior: HitTestBehavior.opaque,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: Row(
-          children: [
-            // Checkbox
-            Container(
-              width: 22, height: 22,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: _showCustomInput && hasText ? AppColors.primary : Colors.transparent,
-                border: Border.all(
-                  color: _showCustomInput && hasText ? AppColors.primary : AppColors.border,
-                  width: 1.5,
+    if (!_showCustomInput) {
+      return GestureDetector(
+        onTap: () => setState(() => _showCustomInput = true),
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Row(
+            children: [
+              Container(
+                width: 22, height: 22,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.border, width: 1.5),
                 ),
               ),
-              child: _showCustomInput && hasText
-                  ? const Icon(Icons.check, size: 14, color: Colors.white)
-                  : null,
-            ),
-            const SizedBox(width: 12),
-            // Text or input
-            Expanded(
-              child: _showCustomInput
-                  ? TextField(
-                      controller: _ctrl,
-                      autofocus: true,
-                      onChanged: (_) => setState(() {}),
-                      style: const TextStyle(fontSize: 15, color: AppColors.textPrimary),
-                      decoration: const InputDecoration(
-                        hintText: '输入自定义分类名称',
-                        hintStyle: TextStyle(color: AppColors.textTertiary, fontSize: 15),
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        filled: false,
-                        isDense: true,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                    )
-                  : const Text('自定义分类',
-                      style: TextStyle(fontSize: 15, color: AppColors.primary)),
-            ),
-          ],
+              const SizedBox(width: 12),
+              const Text('自定义分类',
+                  style: TextStyle(fontSize: 15, color: AppColors.primary)),
+            ],
+          ),
         ),
+      );
+    }
+
+    return Column(
+      children: [
+        for (int i = 0; i < _customCtrls.length; i++) ...[
+          if (i > 0)
+            const Padding(
+              padding: EdgeInsets.only(left: 50),
+              child: Divider(
+                  height: 0.5, thickness: 0.5, color: Color(0x0F1C1C1E)),
+            ),
+          _buildCustomFieldRow(i),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildCustomFieldRow(int i) {
+    final hasText = _customCtrls[i].text.trim().isNotEmpty;
+    return Padding(
+      key: ObjectKey(_customCtrls[i]),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: Row(
+        children: [
+          Container(
+            width: 22, height: 22,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: hasText ? AppColors.primary : Colors.transparent,
+              border: Border.all(
+                color: hasText ? AppColors.primary : AppColors.border,
+                width: 1.5,
+              ),
+            ),
+            child: hasText
+                ? const Icon(Icons.check, size: 14, color: Colors.white)
+                : null,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: TextField(
+              controller: _customCtrls[i],
+              focusNode: _customFocusNodes[i],
+              autofocus: i == 0,
+              onChanged: (v) => _onCustomChanged(i, v),
+              style: const TextStyle(fontSize: 15, color: AppColors.textPrimary),
+              decoration: const InputDecoration(
+                hintText: '输入自定义分类名称',
+                hintStyle:
+                    TextStyle(color: AppColors.textTertiary, fontSize: 15),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                filled: false,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -21,6 +21,11 @@ module.exports = (sequelize, DataTypes) => {
     equip: DataTypes.TEXT, // 装备
     city: DataTypes.STRING, // 城市
     public: DataTypes.BOOLEAN,
+    isAbroad: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     viewCount: {
       type: DataTypes.INTEGER,
       allowNull: false,

@@ -24,6 +24,7 @@ class ScheduleTimelineItem extends StatelessWidget {
     this.isSelected = false,
     this.onLongPress,
     this.onToggleSelect,
+    this.isAbroad = false,
   });
 
   final Schedule schedule;
@@ -38,6 +39,7 @@ class ScheduleTimelineItem extends StatelessWidget {
   final bool isSelected;
   final VoidCallback? onLongPress;
   final VoidCallback? onToggleSelect;
+  final bool isAbroad;
 
   static const _maxThumbs = 4;
   static final _timeFmt = DateFormat('HH:mm');
@@ -222,7 +224,8 @@ class ScheduleTimelineItem extends StatelessWidget {
               child: ScheduleNavButton(
                   coordinate: schedule.coordinate,
                   name: schedule.name,
-                  isHotel: schedule.isHotel),
+                  isHotel: schedule.isHotel,
+                  isAbroad: isAbroad),
             ),
           ],
         ],

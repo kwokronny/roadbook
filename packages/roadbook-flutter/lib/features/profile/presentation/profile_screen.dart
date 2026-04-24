@@ -55,24 +55,11 @@ class ProfileScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             // 菜单组 1
             _MenuGroup(items: [
-              const _MenuItem(
-                icon: Icons.mail_outline,
-                iconBg: AppColors.primary,
-                label: '消息中心',
-                trailing: _ComingSoonBadge(),
-                onTap: null,
-              ),
               _MenuItem(
                 icon: Icons.edit_outlined,
                 iconBg: AppColors.success,
-                label: '编辑资料',
+                label: '个人资料',
                 onTap: () => context.push('/profile/edit'),
-              ),
-              _MenuItem(
-                icon: Icons.settings_outlined,
-                iconBg: AppColors.textSecondary,
-                label: '设置',
-                onTap: () => context.push('/profile/settings'),
               ),
               _MenuItem(
                 icon: Icons.key,
@@ -340,22 +327,4 @@ class _MenuItem extends StatelessWidget {
       ),
     );
   }
-}
-
-class _ComingSoonBadge extends StatelessWidget {
-  const _ComingSoonBadge();
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        decoration: BoxDecoration(
-          color: AppColors.petalPink.withValues(alpha: 0.10),
-          borderRadius: BorderRadius.circular(AppRadius.pill),
-          border: Border.all(color: AppColors.petalPink.withValues(alpha: 0.22), width: 1),
-        ),
-        child: const Text('即将推出',
-            style: TextStyle(
-                color: Color(0xFFC02060),
-                fontSize: 9,
-                fontWeight: FontWeight.w500)),
-      );
 }

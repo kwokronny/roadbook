@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme.dart';
+import '../../../shared/widgets/glass_drawer.dart';
 
 import '../data/collect_import_service.dart';
 import '../data/schedule_repository.dart';
@@ -23,10 +24,9 @@ class CollectImportSheet extends ConsumerStatefulWidget {
   final int travelId;
 
   static Future<void> show(BuildContext context, int travelId) {
-    return showModalBottomSheet(
+    return showGlassDrawer<void>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      title: '批量导入',
       builder: (_) => CollectImportSheet(travelId: travelId),
     );
   }
@@ -50,7 +50,6 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
   Future<void> _startImport() async {
     setState(() => _parseError = null);
 
-    // ── 解析数据 ─────────────────────────────────────────────────────────────
     List<ScheduleFormData> forms;
     try {
       forms = await CollectImportService.fetchDianpingAlbum(
@@ -71,7 +70,6 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
       _phase = _Phase.importing;
     });
 
-    // ── 逐条导入 ─────────────────────────────────────────────────────────────
     final repo = ref.read(scheduleRepositoryProvider);
     for (int i = 0; i < _items.length; i++) {
       if (!mounted) break;
@@ -97,148 +95,74 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-        child: BackdropFilter(
-          filter: GlassSpec.sheetBlur,
-          child: Container(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.85,
-            ),
-            decoration: const BoxDecoration(
-              color: GlassSpec.sheetBg,
-              borderRadius:
-                  BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-              border: Border(top: BorderSide(color: GlassSpec.sheetBorder, width: 1)),
-            ),
-            child: SafeArea(
-          top: false,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Drag handle
-              Center(
-                child: Container(
-                  width: 36, height: 4,
-                  margin: const EdgeInsets.only(top: 10, bottom: 4),
-                  decoration: BoxDecoration(
-                    color: GlassSpec.dragHandle,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              _buildHeader(),
-              Flexible(
-                child: _phase == _Phase.input
-                    ? _buildInputPhase()
-                    : _buildProgressPhase(),
-              ),
-            ],
-          ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          child: _phase == _Phase.input
+              ? _buildInputPhase()
+              : _buildProgressPhase(),
         ),
-      ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-          AppSpacing.pageHorizontal, 20, AppSpacing.pageHorizontal, 0),
-      child: Row(
-        children: [
-          Text('批量导入', style: AppTextStyles.title.copyWith(fontSize: 20)),
-          const Spacer(),
-          GestureDetector(
-            onTap: () => Navigator.of(context).pop(),
-            child: Container(
-              width: 26, height: 26,
-              decoration: const BoxDecoration(
-                color: Color(0x1A1C1C1E),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.close, size: 14,
-                  color: AppColors.inkSecondary),
-            ),
-          ),
-        ],
-      ),
+      ],
     );
   }
 
   Widget _buildInputPhase() {
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(
-          AppSpacing.pageHorizontal, 12, AppSpacing.pageHorizontal, 24),
+          AppSpacing.pageHorizontal, 0, AppSpacing.pageHorizontal, 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // ── 白色卡片包裹内容
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '粘贴大众点评收藏夹的分享链接',
-                  style: AppTextStyles.caption,
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: _urlCtrl,
-                  maxLines: 3,
-                  style: const TextStyle(fontSize: 15, color: AppColors.inkPrimary),
-                  decoration: InputDecoration(
-                    hintText: '粘贴点评收藏分享链接…',
-                    hintStyle: const TextStyle(color: AppColors.inkTertiary, fontSize: 15),
-                    filled: false,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.cover),
-                      borderSide: BorderSide(color: const Color(0x1A1C1C1E)),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.cover),
-                      borderSide: BorderSide(color: const Color(0x1A1C1C1E)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.cover),
-                      borderSide: BorderSide(color: AppColors.primary.withValues(alpha: 0.40)),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    errorText: _parseError,
-                  ),
-                ),
-              ],
+          TextField(
+            controller: _urlCtrl,
+            maxLines: 4,
+            style: const TextStyle(fontSize: 15, color: AppColors.inkPrimary),
+            decoration: InputDecoration(
+              hintText: '粘贴大众点评收藏夹的分享链接…',
+              hintStyle: const TextStyle(
+                  color: AppColors.inkTertiary, fontSize: 15),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.cover),
+                borderSide: const BorderSide(color: Color(0x1A1C1C1E)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.cover),
+                borderSide: const BorderSide(color: Color(0x1A1C1C1E)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.cover),
+                borderSide: BorderSide(
+                    color: AppColors.primary.withValues(alpha: 0.40)),
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              errorText: _parseError,
             ),
           ),
           const SizedBox(height: 16),
-          // ── 导入按钮 (coral)
           GestureDetector(
             onTap: _phase == _Phase.input ? _startImport : null,
             child: Container(
               height: 48,
               decoration: BoxDecoration(
-                color: AppColors.primary,
+                color: AppColors.darkPill,
                 borderRadius: BorderRadius.circular(AppRadius.pill),
-                boxShadow: const [
-                  BoxShadow(color: AppColors.coralGlow, blurRadius: 8, offset: Offset(0, 2)),
-                ],
               ),
               child: const Center(
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text('开始导入',
-                        style: TextStyle(color: Colors.white, fontSize: 15)),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500)),
                     SizedBox(width: 6),
-                    Text('→', style: TextStyle(color: Colors.white, fontSize: 15)),
+                    Text('→',
+                        style: TextStyle(color: Colors.white, fontSize: 15)),
                   ],
                 ),
               ),
@@ -259,7 +183,6 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // ── 统计行
         Padding(
           padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.pageHorizontal, vertical: 12),
@@ -278,7 +201,6 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
           ),
         ),
         const Divider(height: 1, color: AppColors.border),
-        // ── 进度列表
         Flexible(
           child: ListView.separated(
             shrinkWrap: true,
@@ -305,8 +227,8 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
                               overflow: TextOverflow.ellipsis),
                           if (item.errorMessage != null)
                             Text(item.errorMessage!,
-                                style: AppTextStyles.caption.copyWith(
-                                    color: Colors.red),
+                                style: AppTextStyles.caption
+                                    .copyWith(color: Colors.red),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis),
                         ],
@@ -318,7 +240,6 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
             },
           ),
         ),
-        // ── 关闭按钮（仅完成后显示）
         if (_phase == _Phase.done)
           Padding(
             padding: const EdgeInsets.fromLTRB(
@@ -332,8 +253,9 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
                 child: const Center(
-                  child: Text('关闭', style: TextStyle(
-                    fontSize: 15, color: AppColors.inkSecondary)),
+                  child: Text('关闭',
+                      style: TextStyle(
+                          fontSize: 15, color: AppColors.inkSecondary)),
                 ),
               ),
             ),
@@ -346,13 +268,15 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
     switch (status) {
       case _ItemStatus.pending:
         return const SizedBox(
-          width: 20, height: 20,
+          width: 20,
+          height: 20,
           child: Icon(Icons.circle_outlined,
               size: 18, color: AppColors.textDisabled),
         );
       case _ItemStatus.loading:
         return const SizedBox(
-          width: 20, height: 20,
+          width: 20,
+          height: 20,
           child: CircularProgressIndicator(
               strokeWidth: 2, color: AppColors.primary),
         );

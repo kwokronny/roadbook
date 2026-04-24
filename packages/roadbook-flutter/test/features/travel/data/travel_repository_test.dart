@@ -110,6 +110,7 @@ void main() {
         startDate: DateTime(2024, 9, 1),
         endDate: DateTime(2024, 9, 5),
         isPublic: false,
+        isAbroad: false,
         cities: ['深圳', '广州'],
       ));
       expect(travel.id, 99);
@@ -136,6 +137,7 @@ void main() {
           startDate: DateTime(2024),
           endDate: DateTime(2024),
           isPublic: false,
+          isAbroad: false,
           cities: [],
         )),
         throwsA(isA<String>()),
@@ -161,6 +163,7 @@ void main() {
         startDate: DateTime(2024, 9, 1),
         endDate: DateTime(2024, 9, 3),
         isPublic: false,
+        isAbroad: false,
         cities: [],
       ));
       expect(capturedId, 5);

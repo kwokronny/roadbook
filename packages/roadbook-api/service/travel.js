@@ -51,13 +51,21 @@ class TravelService {
 
   async page(uid, data) {
     try {
+      const qg = db.sequelize.dialect.queryGenerator;
+      const table = qg.quoteIdentifier('UserTravels');
+      const tIdCol = qg.quoteIdentifier('tId');
+      const uIdCol = qg.quoteIdentifier('uId');
       return await db.Travel.findAndCountAll({
+        distinct: true,
         include: [
-          { model: db.User, attributes: ["id", "username", "avatar", "name"], where: { id: uid } },
+          { model: db.User, attributes: ["id", "username", "avatar", "name"] },
         ],
         where: {
-          name: {
-            [Op.like]: `%${data.name}%`,
+          name: { [Op.like]: `%${data.name}%` },
+          id: {
+            [Op.in]: db.sequelize.literal(
+              `(SELECT ${tIdCol} FROM ${table} WHERE ${uIdCol} = ${parseInt(uid, 10)})`,
+            ),
           },
         },
         order: [["startDate", "DESC"]],

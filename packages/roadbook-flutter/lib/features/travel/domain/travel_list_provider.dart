@@ -48,6 +48,25 @@ class TravelListNotifier extends AutoDisposeAsyncNotifier<TravelListState> {
   // Stored separately so refresh() can retrieve it even when state is AsyncError
   String _keyword = '';
 
+  static bool _isOngoing(Travel t) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final start = DateTime(t.startDate.year, t.startDate.month, t.startDate.day);
+    final end = DateTime(t.endDate.year, t.endDate.month, t.endDate.day);
+    return !today.isBefore(start) && !today.isAfter(end);
+  }
+
+  static List<Travel> _sorted(List<Travel> items) {
+    final result = [...items];
+    result.sort((a, b) {
+      final aOn = _isOngoing(a);
+      final bOn = _isOngoing(b);
+      if (aOn == bOn) return 0;
+      return aOn ? -1 : 1;
+    });
+    return result;
+  }
+
   @override
   Future<TravelListState> build() => _fetch(page: 1, keyword: '', previous: null);
 
@@ -60,9 +79,9 @@ class TravelListNotifier extends AutoDisposeAsyncNotifier<TravelListState> {
         .read(travelRepositoryProvider)
         .page(page: page, keyword: keyword);
 
-    final newItems = page == 1
+    final newItems = _sorted(page == 1
         ? result.travels
-        : <Travel>[...(previous?.items ?? []), ...result.travels];
+        : <Travel>[...(previous?.items ?? []), ...result.travels]);
 
     _keyword = keyword; // keep in sync for refresh() to use even on error
     return TravelListState(
@@ -108,7 +127,7 @@ class TravelListNotifier extends AutoDisposeAsyncNotifier<TravelListState> {
     final current = state.valueOrNull;
     if (current == null) return;
     state = AsyncData(current.copyWith(
-      items: [travel, ...current.items.where((t) => t.id != travel.id)],
+      items: _sorted([travel, ...current.items.where((t) => t.id != travel.id)]),
     ));
   }
 

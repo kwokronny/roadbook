@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme.dart';
+import '../../../shared/widgets/app_toast.dart';
 import '../../../shared/widgets/glass_card.dart';
 
 
@@ -80,15 +81,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         }
       }
       await _calcCacheSize();
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('缓存已清除')));
-      }
+      if (mounted) AppToast.success(context, '缓存已清除');
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('清除失败: $e')));
-      }
+      if (mounted) AppToast.error(context, '清除失败: $e');
     }
   }
 
@@ -97,10 +92,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await prefs.setBool('dark_mode', value);
     setState(() => _darkMode = value);
     // 主题切换留待后续迭代
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('深色模式将在下次启动时生效')));
-    }
+    if (mounted) AppToast.success(context, '深色模式将在下次启动时生效');
   }
 
   @override

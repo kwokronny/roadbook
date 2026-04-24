@@ -119,7 +119,7 @@ class TravelCard extends StatelessWidget {
     if (status == TravelStatusType.ongoing) {
       final elapsed = DateTime.now().difference(travel.startDate).inDays + 1;
       arcProgress = (elapsed / days).clamp(0.0, 1.0);
-      arcColor = AppColors.lavender;
+      arcColor = AppColors.primary;
       arcStartLabel = fmt.format(travel.startDate);
       arcEndLabel = fmt.format(travel.endDate);
       arcProgressLabel = 'Day $elapsed';
@@ -244,14 +244,20 @@ class TravelCard extends StatelessWidget {
                         child: Stack(
                           clipBehavior: Clip.none,
                           children: [
-                            CustomPaint(
-                              size: const Size(double.infinity, 56),
-                              painter: _ArcProgressPainter(
-                                progress: arcProgress!,
-                                color: arcColor!,
-                                hasEmoji: arcStartEmoji != null,
-                              ),
-                            ),
+                            status == TravelStatusType.ongoing
+                                ? _ShimmerArc(
+                                    progress: arcProgress!,
+                                    color: arcColor!,
+                                    hasEmoji: arcStartEmoji != null,
+                                  )
+                                : CustomPaint(
+                                    size: const Size(double.infinity, 56),
+                                    painter: _ArcProgressPainter(
+                                      progress: arcProgress!,
+                                      color: arcColor!,
+                                      hasEmoji: arcStartEmoji != null,
+                                    ),
+                                  ),
                             // Emoji at arc start point
                             if (arcStartEmoji != null)
                               Positioned(
@@ -462,10 +468,10 @@ class _StatusBadge extends StatelessWidget {
 
 // ─── City tag (neutral dark style) ──────────────────────────────────────────
 
-// ─── Arc progress painter (curved line from left to right) ─────────────────
+// ─── Shimmer arc (animated gradient for ongoing status) ────────────────────
 
-class _ArcProgressPainter extends CustomPainter {
-  _ArcProgressPainter({
+class _ShimmerArc extends StatefulWidget {
+  const _ShimmerArc({
     required this.progress,
     required this.color,
     this.hasEmoji = false,
@@ -473,6 +479,60 @@ class _ArcProgressPainter extends CustomPainter {
   final double progress;
   final Color color;
   final bool hasEmoji;
+
+  @override
+  State<_ShimmerArc> createState() => _ShimmerArcState();
+}
+
+class _ShimmerArcState extends State<_ShimmerArc>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2400),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _ctrl,
+      builder: (_, __) => CustomPaint(
+        size: const Size(double.infinity, 56),
+        painter: _ArcProgressPainter(
+          progress: widget.progress,
+          color: widget.color,
+          hasEmoji: widget.hasEmoji,
+          shimmerOffset: _ctrl.value,
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Arc progress painter (curved line from left to right) ─────────────────
+
+class _ArcProgressPainter extends CustomPainter {
+  _ArcProgressPainter({
+    required this.progress,
+    required this.color,
+    this.hasEmoji = false,
+    this.shimmerOffset = 0.0,
+  });
+  final double progress;
+  final Color color;
+  final bool hasEmoji;
+  final double shimmerOffset; // 0.0–1.0 looping for gradient animation
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -507,26 +567,56 @@ class _ArcProgressPainter extends CustomPainter {
       dist += dashLen + gapLen;
     }
 
-    // ── Progress: solid line overlay
+    // ── Progress: gradient line overlay with shimmer
     if (progress > 0) {
       final progressLen = totalLen * progress;
       final progressPath = pathMetrics.extractPath(0, progressLen);
-      canvas.drawPath(
-        progressPath,
-        Paint()
-          ..color = color
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2.0
-          ..strokeCap = StrokeCap.round,
-      );
+
+      // Get start and end points of progress arc for gradient
+      final startTangent = pathMetrics.getTangentForOffset(0);
+      final endTangent = pathMetrics.getTangentForOffset(progressLen);
+      final startPt = startTangent?.position ?? Offset.zero;
+      final endPt = endTangent?.position ?? Offset(w, y0);
+
+      if (shimmerOffset > 0) {
+        // Animated gradient: bright spot travels along the arc
+        final brightColor = Color.lerp(color, Colors.white, 0.55)!;
+        final shimmerStop = shimmerOffset.clamp(0.0, 1.0);
+        final stops = [
+          (shimmerStop - 0.22).clamp(0.0, 1.0),
+          shimmerStop,
+          (shimmerStop + 0.22).clamp(0.0, 1.0),
+        ];
+        canvas.drawPath(
+          progressPath,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 2.5
+            ..strokeCap = StrokeCap.round
+            ..shader = LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [color, brightColor, color],
+              stops: stops,
+            ).createShader(Rect.fromPoints(startPt, endPt)),
+        );
+      } else {
+        canvas.drawPath(
+          progressPath,
+          Paint()
+            ..color = color
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 2.0
+            ..strokeCap = StrokeCap.round,
+        );
+      }
 
       // Progress dot (current position)
-      final tangent = pathMetrics.getTangentForOffset(progressLen);
-      if (tangent != null) {
+      if (endTangent != null) {
         // Outer glow
-        canvas.drawCircle(tangent.position, dotR + 2, Paint()..color = color.withValues(alpha: 0.15));
+        canvas.drawCircle(endTangent.position, dotR + 2, Paint()..color = color.withValues(alpha: 0.20));
         // Solid dot
-        canvas.drawCircle(tangent.position, dotR, Paint()..color = color);
+        canvas.drawCircle(endTangent.position, dotR, Paint()..color = color);
       }
     }
 
@@ -541,7 +631,9 @@ class _ArcProgressPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _ArcProgressPainter old) =>
-      progress != old.progress || color != old.color;
+      progress != old.progress ||
+      color != old.color ||
+      shimmerOffset != old.shimmerOffset;
 }
 
 // ─── City tag (neutral dark style) ──────────────────────────────────────────

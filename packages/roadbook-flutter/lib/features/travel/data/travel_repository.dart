@@ -22,6 +22,7 @@ class TravelFormData {
     required this.startDate,
     required this.endDate,
     required this.isPublic,
+    required this.isAbroad,
     required this.cities,
   });
 
@@ -30,6 +31,7 @@ class TravelFormData {
   final DateTime startDate;
   final DateTime endDate;
   final bool isPublic;
+  final bool isAbroad;
   final List<String> cities;
 }
 
@@ -66,6 +68,7 @@ class TravelRepository {
           'startDate': _dateTimeFmt.format(form.startDate),
           'endDate': _dateTimeFmt.format(form.endDate),
           'public': form.isPublic,
+          'isAbroad': form.isAbroad,
           'city': form.cities.join(','),
         },
       );
@@ -114,14 +117,31 @@ class TravelRepository {
 
   Future<String> invite(int travelId) async {
     try {
-      final res = await _dio.post<String>(
+      final res = await _dio.post(
         ApiEndpoints.travelInvite,
         data: {'id': travelId},
       );
-      return res.data!;
+      // Interceptor extracts data['data'], which is the token string
+      return res.data as String;
     } on DioException catch (e) {
       final msg = (e.response?.data is Map ? e.response?.data['message'] : null) as String?;
       throw msg ?? '生成邀请链接失败';
+    }
+  }
+
+  Future<int> accept(String token) async {
+    try {
+      final res = await _dio.post(
+        ApiEndpoints.travelAccept,
+        data: {'token': token},
+      );
+      // Interceptor extracts data['data'], which is the travel id
+      return res.data as int;
+    } on DioException catch (e) {
+      final msg = e.message ??
+          (e.response?.data is Map ? e.response?.data['message'] : null) as String? ??
+          '加入失败';
+      throw msg;
     }
   }
 }

@@ -5,6 +5,7 @@ import '../../../core/theme.dart';
 
 import '../../../shared/models/schedule.dart';
 import '../../../shared/models/travel.dart';
+import '../../../shared/widgets/app_toast.dart';
 import '../domain/schedule_provider.dart';
 
 // ─── Pure logic helpers (exported for testing) ────────────────────────────────
@@ -220,10 +221,7 @@ class _ScheduleQuickTimeSheetState
             newEndTime: newEnd,
           );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(e.toString())));
-      }
+      if (mounted) AppToast.error(context, e.toString());
     }
   }
 

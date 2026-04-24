@@ -239,7 +239,7 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
                     label: '协作者',
                     onTap: () =>
                         CollaboratorSheet.show(context, widget.travelId)),
-              if (canEdit)
+              if (canEdit && !travel.isAbroad)
                 PopoverItem(
                     icon: Icons.download_outlined,
                     label: '批量导入',

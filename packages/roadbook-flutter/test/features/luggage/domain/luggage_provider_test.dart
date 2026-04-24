@@ -41,6 +41,7 @@ Travel _makeTravel({String? equip, RoleType role = RoleType.manage}) {
     startDate: DateTime(2026, 4, 1),
     endDate: DateTime(2026, 4, 5),
     isPublic: false,
+    isAbroad: false,
     cities: [],
     collaborators: [UserWithRole(user: user, role: role)],
     schedules: [],

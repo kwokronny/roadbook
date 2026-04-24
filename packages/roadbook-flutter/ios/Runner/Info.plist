@@ -47,6 +47,8 @@
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>需要定位权限以在地图上显示当前位置</string>
+	<key>NSCameraUsageDescription</key>
+	<string>需要相机权限以扫描旅程邀请二维码</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>iosamap</string>

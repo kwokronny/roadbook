@@ -1,5 +1,5 @@
-# Uncomment this line to define a global platform for your project
-# platform :ios, '13.0'
+# google_maps_flutter_ios requires iOS 14.0+
+platform :ios, '14.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -38,15 +38,32 @@ target 'Runner' do
 end
 
 post_install do |installer|
+  # AMap pods need i386 exclusion (not arm64) so arm64 simulators (iOS 26+) work.
+  # MLKit/mobile_scanner pods must keep arm64 excluded: MLImage.framework has no
+  # arm64-simulator slice and will cause a linker error if linked on arm64 sim.
+  amap_pod_names = %w[AMapFoundation AMap3DMap AMapSearch amap_flutter_map]
+
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
-    target.build_configurations.each do |config|
-      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'i386'
+    if amap_pod_names.include?(target.name)
+      target.build_configurations.each do |config|
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'i386'
+      end
+    end
+  end
+
+  # Xcode 15+: replace deprecated DT_TOOLCHAIN_DIR with TOOLCHAIN_DIR in all xcconfigs
+  Dir.glob("#{installer.sandbox.root}/**/*.xcconfig").each do |xcconfig_path|
+    content = File.read(xcconfig_path)
+    if content.include?('DT_TOOLCHAIN_DIR')
+      File.write(xcconfig_path, content.gsub('DT_TOOLCHAIN_DIR', 'TOOLCHAIN_DIR'))
     end
   end
 
   # Patch all pod and aggregate xcconfig files in Target Support Files
   target_support_dir = "#{installer.sandbox.root}/Target Support Files"
+
+  amap_xcconfig_paths = %w[/AMapFoundation/ /AMap3DMap/ /AMapSearch/ /amap_flutter_map/]
 
   # Patch individual pod xcconfig files
   Dir.glob("#{target_support_dir}/**/*.xcconfig").each do |xcconfig_path|
@@ -56,10 +73,14 @@ post_install do |installer|
 
     # AMapFoundation sets EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64 via pod_target_xcconfig.
     # iOS 26+ simulators are arm64-only, so change arm64 exclusion to i386 only.
-    if content.include?('EXCLUDED_ARCHS[sdk=iphonesimulator*] = arm64')
-      content = content.gsub('EXCLUDED_ARCHS[sdk=iphonesimulator*] = arm64',
-                             'EXCLUDED_ARCHS[sdk=iphonesimulator*] = i386')
-      changed = true
+    # IMPORTANT: only patch AMap pods — MLKit/mobile_scanner must keep arm64 excluded
+    # on simulator because MLImage.framework has no arm64-simulator slice.
+    if amap_xcconfig_paths.any? { |p| xcconfig_path.include?(p) }
+      if content.include?('EXCLUDED_ARCHS[sdk=iphonesimulator*] = arm64')
+        content = content.gsub('EXCLUDED_ARCHS[sdk=iphonesimulator*] = arm64',
+                               'EXCLUDED_ARCHS[sdk=iphonesimulator*] = i386')
+        changed = true
+      end
     end
 
     # For amap_flutter_map: remove AMap framework search paths from base, add device-only key.

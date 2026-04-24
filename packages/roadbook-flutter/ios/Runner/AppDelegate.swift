@@ -1,5 +1,6 @@
 import Flutter
 import UIKit
+import GoogleMaps
 #if !targetEnvironment(simulator)
 import AMapFoundationKit
 #endif
@@ -12,12 +13,15 @@ import AMapFoundationKit
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    GMSServices.provideAPIKey("AIzaSyBxZbJh5YKN1yy94iJwovr2Br7ZlpudJUg")
     #if !targetEnvironment(simulator)
     AMapServices.shared().apiKey = "4b2a2785e5a357779608d3af1df84ff1"
     #endif
 
-    let controller = window?.rootViewController as! FlutterViewController
-    let messenger = controller.binaryMessenger
+    GeneratedPluginRegistrant.register(with: self)
+    let result = super.application(application, didFinishLaunchingWithOptions: launchOptions)
+
+    let messenger = self.registrar(forPlugin: "RoadbookPlatformPlugin")!.messenger()
 
     let platformChannel = FlutterMethodChannel(name: "com.roadbook/platform", binaryMessenger: messenger)
     platformChannel.setMethodCallHandler { call, result in
@@ -34,7 +38,6 @@ import AMapFoundationKit
 
     searchBridge = AMapSearchBridge(messenger: messenger)
 
-    GeneratedPluginRegistrant.register(with: self)
-    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    return result
   }
 }

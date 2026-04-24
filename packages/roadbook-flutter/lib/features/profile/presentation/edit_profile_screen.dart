@@ -2,6 +2,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/theme.dart';
 import '../../../shared/providers/auth_state_provider.dart';
@@ -126,7 +127,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             ),
           ),
         ),
-        title: const Text('编辑资料', style: AppTextStyles.appBarTitle),
+        title: const Text('个人资料', style: AppTextStyles.appBarTitle),
         actions: [
           TextButton(
             onPressed: _isDirty && !_saving ? _save : null,
@@ -187,8 +188,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             margin: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.pageHorizontal),
             decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(AppRadius.cover),
+              color: const Color(0xB0FFFFFF),
+              borderRadius: BorderRadius.circular(14),
             ),
             child: Column(
               children: [
@@ -197,17 +198,19 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   label: '用户名',
                   child: Text(
                     user?.username ?? '',
+                    textAlign: TextAlign.right,
                     style: const TextStyle(
                         fontSize: 15, color: AppColors.textSecondary),
                   ),
                 ),
-                const Divider(height: 0.5, thickness: 0.5, indent: 56),
+                const _FormDivider(),
                 // 昵称（可编辑）
                 _FormRow(
                   label: '昵称',
                   child: TextField(
                     controller: _nameCtrl,
                     onChanged: (_) => setState(() {}),
+                    textAlign: TextAlign.right,
                     style: const TextStyle(
                         fontSize: 15, color: AppColors.textPrimary),
                     decoration: const InputDecoration(
@@ -218,30 +221,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       focusedErrorBorder: InputBorder.none,
                       filled: false,
                       isDense: true,
-                      contentPadding: EdgeInsets.zero,
+                      contentPadding: EdgeInsets.symmetric(vertical: 2),
                       hintText: '设置昵称',
-                      hintStyle:
-                          TextStyle(color: AppColors.textTertiary),
-                    ),
-                  ),
-                ),
-                const Divider(height: 0.5, thickness: 0.5, indent: 56),
-                // 密码（跳转占位）
-                _FormRow(
-                  label: '密码',
-                  child: GestureDetector(
-                    onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('密码修改功能即将推出'))),
-                    child: const Row(
-                      children: [
-                        Text('修改密码',
-                            style: TextStyle(
-                                fontSize: 15,
-                                color: AppColors.textSecondary)),
-                        Spacer(),
-                        Icon(Icons.chevron_right,
-                            color: AppColors.textTertiary, size: 18),
-                      ],
+                      hintStyle: TextStyle(color: AppColors.textTertiary),
+                      hintTextDirection: TextDirection.rtl,
                     ),
                   ),
                 ),
@@ -254,8 +237,40 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 horizontal: AppSpacing.pageHorizontal),
             child: Text(
               '用户名仅用于登录，昵称显示在旅程中',
-              style:
-                  TextStyle(fontSize: 11, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+            ),
+          ),
+          const SizedBox(height: 20),
+          // 修改密码独立按钮
+          Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.pageHorizontal),
+            child: GestureDetector(
+              onTap: () => context.push('/profile/change-password'),
+              child: Container(
+                height: 48,
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(AppRadius.cover),
+                ),
+                child: const Row(
+                  children: [
+                    SizedBox(width: 16),
+                    Icon(Icons.lock_outline,
+                        size: 18, color: AppColors.inkSecondary),
+                    SizedBox(width: 10),
+                    Text(
+                      '修改密码',
+                      style: TextStyle(
+                          fontSize: 15, color: AppColors.inkPrimary),
+                    ),
+                    Spacer(),
+                    Icon(Icons.chevron_right,
+                        size: 18, color: AppColors.textTertiary),
+                    SizedBox(width: 12),
+                  ],
+                ),
+              ),
             ),
           ),
         ],
@@ -291,23 +306,30 @@ class _FormRow extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-        height: 44,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Row(
-            children: [
-              SizedBox(
-                width: 44,
-                child: Text(label,
-                    style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textSecondary)),
-              ),
-              const SizedBox(width: 8),
-              Expanded(child: child),
-            ],
-          ),
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 60,
+              child: Text(label,
+                  style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.inkPrimary)),
+            ),
+            Expanded(child: child),
+          ],
         ),
+      );
+}
+
+class _FormDivider extends StatelessWidget {
+  const _FormDivider();
+  @override
+  Widget build(BuildContext context) => const Padding(
+        padding: EdgeInsets.only(left: 14),
+        child: Divider(
+            height: 0.5, thickness: 0.5, color: Color(0x0F1C1C1E)),
       );
 }

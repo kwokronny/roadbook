@@ -107,15 +107,23 @@ class MapStateNotifier extends AutoDisposeFamilyNotifier<MapState, int> {
     receiveTimeout: const Duration(seconds: 10),
   ));
 
-  Future<void> searchPoi(String keyword) async {
+  static final _googleDio = Dio(BaseOptions(
+    baseUrl: 'https://maps.googleapis.com',
+    connectTimeout: const Duration(seconds: 10),
+    receiveTimeout: const Duration(seconds: 10),
+  ));
+
+  Future<void> searchPoi(String keyword, {bool isAbroad = false}) async {
     state = state.copyWith(isSearching: true, poiResults: [], searchError: null);
     try {
-      final isSimulator = await PlatformUtil.isSimulator;
       final List<AmapPoi> pois;
-      if (isSimulator) {
-        pois = await _searchViaRestApi(keyword);
+      if (isAbroad) {
+        pois = await _searchViaGooglePlaces(keyword);
       } else {
-        pois = await _searchViaNativeSdk(keyword);
+        final isSimulator = await PlatformUtil.isSimulator;
+        pois = isSimulator
+            ? await _searchViaRestApi(keyword)
+            : await _searchViaNativeSdk(keyword);
       }
       state = state.copyWith(
         isSearching: false,
@@ -180,6 +188,42 @@ class MapStateNotifier extends AutoDisposeFamilyNotifier<MapState, int> {
         .toList();
   }
 
+  Future<List<AmapPoi>> _searchViaGooglePlaces(String keyword) async {
+    final resp = await _googleDio.get(
+      '/maps/api/place/textsearch/json',
+      queryParameters: {
+        'query': keyword,
+        'key': AppConstants.googleMapsKey,
+      },
+    );
+    final raw = resp.data;
+    if (raw is! Map<String, dynamic>) return [];
+    if (raw['status'] != 'OK' && raw['status'] != 'ZERO_RESULTS') {
+      throw Exception(raw['error_message'] as String? ?? raw['status']);
+    }
+    final results = raw['results'];
+    if (results is! List) return [];
+    return results.whereType<Map<String, dynamic>>().map((e) {
+      try {
+        final geo = (e['geometry'] as Map?)?.cast<String, dynamic>();
+        final loc = (geo?['location'] as Map?)?.cast<String, dynamic>();
+        final lat = (loc?['lat'] as num?)?.toDouble() ?? 0.0;
+        final lng = (loc?['lng'] as num?)?.toDouble() ?? 0.0;
+        final types = (e['types'] as List?)?.cast<String>() ?? [];
+        return AmapPoi(
+          id: e['place_id'] as String? ?? '',
+          name: e['name'] as String? ?? '',
+          address: e['formatted_address'] as String? ?? '',
+          longitude: lng,
+          latitude: lat,
+          type: types.isNotEmpty ? types.first : null,
+        );
+      } catch (_) {
+        return null;
+      }
+    }).whereType<AmapPoi>().toList();
+  }
+
   Future<void> quickAddSchedule(AmapPoi poi, {
     int? selectedDay,
     DateTime? travelStartDate,
@@ -194,7 +238,8 @@ class MapStateNotifier extends AutoDisposeFamilyNotifier<MapState, int> {
       name: poi.name,
       coordinate: '${poi.longitude},${poi.latitude}',
       address: poi.address,
-      isHotel: poi.type?.contains('住宿服务') ?? false,
+      isHotel: (poi.type?.contains('住宿服务') ?? false) ||
+               (poi.type?.contains('lodging') ?? false),
       startTime: startTime,
     );
     await ref.read(scheduleProvider(arg).notifier).add(form);

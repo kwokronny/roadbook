@@ -44,6 +44,13 @@ dependencies:
   lpinyin: ^2.0.3
   path: ^1.9.1
 
+  # Google 地图（境外旅程）
+  google_maps_flutter: ^2.9.0
+
+  # 协作邀请
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^7.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

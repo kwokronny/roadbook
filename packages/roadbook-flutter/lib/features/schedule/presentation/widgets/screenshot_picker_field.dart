@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/theme.dart';
 
 import '../../../../shared/api/upload_repository.dart';
+import '../../../../shared/widgets/app_toast.dart';
 
 class ScreenshotPickerField extends ConsumerStatefulWidget {
   const ScreenshotPickerField({
@@ -52,10 +53,7 @@ class ScreenshotPickerFieldState
       final newUrls = await repo.upload(files);
       widget.onChanged([...widget.value, ...newUrls]);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(e.toString())));
-      }
+      if (mounted) AppToast.error(context, e.toString());
     } finally {
       if (mounted) setState(() => _uploading = false);
     }

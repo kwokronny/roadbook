@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme.dart';
 import '../../../../shared/constants/luggage_presets.dart';
+import '../../../../shared/widgets/app_toast.dart';
 import '../../domain/luggage_provider.dart';
 
 class TemplateSheet extends ConsumerWidget {
@@ -96,9 +97,7 @@ class _SeasonCard extends ConsumerWidget {
         Navigator.pop(context);
         final added = await notifier.importTemplate(season);
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('已导入$label模板，新增 $added 项')),
-          );
+          AppToast.success(context, '已导入$label模板，新增 $added 项');
         }
       },
       child: Container(

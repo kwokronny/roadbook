@@ -13,12 +13,14 @@ class ScheduleNavButton extends StatelessWidget {
     required this.coordinate,
     required this.name,
     required this.isHotel,
+    this.isAbroad = false,
     this.compact = false,
   });
 
   final String coordinate;
   final String name;
   final bool isHotel;
+  final bool isAbroad;
   final bool compact;
 
   bool get _isEnabled {
@@ -30,39 +32,80 @@ class ScheduleNavButton extends StatelessWidget {
 
   Color get _textColor => isHotel ? AppColors.lavender : AppColors.primary;
 
+  // ── Coordinate helpers ─────────────────────────────────────────────────────
+  // Stored as "longitude,latitude"
+  String get _lng => coordinate.split(',')[0];
+  String get _lat => coordinate.split(',')[1];
+
+  // ── Domestic: AMap + DiDi ──────────────────────────────────────────────────
+
   String _buildAmapUrl(String mapMode) {
-    final parts = coordinate.split(',');
-    final lon = parts[0];
-    final lat = parts[1];
     final encodedName = Uri.encodeComponent(name);
     final t = {'car': 0, 'bus': 1, 'walk': 2, 'ride': 3}[mapMode] ?? 0;
     if (Platform.isIOS) {
       return 'iosamap://path?sourceApplication=roadbook'
-          '&dlat=$lat&dlon=$lon&dname=$encodedName&dev=0&t=$t';
+          '&dlat=$_lat&dlon=$_lng&dname=$encodedName&dev=0&t=$t';
     } else {
       return 'amapuri://route/plan/'
-          '?dlat=$lat&dlon=$lon&dname=$encodedName&dev=0&t=$t';
+          '?dlat=$_lat&dlon=$_lng&dname=$encodedName&dev=0&t=$t';
     }
   }
 
   String _buildDidiUrl() {
-    final parts = coordinate.split(',');
-    final lon = parts[0];
-    final lat = parts[1];
     final encodedName = Uri.encodeComponent(name);
     return 'diditaxi://taxi?'
-        'dlat=$lat&dlng=$lon&dname=$encodedName&maptype=gaode';
+        'dlat=$_lat&dlng=$_lng&dname=$encodedName&maptype=gaode';
   }
 
-  Future<void> _launch(String mapMode) async {
-    final url = mapMode == 'didi' ? _buildDidiUrl() : _buildAmapUrl(mapMode);
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+  // ── Overseas: Apple Maps (iOS) + Google Maps ───────────────────────────────
+
+  String _buildAppleMapsUrl(String dirflg) {
+    // dirflg: d=drive, r=transit, w=walk
+    return 'maps://?daddr=$_lat,$_lng&dirflg=$dirflg';
+  }
+
+  /// Google Maps app → falls back to web if not installed.
+  Future<void> _launchGoogleMaps(String mode) async {
+    // mode: driving | transit | walking
+    final appUri = Uri.parse(Platform.isIOS
+        ? 'comgooglemaps://?daddr=$_lat,$_lng&directionsmode=$mode'
+        : 'google.navigation:q=$_lat,$_lng&mode=${mode[0]}');
+    final webUri = Uri.parse(
+        'https://www.google.com/maps/dir/?api=1'
+        '&destination=$_lat,$_lng&travelmode=$mode');
+    if (await canLaunchUrl(appUri)) {
+      await launchUrl(appUri, mode: LaunchMode.externalApplication);
+    } else {
+      await launchUrl(webUri, mode: LaunchMode.externalApplication);
     }
   }
 
-  static const List<Map<String, String>> _modes = [
+  // ── Launch dispatch ────────────────────────────────────────────────────────
+
+  Future<void> _launch(String mode) async {
+    if (isAbroad) {
+      if (mode.startsWith('apple_')) {
+        final dirflg = mode.split('_')[1]; // apple_d → d
+        final uri = Uri.parse(_buildAppleMapsUrl(dirflg));
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        }
+      } else {
+        await _launchGoogleMaps(mode);
+      }
+    } else {
+      final url =
+          mode == 'didi' ? _buildDidiUrl() : _buildAmapUrl(mode);
+      final uri = Uri.parse(url);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    }
+  }
+
+  // ── Mode lists ─────────────────────────────────────────────────────────────
+
+  static const _domesticModes = [
     {'mode': 'car',  'emoji': '🚗', 'label': '驾车'},
     {'mode': 'didi', 'emoji': '🚕', 'label': '滴滴打车'},
     {'mode': 'bus',  'emoji': '🚌', 'label': '公交'},
@@ -70,22 +113,39 @@ class ScheduleNavButton extends StatelessWidget {
     {'mode': 'ride', 'emoji': '🚲', 'label': '骑行'},
   ];
 
+  static final _abroadModes = Platform.isIOS
+      ? [
+          {'mode': 'apple_d', 'emoji': '🚗', 'label': 'Apple Maps 驾车'},
+          {'mode': 'apple_r', 'emoji': '🚇', 'label': 'Apple Maps 公交'},
+          {'mode': 'apple_w', 'emoji': '🚶', 'label': 'Apple Maps 步行'},
+          {'mode': 'driving', 'emoji': '🗺️', 'label': 'Google Maps'},
+        ]
+      : [
+          {'mode': 'driving', 'emoji': '🚗', 'label': 'Google Maps 驾车'},
+          {'mode': 'transit', 'emoji': '🚇', 'label': 'Google Maps 公交'},
+          {'mode': 'walking', 'emoji': '🚶', 'label': 'Google Maps 步行'},
+        ];
+
+  List<Map<String, String>> get _modes =>
+      isAbroad ? _abroadModes : _domesticModes;
+
+  // ── Popover ────────────────────────────────────────────────────────────────
+
   void _showNavPopover(BuildContext context) {
     final RenderBox button = context.findRenderObject() as RenderBox;
     final RenderBox overlay =
         Navigator.of(context).overlay!.context.findRenderObject() as RenderBox;
-    final Offset buttonPos = button.localToGlobal(Offset.zero, ancestor: overlay);
-
-    final position = RelativeRect.fromLTRB(
-      buttonPos.dx,
-      buttonPos.dy + button.size.height + 4,
-      overlay.size.width - buttonPos.dx - button.size.width,
-      0,
-    );
+    final Offset buttonPos =
+        button.localToGlobal(Offset.zero, ancestor: overlay);
 
     showGlassPopover(
       context: context,
-      position: position,
+      position: RelativeRect.fromLTRB(
+        buttonPos.dx,
+        buttonPos.dy + button.size.height + 4,
+        overlay.size.width - buttonPos.dx - button.size.width,
+        0,
+      ),
       width: button.size.width,
       items: _modes
           .map((m) => PopoverItem(
@@ -96,6 +156,8 @@ class ScheduleNavButton extends StatelessWidget {
           .toList(),
     );
   }
+
+  // ── Build ──────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -131,8 +193,8 @@ class ScheduleNavButton extends StatelessWidget {
               decoration: BoxDecoration(
                 color: const Color(0x85FFFFFF),
                 borderRadius: BorderRadius.circular(AppRadius.pill),
-                border: Border.all(
-                    color: const Color(0xA6FFFFFF), width: 1),
+                border:
+                    Border.all(color: const Color(0xA6FFFFFF), width: 1),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

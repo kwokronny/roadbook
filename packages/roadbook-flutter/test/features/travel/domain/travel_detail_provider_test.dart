@@ -29,6 +29,7 @@ Travel _makeTravel({List<UserWithRole> collaborators = const []}) => Travel(
       startDate: DateTime(2024, 6, 1),
       endDate: DateTime(2024, 6, 5),
       isPublic: false,
+      isAbroad: false,
       cities: [],
       collaborators: collaborators,
       schedules: [],

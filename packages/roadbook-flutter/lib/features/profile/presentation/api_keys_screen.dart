@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme.dart';
+import '../../../shared/widgets/app_confirm_dialog.dart';
+import '../../../shared/widgets/app_toast.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/models/api_key.dart';
 import '../domain/api_key_provider.dart';
@@ -24,10 +26,7 @@ class _ApiKeysScreenState extends ConsumerState<ApiKeysScreen> {
           await ref.read(apiKeyListProvider.notifier).create(name.trim());
       if (mounted) _showKeyCreatedDialog(newKey);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('$e')));
-      }
+      if (mounted) AppToast.error(context, '$e');
     }
   }
 
@@ -96,9 +95,7 @@ class _ApiKeysScreenState extends ConsumerState<ApiKeysScreen> {
                     icon: const Icon(Icons.copy, size: 18),
                     onPressed: () {
                       Clipboard.setData(ClipboardData(text: apiKey.key));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('已复制到剪贴板')),
-                      );
+                      AppToast.success(context, '已复制到剪贴板');
                     },
                   ),
                 ],
@@ -117,37 +114,19 @@ class _ApiKeysScreenState extends ConsumerState<ApiKeysScreen> {
   }
 
   Future<void> _confirmDelete(ApiKey key) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showAppConfirmDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('删除 API Key'),
-        content: Text('确定删除「${key.name}」？使用此 Key 的连接将立即失效。'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('取消'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('删除',
-                style: TextStyle(color: AppColors.destructive)),
-          ),
-        ],
-      ),
+      title: '删除 API Key',
+      message: '确定删除「${key.name}」？使用此 Key 的连接将立即失效。',
+      confirmLabel: '删除',
     );
-    if (confirmed != true) return;
+    if (!confirmed) return;
 
     try {
       await ref.read(apiKeyListProvider.notifier).remove(key.id);
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('已删除')));
-      }
+      if (mounted) AppToast.success(context, '已删除');
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('$e')));
-      }
+      if (mounted) AppToast.error(context, '$e');
     }
   }
 
