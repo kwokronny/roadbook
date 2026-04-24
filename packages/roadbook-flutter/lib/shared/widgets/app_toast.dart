@@ -2,6 +2,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../core/theme.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 enum ToastType { success, error }
 
@@ -162,7 +163,7 @@ class _ToastWidgetState extends State<_ToastWidget>
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                isSuccess ? Icons.check : Icons.close,
+                isSuccess ? HugeIcons.strokeRoundedTick01 : HugeIcons.strokeRoundedCancel01,
                 size: 14,
                 color: Colors.white,
               ),

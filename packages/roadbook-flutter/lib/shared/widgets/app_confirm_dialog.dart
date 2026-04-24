@@ -6,6 +6,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../core/theme.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 Future<bool> showAppConfirmDialog({
   required BuildContext context,
@@ -183,7 +184,7 @@ class _ConfirmDialogContent extends StatelessWidget {
             children: [
               // Warning icon
               const Icon(
-                Icons.warning_amber_rounded,
+                HugeIcons.strokeRoundedAlertDiamond,
                 size: 44,
                 color: Color(0xFFFFC107),
               ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme.dart';
 import '../../../../features/schedule/domain/schedule_provider.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class MapDaySelectorBar extends ConsumerWidget {
   const MapDaySelectorBar({
@@ -113,7 +114,7 @@ class _SearchButton extends StatelessWidget {
           color: const Color(0xB3FFFFFF),
           borderRadius: BorderRadius.circular(AppRadius.pill),
         ),
-        child: const Center(child: Icon(Icons.search, size: 20, color: AppColors.inkSecondary)),
+        child: const Center(child: Icon(HugeIcons.strokeRoundedSearch01, size: 20, color: AppColors.inkSecondary)),
       ),
     );
   }

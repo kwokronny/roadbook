@@ -7,6 +7,7 @@ import '../../../shared/models/user.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/providers/auth_state_provider.dart';
 import '../../../features/travel/domain/travel_list_provider.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 
 class ProfileScreen extends ConsumerWidget {
@@ -56,13 +57,13 @@ class ProfileScreen extends ConsumerWidget {
             // 菜单组 1
             _MenuGroup(items: [
               _MenuItem(
-                icon: Icons.edit_outlined,
+                icon: HugeIcons.strokeRoundedEdit01,
                 iconBg: AppColors.success,
                 label: '个人资料',
                 onTap: () => context.push('/profile/edit'),
               ),
               _MenuItem(
-                icon: Icons.key,
+                icon: HugeIcons.strokeRoundedKey01,
                 iconBg: AppColors.hotel,
                 label: 'API Key 管理',
                 onTap: () => context.push('/profile/api-keys'),
@@ -161,7 +162,7 @@ class _UserCard extends StatelessWidget {
                     color: const Color(0x0D1C1C1E),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.edit_outlined, size: 16, color: AppColors.inkSecondary),
+                  child: const Icon(HugeIcons.strokeRoundedEdit01, size: 16, color: AppColors.inkSecondary),
                 ),
               ),
             ],
@@ -211,7 +212,7 @@ class _Avatar extends StatelessWidget {
         ),
       ),
       child: const Center(
-        child: Icon(Icons.person, size: 28, color: Colors.white70),
+        child: Icon(HugeIcons.strokeRoundedUser, size: 28, color: Colors.white70),
       ),
     );
 }

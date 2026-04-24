@@ -17,6 +17,7 @@ import 'map/map_state_notifier.dart';
 import '../../../features/schedule/presentation/widgets/day_sidebar.dart';
 import '../../../shared/widgets/pastel_mesh_background.dart';
 import '../../../shared/widgets/glass_popover.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class TravelDetailScreen extends ConsumerStatefulWidget {
   const TravelDetailScreen({super.key, required this.travelId});
@@ -87,7 +88,7 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
                       color: AppColors.darkPill,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.chevron_left,
+                    child: const Icon(HugeIcons.strokeRoundedArrowLeft01,
                         size: 22, color: Colors.white),
                   ),
                 ),
@@ -184,9 +185,9 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
           Row(
             children: [
               SizedBox(width: _pad), // left edge padding
-              _buildToggleTab(Icons.format_list_bulleted, 0),
+              _buildToggleTab(HugeIcons.strokeRoundedLeftToRightListBullet, 0),
               SizedBox(width: _pad), // gap between
-              _buildToggleTab(Icons.map_outlined, 1),
+              _buildToggleTab(HugeIcons.strokeRoundedMaps, 1),
               SizedBox(width: _pad), // right edge padding
             ],
           ),
@@ -230,23 +231,23 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
             items: [
               if (canManage)
                 PopoverItem(
-                    icon: Icons.edit_outlined,
+                    icon: HugeIcons.strokeRoundedEdit01,
                     label: '编辑旅程',
                     onTap: () => TravelFormSheet.show(context, travel: travel)),
               if (canManage)
                 PopoverItem(
-                    icon: Icons.group_outlined,
+                    icon: HugeIcons.strokeRoundedUserGroup,
                     label: '协作者',
                     onTap: () =>
                         CollaboratorSheet.show(context, widget.travelId)),
               if (canEdit && !travel.isAbroad)
                 PopoverItem(
-                    icon: Icons.download_outlined,
+                    icon: HugeIcons.strokeRoundedDownload01,
                     label: '批量导入',
                     onTap: () =>
                         CollectImportSheet.show(context, widget.travelId)),
               PopoverItem(
-                  icon: Icons.luggage_outlined,
+                  icon: HugeIcons.strokeRoundedLuggage01,
                   label: '行李清单',
                   onTap: () =>
                       context.push('/travel/${widget.travelId}/luggage')),
@@ -261,7 +262,7 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
             shape: BoxShape.circle,
             color: AppColors.darkPill,
           ),
-          child: const Icon(Icons.more_vert, size: 18, color: Colors.white),
+          child: const Icon(HugeIcons.strokeRoundedMoreVertical, size: 18, color: Colors.white),
         ),
       );
     });
@@ -288,7 +289,7 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
         backgroundColor: AppColors.primary,
         shape: const CircleBorder(),
         elevation: 0,
-        child: const Icon(Icons.add, size: 22, color: Colors.white),
+        child: const Icon(HugeIcons.strokeRoundedAdd01, size: 22, color: Colors.white),
       ),
     );
   }

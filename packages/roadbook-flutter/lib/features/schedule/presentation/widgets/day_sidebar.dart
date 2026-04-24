@@ -2,6 +2,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../../../core/theme.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 
 /// Horizontal scrollable day bar with sliding glass indicator (like dock).
@@ -268,7 +269,7 @@ class _DayBarState extends State<DayBar> with TickerProviderStateMixin {
                             ),
                             child: const Align(
                               alignment: Alignment(-0.2, 0),
-                              child: Icon(Icons.chevron_left_rounded,
+                              child: Icon(HugeIcons.strokeRoundedArrowLeft01,
                                   size: 24, color: AppColors.inkPrimary),
                             ),
                           ),
@@ -295,7 +296,7 @@ class _DayBarState extends State<DayBar> with TickerProviderStateMixin {
                             ),
                             child: const Align(
                               alignment: Alignment(0.2, 0),
-                              child: Icon(Icons.chevron_right_rounded,
+                              child: Icon(HugeIcons.strokeRoundedArrowRight01,
                                   size: 24, color: AppColors.inkPrimary),
                             ),
                           ),

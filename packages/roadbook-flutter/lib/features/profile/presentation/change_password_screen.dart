@@ -6,6 +6,7 @@ import '../../../shared/providers/dio_provider.dart';
 import '../../../shared/api/api_endpoints.dart';
 import '../../../shared/widgets/app_toast.dart';
 import 'package:dio/dio.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class ChangePasswordScreen extends ConsumerStatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -85,7 +86,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                   color: AppColors.darkPill,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.chevron_left,
+                child: const Icon(HugeIcons.strokeRoundedArrowLeft01,
                     size: 20, color: Colors.white),
               ),
             ),
@@ -218,7 +219,7 @@ class _PasswordRow extends StatelessWidget {
               GestureDetector(
                 onTap: onToggle,
                 child: Icon(
-                  obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                  obscure ? HugeIcons.strokeRoundedViewOff : HugeIcons.strokeRoundedView,
                   size: 18,
                   color: AppColors.textTertiary,
                 ),

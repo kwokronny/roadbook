@@ -7,6 +7,7 @@ import '../../../shared/widgets/app_toast.dart';
 import '../../../shared/widgets/pastel_mesh_background.dart';
 import '../domain/auth_provider.dart';
 import 'sign_in_screen.dart'; // _GlassInput is private, use AuthField
+import 'package:hugeicons/hugeicons.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({super.key});
@@ -89,7 +90,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                 AuthField(
                                   controller: _usernameCtrl,
                                   hintText: '用户名',
-                                  prefixIcon: Icons.person_outline,
+                                  prefixIcon: HugeIcons.strokeRoundedUser,
                                   textInputAction: TextInputAction.next,
                                   validator: (v) {
                                     if (v == null || v.trim().isEmpty) return '请输入用户名';
@@ -103,7 +104,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                 AuthField(
                                   controller: _passwordCtrl,
                                   hintText: '密码',
-                                  prefixIcon: Icons.lock_outline,
+                                  prefixIcon: HugeIcons.strokeRoundedLock,
                                   obscureText: true,
                                   textInputAction: TextInputAction.next,
                                   validator: (v) =>
@@ -115,7 +116,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                 AuthField(
                                   controller: _confirmCtrl,
                                   hintText: '确认密码',
-                                  prefixIcon: Icons.lock_outline,
+                                  prefixIcon: HugeIcons.strokeRoundedLock,
                                   obscureText: true,
                                   textInputAction: TextInputAction.done,
                                   onFieldSubmitted: (_) => _submit(),

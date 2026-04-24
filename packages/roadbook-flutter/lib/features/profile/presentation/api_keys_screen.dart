@@ -8,6 +8,7 @@ import '../../../shared/widgets/app_toast.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/models/api_key.dart';
 import '../domain/api_key_provider.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class ApiKeysScreen extends ConsumerStatefulWidget {
   const ApiKeysScreen({super.key});
@@ -92,7 +93,7 @@ class _ApiKeysScreenState extends ConsumerState<ApiKeysScreen> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.copy, size: 18),
+                    icon: const Icon(HugeIcons.strokeRoundedCopy01, size: 18),
                     onPressed: () {
                       Clipboard.setData(ClipboardData(text: apiKey.key));
                       AppToast.success(context, '已复制到剪贴板');
@@ -148,7 +149,7 @@ class _ApiKeysScreenState extends ConsumerState<ApiKeysScreen> {
                 decoration: const BoxDecoration(
                   color: AppColors.darkPill, shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.chevron_left, size: 20, color: Colors.white),
+                child: const Icon(HugeIcons.strokeRoundedArrowLeft01, size: 20, color: Colors.white),
               ),
             ),
           ),
@@ -164,7 +165,7 @@ class _ApiKeysScreenState extends ConsumerState<ApiKeysScreen> {
                 decoration: const BoxDecoration(
                   color: AppColors.darkPill, shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.add, size: 20, color: Colors.white),
+                child: const Icon(HugeIcons.strokeRoundedAdd01, size: 20, color: Colors.white),
               ),
             ),
           ),
@@ -193,7 +194,7 @@ class _ApiKeysScreenState extends ConsumerState<ApiKeysScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.key,
+                  const Icon(HugeIcons.strokeRoundedKey01,
                       size: 48, color: AppColors.textTertiary),
                   const SizedBox(height: 12),
                   Text('暂无 API Key', style: AppTextStyles.caption),
@@ -207,7 +208,7 @@ class _ApiKeysScreenState extends ConsumerState<ApiKeysScreen> {
                   const SizedBox(height: 16),
                   FilledButton.icon(
                     onPressed: _createKey,
-                    icon: const Icon(Icons.add, size: 16),
+                    icon: const Icon(HugeIcons.strokeRoundedAdd01, size: 16),
                     label: const Text('创建 API Key'),
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColors.primary,
@@ -252,7 +253,7 @@ class _ApiKeyCard extends StatelessWidget {
               color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.key, size: 18, color: AppColors.primary),
+            child: const Icon(HugeIcons.strokeRoundedKey01, size: 18, color: AppColors.primary),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -285,7 +286,7 @@ class _ApiKeyCard extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.delete_outline,
+            icon: const Icon(HugeIcons.strokeRoundedDelete01,
                 size: 20, color: AppColors.textTertiary),
             onPressed: onDelete,
           ),

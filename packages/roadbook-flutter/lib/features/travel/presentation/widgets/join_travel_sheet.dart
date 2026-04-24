@@ -9,6 +9,7 @@ import '../../../../shared/widgets/glass_drawer.dart';
 import '../../data/invite_code_cache.dart';
 import '../../domain/travel_list_provider.dart';
 import 'qr_scanner_screen.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class JoinTravelSheet extends ConsumerStatefulWidget {
   const JoinTravelSheet({super.key});
@@ -184,7 +185,7 @@ class _JoinTravelSheetState extends ConsumerState<JoinTravelSheet> {
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.qr_code_scanner,
+                        Icon(HugeIcons.strokeRoundedQrCode,
                             size: 18, color: AppColors.inkSecondary),
                         SizedBox(width: 6),
                         Text('扫描二维码',

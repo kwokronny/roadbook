@@ -8,6 +8,7 @@ import '../../../../shared/models/amap_poi.dart';
 import '../../../../features/schedule/presentation/widgets/schedule_nav_button.dart';
 import '../../../../features/schedule/presentation/schedule_photo_viewer.dart';
 import '../../../../shared/widgets/glass_popover.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 final _timeFmt = DateFormat('HH:mm');
 
@@ -49,7 +50,7 @@ void _showNotesDialog(BuildContext context, String title, String notes) {
                           color: Color(0x1A1C1C1E),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.close, size: 12,
+                        child: const Icon(HugeIcons.strokeRoundedCancel01, size: 12,
                             color: AppColors.inkSecondary),
                       ),
                     ),
@@ -216,7 +217,7 @@ class MapInfoBar extends StatelessWidget {
                         style: TextStyle(fontSize: 13,
                             fontWeight: FontWeight.w500, color: timeTxt)),
                     const SizedBox(width: 3),
-                    Icon(Icons.edit_calendar_outlined, size: 12, color: timeTxt),
+                    Icon(HugeIcons.strokeRoundedCalendarSetting01, size: 12, color: timeTxt),
                   ],
                 ),
               ),
@@ -236,13 +237,13 @@ class MapInfoBar extends StatelessWidget {
                           MediaQuery.of(ctx).size.width - pos.dx - box.size.width,
                           0),
                       items: [
-                        PopoverItem(icon: Icons.edit_outlined, label: '编辑', onTap: () => onTap!()),
-                        PopoverItem(icon: Icons.delete_outline, label: '删除', isDestructive: true,
+                        PopoverItem(icon: HugeIcons.strokeRoundedEdit01, label: '编辑', onTap: () => onTap!()),
+                        PopoverItem(icon: HugeIcons.strokeRoundedDelete01, label: '删除', isDestructive: true,
                             onTap: () => onAction?.call()),
                       ],
                     );
                   },
-                  child: const Icon(Icons.more_horiz, size: 24,
+                  child: const Icon(HugeIcons.strokeRoundedMoreHorizontal, size: 24,
                       color: AppColors.inkTertiary),
                 );
               }),
@@ -390,7 +391,7 @@ class MapInfoBar extends StatelessWidget {
                     width: 36,
                     height: 36,
                     color: AppColors.border,
-                    child: const Icon(Icons.broken_image_outlined,
+                    child: const Icon(HugeIcons.strokeRoundedImageNotFound01,
                         size: 14, color: AppColors.textDisabled),
                   ),
                 ),

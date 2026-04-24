@@ -7,6 +7,7 @@ import '../../../shared/models/schedule.dart';
 import '../../../shared/models/travel.dart';
 import '../../../shared/widgets/app_toast.dart';
 import '../domain/schedule_provider.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 // ─── Pure logic helpers (exported for testing) ────────────────────────────────
 
@@ -432,7 +433,7 @@ class _SheetHeader extends StatelessWidget {
             color: Color(0x1A1C1C1E),
             shape: BoxShape.circle,
           ),
-          child: const Icon(Icons.close, size: 14, color: AppColors.inkSecondary),
+          child: const Icon(HugeIcons.strokeRoundedCancel01, size: 14, color: AppColors.inkSecondary),
         ),
       ),
     ]);

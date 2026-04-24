@@ -23,6 +23,7 @@ import 'map_search_bar.dart';
 import 'map_info_bar.dart';
 import 'map_marker_bytes.dart';
 import 'google_map_layer.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 final _mapTimeFmt = DateFormat('HH:mm');
 
@@ -474,7 +475,7 @@ class _MapTabViewState extends ConsumerState<MapTabView> {
                         blurRadius: 16, offset: const Offset(0, 4)),
                     ],
                   ),
-                  child: const Icon(Icons.search, size: 22, color: Colors.white),
+                  child: const Icon(HugeIcons.strokeRoundedSearch01, size: 22, color: Colors.white),
                 ),
               ),
             ),
@@ -524,7 +525,7 @@ class _MapTabViewState extends ConsumerState<MapTabView> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.map_outlined, size: 48, color: AppColors.inkTertiary),
+              Icon(HugeIcons.strokeRoundedMaps, size: 48, color: AppColors.inkTertiary),
               const SizedBox(height: 8),
               Text('地图在模拟器上不可用',
                   style: TextStyle(color: AppColors.inkSecondary, fontSize: 14)),
@@ -692,7 +693,7 @@ class _MapTabViewState extends ConsumerState<MapTabView> {
                       shape: BoxShape.circle,
                       border: Border.all(color: const Color(0x1FFF6B3D)),
                     ),
-                    child: const Icon(Icons.add, size: 18,
+                    child: const Icon(HugeIcons.strokeRoundedAdd01, size: 18,
                         color: AppColors.primary),
                   ),
                 ),
@@ -794,7 +795,7 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    widget.isError ? Icons.error_outline : Icons.check_circle,
+                    widget.isError ? HugeIcons.strokeRoundedAlertCircle : HugeIcons.strokeRoundedCheckmarkCircle01,
                     size: 18,
                     color: widget.isError ? AppColors.destructive : AppColors.success,
                   ),
@@ -945,7 +946,7 @@ class _DayChipRowState extends State<_DayChipRow> {
                       colors: [Color(0xCCFFFFFF), Color(0x00FFFFFF)],
                     ),
                   ),
-                  child: const Icon(Icons.chevron_left_rounded,
+                  child: const Icon(HugeIcons.strokeRoundedArrowLeft01,
                       size: 20, color: AppColors.inkPrimary),
                 ),
               ),
@@ -967,7 +968,7 @@ class _DayChipRowState extends State<_DayChipRow> {
                       colors: [Color(0x00FFFFFF), Color(0xCCFFFFFF)],
                     ),
                   ),
-                  child: const Icon(Icons.chevron_right_rounded,
+                  child: const Icon(HugeIcons.strokeRoundedArrowRight01,
                       size: 20, color: AppColors.inkPrimary),
                 ),
               ),

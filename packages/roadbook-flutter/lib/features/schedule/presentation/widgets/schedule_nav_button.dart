@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme.dart';
 
 import '../../../../shared/widgets/glass_popover.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class ScheduleNavButton extends StatelessWidget {
   const ScheduleNavButton({
@@ -173,7 +174,7 @@ class ScheduleNavButton extends StatelessWidget {
               color: AppColors.primary,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.navigation_rounded,
+            child: const Icon(HugeIcons.strokeRoundedNavigation01,
                 size: 16, color: Colors.white),
           ),
         ),
@@ -199,7 +200,7 @@ class ScheduleNavButton extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.navigation_rounded,
+                  Icon(HugeIcons.strokeRoundedNavigation01,
                       size: 12, color: _textColor),
                   const SizedBox(width: 5),
                   Text(

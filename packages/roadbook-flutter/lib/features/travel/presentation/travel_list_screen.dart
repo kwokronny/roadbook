@@ -15,6 +15,7 @@ import 'widgets/join_travel_sheet.dart';
 import 'widgets/travel_card.dart';
 import 'widgets/travel_card_skeleton.dart';
 import 'widgets/travel_form_sheet.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class TravelListScreen extends ConsumerStatefulWidget {
   const TravelListScreen({super.key});
@@ -107,7 +108,7 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.group_add_outlined,
+                          Icon(HugeIcons.strokeRoundedUserAdd01,
                               size: 16, color: AppColors.inkPrimary),
                           SizedBox(width: 5),
                           Text('加入',
@@ -131,7 +132,7 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
                         color: AppColors.darkPill,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.add, size: 20, color: Colors.white),
+                      child: const Icon(HugeIcons.strokeRoundedAdd01, size: 20, color: Colors.white),
                     ),
                   ),
                 ],
@@ -182,7 +183,7 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.map_outlined, size: 48,
+                          Icon(HugeIcons.strokeRoundedMaps, size: 48,
                               color: AppColors.textTertiary),
                           SizedBox(height: 12),
                           Text('暂无旅程，点击 ＋ 开始规划',
@@ -262,7 +263,7 @@ class _GlassSearchBar extends StatelessWidget {
             children: [
               const Padding(
                 padding: EdgeInsets.only(left: 12),
-                child: Icon(Icons.search, size: 18, color: AppColors.textTertiary),
+                child: Icon(HugeIcons.strokeRoundedSearch01, size: 18, color: AppColors.textTertiary),
               ),
               const SizedBox(width: 6),
               Expanded(
@@ -297,7 +298,7 @@ class _GlassSearchBar extends StatelessWidget {
                     },
                     child: const Padding(
                       padding: EdgeInsets.only(right: 10),
-                      child: Icon(Icons.close, size: 14, color: AppColors.textTertiary),
+                      child: Icon(HugeIcons.strokeRoundedCancel01, size: 14, color: AppColors.textTertiary),
                     ),
                   ),
                 ),

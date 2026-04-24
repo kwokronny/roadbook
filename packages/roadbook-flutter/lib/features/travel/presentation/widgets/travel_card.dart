@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/theme.dart';
 import '../../../../shared/models/travel.dart';
 import '../../../../shared/widgets/glass_popover.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 // ─── Status helpers ─────────────────────────────────────────────────────────
 
@@ -192,7 +193,7 @@ class TravelCard extends StatelessWidget {
                       height: 44,
                       child: Center(
                         child: Icon(
-                          Icons.more_horiz,
+                          HugeIcons.strokeRoundedMoreHorizontal,
                           size: 16,
                           color: AppColors.inkTertiary,
                         ),
@@ -341,13 +342,13 @@ class TravelCard extends StatelessWidget {
       items: [
         if (onEdit != null)
           PopoverItem(
-            icon: Icons.edit_outlined,
+            icon: HugeIcons.strokeRoundedEdit01,
             label: '编辑',
             onTap: () => onEdit!(),
           ),
         if (onDelete != null)
           PopoverItem(
-            icon: Icons.delete_outline,
+            icon: HugeIcons.strokeRoundedDelete01,
             label: '删除',
             isDestructive: true,
             onTap: () => onDelete!(),

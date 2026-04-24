@@ -11,6 +11,7 @@ import '../../../shared/widgets/app_toast.dart';
 import '../../../shared/api/upload_repository.dart';
 import '../../../shared/models/user.dart';
 import '../data/profile_repository.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});
@@ -122,7 +123,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 decoration: const BoxDecoration(
                   color: AppColors.darkPill, shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.chevron_left, size: 20, color: Colors.white),
+                child: const Icon(HugeIcons.strokeRoundedArrowLeft01, size: 20, color: Colors.white),
               ),
             ),
           ),
@@ -174,7 +175,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           border: Border.all(
                               color: AppColors.warmCanvas, width: 2),
                         ),
-                        child: const Icon(Icons.camera_alt,
+                        child: const Icon(HugeIcons.strokeRoundedCamera01,
                             color: Colors.white, size: 12),
                       ),
                     ),
@@ -256,7 +257,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 child: const Row(
                   children: [
                     SizedBox(width: 16),
-                    Icon(Icons.lock_outline,
+                    Icon(HugeIcons.strokeRoundedLock,
                         size: 18, color: AppColors.inkSecondary),
                     SizedBox(width: 10),
                     Text(
@@ -265,7 +266,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           fontSize: 15, color: AppColors.inkPrimary),
                     ),
                     Spacer(),
-                    Icon(Icons.chevron_right,
+                    Icon(HugeIcons.strokeRoundedArrowRight01,
                         size: 18, color: AppColors.textTertiary),
                     SizedBox(width: 12),
                   ],

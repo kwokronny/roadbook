@@ -2,6 +2,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../../../core/theme.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 
 class MapSearchBar extends StatefulWidget {
@@ -119,7 +120,7 @@ class _MapSearchBarState extends State<MapSearchBar> {
                 BoxShadow(color: Color(0x0D000000), blurRadius: 8, offset: Offset(0, 2)),
               ],
             ),
-            child: const Icon(Icons.close, size: 14, color: AppColors.inkSecondary),
+            child: const Icon(HugeIcons.strokeRoundedCancel01, size: 14, color: AppColors.inkSecondary),
           ),
         ),
       ],

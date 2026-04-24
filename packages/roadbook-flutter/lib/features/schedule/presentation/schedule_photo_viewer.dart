@@ -1,5 +1,6 @@
 // lib/features/schedule/presentation/schedule_photo_viewer.dart
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class SchedulePhotoViewer extends StatefulWidget {
   const SchedulePhotoViewer({
@@ -72,7 +73,7 @@ class _SchedulePhotoViewerState extends State<SchedulePhotoViewer> {
                     : const Center(
                         child: CircularProgressIndicator(color: Colors.white54)),
                 errorBuilder: (_, __, ___) => const Icon(
-                  Icons.broken_image_outlined,
+                  HugeIcons.strokeRoundedImageNotFound01,
                   color: Colors.white54,
                   size: 48,
                 ),
@@ -88,7 +89,7 @@ class _SchedulePhotoViewerState extends State<SchedulePhotoViewer> {
                 children: [
                   GestureDetector(
                     onTap: () => Navigator.of(context).pop(),
-                    child: const Icon(Icons.close, color: Colors.white, size: 22),
+                    child: const Icon(HugeIcons.strokeRoundedCancel01, color: Colors.white, size: 22),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -119,7 +120,7 @@ class _SchedulePhotoViewerState extends State<SchedulePhotoViewer> {
               bottom: 0,
               child: Center(
                 child: _ArrowButton(
-                  icon: Icons.chevron_left,
+                  icon: HugeIcons.strokeRoundedArrowLeft01,
                   onTap: _current > 0
                       ? () => _pageCtrl.previousPage(
                           duration: const Duration(milliseconds: 250),
@@ -134,7 +135,7 @@ class _SchedulePhotoViewerState extends State<SchedulePhotoViewer> {
               bottom: 0,
               child: Center(
                 child: _ArrowButton(
-                  icon: Icons.chevron_right,
+                  icon: HugeIcons.strokeRoundedArrowRight01,
                   onTap: _current < widget.urls.length - 1
                       ? () => _pageCtrl.nextPage(
                           duration: const Duration(milliseconds: 250),
@@ -191,7 +192,7 @@ class _SchedulePhotoViewerState extends State<SchedulePhotoViewer> {
                               fit: BoxFit.cover,
                               errorBuilder: (_, __, ___) => const ColoredBox(
                                 color: Colors.white12,
-                                child: Icon(Icons.broken_image_outlined,
+                                child: Icon(HugeIcons.strokeRoundedImageNotFound01,
                                     color: Colors.white38, size: 14),
                               ),
                             ),

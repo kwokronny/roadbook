@@ -18,6 +18,7 @@ import 'schedule_quick_time_sheet.dart';
 import '../../luggage/domain/luggage_provider.dart';
 import '../../../shared/widgets/skeleton.dart';
 import 'widgets/schedule_item_skeleton.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class _LuggageMarker {
   const _LuggageMarker();
@@ -271,7 +272,7 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
                                       : Border.all(color: AppColors.inkTertiary, width: 2),
                                 ),
                                 child: allSelected
-                                    ? const Icon(Icons.check, size: 14, color: Colors.white)
+                                    ? const Icon(HugeIcons.strokeRoundedTick01, size: 14, color: Colors.white)
                                     : null,
                               ),
                             ),
@@ -288,7 +289,7 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
                                   borderRadius: BorderRadius.circular(8),
                                   color: const Color(0x0F1C1C1E),
                                 ),
-                                child: Icon(Icons.drive_file_move_outline, size: 16,
+                                child: Icon(HugeIcons.strokeRoundedMoveTo, size: 16,
                                     color: _selectedIds.isNotEmpty
                                         ? AppColors.inkSecondary : AppColors.textDisabled),
                               ),
@@ -303,7 +304,7 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
                                   borderRadius: BorderRadius.circular(8),
                                   color: const Color(0x14FF3B30),
                                 ),
-                                child: Icon(Icons.delete_outline, size: 16,
+                                child: Icon(HugeIcons.strokeRoundedDelete01, size: 16,
                                     color: _selectedIds.isNotEmpty
                                         ? AppColors.destructive : AppColors.textDisabled),
                               ),
@@ -318,7 +319,7 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
                                   borderRadius: BorderRadius.circular(8),
                                   color: const Color(0x0F1C1C1E),
                                 ),
-                                child: const Icon(Icons.close, size: 14,
+                                child: const Icon(HugeIcons.strokeRoundedCancel01, size: 14,
                                     color: AppColors.inkSecondary),
                               ),
                             ),
@@ -547,7 +548,7 @@ class _LuggageCheckItem extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 6),
-                          Icon(Icons.chevron_right,
+                          Icon(HugeIcons.strokeRoundedArrowRight01,
                               size: 18, color: AppColors.inkTertiary),
                         ],
                       ),

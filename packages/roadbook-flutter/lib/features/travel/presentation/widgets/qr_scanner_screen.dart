@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../../../core/theme.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 /// Full-screen camera overlay. Pops with the scanned raw value (String) on
 /// first successful QR detection, or null if the user cancels.
@@ -82,7 +83,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                   color: Color(0x66000000),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.close, size: 18, color: Colors.white),
+                child: const Icon(HugeIcons.strokeRoundedCancel01, size: 18, color: Colors.white),
               ),
             ),
           ),

@@ -7,6 +7,7 @@ import '../../../shared/widgets/glass_drawer.dart';
 import '../data/collect_import_service.dart';
 import '../data/schedule_repository.dart';
 import '../domain/schedule_provider.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 enum _Phase { input, importing, done }
 
@@ -270,7 +271,7 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
         return const SizedBox(
           width: 20,
           height: 20,
-          child: Icon(Icons.circle_outlined,
+          child: Icon(HugeIcons.strokeRoundedCircle,
               size: 18, color: AppColors.textDisabled),
         );
       case _ItemStatus.loading:
@@ -281,10 +282,10 @@ class _CollectImportSheetState extends ConsumerState<CollectImportSheet> {
               strokeWidth: 2, color: AppColors.primary),
         );
       case _ItemStatus.success:
-        return const Icon(Icons.check_circle,
+        return const Icon(HugeIcons.strokeRoundedCheckmarkCircle01,
             size: 20, color: AppColors.success);
       case _ItemStatus.error:
-        return const Icon(Icons.close, size: 20, color: Colors.red);
+        return const Icon(HugeIcons.strokeRoundedCancel01, size: 20, color: Colors.red);
     }
   }
 }

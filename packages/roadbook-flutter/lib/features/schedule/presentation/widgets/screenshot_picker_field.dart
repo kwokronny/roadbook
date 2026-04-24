@@ -6,6 +6,7 @@ import '../../../../core/theme.dart';
 
 import '../../../../shared/api/upload_repository.dart';
 import '../../../../shared/widgets/app_toast.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class ScreenshotPickerField extends ConsumerStatefulWidget {
   const ScreenshotPickerField({
@@ -118,7 +119,7 @@ class _Thumbnail extends StatelessWidget {
               width: 64,
               height: 64,
               color: AppColors.border,
-              child: const Icon(Icons.broken_image_outlined,
+              child: const Icon(HugeIcons.strokeRoundedImageNotFound01,
                   size: 24, color: AppColors.textDisabled),
             ),
           ),
@@ -135,7 +136,7 @@ class _Thumbnail extends StatelessWidget {
                 color: Colors.black54,
                 borderRadius: BorderRadius.circular(9),
               ),
-              child: const Icon(Icons.close, size: 12, color: Colors.white),
+              child: const Icon(HugeIcons.strokeRoundedCancel01, size: 12, color: Colors.white),
             ),
           ),
         ),
@@ -163,7 +164,7 @@ class _AddButton extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.add, size: 20, color: AppColors.textSecondary),
+            const Icon(HugeIcons.strokeRoundedAdd01, size: 20, color: AppColors.textSecondary),
             const SizedBox(height: 2),
             Text('添加', style: AppTextStyles.micro),
           ],

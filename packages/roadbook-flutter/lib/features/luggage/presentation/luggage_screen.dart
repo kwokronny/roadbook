@@ -7,6 +7,7 @@ import '../../../shared/widgets/glass_drawer.dart';
 import '../domain/luggage_provider.dart';
 import 'widgets/luggage_category_section.dart';
 import 'widgets/add_item_sheet.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 const _categoryTemplates = [
   {'emoji': '📋', 'name': '证件', 'items': '护照,身份证,签证,机票打印件,酒店预订单,旅行保险单'},
@@ -67,7 +68,7 @@ class LuggageScreen extends ConsumerWidget {
                   decoration: const BoxDecoration(
                     color: AppColors.darkPill, shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.chevron_left, size: 20, color: Colors.white),
+                  child: const Icon(HugeIcons.strokeRoundedArrowLeft01, size: 20, color: Colors.white),
                 ),
               ),
             ),
@@ -138,7 +139,7 @@ class LuggageScreen extends ConsumerWidget {
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.add, size: 18, color: Colors.white),
+                          Icon(HugeIcons.strokeRoundedAdd01, size: 18, color: Colors.white),
                           SizedBox(width: 6),
                           Text('添加分类', style: TextStyle(
                             fontSize: 15,
@@ -348,7 +349,7 @@ class _AddCategorySheetState extends State<_AddCategorySheet> {
                             ),
                           ),
                           child: selected
-                              ? const Icon(Icons.check,
+                              ? const Icon(HugeIcons.strokeRoundedTick01,
                                   size: 14, color: Colors.white)
                               : null,
                         ),
@@ -516,7 +517,7 @@ class _AddCategorySheetState extends State<_AddCategorySheet> {
               ),
             ),
             child: hasText
-                ? const Icon(Icons.check, size: 14, color: Colors.white)
+                ? const Icon(HugeIcons.strokeRoundedTick01, size: 14, color: Colors.white)
                 : null,
           ),
           const SizedBox(width: 12),

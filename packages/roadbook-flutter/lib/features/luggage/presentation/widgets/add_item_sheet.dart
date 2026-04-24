@@ -6,6 +6,7 @@ import '../../../../shared/constants/luggage_presets.dart';
 import '../../../../shared/models/luggage.dart';
 import '../../../../shared/widgets/glass_drawer.dart';
 import '../../domain/luggage_provider.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class AddItemSheet extends ConsumerStatefulWidget {
   const AddItemSheet({
@@ -130,7 +131,7 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
             decoration: InputDecoration(
               hintText: '搜索或输入物品名…',
               hintStyle: const TextStyle(fontSize: 15, color: AppColors.textSecondary),
-              prefixIcon: const Icon(Icons.search,
+              prefixIcon: const Icon(HugeIcons.strokeRoundedSearch01,
                   size: 18, color: AppColors.textSecondary),
               prefixIconConstraints: const BoxConstraints(minWidth: 36, minHeight: 36),
               suffixIcon: _query.isNotEmpty
@@ -139,7 +140,7 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
                         _searchCtrl.clear();
                         setState(() => _query = '');
                       },
-                      child: const Icon(Icons.close,
+                      child: const Icon(HugeIcons.strokeRoundedCancel01,
                           size: 14, color: AppColors.textSecondary),
                     )
                   : null,
@@ -260,7 +261,7 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
                 ),
               ),
               child: selected
-                  ? const Icon(Icons.check, size: 14, color: Colors.white)
+                  ? const Icon(HugeIcons.strokeRoundedTick01, size: 14, color: Colors.white)
                   : null,
             ),
             const SizedBox(width: 12),
@@ -301,7 +302,7 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
                 shape: BoxShape.circle,
                 border: Border.all(color: AppColors.primary, width: 1.5),
               ),
-              child: const Icon(Icons.add, size: 14, color: AppColors.primary),
+              child: const Icon(HugeIcons.strokeRoundedAdd01, size: 14, color: AppColors.primary),
             ),
             const SizedBox(width: 12),
             RichText(
@@ -385,7 +386,7 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
               ),
             ),
             child: hasText
-                ? const Icon(Icons.check, size: 14, color: Colors.white)
+                ? const Icon(HugeIcons.strokeRoundedTick01, size: 14, color: Colors.white)
                 : null,
           ),
           const SizedBox(width: 12),

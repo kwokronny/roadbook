@@ -4,6 +4,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../core/theme.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 /// Push a glass drawer onto the navigator. Returns the value passed to pop().
 Future<T?> showGlassDrawer<T>({
@@ -169,7 +170,7 @@ class _GlassDrawerScaffold extends StatelessWidget {
                                     color: Color(0x1A1C1C1E),
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Icon(Icons.close,
+                                  child: const Icon(HugeIcons.strokeRoundedCancel01,
                                       size: 14,
                                       color: AppColors.inkSecondary),
                                 ),

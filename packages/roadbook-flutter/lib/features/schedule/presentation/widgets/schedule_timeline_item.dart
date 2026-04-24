@@ -8,6 +8,7 @@ import '../../../../shared/models/schedule.dart';
 import '../../../../shared/widgets/glass_popover.dart';
 import '../schedule_photo_viewer.dart';
 import 'schedule_nav_button.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class ScheduleTimelineItem extends StatelessWidget {
   const ScheduleTimelineItem({
@@ -124,7 +125,7 @@ class ScheduleTimelineItem extends StatelessWidget {
                         : Border.all(color: AppColors.inkTertiary, width: 2),
                   ),
                   child: isSelected
-                      ? const Icon(Icons.check, size: 14, color: Colors.white)
+                      ? const Icon(HugeIcons.strokeRoundedTick01, size: 14, color: Colors.white)
                       : null,
                 ),
               ),
@@ -183,7 +184,7 @@ class ScheduleTimelineItem extends StatelessWidget {
                                         fontWeight: FontWeight.w500, color: _timeBadgeText)),
                                 if (canEdit) ...[
                                   const SizedBox(width: 3),
-                                  Icon(Icons.edit_calendar_outlined,
+                                  Icon(HugeIcons.strokeRoundedCalendarSetting01,
                                       size: 11, color: _timeBadgeText),
                                 ],
                               ],
@@ -388,7 +389,7 @@ class ScheduleTimelineItem extends StatelessWidget {
                   width: 48,
                   height: 48,
                   color: const Color(0x0D1C1C1E),
-                  child: const Icon(Icons.broken_image_outlined,
+                  child: const Icon(HugeIcons.strokeRoundedImageNotFound01,
                       size: 14, color: AppColors.inkTertiary),
                 ),
               ),
@@ -437,16 +438,16 @@ class _MoreIconButton extends StatelessWidget {
                 pos.dx, pos.dy + 20,
                 MediaQuery.of(ctx).size.width - pos.dx - box.size.width, 0),
             items: [
-              PopoverItem(icon: Icons.edit_outlined, label: '编辑', onTap: () => onEdit?.call()),
-              PopoverItem(icon: Icons.copy_outlined, label: '克隆', onTap: () => onClone?.call()),
-              PopoverItem(icon: Icons.delete_outline, label: '删除', isDestructive: true,
+              PopoverItem(icon: HugeIcons.strokeRoundedEdit01, label: '编辑', onTap: () => onEdit?.call()),
+              PopoverItem(icon: HugeIcons.strokeRoundedCopy01, label: '克隆', onTap: () => onClone?.call()),
+              PopoverItem(icon: HugeIcons.strokeRoundedDelete01, label: '删除', isDestructive: true,
                   onTap: () => onDelete?.call()),
             ],
           );
         },
         child: Padding(
           padding: const EdgeInsets.all(4),
-          child: Icon(Icons.more_horiz, size: 16, color: color),
+          child: Icon(HugeIcons.strokeRoundedMoreHorizontal, size: 16, color: color),
         ),
       );
     });
@@ -645,7 +646,7 @@ class _ExpandableNoteState extends State<_ExpandableNote> {
                         fontSize: 13, color: widget.noteColor.withValues(alpha: 0.5)),
                   ),
                   Icon(
-                    _expanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    _expanded ? HugeIcons.strokeRoundedArrowUp01 : HugeIcons.strokeRoundedArrowDown01,
                     size: 16,
                     color: widget.noteColor.withValues(alpha: 0.5),
                   ),

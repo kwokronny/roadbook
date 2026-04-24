@@ -12,6 +12,7 @@ import '../../../../shared/widgets/glass_popover.dart';
 import '../../data/invite_code_cache.dart';
 import '../../domain/travel_list_provider.dart';
 import '../../domain/travel_detail_provider.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class CollaboratorSheet extends ConsumerStatefulWidget {
   const CollaboratorSheet({super.key, required this.travelId});
@@ -89,19 +90,19 @@ class _CollaboratorSheetState extends ConsumerState<CollaboratorSheet> {
       width: 160,
       items: [
         PopoverItem(
-            icon: Icons.admin_panel_settings_outlined,
+            icon: HugeIcons.strokeRoundedSettings01,
             label: '管理者',
             onTap: () => updateRole('manage')),
         PopoverItem(
-            icon: Icons.edit_outlined,
+            icon: HugeIcons.strokeRoundedEdit01,
             label: '编辑者',
             onTap: () => updateRole('edit')),
         PopoverItem(
-            icon: Icons.visibility_outlined,
+            icon: HugeIcons.strokeRoundedView,
             label: '查看者',
             onTap: () => updateRole('view')),
         PopoverItem(
-            icon: Icons.person_remove_outlined,
+            icon: HugeIcons.strokeRoundedUserRemove01,
             label: '移除',
             isDestructive: true,
             onTap: removeCollab),

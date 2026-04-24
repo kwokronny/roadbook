@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme.dart';
 import '../../../shared/widgets/pastel_mesh_background.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class MainShell extends StatelessWidget {
   const MainShell({super.key, required this.navigationShell});
@@ -62,8 +63,8 @@ class _TabDef {
 }
 
 const _tabs = [
-  _TabDef(outlinedIcon: Icons.map_outlined,     filledIcon: Icons.map,     label: '旅程'),
-  _TabDef(outlinedIcon: Icons.person_outline,    filledIcon: Icons.person,   label: '我的'),
+  _TabDef(outlinedIcon: HugeIcons.strokeRoundedMaps,     filledIcon: HugeIcons.strokeRoundedMaps,     label: '旅程'),
+  _TabDef(outlinedIcon: HugeIcons.strokeRoundedUser,    filledIcon: HugeIcons.strokeRoundedUser,   label: '我的'),
 ];
 
 // ─── Bouncy Glass Dock ──────────────────────────────────────────────────────

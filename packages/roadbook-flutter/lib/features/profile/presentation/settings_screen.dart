@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme.dart';
 import '../../../shared/widgets/app_toast.dart';
 import '../../../shared/widgets/glass_card.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 
 class SettingsScreen extends StatefulWidget {
@@ -111,7 +112,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 decoration: const BoxDecoration(
                   color: AppColors.darkPill, shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.chevron_left, size: 20, color: Colors.white),
+                child: const Icon(HugeIcons.strokeRoundedArrowLeft01, size: 20, color: Colors.white),
               ),
             ),
           ),
@@ -124,14 +125,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const _SectionTitle('通用'),
           _MenuGroup(items: [
             _SwitchItem(
-              icon: Icons.dark_mode_outlined,
+              icon: HugeIcons.strokeRoundedMoon01,
               iconBg: const Color(0xFF1C1C1E),
               label: '深色模式',
               value: _darkMode,
               onChanged: _toggleDarkMode,
             ),
             const _RowItem(
-              icon: Icons.language_outlined,
+              icon: HugeIcons.strokeRoundedLanguageCircle,
               iconBg: Color(0xFF007AFF),
               label: '语言',
               trailing: Text('简体中文',
@@ -143,7 +144,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const _SectionTitle('存储'),
           _MenuGroup(items: [
             _RowItem(
-              icon: Icons.delete_outline,
+              icon: HugeIcons.strokeRoundedDelete01,
               iconBg: const Color(0xFFFF9500),
               label: '清除缓存',
               trailing: Text(_cacheSize,
@@ -155,7 +156,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const _SectionTitle('关于'),
           _MenuGroup(items: [
             _RowItem(
-              icon: Icons.info_outline,
+              icon: HugeIcons.strokeRoundedInformationCircle,
               iconBg: AppColors.primary,
               label: '版本号',
               trailing: Text(_version,
@@ -164,7 +165,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onTap: null,
             ),
             _RowItem(
-              icon: Icons.chat_bubble_outline,
+              icon: HugeIcons.strokeRoundedBubbleChat,
               iconBg: AppColors.success,
               label: '意见反馈',
               onTap: () => launchUrl(
@@ -256,7 +257,7 @@ class _RowItem extends StatelessWidget {
                 const Spacer(),
                 if (trailing != null) trailing!,
                 if (onTap != null)
-                  const Icon(Icons.chevron_right,
+                  const Icon(HugeIcons.strokeRoundedArrowRight01,
                       size: 18, color: AppColors.textTertiary),
               ],
             ),

@@ -6,6 +6,7 @@ import '../../../core/theme.dart';
 
 import '../domain/discover_provider.dart';
 import 'widgets/public_travel_card.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 const _cities = ['热门', '日本', '泰国', '韩国', '欧洲', '东南亚', '国内'];
 
@@ -90,11 +91,11 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                   hintText: '搜索旅程、目的地',
                   hintStyle: const TextStyle(
                       fontSize: 15, color: AppColors.textSecondary),
-                  prefixIcon: const Icon(Icons.search,
+                  prefixIcon: const Icon(HugeIcons.strokeRoundedSearch01,
                       size: 18, color: AppColors.textSecondary),
                   suffixIcon: _searchCtrl.text.isNotEmpty
                       ? IconButton(
-                          icon: const Icon(Icons.close,
+                          icon: const Icon(HugeIcons.strokeRoundedCancel01,
                               size: 14, color: AppColors.textSecondary),
                           onPressed: () {
                             _searchCtrl.clear();
@@ -166,7 +167,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.wifi_off,
+                      const Icon(HugeIcons.strokeRoundedWifiOff01,
                           size: 48, color: AppColors.textTertiary),
                       const SizedBox(height: 8),
                       Text('$e',
@@ -187,7 +188,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.travel_explore,
+                          Icon(HugeIcons.strokeRoundedMapsGlobal01,
                               size: 48,
                               color: AppColors.textTertiary),
                           SizedBox(height: 8),

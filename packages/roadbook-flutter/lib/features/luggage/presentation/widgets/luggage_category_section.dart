@@ -5,6 +5,7 @@ import '../../../../core/theme.dart';
 import '../../../../shared/models/luggage.dart';
 import '../../../../shared/widgets/app_confirm_dialog.dart';
 import '../../domain/luggage_provider.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class LuggageCategorySection extends ConsumerStatefulWidget {
   const LuggageCategorySection({
@@ -86,7 +87,7 @@ class _LuggageCategorySectionState
               const SizedBox(width: 4),
               GestureDetector(
                 onTap: _confirmDelete,
-                child: const Icon(Icons.delete_outline,
+                child: const Icon(HugeIcons.strokeRoundedDelete01,
                     size: 18, color: AppColors.inkTertiary),
               ),
             ],
@@ -94,7 +95,7 @@ class _LuggageCategorySectionState
             AnimatedRotation(
               turns: _expanded ? 0 : -0.25,
               duration: const Duration(milliseconds: 200),
-              child: const Icon(Icons.expand_more,
+              child: const Icon(HugeIcons.strokeRoundedArrowDown01,
                   size: 20, color: AppColors.inkSecondary),
             ),
           ],
@@ -114,7 +115,7 @@ class _LuggageCategorySectionState
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 16),
         color: AppColors.destructive,
-        child: const Icon(Icons.delete_outline,
+        child: const Icon(HugeIcons.strokeRoundedDelete01,
             color: Colors.white, size: 20),
       ),
       onDismissed: (_) => ref
@@ -150,7 +151,7 @@ class _LuggageCategorySectionState
                         ),
                       ),
                       child: checked
-                          ? const Icon(Icons.check,
+                          ? const Icon(HugeIcons.strokeRoundedTick01,
                               size: 12, color: Colors.white)
                           : null,
                     ),
@@ -200,7 +201,7 @@ class _LuggageCategorySectionState
                       shape: BoxShape.circle,
                       border: Border.all(color: AppColors.primary, width: 1.5),
                     ),
-                    child: const Icon(Icons.add, size: 12, color: AppColors.primary),
+                    child: const Icon(HugeIcons.strokeRoundedAdd01, size: 12, color: AppColors.primary),
                   ),
                   const SizedBox(width: 10),
                   Text('添加物品',

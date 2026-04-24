@@ -12,6 +12,7 @@ import '../../../../features/travel/domain/travel_detail_provider.dart';
 import '../../../../shared/models/travel.dart';
 import '../../../../shared/widgets/app_toast.dart';
 import '../../../../shared/widgets/glass_drawer.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class TravelFormSheet extends ConsumerStatefulWidget {
   const TravelFormSheet({super.key, this.travel});
@@ -163,7 +164,7 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                                         style: TextStyle(fontSize: 15,
                                             color: AppColors.textTertiary)),
                                     SizedBox(width: 4),
-                                    Icon(Icons.chevron_right,
+                                    Icon(HugeIcons.strokeRoundedArrowRight01,
                                         size: 16, color: AppColors.textTertiary),
                                   ],
                                 )
@@ -198,7 +199,7 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                                               color: const Color(0x1E1C1C1E),
                                               width: 1),
                                         ),
-                                        child: const Icon(Icons.add,
+                                        child: const Icon(HugeIcons.strokeRoundedAdd01,
                                             size: 14,
                                             color: AppColors.inkSecondary),
                                       ),
@@ -220,7 +221,7 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                                   fontSize: 15, color: AppColors.textPrimary),
                               ),
                               const SizedBox(width: 4),
-                              const Icon(Icons.chevron_right,
+                              const Icon(HugeIcons.strokeRoundedArrowRight01,
                                   size: 16, color: AppColors.textTertiary),
                             ],
                           ),
@@ -461,7 +462,7 @@ class _CalendarPickerDialogState extends State<_CalendarPickerDialog> {
                     decoration: const BoxDecoration(
                       color: Color(0x1A1C1C1E), shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.close, size: 12,
+                    child: const Icon(HugeIcons.strokeRoundedCancel01, size: 12,
                         color: AppColors.inkSecondary),
                   ),
                 ),
@@ -489,7 +490,7 @@ class _CalendarPickerDialogState extends State<_CalendarPickerDialog> {
                     decoration: const BoxDecoration(
                       color: Color(0x0D1C1C1E), shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.chevron_left, size: 24, color: AppColors.inkSecondary),
+                    child: const Icon(HugeIcons.strokeRoundedArrowLeft01, size: 24, color: AppColors.inkSecondary),
                   ),
                 ),
                 Expanded(
@@ -509,7 +510,7 @@ class _CalendarPickerDialogState extends State<_CalendarPickerDialog> {
                     decoration: const BoxDecoration(
                       color: Color(0x0D1C1C1E), shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.chevron_right, size: 24, color: AppColors.inkSecondary),
+                    child: const Icon(HugeIcons.strokeRoundedArrowRight01, size: 24, color: AppColors.inkSecondary),
                   ),
                 ),
               ],
@@ -927,7 +928,7 @@ class _CityPickerSheetState extends State<_CityPickerSheet>
                 children: [
                   const Padding(
                     padding: EdgeInsets.only(left: 10),
-                    child: Icon(Icons.search, size: 18, color: AppColors.textTertiary),
+                    child: Icon(HugeIcons.strokeRoundedSearch01, size: 18, color: AppColors.textTertiary),
                   ),
                   const SizedBox(width: 6),
                   Expanded(
@@ -1125,7 +1126,7 @@ class _CityItem extends StatelessWidget {
             ),
             if (selected) ...[
               const SizedBox(width: 6),
-              const Icon(Icons.check_circle, size: 20, color: AppColors.success),
+              const Icon(HugeIcons.strokeRoundedCheckmarkCircle01, size: 20, color: AppColors.success),
             ],
           ],
         ),
@@ -1164,7 +1165,7 @@ class _CityChip extends StatelessWidget {
           const SizedBox(width: 2),
           GestureDetector(
             onTap: onRemove,
-            child: Icon(Icons.close, size: 14, color: AppColors.cityTagText(index)),
+            child: Icon(HugeIcons.strokeRoundedCancel01, size: 14, color: AppColors.cityTagText(index)),
           ),
         ],
       ),
