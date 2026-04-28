@@ -267,7 +267,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     ),
                     Spacer(),
                     Icon(HugeIcons.strokeRoundedArrowRight01,
-                        size: 18, color: AppColors.textTertiary),
+                        size: 20, color: AppColors.textTertiary),
                     SizedBox(width: 12),
                   ],
                 ),

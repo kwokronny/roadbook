@@ -163,7 +163,7 @@ class _ToastWidgetState extends State<_ToastWidget>
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                isSuccess ? HugeIcons.strokeRoundedTick01 : HugeIcons.strokeRoundedCancel01,
+                isSuccess ? HugeIcons.strokeRoundedTick02 : HugeIcons.strokeRoundedCancel01,
                 size: 14,
                 color: Colors.white,
               ),

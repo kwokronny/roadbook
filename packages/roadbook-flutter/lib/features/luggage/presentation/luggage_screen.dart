@@ -49,7 +49,7 @@ class LuggageScreen extends ConsumerWidget {
                 CircularProgressIndicator(color: AppColors.primary)),
       ),
       error: (e, _) => Scaffold(
-        appBar: AppBar(title: const Text('行李清单')),
+        appBar: AppBar(title: const Text('行李清点')),
         body: Center(
             child:
                 Text(e.toString(), style: AppTextStyles.caption)),
@@ -73,7 +73,15 @@ class LuggageScreen extends ConsumerWidget {
               ),
             ),
           ),
-          title: const Text('行李清单', style: AppTextStyles.appBarTitle),
+          title: const Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text('行李清点', style: AppTextStyles.appBarTitle),
+              Text('勾选状态仅存储在本地',
+                  style: TextStyle(fontSize: 13, color: AppColors.inkTertiary)),
+            ],
+          ),
           actions: [
             if (state.canEdit)
               Padding(
@@ -99,60 +107,72 @@ class LuggageScreen extends ConsumerWidget {
               ),
           ],
         ),
-        body: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(child: _buildProgress(state)),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (_, i) {
-                  final cat = state.categories[i];
-                  return LuggageCategorySection(
-                    travelId: travelId,
-                    category: cat,
-                    canEdit: state.canEdit,
-                    checkedIds: state.checkedIds,
-                    onAddItemTap: () => AddItemSheet.show(
-                      context,
-                      travelId: travelId,
-                      categoryId: cat.id,
-                      categoryName: cat.name,
-                      existingItems: cat.items,
-                    ),
-                  );
-                },
-                childCount: state.categories.length,
-              ),
-            ),
-            if (state.canEdit)
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.pageHorizontal, 8, AppSpacing.pageHorizontal, 24),
-                  child: GestureDetector(
-                    onTap: () => _showAddCategorySheet(context, ref, state),
-                    child: Container(
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: AppColors.darkPill,
-                        borderRadius: BorderRadius.circular(AppRadius.pill),
-                      ),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(HugeIcons.strokeRoundedAdd01, size: 18, color: Colors.white),
-                          SizedBox(width: 6),
-                          Text('添加分类', style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white)),
-                        ],
+        body: Stack(
+          children: [
+            CustomScrollView(
+              slivers: [
+                // Space for floating progress card (~72px card + 8px gap)
+                const SliverToBoxAdapter(child: SizedBox(height: 80)),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (_, i) {
+                      final cat = state.categories[i];
+                      return LuggageCategorySection(
+                        travelId: travelId,
+                        category: cat,
+                        canEdit: state.canEdit,
+                        checkedIds: state.checkedIds,
+                        onAddItemTap: () => AddItemSheet.show(
+                          context,
+                          travelId: travelId,
+                          categoryId: cat.id,
+                          categoryName: cat.name,
+                          existingItems: cat.items,
+                        ),
+                      );
+                    },
+                    childCount: state.categories.length,
+                  ),
+                ),
+                if (state.canEdit)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.pageHorizontal, 8, AppSpacing.pageHorizontal, 16),
+                      child: GestureDetector(
+                        onTap: () => _showAddCategorySheet(context, ref, state),
+                        child: Container(
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: AppColors.darkPill,
+                            borderRadius: BorderRadius.circular(AppRadius.pill),
+                          ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(HugeIcons.strokeRoundedAdd01, size: 18, color: Colors.white),
+                              SizedBox(width: 6),
+                              Text('添加分类', style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white)),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
-            if (!state.canEdit)
-              const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                // Extra space at bottom
+                const SliverToBoxAdapter(child: SizedBox(height: 24)),
+              ],
+            ),
+            // Floating progress card pinned to top
+            Positioned(
+              left: 0,
+              right: 0,
+              top: 0,
+              child: _buildProgress(state),
+            ),
           ],
         ),
       ),
@@ -180,11 +200,14 @@ class LuggageScreen extends ConsumerWidget {
                     fontSize: 14, color: AppColors.textSecondary)),
             const SizedBox(width: 12),
             Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: LinearProgressIndicator(
-                  value: progress,
+              child: TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: progress),
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeOutCubic,
+                builder: (_, value, __) => LinearProgressIndicator(
+                  value: value,
                   minHeight: 6,
+                  borderRadius: BorderRadius.circular(4),
                   backgroundColor: AppColors.border,
                   valueColor: const AlwaysStoppedAnimation<Color>(
                       AppColors.primary),
@@ -349,7 +372,7 @@ class _AddCategorySheetState extends State<_AddCategorySheet> {
                             ),
                           ),
                           child: selected
-                              ? const Icon(HugeIcons.strokeRoundedTick01,
+                              ? const Icon(HugeIcons.strokeRoundedTick02,
                                   size: 14, color: Colors.white)
                               : null,
                         ),
@@ -517,7 +540,7 @@ class _AddCategorySheetState extends State<_AddCategorySheet> {
               ),
             ),
             child: hasText
-                ? const Icon(HugeIcons.strokeRoundedTick01, size: 14, color: Colors.white)
+                ? const Icon(HugeIcons.strokeRoundedTick02, size: 14, color: Colors.white)
                 : null,
           ),
           const SizedBox(width: 12),

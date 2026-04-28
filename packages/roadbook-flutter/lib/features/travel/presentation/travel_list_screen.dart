@@ -80,16 +80,17 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
   Widget build(BuildContext context) {
     final listAsync = ref.watch(travelListProvider);
 
+    final topPad = MediaQuery.of(context).padding.top;
+
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
             // ── Large Title + Join + Add buttons ──────────────────────────
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.pageHorizontal, 20, AppSpacing.pageHorizontal, 0),
+              padding: EdgeInsets.fromLTRB(
+                  AppSpacing.pageHorizontal, topPad + 20, AppSpacing.pageHorizontal, 0),
               child: Row(
                 children: [
                   const Text('旅程', style: AppTextStyles.largeTitle),
@@ -157,7 +158,7 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
                 loading: () => SkeletonLoader(
                   child: ListView.builder(
                     padding: const EdgeInsets.fromLTRB(
-                        AppSpacing.pageHorizontal, 4,
+                        AppSpacing.pageHorizontal, 12,
                         AppSpacing.pageHorizontal, 100),
                     itemCount: 4,
                     itemBuilder: (_, __) => const TravelCardSkeleton(),
@@ -199,7 +200,7 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
                     child: ListView.builder(
                       controller: _scrollCtrl,
                       padding: const EdgeInsets.fromLTRB(
-                          AppSpacing.pageHorizontal, 4,
+                          AppSpacing.pageHorizontal, 12,
                           AppSpacing.pageHorizontal, 100),
                       itemCount: state.items.length + (state.isLoadingMore ? 1 : 0),
                       itemBuilder: (context, index) {
@@ -233,7 +234,6 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
               ),
             ),
           ],
-        ),
       ),
     );
   }

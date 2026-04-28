@@ -248,7 +248,7 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
                         CollectImportSheet.show(context, widget.travelId)),
               PopoverItem(
                   icon: HugeIcons.strokeRoundedLuggage01,
-                  label: '行李清单',
+                  label: '行李清点',
                   onTap: () =>
                       context.push('/travel/${widget.travelId}/luggage')),
             ],

@@ -258,7 +258,7 @@ class _RowItem extends StatelessWidget {
                 if (trailing != null) trailing!,
                 if (onTap != null)
                   const Icon(HugeIcons.strokeRoundedArrowRight01,
-                      size: 18, color: AppColors.textTertiary),
+                      size: 20, color: AppColors.textTertiary),
               ],
             ),
           ),

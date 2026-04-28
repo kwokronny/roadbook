@@ -27,7 +27,33 @@ class MainShell extends StatelessWidget {
         children: [
           PastelMeshBackground(key: PastelMeshBackground.globalKey),
           navigationShell,
-          if (!hideNav)
+          if (!hideNav) ...[
+            // Soft fade above dock
+            Positioned(
+              left: 0, right: 0, bottom: 0,
+              child: IgnorePointer(
+                child: SizedBox(
+                  height: MediaQuery.of(context).padding.bottom +
+                      AppSpacing.dockInset +
+                      AppSpacing.dockHeight +
+                      64,
+                  child: const DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Color(0x00FFFFFF),
+                          Color(0x0DFFFFFF),
+                          Color(0x33FFFFFF),
+                        ],
+                        stops: [0.0, 0.5, 1.0],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
             Positioned(
               left: AppSpacing.dockInset,
               right: AppSpacing.dockInset,
@@ -47,6 +73,7 @@ class MainShell extends StatelessWidget {
                 },
               ),
             ),
+          ],
         ],
       ),
     );
@@ -229,7 +256,7 @@ class _BouncyGlassDockState extends State<_BouncyGlassDock>
                             gradient: LinearGradient(
                               colors: [
                                 Color(0x00FFFFFF),
-                                Color(0xCCFFFFFF),
+                                Color(0x55FFFFFF),
                                 Color(0x00FFFFFF),
                               ],
                             ),
@@ -238,12 +265,13 @@ class _BouncyGlassDockState extends State<_BouncyGlassDock>
                       ),
                     ),
                     // ── Glass indicator (Layer 2)
-                    _buildGlassIndicator(dockW),
+                    _buildGlassIndicator(dockW, constraints.maxHeight),
                     // ── Tab items (Layer 3)
                     Positioned.fill(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: _dockPad),
                         child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: List.generate(_tabs.length, (i) =>
                             Expanded(child: _buildTab(i)),
                           ),
@@ -261,7 +289,7 @@ class _BouncyGlassDockState extends State<_BouncyGlassDock>
   }
 
   // ── Layer 2: Glass indicator with slide + motion blur
-  Widget _buildGlassIndicator(double dockW) {
+  Widget _buildGlassIndicator(double dockW, double dockH) {
     final fromLeft = _indicatorLeft(dockW, _prevIndex);
     final toLeft = _indicatorLeft(dockW, widget.currentIndex);
     final width = _indicatorWidth(dockW);
@@ -284,7 +312,7 @@ class _BouncyGlassDockState extends State<_BouncyGlassDock>
           left: left,
           top: _dockPad,
           width: width,
-          height: AppSpacing.dockHeight - _dockPad * 2,
+          height: dockH - _dockPad * 2,
           child: IgnorePointer(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppRadius.pill),
@@ -301,7 +329,7 @@ class _BouncyGlassDockState extends State<_BouncyGlassDock>
                       width: 1,
                     ),
                     boxShadow: const [
-                      BoxShadow(color: Color(0x0D000000), blurRadius: 12, offset: Offset(0, 2)),
+                      BoxShadow(color: Color(0x0D000000), blurRadius: 8),
                     ],
                   ),
                   child: Stack(
@@ -312,7 +340,7 @@ class _BouncyGlassDockState extends State<_BouncyGlassDock>
                         child: Container(
                           decoration: const BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [Color(0x00FFFFFF), Color(0xCCFFFFFF), Color(0x00FFFFFF)],
+                              colors: [Color(0x00FFFFFF), Color(0x55FFFFFF), Color(0x00FFFFFF)],
                             ),
                           ),
                         ),
@@ -325,7 +353,7 @@ class _BouncyGlassDockState extends State<_BouncyGlassDock>
                             gradient: const LinearGradient(
                               begin: Alignment(-0.5, -0.87),
                               end: Alignment(0.5, 0.87),
-                              colors: [Color(0x80FFFFFF), Color(0x00FFFFFF)],
+                              colors: [Color(0x40FFFFFF), Color(0x00FFFFFF)],
                               stops: [0.0, 0.45],
                             ),
                           ),
@@ -424,7 +452,6 @@ class _TabButtonState extends State<_TabButton>
           Color iconColor;
           Color labelColor;
           double iconScale = 1.0;
-          double iconDy = 0.0;
           FontWeight labelWeight = FontWeight.w400;
           bool showFilled = false;
 
@@ -432,7 +459,6 @@ class _TabButtonState extends State<_TabButton>
             iconColor = Color.lerp(AppColors.inkTertiary, AppColors.primary, t)!;
             labelColor = iconColor;
             iconScale = 1.0 + 0.12 * t;
-            iconDy = -1.0 * t;
             labelWeight = t > 0.5 ? FontWeight.w500 : FontWeight.w400;
             showFilled = t > 0.3;
           } else if (widget.wasActive) {
@@ -449,9 +475,7 @@ class _TabButtonState extends State<_TabButton>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Transform.translate(
-                  offset: Offset(0, iconDy),
-                  child: Transform.scale(
+                  Transform.scale(
                     scale: iconScale,
                     child: Icon(
                       showFilled ? widget.tab.filledIcon : widget.tab.outlinedIcon,
@@ -459,17 +483,16 @@ class _TabButtonState extends State<_TabButton>
                       color: iconColor,
                     ),
                   ),
-                ),
-                const SizedBox(height: 1),
-                Text(
-                  widget.tab.label,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: labelWeight,
-                    color: labelColor,
+                  const SizedBox(height: 1),
+                  Text(
+                    widget.tab.label,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: labelWeight,
+                      color: labelColor,
+                    ),
                   ),
-                ),
-              ],
+                ],
             ),
           );
         },

@@ -13,9 +13,11 @@ import AMapFoundationKit
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    GMSServices.provideAPIKey("AIzaSyBxZbJh5YKN1yy94iJwovr2Br7ZlpudJUg")
+    let googleMapsKey = Bundle.main.infoDictionary?["GoogleMapsApiKey"] as? String ?? ""
+    GMSServices.provideAPIKey(googleMapsKey)
     #if !targetEnvironment(simulator)
-    AMapServices.shared().apiKey = "4b2a2785e5a357779608d3af1df84ff1"
+    let amapKey = Bundle.main.infoDictionary?["AmapApiKey"] as? String ?? ""
+    AMapServices.shared().apiKey = amapKey
     #endif
 
     GeneratedPluginRegistrant.register(with: self)

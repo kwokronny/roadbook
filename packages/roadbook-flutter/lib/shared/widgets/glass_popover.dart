@@ -152,9 +152,7 @@ class _PopoverMenu extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: item.isDestructive
-              ? const Color(0x0AFF3B30) // light red tint
-              : Colors.transparent,
+          color: Colors.transparent,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Row(

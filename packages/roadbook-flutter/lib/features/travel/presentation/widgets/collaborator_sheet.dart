@@ -370,7 +370,7 @@ class _InviteCard extends StatelessWidget {
               children: [
                 const Text('邀请码',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: FontWeight.w400,
                       color: AppColors.inkSecondary,
                     )),
@@ -381,10 +381,10 @@ class _InviteCard extends StatelessWidget {
                     Text(
                       shortCode,
                       style: const TextStyle(
-                        fontSize: 20,
+                        fontSize: 26,
                         fontWeight: FontWeight.w500,
                         color: AppColors.inkPrimary,
-                        letterSpacing: 3,
+                        letterSpacing: 4,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -417,7 +417,11 @@ class _InviteCard extends StatelessWidget {
                 const SizedBox(height: 10),
                 Text(
                   loading ? '生成中...' : '有效期 7 天',
-                  style: AppTextStyles.caption,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.inkTertiary,
+                  ),
                 ),
               ],
             ),

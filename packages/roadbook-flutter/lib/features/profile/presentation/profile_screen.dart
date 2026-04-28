@@ -319,8 +319,8 @@ class _MenuItem extends StatelessWidget {
                 const Spacer(),
                 if (trailing != null) trailing!,
                 if (onTap != null)
-                  const Text('›', style: TextStyle(
-                      fontSize: 12, color: AppColors.inkTertiary)),
+                  const Icon(HugeIcons.strokeRoundedArrowRight01,
+                      size: 20, color: AppColors.inkTertiary),
               ],
             ],
           ),

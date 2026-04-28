@@ -144,7 +144,10 @@ class _DayBarState extends State<DayBar> with TickerProviderStateMixin {
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                   border: Border.all(color: const Color(0x80FFFFFF)),
                 ),
-                child: Stack(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final barH = constraints.maxHeight;
+                    return Stack(
                   children: [
                     // ── Specular top line
                     Positioned(
@@ -154,7 +157,7 @@ class _DayBarState extends State<DayBar> with TickerProviderStateMixin {
                           height: 1,
                           decoration: const BoxDecoration(
                             gradient: LinearGradient(colors: [
-                              Color(0x00FFFFFF), Color(0x99FFFFFF), Color(0x00FFFFFF),
+                              Color(0x00FFFFFF), Color(0x55FFFFFF), Color(0x00FFFFFF),
                             ]),
                           ),
                         ),
@@ -178,7 +181,7 @@ class _DayBarState extends State<DayBar> with TickerProviderStateMixin {
                           left: left,
                           top: _itemPad,
                           width: _itemWidth,
-                          height: _barHeight - _itemPad * 2,
+                          height: barH - _itemPad * 2,
                           child: IgnorePointer(
                             child: Container(
                               decoration: BoxDecoration(
@@ -303,6 +306,8 @@ class _DayBarState extends State<DayBar> with TickerProviderStateMixin {
                         ),
                       ),
                   ],
+                );
+                  },
                 ),
               ),
             ),

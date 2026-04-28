@@ -283,7 +283,7 @@ abstract class AppSpacing {
   static const double cardGap        = 14; // travel list gap
   static const double scheduleGap    = 20; // schedule list gap
   static const double dockInset      = 20; // dock from edges
-  static const double dockHeight     = 58;
+  static const double dockHeight     = 62;
 }
 
 // ─── Animation ────────────────────────────────────────────────────────────────

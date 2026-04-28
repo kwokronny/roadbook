@@ -151,7 +151,7 @@ class _LuggageCategorySectionState
                         ),
                       ),
                       child: checked
-                          ? const Icon(HugeIcons.strokeRoundedTick01,
+                          ? const Icon(HugeIcons.strokeRoundedTick02,
                               size: 12, color: Colors.white)
                           : null,
                     ),

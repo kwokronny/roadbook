@@ -125,7 +125,7 @@ class ScheduleTimelineItem extends StatelessWidget {
                         : Border.all(color: AppColors.inkTertiary, width: 2),
                   ),
                   child: isSelected
-                      ? const Icon(HugeIcons.strokeRoundedTick01, size: 14, color: Colors.white)
+                      ? const Icon(HugeIcons.strokeRoundedTick02, size: 14, color: Colors.white)
                       : null,
                 ),
               ),

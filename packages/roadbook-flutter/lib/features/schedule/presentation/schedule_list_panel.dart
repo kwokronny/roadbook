@@ -272,7 +272,7 @@ class _ScheduleListPanelState extends ConsumerState<ScheduleListPanel> {
                                       : Border.all(color: AppColors.inkTertiary, width: 2),
                                 ),
                                 child: allSelected
-                                    ? const Icon(HugeIcons.strokeRoundedTick01, size: 14, color: Colors.white)
+                                    ? const Icon(HugeIcons.strokeRoundedTick02, size: 14, color: Colors.white)
                                     : null,
                               ),
                             ),
@@ -513,7 +513,7 @@ class _LuggageCheckItem extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('出发行李清单',
+                            Text('出发前清点行李',
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.w500,
                                     color: AppColors.inkPrimary)),
@@ -549,7 +549,7 @@ class _LuggageCheckItem extends StatelessWidget {
                           ),
                           const SizedBox(width: 6),
                           Icon(HugeIcons.strokeRoundedArrowRight01,
-                              size: 18, color: AppColors.inkTertiary),
+                              size: 20, color: AppColors.inkTertiary),
                         ],
                       ),
                     ],

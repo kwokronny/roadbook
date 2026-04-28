@@ -165,7 +165,7 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                                             color: AppColors.textTertiary)),
                                     SizedBox(width: 4),
                                     Icon(HugeIcons.strokeRoundedArrowRight01,
-                                        size: 16, color: AppColors.textTertiary),
+                                        size: 20, color: AppColors.textTertiary),
                                   ],
                                 )
                               : Wrap(
@@ -222,7 +222,7 @@ class _TravelFormSheetState extends ConsumerState<TravelFormSheet> {
                               ),
                               const SizedBox(width: 4),
                               const Icon(HugeIcons.strokeRoundedArrowRight01,
-                                  size: 16, color: AppColors.textTertiary),
+                                  size: 20, color: AppColors.textTertiary),
                             ],
                           ),
                         ),

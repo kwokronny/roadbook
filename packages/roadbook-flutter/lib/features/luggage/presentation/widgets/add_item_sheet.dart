@@ -261,7 +261,7 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
                 ),
               ),
               child: selected
-                  ? const Icon(HugeIcons.strokeRoundedTick01, size: 14, color: Colors.white)
+                  ? const Icon(HugeIcons.strokeRoundedTick02, size: 14, color: Colors.white)
                   : null,
             ),
             const SizedBox(width: 12),
@@ -386,7 +386,7 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
               ),
             ),
             child: hasText
-                ? const Icon(HugeIcons.strokeRoundedTick01, size: 14, color: Colors.white)
+                ? const Icon(HugeIcons.strokeRoundedTick02, size: 14, color: Colors.white)
                 : null,
           ),
           const SizedBox(width: 12),
