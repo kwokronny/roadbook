@@ -37,11 +37,16 @@ class UserService {
 
   async update(uid, data) {
     try {
-      let user = await db.User.findByPk(uid);
-      delete data.password
-      user.update(data);
+      const user = await db.User.findByPk(uid);
+      if (!user) throw '未找到用户';
+      // 只允许修改 name 和 avatar，不允许改 username/password
+      const allowed = {};
+      if (data.name  !== undefined) allowed.name  = data.name;
+      if (data.avatar !== undefined) allowed.avatar = data.avatar;
+      await user.update(allowed);
+      return { id: user.id, username: user.username, name: user.name, avatar: user.avatar };
     } catch (e) {
-      throw "未找到用户";
+      throw e || '更新失败';
     }
   }
 

@@ -15,6 +15,7 @@ abstract class ApiEndpoints {
   static const String travelInvite  = '/api/travel/invite';
   static const String travelAccept  = '/api/travel/accept';
   static const String travelSetRole = '/api/travel/set_role';
+  static const String travelDiscover = '/api/travel/discover';
 
   // Schedule
   static const String scheduleList   = '/api/travel/schedule/list';
@@ -23,6 +24,14 @@ abstract class ApiEndpoints {
   static const String scheduleRemove = '/api/travel/schedule/remove';
   static const String scheduleClone  = '/api/travel/schedule/clone';
 
+  // API Key
+  static const String apiKeyCreate = '/api/user/apikey/create';
+  static const String apiKeyList   = '/api/user/apikey/list';
+  static const String apiKeyRemove = '/api/user/apikey/remove';
+
   // Upload
-  static const String upload = '/upload';
+  static const String upload = '/api/upload';
+
+  // Equip (Luggage)
+  static const String equipSet = '/api/travel/equip/set';
 }

@@ -1,0 +1,6 @@
+{"type":"server-started","port":55582,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:55582","screen_dir":"/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/.superpowers/brainstorm/88991-1774253686"}
+{"type":"screen-added","file":"/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/.superpowers/brainstorm/88991-1774253686/screenshot-upload-layout.html"}
+{"source":"user-event","type":"click","text":"截图\n      \n        \n        \n          🖼\n          ×\n        \n        \n          🖼\n          ×\n        \n        \n        \n          +\n          添加\n        \n      \n    \n    \n      A — 横向滚动行\n      64×64 缩略图横排，末尾虚线框\"+\"按钮，超出可左右滑动，叉号删除","choice":"a","id":null,"timestamp":1774253741176}
+{"source":"user-event","type":"click","text":"截图\n      \n        \n        \n          🖼\n          ×\n        \n        \n          🖼\n          ×\n        \n        \n        \n          +\n          添加\n        \n      \n    \n    \n      A — 横向滚动行\n      64×64 缩略图横排，末尾虚线框\"+\"按钮，超出可左右滑动，叉号删除","choice":"a","id":null,"timestamp":1774253741692}
+{"type":"screen-added","file":"/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/.superpowers/brainstorm/88991-1774253686/waiting-1.html"}
+{"type":"server-stopped","reason":"idle timeout"}

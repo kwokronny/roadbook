@@ -1,0 +1,366 @@
+<h2>收敛版 UI 设计</h2>
+<p class="subtitle">保留活泼卡片色彩，整体氛围更沉稳统一</p>
+
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 24px;">
+
+  <!-- ==================== 1. Travel List (Refined) ==================== -->
+  <div style="background:#F5F5F4; border-radius:20px; padding:20px;">
+    <div style="text-align:center; margin-bottom:12px;">
+      <span style="font-size:12px; font-weight:700; color:#FF6B6B; text-transform:uppercase; letter-spacing:2px;">PAGE 1</span>
+      <h3 style="margin:4px 0 0; font-size:18px;">旅程列表</h3>
+    </div>
+    <div style="width: 260px; margin: 0 auto; background: #FAFAF9; border-radius: 32px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.08); border: 1.5px solid #E7E5E4; height: 530px; position:relative;">
+      <!-- Status bar -->
+      <div style="height: 32px; background: #FAFAF9; display:flex; align-items:center; justify-content:space-between; padding: 0 20px;">
+        <span style="font-size:10px; color:#A8A29E; font-weight:600;">9:41</span>
+        <div style="width: 50px; height: 5px; background: #1C1917; border-radius:3px;"></div>
+        <span style="font-size:10px; color:#A8A29E;">●●●</span>
+      </div>
+      <!-- Header -->
+      <div style="padding: 14px 18px 6px; display:flex; align-items:center; justify-content:space-between;">
+        <div>
+          <div style="font-size: 22px; font-weight: 800; color: #1C1917;">我的旅程</div>
+          <div style="font-size:11px; color:#A8A29E; margin-top:2px;">3 个旅程</div>
+        </div>
+        <div style="width:36px; height:36px; border-radius:12px; background: linear-gradient(135deg, #FF6B6B, #FF8E53); display:flex; align-items:center; justify-content:center;">
+          <span style="color:white; font-size:14px; font-weight:700;">R</span>
+        </div>
+      </div>
+      <!-- Search -->
+      <div style="margin: 8px 18px; background: white; border: 1.5px solid #E7E5E4; border-radius: 10px; padding: 8px 14px; display:flex; align-items:center; gap:8px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <span style="font-size:12px; color:#D6D3D1;">搜索旅程名称...</span>
+      </div>
+      <!-- Cards -->
+      <div style="padding: 6px 14px; overflow:hidden; height: 360px;">
+        <!-- Card 1: Ongoing -->
+        <div style="background: linear-gradient(135deg, #FF6B6B, #FF8E53); border-radius: 14px; padding: 14px; margin-bottom: 10px; position:relative; overflow:hidden;">
+          <div style="position:absolute; top:-10px; right:-10px; width:50px; height:50px; background:rgba(255,255,255,0.08); border-radius:50%;"></div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <div style="width:40px; height:40px; border-radius:12px; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.4-.1.9.3 1.1l5.4 3 .4 4c0 .3.2.5.4.7l.5.5c.4.4 1.1.2 1.3-.3L13 12l4 5.5"/></svg>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:15px; font-weight:700; color:white;">东京自由行</div>
+              <div style="font-size:10px; color:rgba(255,255,255,0.75);">东京 · 大阪 · 京都</div>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+            <span style="font-size:10px; color:rgba(255,255,255,0.85);">3/25 - 4/2 · 9天</span>
+            <div style="padding:3px 10px; background:rgba(255,255,255,0.2); border-radius:8px;">
+              <span style="font-size:10px; color:white; font-weight:600;">旅行中</span>
+            </div>
+          </div>
+          <div style="display:flex; margin-top:8px;">
+            <div style="width:20px; height:20px; border-radius:50%; background:rgba(255,255,255,0.35); border:1.5px solid rgba(255,255,255,0.6); display:flex; align-items:center; justify-content:center; font-size:8px; color:white; font-weight:700;">A</div>
+            <div style="width:20px; height:20px; border-radius:50%; background:rgba(255,255,255,0.25); border:1.5px solid rgba(255,255,255,0.6); margin-left:-5px; display:flex; align-items:center; justify-content:center; font-size:8px; color:white; font-weight:700;">B</div>
+          </div>
+        </div>
+
+        <!-- Card 2: Upcoming -->
+        <div style="background: linear-gradient(135deg, #FBBF24, #F59E0B); border-radius: 14px; padding: 14px; margin-bottom: 10px; position:relative; overflow:hidden;">
+          <div style="position:absolute; top:-10px; right:-10px; width:50px; height:50px; background:rgba(255,255,255,0.08); border-radius:50%;"></div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <div style="width:40px; height:40px; border-radius:12px; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:15px; font-weight:700; color:white;">曼谷清迈</div>
+              <div style="font-size:10px; color:rgba(255,255,255,0.75);">曼谷 · 清迈</div>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+            <span style="font-size:10px; color:rgba(255,255,255,0.85);">4/5 - 4/12 · 8天</span>
+            <div style="padding:3px 10px; background:rgba(255,255,255,0.2); border-radius:8px;">
+              <span style="font-size:10px; color:white; font-weight:600;">3天后出发</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Planning -->
+        <div style="background: linear-gradient(135deg, #818CF8, #6366F1); border-radius: 14px; padding: 14px; margin-bottom: 10px; position:relative; overflow:hidden;">
+          <div style="position:absolute; top:-10px; right:-10px; width:50px; height:50px; background:rgba(255,255,255,0.08); border-radius:50%;"></div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <div style="width:40px; height:40px; border-radius:12px; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:15px; font-weight:700; color:white;">巴厘岛蜜月</div>
+              <div style="font-size:10px; color:rgba(255,255,255,0.75);">巴厘岛</div>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+            <span style="font-size:10px; color:rgba(255,255,255,0.85);">6/15 - 6/22 · 8天</span>
+            <div style="padding:3px 10px; background:rgba(255,255,255,0.2); border-radius:8px;">
+              <span style="font-size:10px; color:white; font-weight:600;">规划中</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: Completed -->
+        <div style="background: linear-gradient(135deg, #2DD4BF, #14B8A6); border-radius: 14px; padding: 14px; position:relative; overflow:hidden;">
+          <div style="position:absolute; top:-10px; right:-10px; width:50px; height:50px; background:rgba(255,255,255,0.08); border-radius:50%;"></div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <div style="width:40px; height:40px; border-radius:12px; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:15px; font-weight:700; color:white;">首尔三日</div>
+              <div style="font-size:10px; color:rgba(255,255,255,0.75);">首尔</div>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+            <span style="font-size:10px; color:rgba(255,255,255,0.85);">1/10 - 1/12 · 3天</span>
+            <div style="padding:3px 10px; background:rgba(255,255,255,0.2); border-radius:8px;">
+              <span style="font-size:10px; color:white; font-weight:600;">已结束</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- FAB -->
+      <div style="position:absolute; bottom:72px; right:18px; width:48px; height:48px; background: linear-gradient(135deg, #FF6B6B, #FF8E53); border-radius:14px; display:flex; align-items:center; justify-content:center; box-shadow: 0 6px 20px rgba(255,107,107,0.3);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+      </div>
+      <!-- Bottom Nav -->
+      <div style="position:absolute; bottom:0; left:0; right:0; height: 58px; background: white; border-top: 1px solid #E7E5E4; display:flex; align-items:center; justify-content:space-around; padding: 0 24px; border-radius: 0 0 32px 32px;">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:3px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          <span style="font-size:9px; font-weight:700; color:#FF6B6B;">旅程</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:3px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D6D3D1" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+          <span style="font-size:9px; color:#D6D3D1;">发现</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:3px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D6D3D1" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span style="font-size:9px; color:#D6D3D1;">我的</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 2. Discover (Refined) ==================== -->
+  <div style="background:#F5F5F4; border-radius:20px; padding:20px;">
+    <div style="text-align:center; margin-bottom:12px;">
+      <span style="font-size:12px; font-weight:700; color:#FF6B6B; text-transform:uppercase; letter-spacing:2px;">PAGE 2</span>
+      <h3 style="margin:4px 0 0; font-size:18px;">发现页</h3>
+    </div>
+    <div style="width: 260px; margin: 0 auto; background: #FAFAF9; border-radius: 32px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.08); border: 1.5px solid #E7E5E4; height: 530px; position:relative;">
+      <div style="height: 32px; background: #FAFAF9; display:flex; align-items:center; justify-content:space-between; padding: 0 20px;">
+        <span style="font-size:10px; color:#A8A29E; font-weight:600;">9:41</span>
+        <div style="width: 50px; height: 5px; background: #1C1917; border-radius:3px;"></div>
+        <span style="font-size:10px; color:#A8A29E;">●●●</span>
+      </div>
+      <div style="padding: 14px 18px 6px;">
+        <div style="font-size: 22px; font-weight: 800; color: #1C1917;">发现</div>
+        <div style="font-size:11px; color:#A8A29E; margin-top:2px;">看看大家的旅程</div>
+      </div>
+      <!-- Search -->
+      <div style="margin: 8px 18px; background: white; border: 1.5px solid #E7E5E4; border-radius: 10px; padding: 8px 14px; display:flex; align-items:center; gap:8px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <span style="font-size:12px; color:#D6D3D1;">搜索目的地或旅程...</span>
+      </div>
+      <!-- Tags -->
+      <div style="padding: 6px 18px; display:flex; gap:6px; flex-wrap:wrap;">
+        <div style="padding:4px 12px; background:#FF6B6B; border-radius:8px; font-size:10px; color:white; font-weight:600;">热门</div>
+        <div style="padding:4px 12px; background:white; border-radius:8px; font-size:10px; color:#57534E; border:1px solid #E7E5E4;">日本</div>
+        <div style="padding:4px 12px; background:white; border-radius:8px; font-size:10px; color:#57534E; border:1px solid #E7E5E4;">泰国</div>
+        <div style="padding:4px 12px; background:white; border-radius:8px; font-size:10px; color:#57534E; border:1px solid #E7E5E4;">韩国</div>
+      </div>
+      <!-- Cards -->
+      <div style="padding: 8px 14px;">
+        <div style="background:white; border:1px solid #E7E5E4; border-radius:12px; padding:12px; margin-bottom:8px;">
+          <div style="display:flex; gap:10px;">
+            <div style="width:56px; height:56px; border-radius:10px; background: linear-gradient(135deg, #FBBF24, #F59E0B); display:flex; align-items:center; justify-content:center;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:700; color:#1C1917;">东京5日深度游</div>
+              <div style="font-size:10px; color:#A8A29E; margin-top:2px;">东京 · 5天 · 12个景点</div>
+              <div style="display:flex; align-items:center; gap:6px; margin-top:6px;">
+                <div style="width:16px; height:16px; border-radius:50%; background: linear-gradient(135deg, #818CF8, #6366F1);"></div>
+                <span style="font-size:10px; color:#78716C;">小明同学</span>
+                <span style="font-size:10px; color:#D6D3D1;">· 128 浏览</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="background:white; border:1px solid #E7E5E4; border-radius:12px; padding:12px; margin-bottom:8px;">
+          <div style="display:flex; gap:10px;">
+            <div style="width:56px; height:56px; border-radius:10px; background: linear-gradient(135deg, #2DD4BF, #14B8A6); display:flex; align-items:center; justify-content:center;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:700; color:#1C1917;">清迈慢生活攻略</div>
+              <div style="font-size:10px; color:#A8A29E; margin-top:2px;">清迈 · 拜县 · 7天</div>
+              <div style="display:flex; align-items:center; gap:6px; margin-top:6px;">
+                <div style="width:16px; height:16px; border-radius:50%; background: linear-gradient(135deg, #FF6B6B, #FF8E53);"></div>
+                <span style="font-size:10px; color:#78716C;">旅行达人</span>
+                <span style="font-size:10px; color:#D6D3D1;">· 86 浏览</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="background:white; border:1px solid #E7E5E4; border-radius:12px; padding:12px;">
+          <div style="display:flex; gap:10px;">
+            <div style="width:56px; height:56px; border-radius:10px; background: linear-gradient(135deg, #818CF8, #6366F1); display:flex; align-items:center; justify-content:center;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:700; color:#1C1917;">大阪美食地图</div>
+              <div style="font-size:10px; color:#A8A29E; margin-top:2px;">大阪 · 3天</div>
+              <div style="display:flex; align-items:center; gap:6px; margin-top:6px;">
+                <div style="width:16px; height:16px; border-radius:50%; background: linear-gradient(135deg, #FBBF24, #F59E0B);"></div>
+                <span style="font-size:10px; color:#78716C;">吃货日记</span>
+                <span style="font-size:10px; color:#D6D3D1;">· 215 浏览</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Bottom Nav -->
+      <div style="position:absolute; bottom:0; left:0; right:0; height: 58px; background: white; border-top: 1px solid #E7E5E4; display:flex; align-items:center; justify-content:space-around; padding: 0 24px; border-radius: 0 0 32px 32px;">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:3px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D6D3D1" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          <span style="font-size:9px; color:#D6D3D1;">旅程</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:3px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+          <span style="font-size:9px; font-weight:700; color:#FF6B6B;">发现</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:3px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D6D3D1" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span style="font-size:9px; color:#D6D3D1;">我的</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 3. Profile (Refined) ==================== -->
+  <div style="background:#F5F5F4; border-radius:20px; padding:20px;">
+    <div style="text-align:center; margin-bottom:12px;">
+      <span style="font-size:12px; font-weight:700; color:#FF6B6B; text-transform:uppercase; letter-spacing:2px;">PAGE 3</span>
+      <h3 style="margin:4px 0 0; font-size:18px;">我的</h3>
+    </div>
+    <div style="width: 260px; margin: 0 auto; background: #FAFAF9; border-radius: 32px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.08); border: 1.5px solid #E7E5E4; height: 530px; position:relative;">
+      <div style="height: 32px; background: #FAFAF9; display:flex; align-items:center; justify-content:space-between; padding: 0 20px;">
+        <span style="font-size:10px; color:#A8A29E; font-weight:600;">9:41</span>
+        <div style="width: 50px; height: 5px; background: #1C1917; border-radius:3px;"></div>
+        <span style="font-size:10px; color:#A8A29E;">●●●</span>
+      </div>
+      <!-- User card -->
+      <div style="padding: 20px 18px; text-align:center;">
+        <div style="width:68px; height:68px; border-radius:50%; background: linear-gradient(135deg, #FF6B6B, #FF8E53); margin:0 auto; display:flex; align-items:center; justify-content:center;">
+          <span style="color:white; font-size:26px; font-weight:700;">R</span>
+        </div>
+        <div style="font-size:17px; font-weight:700; color:#1C1917; margin-top:10px;">Ronny</div>
+        <div style="font-size:11px; color:#A8A29E; margin-top:2px;">3 个旅程 · 5 个城市 · 28 天</div>
+      </div>
+      <!-- Menu -->
+      <div style="padding: 0 14px;">
+        <div style="background:white; border-radius:12px; border:1px solid #E7E5E4;">
+          <!-- Messages -->
+          <div style="padding:13px 14px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #F5F5F4;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:32px; height:32px; border-radius:8px; background:#FEF3C7; display:flex; align-items:center; justify-content:center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              </div>
+              <span style="font-size:14px; font-weight:600; color:#1C1917;">消息中心</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <div style="min-width:18px; height:18px; padding:0 5px; border-radius:9px; background:#FF6B6B; display:flex; align-items:center; justify-content:center;">
+                <span style="font-size:10px; color:white; font-weight:700;">3</span>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D6D3D1" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
+          </div>
+          <!-- Profile -->
+          <div style="padding:13px 14px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #F5F5F4;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:32px; height:32px; border-radius:8px; background:#EDE9FE; display:flex; align-items:center; justify-content:center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <span style="font-size:14px; font-weight:600; color:#1C1917;">编辑资料</span>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D6D3D1" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+          <!-- Settings -->
+          <div style="padding:13px 14px; display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:32px; height:32px; border-radius:8px; background:#F1F5F9; display:flex; align-items:center; justify-content:center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              </div>
+              <span style="font-size:14px; font-weight:600; color:#1C1917;">设置</span>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D6D3D1" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+        </div>
+      </div>
+      <!-- Logout -->
+      <div style="padding: 16px 14px;">
+        <div style="text-align:center; padding:12px; color:#FF6B6B; font-size:14px; font-weight:600; background:white; border-radius:12px; border:1px solid #E7E5E4;">退出登录</div>
+      </div>
+      <!-- Bottom Nav -->
+      <div style="position:absolute; bottom:0; left:0; right:0; height: 58px; background: white; border-top: 1px solid #E7E5E4; display:flex; align-items:center; justify-content:space-around; padding: 0 24px; border-radius: 0 0 32px 32px;">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:3px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D6D3D1" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          <span style="font-size:9px; color:#D6D3D1;">旅程</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:3px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D6D3D1" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+          <span style="font-size:9px; color:#D6D3D1;">发现</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:3px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span style="font-size:9px; font-weight:700; color:#FF6B6B;">我的</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 4. Login (Refined) ==================== -->
+  <div style="background:#F5F5F4; border-radius:20px; padding:20px;">
+    <div style="text-align:center; margin-bottom:12px;">
+      <span style="font-size:12px; font-weight:700; color:#FF6B6B; text-transform:uppercase; letter-spacing:2px;">PAGE 4</span>
+      <h3 style="margin:4px 0 0; font-size:18px;">登录</h3>
+    </div>
+    <div style="width: 260px; margin: 0 auto; background: #FAFAF9; border-radius: 32px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.08); border: 1.5px solid #E7E5E4; height: 530px; position:relative;">
+      <div style="height: 32px; background: #FAFAF9; display:flex; align-items:center; justify-content:space-between; padding: 0 20px;">
+        <span style="font-size:10px; color:#A8A29E; font-weight:600;">9:41</span>
+        <div style="width: 50px; height: 5px; background: #1C1917; border-radius:3px;"></div>
+        <span style="font-size:10px; color:#A8A29E;">●●●</span>
+      </div>
+      <!-- Logo -->
+      <div style="text-align:center; padding:48px 18px 24px;">
+        <div style="width:64px; height:64px; border-radius:18px; background: linear-gradient(135deg, #FF6B6B, #FF8E53); margin:0 auto; display:flex; align-items:center; justify-content:center; box-shadow: 0 6px 20px rgba(255,107,107,0.2);">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div style="font-size:24px; font-weight:800; color:#1C1917; margin-top:16px;">小肥路书</div>
+        <div style="font-size:12px; color:#A8A29E; margin-top:4px;">记录每一次出发</div>
+      </div>
+      <!-- Form -->
+      <div style="padding: 0 22px;">
+        <div style="margin-bottom:12px;">
+          <div style="background:white; border:1.5px solid #E7E5E4; border-radius:10px; padding:12px 14px; display:flex; align-items:center; gap:10px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span style="font-size:13px; color:#D6D3D1;">用户名</span>
+          </div>
+        </div>
+        <div style="margin-bottom:18px;">
+          <div style="background:white; border:1.5px solid #E7E5E4; border-radius:10px; padding:12px 14px; display:flex; align-items:center; gap:10px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span style="font-size:13px; color:#D6D3D1;">密码</span>
+          </div>
+        </div>
+        <div style="background: linear-gradient(135deg, #FF6B6B, #FF8E53); border-radius:12px; padding:14px; text-align:center; box-shadow: 0 4px 16px rgba(255,107,107,0.25);">
+          <span style="font-size:15px; font-weight:700; color:white;">登录</span>
+        </div>
+        <div style="text-align:center; margin-top:16px;">
+          <span style="font-size:12px; color:#A8A29E;">还没有账号？</span>
+          <span style="font-size:12px; font-weight:600; color:#FF6B6B;">立即注册</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,228 @@
+<h2>APP 底部导航结构</h2>
+<p class="subtitle">选择最适合的导航方式 — 点击你偏好的方案</p>
+
+<div class="cards" style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 24px;">
+
+  <!-- A: 3-Tab -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)" style="cursor:pointer; border-radius:16px; overflow:hidden; border:2px solid transparent;">
+    <div class="card-image" style="height: 420px; background: #FFF5F5; padding: 16px; position: relative;">
+      <div style="width: 240px; margin: 0 auto; background: #fff; border-radius: 28px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.06); border: 2px solid #FECDD3; height: 400px; position:relative;">
+        <!-- Status bar -->
+        <div style="height: 28px; background: #FFF1F2; display:flex; align-items:center; justify-content:center;">
+          <div style="width: 60px; height: 6px; background: #FECDD3; border-radius:3px;"></div>
+        </div>
+        <!-- Content area -->
+        <div style="padding: 16px; height: 280px;">
+          <div style="font-size: 18px; font-weight: 800; color: #1E293B;">我的旅程</div>
+          <div style="font-size:10px; color:#94A3B8; margin-top:4px; margin-bottom:12px;">3个旅程等着你</div>
+          <!-- Cards preview -->
+          <div style="background: linear-gradient(135deg, #FEF3C7, #FDE68A); border-radius: 12px; padding: 10px; margin-bottom: 8px;">
+            <div style="display:flex; gap:8px; align-items:center;">
+              <div style="width:32px; height:32px; border-radius:50%; background: #FBBF24; display:flex; align-items:center; justify-content:center; font-size:14px;">🏯</div>
+              <div>
+                <div style="font-size:11px; font-weight:700; color:#92400E;">东京自由行</div>
+                <div style="font-size:9px; color:#B45309;">3/25 - 4/2</div>
+              </div>
+            </div>
+          </div>
+          <div style="background: linear-gradient(135deg, #CCFBF1, #99F6E4); border-radius: 12px; padding: 10px; margin-bottom: 8px;">
+            <div style="display:flex; gap:8px; align-items:center;">
+              <div style="width:32px; height:32px; border-radius:50%; background: #2DD4BF; display:flex; align-items:center; justify-content:center; font-size:14px;">🏝️</div>
+              <div>
+                <div style="font-size:11px; font-weight:700; color:#134E4A;">曼谷清迈</div>
+                <div style="font-size:9px; color:#0F766E;">5/10 - 5/18</div>
+              </div>
+            </div>
+          </div>
+          <div style="background: linear-gradient(135deg, #E0E7FF, #C7D2FE); border-radius: 12px; padding: 10px;">
+            <div style="display:flex; gap:8px; align-items:center;">
+              <div style="width:32px; height:32px; border-radius:50%; background: #818CF8; display:flex; align-items:center; justify-content:center; font-size:14px;">🏖️</div>
+              <div>
+                <div style="font-size:11px; font-weight:700; color:#312E81;">巴厘岛蜜月</div>
+                <div style="font-size:9px; color:#4338CA;">6/15 - 6/22</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Bottom Tab Bar - 3 tabs -->
+        <div style="position:absolute; bottom:0; left:0; right:0; height: 64px; background: white; border-top: 1px solid #F1F5F9; display:flex; align-items:center; justify-content:space-around; padding: 0 20px; border-radius: 0 0 28px 28px;">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+            <div style="width:24px; height:24px; background: linear-gradient(135deg, #F43F5E, #EC4899); border-radius:6px; display:flex; align-items:center; justify-content:center;">
+              <span style="font-size:12px;">📋</span>
+            </div>
+            <span style="font-size:9px; font-weight:700; color:#F43F5E;">旅程</span>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+            <div style="width:24px; height:24px; display:flex; align-items:center; justify-content:center;">
+              <span style="font-size:14px; opacity:0.35;">🔍</span>
+            </div>
+            <span style="font-size:9px; color:#94A3B8;">发现</span>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+            <div style="width:24px; height:24px; display:flex; align-items:center; justify-content:center;">
+              <span style="font-size:14px; opacity:0.35;">👤</span>
+            </div>
+            <span style="font-size:9px; color:#94A3B8;">我的</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body" style="padding: 16px;">
+      <h3 style="margin:0 0 6px;">A. 三栏简洁</h3>
+      <p style="margin:0; font-size:13px; color:#666; line-height:1.5;">旅程 · 发现 · 我的<br>最简洁，核心聚焦。消息和行李收入「我的」子页面。</p>
+    </div>
+  </div>
+
+  <!-- B: 4-Tab -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)" style="cursor:pointer; border-radius:16px; overflow:hidden; border:2px solid transparent;">
+    <div class="card-image" style="height: 420px; background: #FFF5F5; padding: 16px; position: relative;">
+      <div style="width: 240px; margin: 0 auto; background: #fff; border-radius: 28px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.06); border: 2px solid #FECDD3; height: 400px; position:relative;">
+        <div style="height: 28px; background: #FFF1F2; display:flex; align-items:center; justify-content:center;">
+          <div style="width: 60px; height: 6px; background: #FECDD3; border-radius:3px;"></div>
+        </div>
+        <div style="padding: 16px; height: 280px;">
+          <div style="font-size: 18px; font-weight: 800; color: #1E293B;">我的旅程</div>
+          <div style="font-size:10px; color:#94A3B8; margin-top:4px; margin-bottom:12px;">3个旅程等着你</div>
+          <div style="background: linear-gradient(135deg, #FEF3C7, #FDE68A); border-radius: 12px; padding: 10px; margin-bottom: 8px;">
+            <div style="display:flex; gap:8px; align-items:center;">
+              <div style="width:32px; height:32px; border-radius:50%; background: #FBBF24; display:flex; align-items:center; justify-content:center; font-size:14px;">🏯</div>
+              <div>
+                <div style="font-size:11px; font-weight:700; color:#92400E;">东京自由行</div>
+                <div style="font-size:9px; color:#B45309;">3/25 - 4/2</div>
+              </div>
+            </div>
+          </div>
+          <div style="background: linear-gradient(135deg, #CCFBF1, #99F6E4); border-radius: 12px; padding: 10px; margin-bottom: 8px;">
+            <div style="display:flex; gap:8px; align-items:center;">
+              <div style="width:32px; height:32px; border-radius:50%; background: #2DD4BF; display:flex; align-items:center; justify-content:center; font-size:14px;">🏝️</div>
+              <div>
+                <div style="font-size:11px; font-weight:700; color:#134E4A;">曼谷清迈</div>
+                <div style="font-size:9px; color:#0F766E;">5/10 - 5/18</div>
+              </div>
+            </div>
+          </div>
+          <div style="background: linear-gradient(135deg, #E0E7FF, #C7D2FE); border-radius: 12px; padding: 10px;">
+            <div style="display:flex; gap:8px; align-items:center;">
+              <div style="width:32px; height:32px; border-radius:50%; background: #818CF8; display:flex; align-items:center; justify-content:center; font-size:14px;">🏖️</div>
+              <div>
+                <div style="font-size:11px; font-weight:700; color:#312E81;">巴厘岛蜜月</div>
+                <div style="font-size:9px; color:#4338CA;">6/15 - 6/22</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Bottom Tab Bar - 4 tabs -->
+        <div style="position:absolute; bottom:0; left:0; right:0; height: 64px; background: white; border-top: 1px solid #F1F5F9; display:flex; align-items:center; justify-content:space-around; padding: 0 12px; border-radius: 0 0 28px 28px;">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+            <div style="width:24px; height:24px; background: linear-gradient(135deg, #F43F5E, #EC4899); border-radius:6px; display:flex; align-items:center; justify-content:center;">
+              <span style="font-size:12px;">📋</span>
+            </div>
+            <span style="font-size:9px; font-weight:700; color:#F43F5E;">旅程</span>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+            <div style="width:24px; height:24px; display:flex; align-items:center; justify-content:center;">
+              <span style="font-size:14px; opacity:0.35;">🔍</span>
+            </div>
+            <span style="font-size:9px; color:#94A3B8;">发现</span>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+            <div style="width:24px; height:24px; display:flex; align-items:center; justify-content:center;">
+              <span style="font-size:14px; opacity:0.35;">🔔</span>
+            </div>
+            <span style="font-size:9px; color:#94A3B8;">消息</span>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+            <div style="width:24px; height:24px; display:flex; align-items:center; justify-content:center;">
+              <span style="font-size:14px; opacity:0.35;">👤</span>
+            </div>
+            <span style="font-size:9px; color:#94A3B8;">我的</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body" style="padding: 16px;">
+      <h3 style="margin:0 0 6px;">B. 四栏标准</h3>
+      <p style="margin:0; font-size:13px; color:#666; line-height:1.5;">旅程 · 发现 · 消息 · 我的<br>消息独立入口，协作提醒更显眼。最主流的 APP 导航模式。</p>
+    </div>
+  </div>
+
+  <!-- C: 5-Tab with center FAB -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)" style="cursor:pointer; border-radius:16px; overflow:hidden; border:2px solid transparent;">
+    <div class="card-image" style="height: 420px; background: #FFF5F5; padding: 16px; position: relative;">
+      <div style="width: 240px; margin: 0 auto; background: #fff; border-radius: 28px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.06); border: 2px solid #FECDD3; height: 400px; position:relative;">
+        <div style="height: 28px; background: #FFF1F2; display:flex; align-items:center; justify-content:center;">
+          <div style="width: 60px; height: 6px; background: #FECDD3; border-radius:3px;"></div>
+        </div>
+        <div style="padding: 16px; height: 280px;">
+          <div style="font-size: 18px; font-weight: 800; color: #1E293B;">我的旅程</div>
+          <div style="font-size:10px; color:#94A3B8; margin-top:4px; margin-bottom:12px;">3个旅程等着你</div>
+          <div style="background: linear-gradient(135deg, #FEF3C7, #FDE68A); border-radius: 12px; padding: 10px; margin-bottom: 8px;">
+            <div style="display:flex; gap:8px; align-items:center;">
+              <div style="width:32px; height:32px; border-radius:50%; background: #FBBF24; display:flex; align-items:center; justify-content:center; font-size:14px;">🏯</div>
+              <div>
+                <div style="font-size:11px; font-weight:700; color:#92400E;">东京自由行</div>
+                <div style="font-size:9px; color:#B45309;">3/25 - 4/2</div>
+              </div>
+            </div>
+          </div>
+          <div style="background: linear-gradient(135deg, #CCFBF1, #99F6E4); border-radius: 12px; padding: 10px; margin-bottom: 8px;">
+            <div style="display:flex; gap:8px; align-items:center;">
+              <div style="width:32px; height:32px; border-radius:50%; background: #2DD4BF; display:flex; align-items:center; justify-content:center; font-size:14px;">🏝️</div>
+              <div>
+                <div style="font-size:11px; font-weight:700; color:#134E4A;">曼谷清迈</div>
+                <div style="font-size:9px; color:#0F766E;">5/10 - 5/18</div>
+              </div>
+            </div>
+          </div>
+          <div style="background: linear-gradient(135deg, #E0E7FF, #C7D2FE); border-radius: 12px; padding: 10px;">
+            <div style="display:flex; gap:8px; align-items:center;">
+              <div style="width:32px; height:32px; border-radius:50%; background: #818CF8; display:flex; align-items:center; justify-content:center; font-size:14px;">🏖️</div>
+              <div>
+                <div style="font-size:11px; font-weight:700; color:#312E81;">巴厘岛蜜月</div>
+                <div style="font-size:9px; color:#4338CA;">6/15 - 6/22</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Bottom Tab Bar - 5 tabs with center FAB -->
+        <div style="position:absolute; bottom:0; left:0; right:0; height: 64px; background: white; border-top: 1px solid #F1F5F9; display:flex; align-items:center; justify-content:space-around; padding: 0 8px; border-radius: 0 0 28px 28px;">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+            <div style="width:22px; height:22px; background: linear-gradient(135deg, #F43F5E, #EC4899); border-radius:6px; display:flex; align-items:center; justify-content:center;">
+              <span style="font-size:11px;">📋</span>
+            </div>
+            <span style="font-size:8px; font-weight:700; color:#F43F5E;">旅程</span>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+            <div style="width:22px; height:22px; display:flex; align-items:center; justify-content:center;">
+              <span style="font-size:13px; opacity:0.35;">🔍</span>
+            </div>
+            <span style="font-size:8px; color:#94A3B8;">发现</span>
+          </div>
+          <!-- Center FAB -->
+          <div style="margin-top:-24px;">
+            <div style="width:48px; height:48px; background: linear-gradient(135deg, #F43F5E, #EC4899); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 16px rgba(244,63,94,0.35); border: 3px solid white;">
+              <span style="color:white; font-size:22px; font-weight:300;">+</span>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+            <div style="width:22px; height:22px; display:flex; align-items:center; justify-content:center;">
+              <span style="font-size:13px; opacity:0.35;">🔔</span>
+            </div>
+            <span style="font-size:8px; color:#94A3B8;">消息</span>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+            <div style="width:22px; height:22px; display:flex; align-items:center; justify-content:center;">
+              <span style="font-size:13px; opacity:0.35;">👤</span>
+            </div>
+            <span style="font-size:8px; color:#94A3B8;">我的</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body" style="padding: 16px;">
+      <h3 style="margin:0 0 6px;">C. 五栏 + 中心创建</h3>
+      <p style="margin:0; font-size:13px; color:#666; line-height:1.5;">旅程 · 发现 · <strong>+创建</strong> · 消息 · 我的<br>中间凸起的创建按钮，强调「新建旅程」为核心操作。</p>
+    </div>
+  </div>
+
+</div>

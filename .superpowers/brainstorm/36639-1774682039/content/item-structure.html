@@ -1,0 +1,98 @@
+<h2>行李清单 — 物品结构</h2>
+<p class="subtitle">选择物品的组织方式</p>
+
+<style>
+.phone { width: 220px; background: #1C1C1E; border-radius: 28px; padding: 12px 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); flex-shrink: 0; }
+.phone-screen { background: #F2F2F7; border-radius: 20px; overflow: hidden; min-height: 380px; }
+.nav-bar { background: #F2F2F7; padding: 10px 14px 4px; border-bottom: 0.5px solid rgba(60,60,67,0.1); }
+.nav-title { font-size: 13px; font-weight: 700; color: #1C1C1E; }
+.nav-sub { font-size: 10px; color: #8E8E93; }
+.section-hd { padding: 6px 14px 2px; font-size: 9px; font-weight: 700; color: #8E8E93; letter-spacing: 0.5px; text-transform: uppercase; }
+.item-card { background: #fff; margin: 0 8px 4px; border-radius: 10px; overflow: hidden; }
+.item-row { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-bottom: 0.5px solid rgba(60,60,67,0.08); }
+.item-row:last-child { border-bottom: none; }
+.check { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid #C7C7CC; flex-shrink: 0; }
+.check.done { background: #FF5B2E; border-color: #FF5B2E; display: flex; align-items: center; justify-content: center; }
+.check.done::after { content: "✓"; color: white; font-size: 8px; }
+.item-text { font-size: 11px; color: #1C1C1E; flex: 1; }
+.item-text.done { color: #8E8E93; text-decoration: line-through; }
+.cat-badge { font-size: 8px; padding: 1px 5px; border-radius: 8px; font-weight: 600; }
+.add-row { display: flex; align-items: center; gap: 6px; padding: 6px 10px; }
+.add-icon { width: 14px; height: 14px; border-radius: 50%; background: #FF5B2E; display: flex; align-items: center; justify-content: center; }
+.add-icon::after { content: "+"; color: white; font-size: 10px; line-height: 1; }
+.add-text { font-size: 11px; color: #FF5B2E; }
+.progress-bar { height: 3px; background: #E5E5EA; margin: 4px 14px 6px; border-radius: 2px; }
+.progress-fill { height: 100%; background: #FF5B2E; border-radius: 2px; width: 40%; }
+.progress-label { font-size: 9px; color: #8E8E93; padding: 0 14px 4px; text-align: right; }
+</style>
+
+<div class="cards" style="gap:20px;align-items:flex-start">
+
+  <div class="card" data-choice="A" onclick="toggleSelect(this)" style="width:260px;padding-bottom:16px">
+    <div style="padding:0 12px 12px">
+      <div class="phone" style="margin:0 auto">
+        <div class="phone-screen">
+          <div class="nav-bar">
+            <div class="nav-title">行李清单</div>
+            <div class="nav-sub">东京7日游</div>
+          </div>
+          <div class="progress-bar"><div class="progress-fill"></div></div>
+          <div class="progress-label">4 / 10 已打包</div>
+          <div class="section-hd">📋 证件</div>
+          <div class="item-card">
+            <div class="item-row"><div class="check done"></div><span class="item-text done">护照</span></div>
+            <div class="item-row"><div class="check done"></div><span class="item-text done">签证</span></div>
+            <div class="item-row"><div class="check"></div><span class="item-text">酒店预订单</span></div>
+          </div>
+          <div class="section-hd">👕 衣物</div>
+          <div class="item-card">
+            <div class="item-row"><div class="check done"></div><span class="item-text done">T恤 ×5</span></div>
+            <div class="item-row"><div class="check"></div><span class="item-text">外套</span></div>
+            <div class="add-row"><div class="add-icon"></div><span class="add-text">添加物品</span></div>
+          </div>
+          <div class="section-hd">📱 电子</div>
+          <div class="item-card">
+            <div class="item-row"><div class="check"></div><span class="item-text">充电宝</span></div>
+            <div class="item-row"><div class="check"></div><span class="item-text">相机</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body" style="padding:0 12px">
+      <h3>A. 按分类组织</h3>
+      <p>证件 / 衣物 / 电子 / 药品 / 其他，各分类独立，进度条显示打包率</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="B" onclick="toggleSelect(this)" style="width:260px;padding-bottom:16px">
+    <div style="padding:0 12px 12px">
+      <div class="phone" style="margin:0 auto">
+        <div class="phone-screen">
+          <div class="nav-bar">
+            <div class="nav-title">行李清单</div>
+            <div class="nav-sub">4 / 10 已打包</div>
+          </div>
+          <div style="padding:4px 0">
+            <div class="item-card" style="margin-top:8px">
+              <div class="item-row"><div class="check done"></div><span class="item-text done">护照</span><span class="cat-badge" style="background:#FFF3E0;color:#E65100">证件</span></div>
+              <div class="item-row"><div class="check done"></div><span class="item-text done">签证</span><span class="cat-badge" style="background:#FFF3E0;color:#E65100">证件</span></div>
+              <div class="item-row"><div class="check"></div><span class="item-text">酒店预订单</span><span class="cat-badge" style="background:#FFF3E0;color:#E65100">证件</span></div>
+              <div class="item-row"><div class="check done"></div><span class="item-text done">T恤 ×5</span><span class="cat-badge" style="background:#E3F2FD;color:#1565C0">衣物</span></div>
+              <div class="item-row"><div class="check"></div><span class="item-text">外套</span><span class="cat-badge" style="background:#E3F2FD;color:#1565C0">衣物</span></div>
+              <div class="item-row"><div class="check done"></div><span class="item-text done">充电宝</span><span class="cat-badge" style="background:#E8F5E9;color:#2E7D32">电子</span></div>
+              <div class="item-row"><div class="check"></div><span class="item-text">相机</span><span class="cat-badge" style="background:#E8F5E9;color:#2E7D32">电子</span></div>
+              <div class="add-row"><div class="add-icon"></div><span class="add-text">添加物品</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body" style="padding:0 12px">
+      <h3>B. 平铺列表 + 标签</h3>
+      <p>所有物品一个列表，每项带颜色标签标明类别，简洁但分类浏览不方便</p>
+    </div>
+  </div>
+
+</div>
+
+<p style="margin-top:16px;font-size:13px;color:#8E8E93">推荐 A：分类视图更适合旅行场景，证件/衣物/电子是不同维度，分组更清晰</p>

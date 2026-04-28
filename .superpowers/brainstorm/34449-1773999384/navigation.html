@@ -1,0 +1,68 @@
+<h2>导航结构与页面总览</h2>
+<p class="subtitle">Flutter 版路由结构，基于 GoRouter + Riverpod</p>
+
+<div class="section">
+  <span class="label">路由树</span>
+  <div style="background:var(--maz-color-bg,#1a1a2e);border:1px solid #333;border-radius:12px;padding:24px;font-family:monospace;font-size:13px;line-height:2;color:#cdd6f4">
+    <span style="color:#89b4fa">/</span><br>
+    <span style="color:#6c7086">├── </span><span style="color:#a6e3a1">/auth</span><span style="color:#6c7086"> — 登录/注册（无需 token）</span><br>
+    <span style="color:#6c7086">│   ├── </span><span style="color:#cba6f7">/signin</span><br>
+    <span style="color:#6c7086">│   └── </span><span style="color:#cba6f7">/signup</span><br>
+    <span style="color:#6c7086">├── </span><span style="color:#a6e3a1">/accept</span><span style="color:#6c7086"> — 接受邀请（无需 token）</span><br>
+    <span style="color:#6c7086">└── </span><span style="color:#a6e3a1">/travel</span><span style="color:#6c7086"> — 主应用（需要 token）</span><br>
+    <span style="color:#6c7086">    ├── </span><span style="color:#cba6f7">/travel</span><span style="color:#6c7086"> — 旅程列表</span><br>
+    <span style="color:#6c7086">    └── </span><span style="color:#cba6f7">/travel/:id</span><span style="color:#6c7086"> — 旅程详情</span>
+  </div>
+</div>
+
+<div class="section">
+  <span class="label">各页面功能</span>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+
+    <div style="background:#1e1e2e;border:1px solid #313244;border-radius:10px;padding:16px">
+      <div style="color:#89b4fa;font-weight:600;margin-bottom:8px">🔐 Auth（登录/注册）</div>
+      <ul style="margin:0;padding-left:18px;color:#cdd6f4;font-size:13px;line-height:1.8">
+        <li>MD5 密码哈希</li>
+        <li>表单校验（async_validator）</li>
+        <li>token 写入 Riverpod + SharedPreferences</li>
+        <li>支持邀请 token 透传</li>
+      </ul>
+    </div>
+
+    <div style="background:#1e1e2e;border:1px solid #313244;border-radius:10px;padding:16px">
+      <div style="color:#a6e3a1;font-weight:600;margin-bottom:8px">📋 旅程列表</div>
+      <ul style="margin:0;padding-left:18px;color:#cdd6f4;font-size:13px;line-height:1.8">
+        <li>分页 + 搜索（防抖 500ms）</li>
+        <li>旅程卡片（状态/时长/协作者）</li>
+        <li>新建旅程对话框</li>
+        <li>用户菜单（编辑/改密码/退出）</li>
+      </ul>
+    </div>
+
+    <div style="background:#1e1e2e;border:1px solid #313244;border-radius:10px;padding:16px">
+      <div style="color:#fab387;font-weight:600;margin-bottom:8px">🗺️ 旅程详情（核心）</div>
+      <ul style="margin:0;padding-left:18px;color:#cdd6f4;font-size:13px;line-height:1.8">
+        <li>高德地图 + 弹性标记</li>
+        <li>日程列表（按天分组）</li>
+        <li>行程 CRUD + 克隆</li>
+        <li>搜索 POI → 添加行程</li>
+        <li>协作者权限管理</li>
+        <li>装备清单抽屉</li>
+        <li>批量导入 / AI 采集</li>
+      </ul>
+    </div>
+
+    <div style="background:#1e1e2e;border:1px solid #313244;border-radius:10px;padding:16px">
+      <div style="color:#cba6f7;font-weight:600;margin-bottom:8px">🎒 装备清单（抽屉）</div>
+      <ul style="margin:0;padding-left:18px;color:#cdd6f4;font-size:13px;line-height:1.8">
+        <li>分组折叠展示</li>
+        <li>勾选项目</li>
+        <li>编辑模式：增删分组/条目</li>
+        <li>套用模板重置</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<p style="color:#6c7086;font-size:13px;margin-top:16px">导航守卫：无 token → 重定向 /signin；有邀请 token → /accept → 自动跳转旅程详情</p>

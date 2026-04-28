@@ -43,5 +43,25 @@ void main() {
       );
       expect(result, isNull);
     });
+
+    test('unauthenticated user going to /discover redirects to /signin', () {
+      final result = RouterGuard.computeRedirect(token: null, location: '/discover');
+      expect(result, '/signin');
+    });
+
+    test('unauthenticated user going to /profile redirects to /signin', () {
+      final result = RouterGuard.computeRedirect(token: null, location: '/profile');
+      expect(result, '/signin');
+    });
+
+    test('authenticated user going to /discover is allowed', () {
+      final result = RouterGuard.computeRedirect(token: 'tok', location: '/discover');
+      expect(result, isNull);
+    });
+
+    test('authenticated user going to /profile is allowed', () {
+      final result = RouterGuard.computeRedirect(token: 'tok', location: '/profile');
+      expect(result, isNull);
+    });
   });
 }

@@ -56,7 +56,12 @@ class ScheduleService {
 			let travel = await db.Travel.findByPk(schedule.tId);
 			if (!await travel.hasUser(uid, { through: { where: { role: { [Op.in]: ["edit", "manage"] } } } })) throw "您无权限修改行程"
 			if (schedule) {
-				return await schedule.update(omit(data, ["id"]));
+				// Only update fields present in the request body (undefined = not provided = keep unchanged)
+				// null values are kept to allow explicitly clearing a field (e.g. clearing startTime)
+				const fields = Object.fromEntries(
+					Object.entries(omit(data, ["id"])).filter(([, v]) => v !== undefined)
+				);
+				return await schedule.update(fields);
 			}
 		} catch (e) {
 			console.error(e);

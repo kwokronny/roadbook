@@ -1,0 +1,57 @@
+<h2>旅程详情页布局方案</h2>
+<p class="subtitle">手机端如何在地图和行程列表之间切换？</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>底部抽屉式（推荐）</h3>
+      <p>地图全屏展示，行程列表作为可拖拽的底部面板（DraggableScrollableSheet）。向上拖拽展开列表，向下收起看地图。</p>
+      <div style="margin-top:12px;background:#1e1e2e;border-radius:8px;overflow:hidden;width:140px;height:220px;position:relative;border:1px solid #313244">
+        <div style="background:#264653;height:155px;display:flex;align-items:center;justify-content:center;color:#89b4fa;font-size:11px">🗺️ 高德地图</div>
+        <div style="background:#1e1e2e;height:70px;border-radius:12px 12px 0 0;border-top:2px solid #313244;padding:8px">
+          <div style="width:30px;height:3px;background:#585b70;border-radius:2px;margin:0 auto 6px"></div>
+          <div style="font-size:10px;color:#cdd6f4">第1天 · 3个地点</div>
+          <div style="font-size:10px;color:#585b70;margin-top:3px">↑ 上拉展开列表</div>
+        </div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#a6e3a1">✓ 地图随时可见 · 体验最流畅</div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Tab 切换式</h3>
+      <p>顶部两个 Tab："地图" 和 "行程"，点击切换。类似 Vue 移动端的 mapMode 布尔值做法。</p>
+      <div style="margin-top:12px;background:#1e1e2e;border-radius:8px;overflow:hidden;width:140px;height:220px;border:1px solid #313244">
+        <div style="display:flex;background:#181825;border-bottom:1px solid #313244">
+          <div style="flex:1;padding:6px 0;text-align:center;font-size:10px;color:#89b4fa;border-bottom:2px solid #89b4fa">🗺️ 地图</div>
+          <div style="flex:1;padding:6px 0;text-align:center;font-size:10px;color:#585b70">📋 行程</div>
+        </div>
+        <div style="background:#264653;height:185px;display:flex;align-items:center;justify-content:center;color:#89b4fa;font-size:11px">高德地图全屏</div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#f38ba8">✗ 看列表时地图完全消失</div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>地图缩略 + 列表</h3>
+      <p>上方固定高度地图（约屏幕 40%），下方列表可滚动。地图和列表同时可见。</p>
+      <div style="margin-top:12px;background:#1e1e2e;border-radius:8px;overflow:hidden;width:140px;height:220px;border:1px solid #313244">
+        <div style="background:#264653;height:88px;display:flex;align-items:center;justify-content:center;color:#89b4fa;font-size:11px">🗺️ 地图（40%）</div>
+        <div style="padding:8px;height:124px;overflow:hidden">
+          <div style="font-size:10px;color:#cdd6f4;margin-bottom:6px">第1天</div>
+          <div style="background:#313244;border-radius:4px;padding:5px;margin-bottom:4px;font-size:9px;color:#cdd6f4">📍 故宫博物院</div>
+          <div style="background:#313244;border-radius:4px;padding:5px;margin-bottom:4px;font-size:9px;color:#cdd6f4">🍜 全聚德烤鸭</div>
+          <div style="background:#313244;border-radius:4px;padding:5px;font-size:9px;color:#cdd6f4">🏨 北京饭店</div>
+        </div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#fab387">△ 两者都偏小，操作不便</div>
+    </div>
+  </div>
+
+</div>

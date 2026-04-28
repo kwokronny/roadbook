@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Roadbook 设计方案</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system,'PingFang SC',sans-serif;
+  background: #0D0D0D;
+  min-height: 100vh;
+  padding: 32px 16px 64px;
+}
+.page-title { text-align:center; color:#fff; font-size:20px; font-weight:700; margin-bottom:6px; }
+.page-sub   { text-align:center; color:#555; font-size:12px; margin-bottom:28px; }
+
+/* ── Tab ── */
+.tabs { display:flex; justify-content:center; gap:8px; margin-bottom:32px; flex-wrap:wrap; }
+.tab {
+  padding:8px 18px; border-radius:22px; font-size:12px; font-weight:600;
+  cursor:pointer; border:none; transition:all .2s; color:#555; background:#1A1A1A;
+}
+.tab.on { color:#fff; }
+
+/* ── 方案区 ── */
+.scheme { display:none; }
+.scheme.on { display:block; }
+
+/* ── 标题行 ── */
+.scheme-intro { text-align:center; margin-bottom:24px; }
+.scheme-intro .ref { font-size:11px; color:#666; letter-spacing:.5px; text-transform:uppercase; margin-bottom:4px; }
+.scheme-intro .name { font-size:22px; font-weight:800; }
+.scheme-intro .desc { font-size:12px; margin-top:4px; }
+
+/* ── 手机组 ── */
+.phones {
+  display:flex; gap:16px; justify-content:center; overflow-x:auto;
+  padding-bottom:4px; scrollbar-width:none;
+}
+.phones::-webkit-scrollbar { display:none; }
+
+/* ── 手机壳 ── */
+.phone {
+  flex-shrink:0; width:300px;
+  background:#1A1A1A; border-radius:46px; padding:12px;
+  box-shadow: 0 0 0 1px #2A2A2A, 0 32px 72px rgba(0,0,0,.7);
+}
+.screen {
+  border-radius:36px; overflow:hidden;
+  height:620px; display:flex; flex-direction:column; position:relative;
+}
+.screen-scroll { flex:1; overflow-y:auto; scrollbar-width:none; }
+.screen-scroll::-webkit-scrollbar { display:none; }
+.screen-label { text-align:center; color:#444; font-size:11px; margin-top:10px; }
+
+/* ── 状态栏 ── */
+.sb {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 20px 2px; font-size:11px; font-weight:600; flex-shrink:0;
+  position:relative;
+}
+.sb .pill {
+  width:72px; height:20px; border-radius:10px; background:inherit;
+  position:absolute; top:8px; left:50%; transform:translateX(-50%);
+}
+
+/* ── 通用小组件 ── */
+.row { display:flex; justify-content:space-between; align-items:flex-start; }
+.badge { padding:4px 10px; border-radius:20px; font-size:10px; font-weight:600; white-space:nowrap; }
+.avrow { display:flex; align-items:center; margin-top:10px; gap:5px; }
+.av {
+  width:22px; height:22px; border-radius:50%;
+  font-size:9px; color:#fff; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+}
+.av+.av { margin-left:-5px; }
+.fab {
+  position:absolute; right:16px; bottom:60px;
+  width:44px; height:44px; border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; box-shadow:0 4px 16px rgba(0,0,0,.2);
+  font-weight:300;
+}
+.bnav { display:flex; padding:8px 0 14px; flex-shrink:0; }
+.bni { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; font-size:9px; }
+.bni .ico { font-size:18px; }
+
+/* ── 行程区 ── */
+.sched-wrap { display:flex; flex:1; overflow:hidden; }
+.daycol {
+  width:44px; flex-shrink:0; display:flex; flex-direction:column;
+  padding:8px 0; gap:3px; overflow-y:auto; scrollbar-width:none;
+}
+.daycol::-webkit-scrollbar { display:none; }
+.dn {
+  width:30px; height:30px; border-radius:9px; margin:0 auto;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; flex-shrink:0;
+}
+.slist { flex:1; overflow-y:auto; padding:8px 10px 8px 4px; scrollbar-width:none; }
+.slist::-webkit-scrollbar { display:none; }
+
+/* ── 行程卡 ── */
+.sc { border-radius:12px; overflow:hidden; margin-bottom:10px; display:flex; }
+.sacc { width:3px; flex-shrink:0; }
+.sbody { flex:1; min-width:0; }
+.sc-img { width:100%; height:90px; object-fit:cover; display:block; }
+.sc-fb  { height:72px; display:flex; align-items:center; justify-content:center; font-size:30px; position:relative; }
+.sc-badge {
+  position:absolute; top:6px; left:6px;
+  font-size:9px; padding:2px 7px; border-radius:20px;
+  background:rgba(0,0,0,.38); color:#fff; backdrop-filter:blur(4px);
+}
+.sc-info { padding:8px 10px 6px; }
+.sc-title { font-size:13px; font-weight:700; line-height:1.3; }
+.sc-addr  { font-size:10px; opacity:.45; margin-top:2px; }
+.sc-thumbs { padding:0 10px 6px; display:flex; gap:4px; }
+.sc-thumb { width:42px; height:42px; border-radius:6px; object-fit:cover; }
+.sc-nav { margin:0 10px 10px; padding-top:6px; }
+.sc-nav-btn {
+  width:100%; border-radius:8px; padding:7px;
+  font-size:11px; font-weight:600; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:4px;
+}
+
+/* ── 底部面板 ── */
+.sheet { border-radius:24px 24px 0 0; padding:14px 14px 28px; flex-shrink:0; }
+.sheet-handle { width:36px; height:4px; border-radius:4px; margin:0 auto 14px; }
+.sheet-title { font-size:15px; font-weight:700; margin-bottom:12px; }
+.grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:12px; }
+.grid6 { display:grid; grid-template-columns:repeat(6,1fr); gap:4px; margin-bottom:12px; }
+.gcell { border-radius:8px; padding:7px; text-align:center; font-size:11px; }
+.gcell6 { border-radius:6px; padding:5px; text-align:center; font-size:10px; }
+.gcell sub { font-size:9px; display:block; opacity:.65; }
+.save-btn { width:100%; border:none; border-radius:12px; padding:12px; font-size:14px; font-weight:700; color:#fff; cursor:pointer; }
+
+.overlay { flex:1; }
+</style>
+</head>
+<body>
+
+<div class="page-title">Roadbook 设计方案</div>
+<div class="page-sub">参考热门 App 配色与设计语言 · 左右滑动查看三个屏幕</div>
+
+<div class="tabs">
+  <div class="tab on" onclick="show(0)">A · 小红书</div>
+  <div class="tab"    onclick="show(1)">B · Things 3</div>
+  <div class="tab"    onclick="show(2)">C · Linear</div>
+  <div class="tab"    onclick="show(3)">D · Headspace</div>
+</div>
+
+<!-- ═══════════════════════════════════════
+  方案 A · 小红书风
+  参考：小红书 / Instagram
+  白底 · 鲜红主色 · 视觉优先 · 强卡片图
+═══════════════════════════════════════ -->
+<div class="scheme on" id="s0">
+<div class="scheme-intro">
+  <div class="ref" style="color:#FF2442">参考：小红书 / Instagram</div>
+  <div class="name" style="color:#FF2442">鲜红 · 视觉优先</div>
+  <div class="desc" style="color:#888">白底纯净，鲜红强调，图片主导，生活方式感</div>
+</div>
+<div class="phones">
+
+  <!-- 列表 -->
+  <div><div class="phone">
+  <div class="screen" style="background:#FFFFFF">
+    <div class="sb" style="background:#fff;color:#1A1A1A"><span>9:41</span><div class="pill" style="background:#fff"></div><span>📶🔋</span></div>
+    <div style="padding:8px 16px 4px;display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:20px;font-weight:800;color:#1A1A1A">我的旅程</div>
+      <div style="width:34px;height:34px;border-radius:50%;background:#FF2442;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700">你</div>
+    </div>
+    <div style="margin:8px 16px;background:#F5F5F5;border-radius:12px;padding:10px 14px;font-size:13px;color:#999;display:flex;gap:8px">
+      <span>🔍</span><span>搜索旅程…</span>
+    </div>
+    <div class="screen-scroll" style="padding:4px 0">
+      <!-- 卡片1 -->
+      <div style="margin:0 16px 12px;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(255,36,66,.1)">
+        <img src="https://picsum.photos/seed/xhs1/268/120" style="width:100%;height:120px;object-fit:cover;display:block"/>
+        <div style="background:#fff;padding:12px">
+          <div class="row">
+            <div style="font-size:14px;font-weight:700;color:#1A1A1A">上海五日游</div>
+            <span class="badge" style="background:#FF244215;color:#FF2442;border:1px solid #FF244230">待出发</span>
+          </div>
+          <div style="font-size:11px;color:#999;margin-top:3px">2026.04.10 – 04.14 · 5天</div>
+          <div class="avrow">
+            <div class="av" style="background:#FF2442;border:2px solid #fff">你</div>
+            <div class="av" style="background:#FF6900;border:2px solid #fff">友</div>
+            <span style="font-size:10px;color:#999;margin-left:3px">上海 · 2人同行</span>
+          </div>
+        </div>
+      </div>
+      <!-- 卡片2 -->
+      <div style="margin:0 16px 12px;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+        <img src="https://picsum.photos/seed/xhs2/268/120" style="width:100%;height:120px;object-fit:cover;display:block"/>
+        <div style="background:#fff;padding:12px">
+          <div class="row">
+            <div style="font-size:14px;font-weight:700;color:#1A1A1A">成都周末</div>
+            <span class="badge" style="background:#FF690015;color:#FF6900;border:1px solid #FF690030">旅行中</span>
+          </div>
+          <div style="font-size:11px;color:#999;margin-top:3px">2026.03.20 – 03.22 · 3天</div>
+          <div class="avrow">
+            <div class="av" style="background:#FF2442;border:2px solid #fff">你</div>
+            <span style="font-size:10px;color:#999;margin-left:3px">成都 · 独自</span>
+          </div>
+        </div>
+      </div>
+      <div style="height:60px"></div>
+    </div>
+    <div class="fab" style="background:#FF2442;color:#fff">＋</div>
+    <div class="bnav" style="background:#fff;border-top:1px solid #F0F0F0">
+      <div class="bni" style="color:#FF2442"><div class="ico">🗺️</div>旅程</div>
+      <div class="bni" style="color:#ccc"><div class="ico">👤</div>我的</div>
+    </div>
+  </div>
+  </div><div class="screen-label">旅程列表</div></div>
+
+  <!-- 行程 -->
+  <div><div class="phone">
+  <div class="screen" style="background:#F5F5F5">
+    <div class="sb" style="background:#fff;color:#1A1A1A"><span>9:41</span><div class="pill" style="background:#fff"></div><span>📶🔋</span></div>
+    <div style="background:#fff;padding:8px 16px 0;display:flex;align-items:center;gap:10px">
+      <span style="color:#ccc;font-size:18px">←</span>
+      <div style="font-size:16px;font-weight:700;flex:1;color:#1A1A1A">上海五日游</div>
+      <span style="font-size:18px;color:#ccc">⋯</span>
+    </div>
+    <div style="background:#fff;display:flex;border-bottom:1px solid #F0F0F0;padding:0 16px">
+      <div style="flex:1;text-align:center;padding:10px 0;font-size:13px;font-weight:600;color:#ccc">地图</div>
+      <div style="flex:1;text-align:center;padding:10px 0;font-size:13px;font-weight:600;color:#FF2442;border-bottom:2px solid #FF2442">行程</div>
+    </div>
+    <div class="sched-wrap" style="background:#F5F5F5">
+      <div class="daycol" style="background:#fff;border-right:1px solid #F0F0F0">
+        <div class="dn" style="background:#FF2442;color:#fff">1</div>
+        <div class="dn" style="color:#ccc">2</div>
+        <div class="dn" style="color:#ccc">3</div>
+        <div class="dn" style="color:#ccc">4</div>
+        <div class="dn" style="color:#ccc">5</div>
+        <div class="dn" style="color:#ccc;font-size:9px">?</div>
+      </div>
+      <div class="slist">
+        <div class="sc">
+          <div class="sacc" style="background:#FF2442"></div>
+          <div class="sbody" style="background:#fff">
+            <div style="position:relative"><img class="sc-img" src="https://picsum.photos/seed/xhsc1/276/90" alt=""/><div class="sc-badge">⏰ 09:00</div></div>
+            <div class="sc-info"><div class="sc-title">外滩观光隧道</div><div class="sc-addr">黄浦区中山东二路479号</div></div>
+            <div class="sc-thumbs">
+              <img class="sc-thumb" src="https://picsum.photos/seed/xt1/42/42" alt=""/>
+              <img class="sc-thumb" src="https://picsum.photos/seed/xt2/42/42" alt=""/>
+            </div>
+            <div class="sc-nav" style="border-top:1px solid #F5F5F5">
+              <button class="sc-nav-btn" style="background:#FF244212;color:#FF2442;border:1px solid #FF244225">🧭 导航到这里</button>
+            </div>
+          </div>
+        </div>
+        <div class="sc">
+          <div class="sacc" style="background:#FF6900"></div>
+          <div class="sbody" style="background:#fff">
+            <div class="sc-fb" style="background:#FFF4EE"><div class="sc-badge" style="background:rgba(255,105,0,.6)">🌙 第1–3天</div>🏨</div>
+            <div class="sc-info"><div class="sc-title">外滩茂悦大酒店</div><div class="sc-addr">黄浦区黄浦路199号</div></div>
+            <div class="sc-nav" style="border-top:1px solid #F5F5F5">
+              <button class="sc-nav-btn" style="background:#FF690012;color:#FF6900;border:1px solid #FF690025">🧭 导航到这里</button>
+            </div>
+          </div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+    </div>
+  </div>
+  </div><div class="screen-label">旅程详情 · 行程</div></div>
+
+  <!-- 编辑面板 -->
+  <div><div class="phone">
+  <div class="screen" style="background:#F5F5F5;justify-content:flex-end">
+    <div class="overlay" style="background:rgba(0,0,0,.35)"></div>
+    <div class="sheet" style="background:#fff">
+      <div class="sheet-handle" style="background:#E5E5E5"></div>
+      <div class="sheet-title" style="color:#1A1A1A">编辑行程</div>
+      <div style="font-size:11px;color:#999;margin-bottom:7px">选择日期</div>
+      <div class="grid3">
+        <div class="gcell" style="background:#FF2442;color:#fff;font-weight:600">第1天<sub>周四</sub></div>
+        <div class="gcell" style="background:#F5F5F5;color:#999">第2天<sub>周五</sub></div>
+        <div class="gcell" style="background:#F5F5F5;color:#999">第3天<sub>周六</sub></div>
+        <div class="gcell" style="background:#F5F5F5;color:#999">第4天<sub>周日</sub></div>
+        <div class="gcell" style="background:#F5F5F5;color:#999">第5天<sub>周一</sub></div>
+        <div class="gcell" style="background:#F5F5F5;color:#999;font-style:italic">待规划</div>
+      </div>
+      <div style="font-size:11px;color:#999;margin-bottom:7px">出发时间</div>
+      <div class="grid6">
+        <div class="gcell6" style="background:#F5F5F5;color:#ccc">08</div>
+        <div class="gcell6" style="background:#FF2442;color:#fff;font-weight:700">09</div>
+        <div class="gcell6" style="background:#F5F5F5;color:#ccc">10</div>
+        <div class="gcell6" style="background:#F5F5F5;color:#ccc">11</div>
+        <div class="gcell6" style="background:#F5F5F5;color:#ccc">12</div>
+        <div class="gcell6" style="background:#F5F5F5;color:#ccc">13</div>
+      </div>
+      <button class="save-btn" style="background:#FF2442">保存行程</button>
+    </div>
+  </div>
+  </div><div class="screen-label">编辑行程面板</div></div>
+
+</div></div>
+
+<!-- ═══════════════════════════════════════
+  方案 B · Things 3 风
+  参考：Things 3 / Apple Reminders
+  iOS系统灰底 · 纯蓝主色 · 极简分组 · 干净
+═══════════════════════════════════════ -->
+<div class="scheme" id="s1">
+<div class="scheme-intro">
+  <div class="ref" style="color:#2563EB">参考：Things 3 / Apple Reminders</div>
+  <div class="name" style="color:#2563EB">纯蓝 · iOS极简</div>
+  <div class="desc" style="color:#888">系统灰底，纯蓝点缀，内容密度适中，质感细腻</div>
+</div>
+<div class="phones">
+
+  <div><div class="phone">
+  <div class="screen" style="background:#F2F2F7">
+    <div class="sb" style="background:#F2F2F7;color:#1C1C1E"><span>9:41</span><div class="pill" style="background:#F2F2F7"></div><span>📶🔋</span></div>
+    <div style="padding:8px 20px 6px">
+      <div style="font-size:28px;font-weight:800;color:#1C1C1E;letter-spacing:-.5px">旅程</div>
+    </div>
+    <div class="screen-scroll" style="padding:0 16px">
+      <!-- 分组：进行中 -->
+      <div style="font-size:11px;font-weight:600;color:#8E8E93;letter-spacing:.5px;margin:8px 4px 6px;text-transform:uppercase">进行中</div>
+      <div style="background:#fff;border-radius:14px;overflow:hidden;margin-bottom:8px">
+        <div style="padding:13px 14px;border-bottom:1px solid #F2F2F7">
+          <div class="row" style="align-items:center">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:10px;height:10px;border-radius:50%;background:#34C759;flex-shrink:0"></div>
+              <div>
+                <div style="font-size:14px;font-weight:600;color:#1C1C1E">成都周末</div>
+                <div style="font-size:11px;color:#8E8E93;margin-top:1px">03.20–03.22 · 3天 · 独自</div>
+              </div>
+            </div>
+            <span style="color:#C7C7CC;font-size:16px">›</span>
+          </div>
+        </div>
+      </div>
+      <!-- 分组：待出发 -->
+      <div style="font-size:11px;font-weight:600;color:#8E8E93;letter-spacing:.5px;margin:8px 4px 6px;text-transform:uppercase">待出发</div>
+      <div style="background:#fff;border-radius:14px;overflow:hidden;margin-bottom:8px">
+        <div style="padding:13px 14px;border-bottom:1px solid #F2F2F7">
+          <div class="row" style="align-items:center">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:10px;height:10px;border-radius:50%;background:#2563EB;flex-shrink:0"></div>
+              <div>
+                <div style="font-size:14px;font-weight:600;color:#1C1C1E">上海五日游</div>
+                <div style="font-size:11px;color:#8E8E93;margin-top:1px">04.10–04.14 · 5天 · 2人</div>
+              </div>
+            </div>
+            <span style="color:#C7C7CC;font-size:16px">›</span>
+          </div>
+        </div>
+      </div>
+      <!-- 分组：已结束 -->
+      <div style="font-size:11px;font-weight:600;color:#8E8E93;letter-spacing:.5px;margin:8px 4px 6px;text-transform:uppercase">已结束</div>
+      <div style="background:#fff;border-radius:14px;overflow:hidden;margin-bottom:8px">
+        <div style="padding:13px 14px">
+          <div class="row" style="align-items:center">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:10px;height:10px;border-radius:50%;background:#C7C7CC;flex-shrink:0"></div>
+              <div>
+                <div style="font-size:14px;font-weight:600;color:#8E8E93;text-decoration:line-through">北京故宫之旅</div>
+                <div style="font-size:11px;color:#8E8E93;margin-top:1px">2025.10.01–05 · 5天</div>
+              </div>
+            </div>
+            <span style="color:#C7C7CC;font-size:16px">›</span>
+          </div>
+        </div>
+      </div>
+      <div style="height:60px"></div>
+    </div>
+    <div class="fab" style="background:#2563EB;color:#fff">＋</div>
+    <div class="bnav" style="background:#F2F2F7;border-top:1px solid #E5E5EA">
+      <div class="bni" style="color:#2563EB"><div class="ico">🗺️</div>旅程</div>
+      <div class="bni" style="color:#C7C7CC"><div class="ico">👤</div>我的</div>
+    </div>
+  </div>
+  </div><div class="screen-label">旅程列表</div></div>
+
+  <div><div class="phone">
+  <div class="screen" style="background:#F2F2F7">
+    <div class="sb" style="background:#F2F2F7;color:#1C1C1E"><span>9:41</span><div class="pill" style="background:#F2F2F7"></div><span>📶🔋</span></div>
+    <div style="background:#fff;padding:8px 16px 0;border-bottom:1px solid #E5E5EA">
+      <div style="display:flex;align-items:center;gap:8px;padding-bottom:10px">
+        <span style="color:#2563EB;font-size:13px;font-weight:600">‹ 返回</span>
+        <div style="flex:1;font-size:16px;font-weight:700;text-align:center;color:#1C1C1E">上海五日游</div>
+        <span style="color:#2563EB;font-size:13px">编辑</span>
+      </div>
+      <div style="display:flex">
+        <div style="flex:1;text-align:center;padding:8px 0;font-size:13px;font-weight:600;color:#8E8E93">地图</div>
+        <div style="flex:1;text-align:center;padding:8px 0;font-size:13px;font-weight:600;color:#2563EB;border-bottom:2px solid #2563EB">行程</div>
+      </div>
+    </div>
+    <div class="sched-wrap" style="background:#F2F2F7">
+      <div class="daycol" style="background:#fff;border-right:1px solid #E5E5EA">
+        <div class="dn" style="background:#2563EB;color:#fff">1</div>
+        <div class="dn" style="color:#C7C7CC">2</div>
+        <div class="dn" style="color:#C7C7CC">3</div>
+        <div class="dn" style="color:#C7C7CC">4</div>
+        <div class="dn" style="color:#C7C7CC">5</div>
+        <div class="dn" style="color:#C7C7CC;font-size:9px">?</div>
+      </div>
+      <div class="slist">
+        <div class="sc" style="border-radius:12px">
+          <div class="sacc" style="background:#2563EB"></div>
+          <div class="sbody" style="background:#fff">
+            <div style="position:relative"><img class="sc-img" src="https://picsum.photos/seed/th1/276/90" alt=""/><div class="sc-badge">⏰ 09:00</div></div>
+            <div class="sc-info"><div class="sc-title" style="color:#1C1C1E">外滩观光隧道</div><div class="sc-addr">黄浦区中山东二路479号</div></div>
+            <div class="sc-thumbs">
+              <img class="sc-thumb" src="https://picsum.photos/seed/tht1/42/42" alt=""/>
+              <img class="sc-thumb" src="https://picsum.photos/seed/tht2/42/42" alt=""/>
+            </div>
+            <div class="sc-nav" style="border-top:1px solid #F2F2F7">
+              <button class="sc-nav-btn" style="background:#F2F2F7;color:#2563EB">🧭 导航到这里</button>
+            </div>
+          </div>
+        </div>
+        <div class="sc">
+          <div class="sacc" style="background:#7C3AED"></div>
+          <div class="sbody" style="background:#fff">
+            <div class="sc-fb" style="background:#F5F3FF"><div class="sc-badge" style="background:rgba(124,58,237,.6)">🌙 第1–3天</div>🏨</div>
+            <div class="sc-info"><div class="sc-title" style="color:#1C1C1E">外滩茂悦大酒店</div><div class="sc-addr">黄浦区黄浦路199号</div></div>
+            <div class="sc-nav" style="border-top:1px solid #F2F2F7">
+              <button class="sc-nav-btn" style="background:#F5F3FF;color:#7C3AED">🧭 导航到这里</button>
+            </div>
+          </div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+    </div>
+  </div>
+  </div><div class="screen-label">旅程详情 · 行程</div></div>
+
+  <div><div class="phone">
+  <div class="screen" style="background:#F2F2F7;justify-content:flex-end">
+    <div class="overlay" style="background:rgba(0,0,0,.3)"></div>
+    <div class="sheet" style="background:#fff">
+      <div class="sheet-handle" style="background:#E5E5EA"></div>
+      <div class="sheet-title" style="color:#1C1C1E">编辑行程</div>
+      <div style="font-size:11px;color:#8E8E93;margin-bottom:7px">选择日期</div>
+      <div class="grid3">
+        <div class="gcell" style="background:#2563EB;color:#fff;font-weight:600">第1天<sub>周四</sub></div>
+        <div class="gcell" style="background:#F2F2F7;color:#8E8E93">第2天<sub>周五</sub></div>
+        <div class="gcell" style="background:#F2F2F7;color:#8E8E93">第3天<sub>周六</sub></div>
+        <div class="gcell" style="background:#F2F2F7;color:#8E8E93">第4天<sub>周日</sub></div>
+        <div class="gcell" style="background:#F2F2F7;color:#8E8E93">第5天<sub>周一</sub></div>
+        <div class="gcell" style="background:#F2F2F7;color:#8E8E93;font-style:italic">待规划</div>
+      </div>
+      <div style="font-size:11px;color:#8E8E93;margin-bottom:7px">出发时间</div>
+      <div class="grid6">
+        <div class="gcell6" style="background:#F2F2F7;color:#C7C7CC">08</div>
+        <div class="gcell6" style="background:#2563EB;color:#fff;font-weight:700">09</div>
+        <div class="gcell6" style="background:#F2F2F7;color:#C7C7CC">10</div>
+        <div class="gcell6" style="background:#F2F2F7;color:#C7C7CC">11</div>
+        <div class="gcell6" style="background:#F2F2F7;color:#C7C7CC">12</div>
+        <div class="gcell6" style="background:#F2F2F7;color:#C7C7CC">13</div>
+      </div>
+      <button class="save-btn" style="background:#2563EB">保存行程</button>
+    </div>
+  </div>
+  </div><div class="screen-label">编辑行程面板</div></div>
+
+</div></div>
+
+<!-- ═══════════════════════════════════════
+  方案 C · Linear 风
+  参考：Linear / Vercel / Craft
+  纯白 · 靛紫主色 · 边框卡片 · 工程感
+═══════════════════════════════════════ -->
+<div class="scheme" id="s2">
+<div class="scheme-intro">
+  <div class="ref" style="color:#5E6AD2">参考：Linear / Craft / Vercel</div>
+  <div class="name" style="color:#5E6AD2">靛紫 · 工程感</div>
+  <div class="desc" style="color:#888">纯白底，细边框卡片，靛紫点缀，精准克制</div>
+</div>
+<div class="phones">
+
+  <div><div class="phone">
+  <div class="screen" style="background:#FFFFFF">
+    <div class="sb" style="background:#fff;color:#0F0F0F"><span>9:41</span><div class="pill" style="background:#fff"></div><span>📶🔋</span></div>
+    <div style="padding:10px 16px 8px;border-bottom:1px solid #F0F0F0">
+      <div style="font-size:17px;font-weight:700;color:#0F0F0F">我的旅程</div>
+    </div>
+    <div style="margin:10px 16px;background:#FAFAFA;border:1px solid #EBEBEB;border-radius:10px;padding:9px 12px;font-size:12px;color:#999;display:flex;gap:7px">
+      <span>🔍</span><span>搜索旅程名称或城市…</span>
+    </div>
+    <div class="screen-scroll">
+      <div style="padding:0 16px">
+        <div style="font-size:11px;color:#999;margin-bottom:8px;font-weight:500">3 个旅程</div>
+        <div style="border:1px solid #EBEBEB;border-radius:12px;margin-bottom:8px;overflow:hidden;background:#fff">
+          <div style="padding:13px 14px;border-bottom:1px solid #F5F5F5">
+            <div class="row">
+              <div>
+                <div style="font-size:14px;font-weight:600;color:#0F0F0F">上海五日游</div>
+                <div style="font-size:11px;color:#999;margin-top:2px">04.10 – 04.14 · 上海 · 5天</div>
+              </div>
+              <span class="badge" style="background:#F0F1FE;color:#5E6AD2;font-size:10px">待出发</span>
+            </div>
+            <div class="avrow">
+              <div class="av" style="background:#5E6AD2;border:2px solid #fff">你</div>
+              <div class="av" style="background:#E8432D;border:2px solid #fff">友</div>
+              <span style="font-size:10px;color:#bbb;margin-left:3px">2人同行</span>
+            </div>
+          </div>
+          <div style="padding:13px 14px;border-bottom:1px solid #F5F5F5">
+            <div class="row">
+              <div>
+                <div style="font-size:14px;font-weight:600;color:#0F0F0F">成都周末</div>
+                <div style="font-size:11px;color:#999;margin-top:2px">03.20 – 03.22 · 成都 · 3天</div>
+              </div>
+              <span class="badge" style="background:#F0FDF4;color:#16A34A;font-size:10px">旅行中</span>
+            </div>
+          </div>
+          <div style="padding:13px 14px">
+            <div class="row">
+              <div>
+                <div style="font-size:14px;font-weight:600;color:#C0C0C0">北京故宫之旅</div>
+                <div style="font-size:11px;color:#ccc;margin-top:2px">2025.10.01 – 10.05 · 5天</div>
+              </div>
+              <span class="badge" style="background:#F5F5F5;color:#bbb;font-size:10px">已结束</span>
+            </div>
+          </div>
+        </div>
+        <div style="height:60px"></div>
+      </div>
+    </div>
+    <div class="fab" style="background:#5E6AD2;color:#fff">＋</div>
+    <div class="bnav" style="background:#fff;border-top:1px solid #EBEBEB">
+      <div class="bni" style="color:#5E6AD2"><div class="ico">🗺️</div>旅程</div>
+      <div class="bni" style="color:#ccc"><div class="ico">👤</div>我的</div>
+    </div>
+  </div>
+  </div><div class="screen-label">旅程列表</div></div>
+
+  <div><div class="phone">
+  <div class="screen" style="background:#FAFAFA">
+    <div class="sb" style="background:#fff;color:#0F0F0F"><span>9:41</span><div class="pill" style="background:#fff"></div><span>📶🔋</span></div>
+    <div style="background:#fff;border-bottom:1px solid #EBEBEB">
+      <div style="padding:8px 16px;display:flex;align-items:center;gap:10px">
+        <span style="color:#5E6AD2;font-size:13px">‹ 返回</span>
+        <div style="flex:1;font-size:15px;font-weight:700;color:#0F0F0F">上海五日游</div>
+        <span style="font-size:16px;color:#bbb">⋯</span>
+      </div>
+      <div style="display:flex;padding:0 16px">
+        <div style="flex:1;text-align:center;padding:8px 0;font-size:12px;font-weight:600;color:#bbb">地图</div>
+        <div style="flex:1;text-align:center;padding:8px 0;font-size:12px;font-weight:600;color:#5E6AD2;border-bottom:2px solid #5E6AD2">行程</div>
+      </div>
+    </div>
+    <div class="sched-wrap">
+      <div class="daycol" style="background:#fff;border-right:1px solid #EBEBEB">
+        <div class="dn" style="background:#5E6AD2;color:#fff">1</div>
+        <div class="dn" style="color:#ddd">2</div>
+        <div class="dn" style="color:#ddd">3</div>
+        <div class="dn" style="color:#ddd">4</div>
+        <div class="dn" style="color:#ddd">5</div>
+        <div class="dn" style="color:#ddd;font-size:9px">?</div>
+      </div>
+      <div class="slist" style="background:#FAFAFA">
+        <div class="sc" style="border:1px solid #EBEBEB;border-left:none">
+          <div class="sacc" style="background:#5E6AD2"></div>
+          <div class="sbody" style="background:#fff">
+            <div style="position:relative"><img class="sc-img" src="https://picsum.photos/seed/ln1/276/90" alt=""/><div class="sc-badge">⏰ 09:00</div></div>
+            <div class="sc-info"><div class="sc-title" style="color:#0F0F0F">外滩观光隧道</div><div class="sc-addr">黄浦区中山东二路479号</div></div>
+            <div class="sc-thumbs">
+              <img class="sc-thumb" src="https://picsum.photos/seed/lnt1/42/42" alt=""/>
+              <img class="sc-thumb" src="https://picsum.photos/seed/lnt2/42/42" alt=""/>
+            </div>
+            <div class="sc-nav" style="border-top:1px solid #F5F5F5">
+              <button class="sc-nav-btn" style="background:#F0F1FE;color:#5E6AD2;border:1px solid #E0E2FD">🧭 导航到这里</button>
+            </div>
+          </div>
+        </div>
+        <div class="sc" style="border:1px solid #EBEBEB;border-left:none">
+          <div class="sacc" style="background:#E8432D"></div>
+          <div class="sbody" style="background:#fff">
+            <div class="sc-fb" style="background:#FEF3F2"><div class="sc-badge" style="background:rgba(232,67,45,.6)">🌙 第1–3天</div>🏨</div>
+            <div class="sc-info"><div class="sc-title" style="color:#0F0F0F">外滩茂悦大酒店</div><div class="sc-addr">黄浦区黄浦路199号</div></div>
+            <div class="sc-nav" style="border-top:1px solid #F5F5F5">
+              <button class="sc-nav-btn" style="background:#FEF3F2;color:#E8432D;border:1px solid #FECDC8">🧭 导航到这里</button>
+            </div>
+          </div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+    </div>
+  </div>
+  </div><div class="screen-label">旅程详情 · 行程</div></div>
+
+  <div><div class="phone">
+  <div class="screen" style="background:#FAFAFA;justify-content:flex-end">
+    <div class="overlay" style="background:rgba(0,0,0,.25)"></div>
+    <div class="sheet" style="background:#fff;border-top:1px solid #EBEBEB">
+      <div class="sheet-handle" style="background:#EBEBEB"></div>
+      <div class="sheet-title" style="color:#0F0F0F">编辑行程</div>
+      <div style="font-size:11px;color:#999;margin-bottom:7px">选择日期</div>
+      <div class="grid3">
+        <div class="gcell" style="background:#5E6AD2;color:#fff;font-weight:600">第1天<sub>周四</sub></div>
+        <div class="gcell" style="background:#F5F5F5;color:#bbb;border:1px solid #EBEBEB">第2天<sub>周五</sub></div>
+        <div class="gcell" style="background:#F5F5F5;color:#bbb;border:1px solid #EBEBEB">第3天<sub>周六</sub></div>
+        <div class="gcell" style="background:#F5F5F5;color:#bbb;border:1px solid #EBEBEB">第4天<sub>周日</sub></div>
+        <div class="gcell" style="background:#F5F5F5;color:#bbb;border:1px solid #EBEBEB">第5天<sub>周一</sub></div>
+        <div class="gcell" style="background:#F5F5F5;color:#bbb;border:1px solid #EBEBEB;font-style:italic">待规划</div>
+      </div>
+      <div style="font-size:11px;color:#999;margin-bottom:7px">出发时间</div>
+      <div class="grid6">
+        <div class="gcell6" style="background:#F5F5F5;color:#ccc;border:1px solid #EBEBEB">08</div>
+        <div class="gcell6" style="background:#5E6AD2;color:#fff;font-weight:700">09</div>
+        <div class="gcell6" style="background:#F5F5F5;color:#ccc;border:1px solid #EBEBEB">10</div>
+        <div class="gcell6" style="background:#F5F5F5;color:#ccc;border:1px solid #EBEBEB">11</div>
+        <div class="gcell6" style="background:#F5F5F5;color:#ccc;border:1px solid #EBEBEB">12</div>
+        <div class="gcell6" style="background:#F5F5F5;color:#ccc;border:1px solid #EBEBEB">13</div>
+      </div>
+      <button class="save-btn" style="background:#5E6AD2">保存行程</button>
+    </div>
+  </div>
+  </div><div class="screen-label">编辑行程面板</div></div>
+
+</div></div>
+
+<!-- ═══════════════════════════════════════
+  方案 D · Headspace 风
+  参考：Headspace / Notion 暖色
+  米白底 · 暖橙主色 · 柔和渐变 · 舒适感
+═══════════════════════════════════════ -->
+<div class="scheme" id="s3">
+<div class="scheme-intro">
+  <div class="ref" style="color:#F97316">参考：Headspace / Notion 暖色</div>
+  <div class="name" style="color:#F97316">暖橙 · 舒适感</div>
+  <div class="desc" style="color:#888">米白底，暖橙点缀，圆润卡片，旅行情绪感强</div>
+</div>
+<div class="phones">
+
+  <div><div class="phone">
+  <div class="screen" style="background:#FDFAF6">
+    <div class="sb" style="background:#FDFAF6;color:#1C1917"><span>9:41</span><div class="pill" style="background:#FDFAF6"></div><span>📶🔋</span></div>
+    <div style="padding:10px 16px 6px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:12px;color:#A8A29E">早上好 👋</div>
+        <div style="font-size:20px;font-weight:800;color:#1C1917">Ronny</div>
+      </div>
+      <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#F97316,#FBBF24);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700">你</div>
+    </div>
+    <!-- 旅行中横幅 -->
+    <div style="margin:8px 16px;background:linear-gradient(135deg,#F97316,#FB923C);border-radius:14px;padding:14px;color:#fff">
+      <div style="font-size:10px;opacity:.8;font-weight:600;letter-spacing:.5px;margin-bottom:4px">正在旅行中</div>
+      <div style="font-size:15px;font-weight:700">成都周末</div>
+      <div style="font-size:11px;opacity:.8;margin-top:2px">03.20 – 03.22 · 第2天</div>
+    </div>
+    <div style="padding:0 16px">
+      <div style="font-size:12px;font-weight:600;color:#A8A29E;margin:10px 0 8px">即将出发</div>
+      <div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 12px rgba(249,115,22,.08);margin-bottom:8px">
+        <div class="row">
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#1C1917">上海五日游</div>
+            <div style="font-size:11px;color:#A8A29E;margin-top:2px">04.10–14 · 上海 · 5天</div>
+          </div>
+          <span class="badge" style="background:#FFF7ED;color:#F97316;border:1px solid #FED7AA">待出发</span>
+        </div>
+        <div class="avrow">
+          <div class="av" style="background:#F97316;border:2px solid #fff">你</div>
+          <div class="av" style="background:#8B5CF6;border:2px solid #fff">友</div>
+          <span style="font-size:10px;color:#A8A29E;margin-left:3px">2人同行</span>
+        </div>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:#A8A29E;margin:10px 0 8px">往期旅程</div>
+      <div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.04)">
+        <div class="row">
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#C4B8B0">北京故宫之旅</div>
+            <div style="font-size:11px;color:#D6CFC8;margin-top:2px">2025.10.01–05</div>
+          </div>
+          <span class="badge" style="background:#F5F5F4;color:#A8A29E">已结束</span>
+        </div>
+      </div>
+    </div>
+    <div style="height:60px"></div>
+    <div class="fab" style="background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff">＋</div>
+    <div class="bnav" style="background:#FDFAF6;border-top:1px solid #F0EBE3">
+      <div class="bni" style="color:#F97316"><div class="ico">🗺️</div>旅程</div>
+      <div class="bni" style="color:#D6CFC8"><div class="ico">👤</div>我的</div>
+    </div>
+  </div>
+  </div><div class="screen-label">旅程列表</div></div>
+
+  <div><div class="phone">
+  <div class="screen" style="background:#FDFAF6">
+    <div class="sb" style="background:#FDFAF6;color:#1C1917"><span>9:41</span><div class="pill" style="background:#FDFAF6"></div><span>📶🔋</span></div>
+    <div style="padding:8px 16px 0">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="color:#F97316;font-size:13px;font-weight:600">‹ 返回</span>
+        <div style="flex:1;font-size:16px;font-weight:700;color:#1C1917">上海五日游</div>
+      </div>
+      <div style="display:flex;margin-top:8px;gap:8px;padding-bottom:10px">
+        <div style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;background:#F0EBE3;color:#A8A29E">地图</div>
+        <div style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;background:#F97316;color:#fff">行程</div>
+      </div>
+    </div>
+    <div class="sched-wrap" style="background:#FDFAF6">
+      <div class="daycol" style="background:#FDFAF6">
+        <div class="dn" style="background:#F97316;color:#fff">1</div>
+        <div class="dn" style="color:#D6CFC8">2</div>
+        <div class="dn" style="color:#D6CFC8">3</div>
+        <div class="dn" style="color:#D6CFC8">4</div>
+        <div class="dn" style="color:#D6CFC8">5</div>
+        <div class="dn" style="color:#D6CFC8;font-size:9px">?</div>
+      </div>
+      <div class="slist">
+        <div class="sc">
+          <div class="sacc" style="background:#F97316"></div>
+          <div class="sbody" style="background:#fff;box-shadow:0 2px 8px rgba(249,115,22,.08)">
+            <div style="position:relative"><img class="sc-img" src="https://picsum.photos/seed/hs1/276/90" alt=""/><div class="sc-badge">⏰ 09:00</div></div>
+            <div class="sc-info"><div class="sc-title" style="color:#1C1917">外滩观光隧道</div><div class="sc-addr" style="color:#A8A29E">黄浦区中山东二路479号</div></div>
+            <div class="sc-thumbs">
+              <img class="sc-thumb" src="https://picsum.photos/seed/hst1/42/42" alt=""/>
+              <img class="sc-thumb" src="https://picsum.photos/seed/hst2/42/42" alt=""/>
+            </div>
+            <div class="sc-nav" style="border-top:1px solid #F5F0EB">
+              <button class="sc-nav-btn" style="background:#FFF7ED;color:#F97316;border:1px solid #FED7AA">🧭 导航到这里</button>
+            </div>
+          </div>
+        </div>
+        <div class="sc">
+          <div class="sacc" style="background:#8B5CF6"></div>
+          <div class="sbody" style="background:#fff;box-shadow:0 2px 8px rgba(139,92,246,.06)">
+            <div class="sc-fb" style="background:#F5F3FF"><div class="sc-badge" style="background:rgba(139,92,246,.6)">🌙 第1–3天</div>🏨</div>
+            <div class="sc-info"><div class="sc-title" style="color:#1C1917">外滩茂悦大酒店</div><div class="sc-addr" style="color:#A8A29E">黄浦区黄浦路199号</div></div>
+            <div class="sc-nav" style="border-top:1px solid #F5F0EB">
+              <button class="sc-nav-btn" style="background:#F5F3FF;color:#8B5CF6;border:1px solid #DDD6FE">🧭 导航到这里</button>
+            </div>
+          </div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+    </div>
+  </div>
+  </div><div class="screen-label">旅程详情 · 行程</div></div>
+
+  <div><div class="phone">
+  <div class="screen" style="background:#FDFAF6;justify-content:flex-end">
+    <div class="overlay" style="background:rgba(28,25,23,.3)"></div>
+    <div class="sheet" style="background:#fff">
+      <div class="sheet-handle" style="background:#F0EBE3"></div>
+      <div class="sheet-title" style="color:#1C1917">编辑行程</div>
+      <div style="font-size:11px;color:#A8A29E;margin-bottom:7px">选择日期</div>
+      <div class="grid3">
+        <div class="gcell" style="background:#F97316;color:#fff;font-weight:600">第1天<sub>周四</sub></div>
+        <div class="gcell" style="background:#FDF8F4;color:#C4B8B0;border:1px solid #F0EBE3">第2天<sub>周五</sub></div>
+        <div class="gcell" style="background:#FDF8F4;color:#C4B8B0;border:1px solid #F0EBE3">第3天<sub>周六</sub></div>
+        <div class="gcell" style="background:#FDF8F4;color:#C4B8B0;border:1px solid #F0EBE3">第4天<sub>周日</sub></div>
+        <div class="gcell" style="background:#FDF8F4;color:#C4B8B0;border:1px solid #F0EBE3">第5天<sub>周一</sub></div>
+        <div class="gcell" style="background:#FDF8F4;color:#C4B8B0;border:1px solid #F0EBE3;font-style:italic">待规划</div>
+      </div>
+      <div style="font-size:11px;color:#A8A29E;margin-bottom:7px">出发时间</div>
+      <div class="grid6">
+        <div class="gcell6" style="background:#FDF8F4;color:#C4B8B0">08</div>
+        <div class="gcell6" style="background:#F97316;color:#fff;font-weight:700">09</div>
+        <div class="gcell6" style="background:#FDF8F4;color:#C4B8B0">10</div>
+        <div class="gcell6" style="background:#FDF8F4;color:#C4B8B0">11</div>
+        <div class="gcell6" style="background:#FDF8F4;color:#C4B8B0">12</div>
+        <div class="gcell6" style="background:#FDF8F4;color:#C4B8B0">13</div>
+      </div>
+      <button class="save-btn" style="background:linear-gradient(135deg,#F97316,#FBBF24)">保存行程</button>
+    </div>
+  </div>
+  </div><div class="screen-label">编辑行程面板</div></div>
+
+</div></div>
+
+<script>
+const tabs = document.querySelectorAll('.tabs .tab');
+const schemes = document.querySelectorAll('.scheme');
+const accent = ['#FF2442','#2563EB','#5E6AD2','#F97316'];
+function show(i){
+  tabs.forEach((t,idx)=>{
+    t.classList.toggle('on', idx===i);
+    t.style.background = idx===i ? accent[idx] : '#1A1A1A';
+    t.style.color = idx===i ? '#fff' : '#555';
+  });
+  schemes.forEach((s,idx)=>s.classList.toggle('on',idx===i));
+}
+tabs.forEach((t,i)=>{ t.style.background=i===0?accent[0]:'#1A1A1A'; t.style.color=i===0?'#fff':'#555'; });
+</script>
+</body>
+</html>

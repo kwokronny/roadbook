@@ -1,0 +1,52 @@
+:root {
+  /* Canvas & Surface */
+  --canvas: #F2EDE8;
+  --frost: rgba(255, 255, 255, 0.52);
+  --frost-strong: rgba(255, 255, 255, 0.72);
+  --frost-border: rgba(255, 255, 255, 0.65);
+
+  /* Brand Accent */
+  --coral: #FF6B3D;
+  --coral-glow: rgba(255, 107, 61, 0.35);
+  --coral-tint: rgba(255, 107, 61, 0.10);
+
+  /* Dark Accents */
+  --dark: rgba(28, 28, 30, 0.88);
+  --dark-hover: rgba(28, 28, 30, 0.75);
+
+  /* Ink (single-hue family from #1C1C1E) */
+  --ink: rgba(28, 28, 30, 0.90);
+  --ink-secondary: rgba(28, 28, 30, 0.50);
+  --ink-tertiary: rgba(28, 28, 30, 0.28);
+
+  /* Lavender (hotel/accommodation) */
+  --lavender: #8C5CF6;
+  --lavender-tint: rgba(140, 92, 246, 0.10);
+  --lavender-text: #6D3FC0;
+
+  /* Nightsky (hotel card dark bg) */
+  --nightsky: rgba(20, 30, 48, 0.88);
+  --nightsky-light: rgba(20, 30, 48, 0.65);
+
+  /* Semantic Status */
+  --destructive: #FF3B30;
+  --ongoing-bg: rgba(255, 107, 61, 0.10);
+  --ongoing-text: #D4410A;
+  --upcoming-bg: rgba(224, 133, 0, 0.10);
+  --upcoming-text: #B56800;
+
+  /* Skeleton */
+  --bone-base: rgba(28, 28, 30, 0.04);
+  --bone-shimmer: rgba(255, 255, 255, 0.50);
+
+  /* Drawer */
+  --scrim: rgba(28, 28, 30, 0.20);
+  --handle: rgba(28, 28, 30, 0.16);
+  --close-bg: rgba(28, 28, 30, 0.06);
+  --divider: rgba(28, 28, 30, 0.06);
+  --form-card: rgba(255, 255, 255, 0.70);
+  --row-hover: rgba(28, 28, 30, 0.04);
+  --row-hover-destructive: rgba(212, 65, 10, 0.06);
+  --selected-bg: rgba(255, 107, 61, 0.04);
+  --check-border: rgba(28, 28, 30, 0.16);
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="fastlane.lanes">
+    
+    
+    
+      
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000357">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="1: cd &apos;/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/packages/roadbook-flutter&apos; &amp;&amp; flutter build ipa --release --build-name=1.0.0 --build-number=2604271656 --export-options-plist=/Users/ronny.kwok/Documents/workSpace/roadbook/roadbook/packages/roadbook-flutter/ios/ExportOptions.plist" time="43.462719">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="2: firebase_app_distribution" time="12.65358">
+        
+      </testcase>
+    
+  </testsuite>
+</testsuites>

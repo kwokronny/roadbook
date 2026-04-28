@@ -1,0 +1,221 @@
+<h2>行李清单 — 完整 UI 设计</h2>
+<p class="subtitle">主屏 + 模板导入，确认后进入详细规范</p>
+
+<style>
+* { box-sizing: border-box; }
+.phone { width: 230px; background: #1C1C1E; border-radius: 30px; padding: 14px 9px; box-shadow: 0 12px 40px rgba(0,0,0,0.35); flex-shrink: 0; }
+.phone-screen { background: #F2F2F7; border-radius: 22px; overflow: hidden; min-height: 440px; position: relative; }
+.appbar { background: #F2F2F7; padding: 12px 14px 8px; display: flex; align-items: center; justify-content: space-between; border-bottom: 0.5px solid rgba(60,60,67,0.12); }
+.appbar-back { font-size: 11px; color: #FF5B2E; }
+.appbar-title { font-size: 13px; font-weight: 700; color: #1C1C1E; }
+.appbar-action { font-size: 10px; color: #FF5B2E; font-weight: 600; }
+.progress-area { padding: 8px 14px 4px; }
+.progress-text { font-size: 9px; color: #8E8E93; display: flex; justify-content: space-between; margin-bottom: 3px; }
+.progress-track { height: 4px; background: #E5E5EA; border-radius: 2px; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #FF5B2E, #FF8C42); border-radius: 2px; }
+.scroll-body { padding: 6px 0 60px; }
+.cat-section { margin-bottom: 4px; }
+.cat-header { display: flex; align-items: center; gap: 6px; padding: 5px 14px; cursor: pointer; }
+.cat-emoji { font-size: 13px; }
+.cat-name { font-size: 11px; font-weight: 700; color: #1C1C1E; flex: 1; }
+.cat-count { font-size: 9px; color: #8E8E93; }
+.cat-chevron { font-size: 9px; color: #C7C7CC; }
+.items-card { background: #fff; margin: 0 8px; border-radius: 10px; overflow: hidden; }
+.item-row { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-bottom: 0.5px solid rgba(60,60,67,0.06); }
+.item-row:last-child { border-bottom: none; }
+.check { width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid #C7C7CC; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.check.on { background: #FF5B2E; border-color: #FF5B2E; }
+.check.on::after { content: "✓"; color: #fff; font-size: 8px; font-weight: 700; }
+.item-label { font-size: 11px; color: #1C1C1E; flex: 1; }
+.item-label.done { color: #C7C7CC; text-decoration: line-through; }
+.add-item-row { display: flex; align-items: center; gap: 6px; padding: 6px 10px; }
+.plus-dot { width: 15px; height: 15px; border-radius: 50%; background: #FF5B2E22; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.plus-dot::after { content: "+"; color: #FF5B2E; font-size: 11px; font-weight: 700; }
+.add-label { font-size: 10px; color: #FF5B2E; }
+.fab { position: absolute; bottom: 10px; right: 10px; width: 32px; height: 32px; background: linear-gradient(135deg, #FF5B2E, #FF8C42); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(255,91,46,0.4); }
+.fab::after { content: "+"; color: white; font-size: 18px; font-weight: 300; margin-top: -2px; }
+
+/* Bottom sheet */
+.sheet { background: #fff; border-radius: 18px 18px 0 0; padding: 14px 14px 20px; }
+.sheet-handle { width: 30px; height: 3px; background: #E5E5EA; border-radius: 2px; margin: 0 auto 12px; }
+.sheet-title { font-size: 13px; font-weight: 700; color: #1C1C1E; margin-bottom: 4px; }
+.sheet-sub { font-size: 9px; color: #8E8E93; margin-bottom: 10px; }
+.tpl-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.tpl-chip { background: #F2F2F7; border-radius: 8px; padding: 5px 8px; font-size: 9px; color: #1C1C1E; display: flex; align-items: center; gap: 4px; }
+.tpl-chip.selected { background: #FFF0EC; border: 1px solid #FF5B2E; color: #FF5B2E; }
+.import-btn { background: linear-gradient(135deg, #FF5B2E, #FF8C42); color: white; border-radius: 10px; padding: 8px; text-align: center; font-size: 11px; font-weight: 700; margin-top: 4px; }
+
+.screen-label { text-align: center; font-size: 10px; color: #8E8E93; margin-top: 6px; font-weight: 600; letter-spacing: 0.3px; }
+</style>
+
+<div style="display:flex; gap:28px; align-items:flex-start; flex-wrap:wrap">
+
+  <!-- Screen 1: Main List -->
+  <div>
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="appbar">
+          <span class="appbar-back">‹ 返回</span>
+          <span class="appbar-title">行李清单</span>
+          <span class="appbar-action">导入模板</span>
+        </div>
+
+        <!-- Progress -->
+        <div class="progress-area">
+          <div class="progress-text"><span>打包进度</span><span>5 / 12 已打包</span></div>
+          <div class="progress-track"><div class="progress-fill" style="width:42%"></div></div>
+        </div>
+
+        <!-- Scroll body -->
+        <div class="scroll-body">
+
+          <!-- 证件 (expanded) -->
+          <div class="cat-section">
+            <div class="cat-header">
+              <span class="cat-emoji">📋</span>
+              <span class="cat-name">证件</span>
+              <span class="cat-count">2/3</span>
+              <span class="cat-chevron">▾</span>
+            </div>
+            <div class="items-card">
+              <div class="item-row"><div class="check on"></div><span class="item-label done">护照</span></div>
+              <div class="item-row"><div class="check on"></div><span class="item-label done">签证</span></div>
+              <div class="item-row"><div class="check"></div><span class="item-label">酒店预订单</span></div>
+              <div class="add-item-row"><div class="plus-dot"></div><span class="add-label">添加物品</span></div>
+            </div>
+          </div>
+
+          <!-- 衣物 (expanded) -->
+          <div class="cat-section">
+            <div class="cat-header">
+              <span class="cat-emoji">👕</span>
+              <span class="cat-name">衣物</span>
+              <span class="cat-count">2/4</span>
+              <span class="cat-chevron">▾</span>
+            </div>
+            <div class="items-card">
+              <div class="item-row"><div class="check on"></div><span class="item-label done">T恤 ×5</span></div>
+              <div class="item-row"><div class="check on"></div><span class="item-label done">内衣内裤</span></div>
+              <div class="item-row"><div class="check"></div><span class="item-label">外套</span></div>
+              <div class="item-row"><div class="check"></div><span class="item-label">运动鞋</span></div>
+              <div class="add-item-row"><div class="plus-dot"></div><span class="add-label">添加物品</span></div>
+            </div>
+          </div>
+
+          <!-- 电子 (collapsed) -->
+          <div class="cat-section">
+            <div class="cat-header">
+              <span class="cat-emoji">📱</span>
+              <span class="cat-name">电子</span>
+              <span class="cat-count">1/3</span>
+              <span class="cat-chevron">›</span>
+            </div>
+          </div>
+
+          <!-- 药品 (collapsed) -->
+          <div class="cat-section">
+            <div class="cat-header">
+              <span class="cat-emoji">💊</span>
+              <span class="cat-name">药品</span>
+              <span class="cat-count">0/2</span>
+              <span class="cat-chevron">›</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- FAB: 添加分类 -->
+        <div class="fab"></div>
+      </div>
+    </div>
+    <div class="screen-label">主列表（分类可展开/折叠）</div>
+  </div>
+
+  <!-- Screen 2: Template Import Sheet -->
+  <div>
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="appbar">
+          <span class="appbar-back">‹ 返回</span>
+          <span class="appbar-title">行李清单</span>
+          <span class="appbar-action">导入模板</span>
+        </div>
+        <div class="progress-area">
+          <div class="progress-text"><span>打包进度</span><span>0 / 0 已打包</span></div>
+          <div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>
+        </div>
+        <!-- Dimmed background -->
+        <div style="background:rgba(0,0,0,0.3);position:absolute;top:0;left:0;right:0;bottom:0;border-radius:22px;z-index:1"></div>
+        <!-- Bottom sheet -->
+        <div style="position:absolute;bottom:0;left:0;right:0;z-index:2">
+          <div class="sheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-title">选择模板分类</div>
+            <div class="sheet-sub">选中的分类和预设物品将导入到清单中</div>
+            <div class="tpl-row">
+              <div class="tpl-chip selected">📋 证件</div>
+              <div class="tpl-chip selected">👕 衣物</div>
+              <div class="tpl-chip selected">📱 电子</div>
+              <div class="tpl-chip">💊 药品</div>
+              <div class="tpl-chip">🧴 洗漱</div>
+              <div class="tpl-chip selected">🎒 其他</div>
+            </div>
+            <div class="import-btn">导入选中分类 (4)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-label">模板导入（Bottom Sheet）</div>
+  </div>
+
+  <!-- Screen 3: Add Category -->
+  <div>
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="appbar">
+          <span class="appbar-back">‹ 返回</span>
+          <span class="appbar-title">行李清单</span>
+          <span class="appbar-action">导入模板</span>
+        </div>
+        <div style="background:rgba(0,0,0,0.3);position:absolute;top:0;left:0;right:0;bottom:0;border-radius:22px;z-index:1"></div>
+        <div style="position:absolute;bottom:0;left:0;right:0;z-index:2">
+          <div class="sheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-title">添加分类</div>
+            <div class="sheet-sub">选择图标和填写分类名称</div>
+            <!-- Emoji picker row -->
+            <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+              <div style="width:26px;height:26px;border-radius:8px;background:#FF5B2E22;border:1.5px solid #FF5B2E;display:flex;align-items:center;justify-content:center;font-size:13px">🎯</div>
+              <div style="width:26px;height:26px;border-radius:8px;background:#F2F2F7;display:flex;align-items:center;justify-content:center;font-size:13px">🏖</div>
+              <div style="width:26px;height:26px;border-radius:8px;background:#F2F2F7;display:flex;align-items:center;justify-content:center;font-size:13px">🎒</div>
+              <div style="width:26px;height:26px;border-radius:8px;background:#F2F2F7;display:flex;align-items:center;justify-content:center;font-size:13px">🧳</div>
+              <div style="width:26px;height:26px;border-radius:8px;background:#F2F2F7;display:flex;align-items:center;justify-content:center;font-size:13px">📷</div>
+              <div style="width:26px;height:26px;border-radius:8px;background:#F2F2F7;display:flex;align-items:center;justify-content:center;font-size:13px">🍜</div>
+              <div style="width:26px;height:26px;border-radius:8px;background:#F2F2F7;display:flex;align-items:center;justify-content:center;font-size:13px">💼</div>
+              <div style="width:26px;height:26px;border-radius:8px;background:#F2F2F7;display:flex;align-items:center;justify-content:center;font-size:13px">📚</div>
+            </div>
+            <!-- Name input -->
+            <div style="background:#F2F2F7;border-radius:8px;padding:8px 10px;font-size:11px;color:#1C1C1E;margin-bottom:10px">自定义分类名称...</div>
+            <div class="import-btn">添加分类</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-label">添加新分类（选 Emoji + 命名）</div>
+  </div>
+
+</div>
+
+<div style="margin-top:20px;background:#fff;border-radius:12px;padding:16px;font-size:12px;color:#1C1C1E;max-width:700px">
+  <div style="font-weight:700;margin-bottom:8px">设计要点</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;color:#636366;font-size:11px">
+    <div>• 勾选物品立即自动保存（防抖 500ms 后 POST）</div>
+    <div>• 分类可展开/折叠，默认全部展开</div>
+    <div>• FAB 点击 → 添加分类 Bottom Sheet</div>
+    <div>• 长按物品 → 删除确认；左滑亦可删除</div>
+    <div>• 导入模板不覆盖已有分类，追加合并</div>
+    <div>• 只有 edit/manage 角色可编辑，其他只读</div>
+    <div>• 进度条全局实时更新（已勾选 / 总数）</div>
+    <div>• 数据存为 JSON，整体一次保存</div>
+  </div>
+</div>

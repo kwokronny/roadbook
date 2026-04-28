@@ -1,0 +1,232 @@
+// lib/features/luggage/presentation/widgets/luggage_category_section.dart
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/theme.dart';
+import '../../../../shared/models/luggage.dart';
+import '../../../../shared/widgets/app_confirm_dialog.dart';
+import '../../domain/luggage_provider.dart';
+import 'package:hugeicons/hugeicons.dart';
+
+class LuggageCategorySection extends ConsumerStatefulWidget {
+  const LuggageCategorySection({
+    super.key,
+    required this.travelId,
+    required this.category,
+    required this.canEdit,
+    required this.checkedIds,
+    required this.onAddItemTap,
+  });
+
+  final int travelId;
+  final LuggageCategory category;
+  final bool canEdit;
+  final Set<String> checkedIds;
+  final VoidCallback onAddItemTap;
+
+  @override
+  ConsumerState<LuggageCategorySection> createState() =>
+      _LuggageCategorySectionState();
+}
+
+class _LuggageCategorySectionState
+    extends ConsumerState<LuggageCategorySection> {
+  bool _expanded = true;
+
+  int get _checkedInCat => widget.category.items
+      .where((i) => widget.checkedIds.contains(i.id))
+      .length;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.pageHorizontal, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xB8FFFFFF), // rgba(255,255,255,0.72)
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: GlassSpec.cardBorder, width: 1),
+        boxShadow: GlassSpec.cardShadow,
+      ),
+      child: Column(
+        children: [
+          _buildHeader(),
+          if (_expanded) ...[
+            ...widget.category.items.map(_buildItemRow),
+            if (widget.canEdit) _buildAddItemRow(),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return GestureDetector(
+      onTap: () => setState(() => _expanded = !_expanded),
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Text(widget.category.emoji,
+                style: const TextStyle(fontSize: 18)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                widget.category.name,
+                style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.inkPrimary),
+              ),
+            ),
+            Text(
+              '$_checkedInCat/${widget.category.items.length}',
+              style: AppTextStyles.caption,
+            ),
+            if (widget.canEdit) ...[
+              const SizedBox(width: 4),
+              GestureDetector(
+                onTap: _confirmDelete,
+                child: const Icon(HugeIcons.strokeRoundedDelete01,
+                    size: 18, color: AppColors.inkTertiary),
+              ),
+            ],
+            const SizedBox(width: 6),
+            AnimatedRotation(
+              turns: _expanded ? 0 : -0.25,
+              duration: const Duration(milliseconds: 200),
+              child: const Icon(HugeIcons.strokeRoundedArrowDown01,
+                  size: 20, color: AppColors.inkSecondary),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildItemRow(LuggageItem item) {
+    final checked = widget.checkedIds.contains(item.id);
+    return Dismissible(
+      key: ValueKey(item.id),
+      direction: widget.canEdit
+          ? DismissDirection.endToStart
+          : DismissDirection.none,
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 16),
+        color: AppColors.destructive,
+        child: const Icon(HugeIcons.strokeRoundedDelete01,
+            color: Colors.white, size: 20),
+      ),
+      onDismissed: (_) => ref
+          .read(luggageProvider(widget.travelId).notifier)
+          .deleteItem(widget.category.id, item.id),
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(left: 48),
+            child: Divider(height: 0.5, thickness: 0.5, color: AppColors.separator),
+          ),
+          GestureDetector(
+            onTap: () => ref
+                .read(luggageProvider(widget.travelId).notifier)
+                .toggleCheck(item.id),
+            behavior: HitTestBehavior.opaque,
+            child: SizedBox(
+              height: 44,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                child: Row(
+                  children: [
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: checked ? AppColors.primary : Colors.transparent,
+                        border: Border.all(
+                          color: checked ? AppColors.primary : AppColors.border,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: checked
+                          ? const Icon(HugeIcons.strokeRoundedTick02,
+                              size: 12, color: Colors.white)
+                          : null,
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      item.text,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: checked
+                            ? AppColors.textSecondary
+                            : AppColors.textPrimary,
+                        decoration: checked
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddItemRow() {
+    return GestureDetector(
+      onTap: widget.onAddItemTap,
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(left: 48),
+            child: Divider(height: 0.5, thickness: 0.5, color: AppColors.separator),
+          ),
+          SizedBox(
+            height: 44,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Row(
+                children: [
+                  Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.primary, width: 1.5),
+                    ),
+                    child: const Icon(HugeIcons.strokeRoundedAdd01, size: 12, color: AppColors.primary),
+                  ),
+                  const SizedBox(width: 10),
+                  Text('添加物品',
+                      style: const TextStyle(
+                          fontSize: 15, color: AppColors.primary)),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _confirmDelete() async {
+    final confirmed = await showAppConfirmDialog(
+      context: context,
+      title: '删除分类',
+      message: '确认删除「${widget.category.name}」及其所有物品？',
+      confirmLabel: '删除',
+    );
+    if (confirmed && mounted) {
+      ref
+          .read(luggageProvider(widget.travelId).notifier)
+          .deleteCategory(widget.category.id);
+    }
+  }
+}

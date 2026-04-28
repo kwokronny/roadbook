@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>旅程详情页 · Liquid Glass 设计</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+    color: rgba(30,36,60,0.92);
+    min-height: 100vh;
+    padding: 32px 24px 48px;
+    background:
+      radial-gradient(ellipse 70% 55% at 15% 25%, rgba(180,210,255,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 65% at 85% 15%, rgba(200,185,255,0.35) 0%, transparent 55%),
+      radial-gradient(ellipse 65% 50% at 65% 85%, rgba(160,230,210,0.3) 0%, transparent 60%),
+      #eef2ff;
+  }
+
+  .page-title { text-align: center; font-size: 28px; font-weight: 300; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .page-sub { text-align: center; font-size: 14px; color: rgba(30,36,60,0.45); margin-bottom: 32px; }
+
+  .phone-center { display: flex; justify-content: center; margin-bottom: 24px; }
+  .phone {
+    width: 375px;
+    border-radius: 40px;
+    overflow: hidden;
+    border: 3px solid rgba(30,36,60,0.08);
+    box-shadow: 0 16px 48px rgba(30,36,60,0.12);
+  }
+  .screen {
+    min-height: 750px;
+    position: relative;
+    background:
+      radial-gradient(ellipse 70% 55% at 15% 25%, rgba(255,180,160,0.30) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 65% at 85% 15%, rgba(200,185,255,0.40) 0%, transparent 55%),
+      radial-gradient(ellipse 65% 50% at 65% 85%, rgba(160,230,210,0.30) 0%, transparent 60%),
+      #f2f0ff;
+  }
+
+  /* Glass surface */
+  .glass {
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(28px) saturate(2.2);
+    -webkit-backdrop-filter: blur(28px) saturate(2.2);
+    border: 1px solid rgba(255,255,255,0.90);
+    box-shadow: 0 4px 24px rgba(100,120,180,0.10), inset 0 1px 0 rgba(255,255,255,0.95);
+    position: relative; overflow: hidden;
+  }
+  .glass::after {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(145deg, rgba(255,255,255,0.50) 0%, transparent 45%);
+    pointer-events: none;
+  }
+
+  /* ─── AppBar ─── */
+  .appbar {
+    padding: 52px 16px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .appbar-back {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.85);
+    box-shadow: 0 2px 8px rgba(100,120,200,0.08);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: rgba(30,36,60,0.65);
+  }
+  .appbar-info { flex: 1; }
+  .appbar-title { font-size: 18px; font-weight: 500; letter-spacing: -0.01em; }
+  .appbar-cities { font-size: 12px; color: rgba(30,36,60,0.40); margin-top: 1px; }
+
+  /* View toggle (glass pill) */
+  .toggle-pill {
+    display: flex;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.85);
+    border-radius: 100px;
+    padding: 3px;
+    box-shadow: 0 2px 8px rgba(100,120,200,0.08);
+  }
+  .toggle-btn {
+    width: 34px; height: 30px; border-radius: 100px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: rgba(30,36,60,0.35);
+    transition: all 0.2s;
+  }
+  .toggle-btn.active {
+    background: rgba(30,36,60,0.88);
+    color: #fff;
+  }
+
+  .appbar-more {
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: rgba(30,36,60,0.55);
+  }
+
+  /* ─── Two-column layout ─── */
+  .content-area {
+    display: flex;
+    height: 620px;
+    padding: 0;
+  }
+
+  /* Day Sidebar — glass strip */
+  .day-sidebar {
+    width: 62px;
+    padding: 8px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+    overflow-y: auto;
+  }
+
+  .day-chip {
+    width: 54px;
+    height: 64px;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .day-chip.selected {
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.85);
+    box-shadow: 0 2px 12px rgba(100,120,180,0.10);
+  }
+  .day-chip.selected::after {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(145deg, rgba(255,255,255,0.45) 0%, transparent 40%);
+    pointer-events: none;
+  }
+  .day-chip .day-label {
+    font-size: 10px; font-weight: 500; letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .day-chip .day-num {
+    font-size: 22px; font-weight: 300; line-height: 1;
+  }
+  .day-chip .day-week {
+    font-size: 10px; font-weight: 400; line-height: 1.2;
+  }
+  .day-chip.selected .day-label,
+  .day-chip.selected .day-num,
+  .day-chip.selected .day-week { color: #FF5B2E; }
+  .day-chip:not(.selected) .day-label,
+  .day-chip:not(.selected) .day-num { color: rgba(30,36,60,0.28); }
+  .day-chip:not(.selected) .day-week { color: rgba(30,36,60,0.22); }
+
+  .day-chip.unplanned {
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .day-chip.unplanned.selected { color: #FF5B2E; }
+  .day-chip.unplanned:not(.selected) { color: rgba(30,36,60,0.28); }
+
+  /* ─── Timeline ─── */
+  .timeline {
+    flex: 1;
+    padding: 8px 12px 8px 4px;
+    overflow-y: auto;
+  }
+
+  .timeline-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+  }
+
+  /* Cover image */
+  .ti-cover {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    background: rgba(124,85,240,0.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    border: 1px solid rgba(124,85,240,0.15);
+  }
+  .ti-cover.hotel { background: rgba(124,85,240,0.10); border-color: rgba(124,85,240,0.20); }
+  .ti-cover.poi { background: rgba(255,91,46,0.10); border-color: rgba(255,91,46,0.15); }
+
+  .ti-body { flex: 1; min-width: 0; }
+
+  .ti-time {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .ti-time.hotel { background: rgba(124,85,240,0.10); color: #5c38cc; }
+  .ti-time.timed { background: rgba(255,91,46,0.10); color: #c43d15; }
+  .ti-time.unset { background: rgba(30,36,60,0.05); color: rgba(30,36,60,0.40); }
+
+  .ti-name {
+    font-size: 15px; font-weight: 500; color: rgba(30,36,60,0.92);
+    margin-bottom: 2px;
+  }
+  .ti-addr {
+    font-size: 12px; color: rgba(30,36,60,0.40);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  /* Note card */
+  .ti-note {
+    margin-top: 6px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: rgba(224,133,0,0.06);
+    border: 1px solid rgba(224,133,0,0.12);
+    font-size: 12px;
+    color: rgba(30,36,60,0.55);
+    line-height: 1.5;
+  }
+
+  /* Screenshot thumbnails */
+  .ti-photos {
+    display: flex;
+    gap: 4px;
+    margin-top: 6px;
+  }
+  .ti-photo {
+    width: 48px; height: 48px;
+    border-radius: 8px;
+    background: rgba(30,36,60,0.06);
+    border: 1px solid rgba(30,36,60,0.04);
+  }
+
+  /* FAB */
+  .fab {
+    position: absolute;
+    bottom: 24px; right: 18px;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: #FF5B2E;
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 4px 16px rgba(255,91,46,0.30);
+    z-index: 5;
+  }
+
+  /* ─── Design notes ─── */
+  .notes {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .note-card {
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.85);
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 2px 12px rgba(100,120,180,0.08);
+    position: relative; overflow: hidden;
+  }
+  .note-card::after {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(145deg, rgba(255,255,255,0.45) 0%, transparent 40%);
+    pointer-events: none;
+  }
+  .note-label {
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: rgba(30,36,60,0.35); margin-bottom: 8px;
+    position: relative; z-index: 1;
+  }
+  .note-text {
+    font-size: 13px; color: rgba(30,36,60,0.65); line-height: 1.7;
+    position: relative; z-index: 1;
+  }
+  .note-text b { color: rgba(30,36,60,0.85); font-weight: 500; }
+
+  @media (max-width: 700px) {
+    .notes { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">旅程详情页 · Liquid Glass</h1>
+<p class="page-sub">行程时间线 + 日程选择侧栏</p>
+
+<!-- Phone mockup -->
+<div class="phone-center">
+  <div class="phone">
+    <div class="screen">
+
+      <!-- AppBar -->
+      <div class="appbar">
+        <div class="appbar-back">‹</div>
+        <div class="appbar-info">
+          <div class="appbar-title">东京自由行</div>
+          <div class="appbar-cities">东京 · 大阪</div>
+        </div>
+        <div class="toggle-pill">
+          <div class="toggle-btn active">☰</div>
+          <div class="toggle-btn">🗺</div>
+        </div>
+        <div class="appbar-more">⋮</div>
+      </div>
+
+      <!-- Two-column content -->
+      <div class="content-area">
+
+        <!-- Day Sidebar -->
+        <div class="day-sidebar">
+          <div class="day-chip selected">
+            <span class="day-label">DAY</span>
+            <span class="day-num">1</span>
+            <span class="day-week">周四</span>
+          </div>
+          <div class="day-chip">
+            <span class="day-label">DAY</span>
+            <span class="day-num">2</span>
+            <span class="day-week">周五</span>
+          </div>
+          <div class="day-chip">
+            <span class="day-label">DAY</span>
+            <span class="day-num">3</span>
+            <span class="day-week">周六</span>
+          </div>
+          <div class="day-chip">
+            <span class="day-label">DAY</span>
+            <span class="day-num">4</span>
+            <span class="day-week">周日</span>
+          </div>
+          <div class="day-chip">
+            <span class="day-label">DAY</span>
+            <span class="day-num">5</span>
+            <span class="day-week">周一</span>
+          </div>
+          <div class="day-chip">
+            <span class="day-label">DAY</span>
+            <span class="day-num">6</span>
+            <span class="day-week">周二</span>
+          </div>
+          <div class="day-chip">
+            <span class="day-label">DAY</span>
+            <span class="day-num">7</span>
+            <span class="day-week">周三</span>
+          </div>
+          <div class="day-chip unplanned">待规划</div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline">
+
+          <!-- Hotel item -->
+          <div class="timeline-item">
+            <div class="ti-cover hotel">🏨</div>
+            <div class="ti-body">
+              <div class="ti-time hotel">入住 15:00</div>
+              <div class="ti-name">新宿格拉斯丽酒店</div>
+              <div class="ti-addr">东京都新宿区歌舞伎町1-19-1</div>
+            </div>
+          </div>
+
+          <!-- POI with time -->
+          <div class="timeline-item">
+            <div class="ti-cover poi">🍜</div>
+            <div class="ti-body">
+              <div class="ti-time timed">11:30</div>
+              <div class="ti-name">一兰拉面 新宿中央东口店</div>
+              <div class="ti-addr">东京都新宿区新宿3-34-11</div>
+              <div class="ti-note">🗒 记得提前在机器点餐，选硬面、浓汤</div>
+            </div>
+          </div>
+
+          <!-- POI with time + photos -->
+          <div class="timeline-item">
+            <div class="ti-cover poi">⛩</div>
+            <div class="ti-body">
+              <div class="ti-time timed">14:00</div>
+              <div class="ti-name">明治神宫</div>
+              <div class="ti-addr">东京都�的谷区代代木神园町1-1</div>
+              <div class="ti-photos">
+                <div class="ti-photo"></div>
+                <div class="ti-photo"></div>
+                <div class="ti-photo"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- POI without time -->
+          <div class="timeline-item">
+            <div class="ti-cover" style="background:rgba(30,36,60,0.06);border-color:rgba(30,36,60,0.08);">🛍</div>
+            <div class="ti-body">
+              <div class="ti-time unset">待规划</div>
+              <div class="ti-name">涉谷 Scramble Square</div>
+              <div class="ti-addr">东京都涉谷区涉谷2-24-12</div>
+            </div>
+          </div>
+
+          <!-- Another POI -->
+          <div class="timeline-item">
+            <div class="ti-cover poi">🌸</div>
+            <div class="ti-body">
+              <div class="ti-time timed">17:00</div>
+              <div class="ti-name">目黑川夜樱散步</div>
+              <div class="ti-addr">东京都目黑区目黑川沿线</div>
+              <div class="ti-note">🗒 日落后去最美，带三脚架拍夜景</div>
+            </div>
+          </div>
+
+          <!-- Dinner -->
+          <div class="timeline-item">
+            <div class="ti-cover poi">🍣</div>
+            <div class="ti-body">
+              <div class="ti-time timed">19:30</div>
+              <div class="ti-name">寿司大 築地本店</div>
+              <div class="ti-addr">东京都中央区築地4-13-9</div>
+            </div>
+          </div>
+
+        </div><!-- /timeline -->
+
+      </div><!-- /content-area -->
+
+      <!-- FAB -->
+      <div class="fab">＋</div>
+
+    </div><!-- /screen -->
+  </div><!-- /phone -->
+</div>
+
+<!-- Design notes -->
+<div class="notes">
+
+  <div class="note-card">
+    <div class="note-label">AppBar</div>
+    <div class="note-text">
+      <b>透明背景</b>，融入 mesh 渐变<br>
+      返回按钮改为 <b>glass circle</b><br>
+      列表/地图切换改为 <b>glass pill toggle</b>，选中态用深色 dark glass<br>
+      标题使用 <b>headline w500</b>，城市使用 <b>caption</b>
+    </div>
+  </div>
+
+  <div class="note-card">
+    <div class="note-label">Day Sidebar</div>
+    <div class="note-text">
+      选中日期用 <b>glass chip</b>（半透明白 + blur + specular highlight）<br>
+      字重从 w900 降到 <b>w300</b>（数字）、<b>w500</b>（DAY 标签）<br>
+      选中色为 <b>coral #FF5B2E</b><br>
+      未选中态更轻：<b>rgba(30,36,60,0.28)</b>
+    </div>
+  </div>
+
+  <div class="note-card">
+    <div class="note-label">时间标签</div>
+    <div class="note-text">
+      使用 <b>Liquid Glass tinted badge</b> 风格<br>
+      酒店: lavender tint <b>rgba(124,85,240,0.10)</b><br>
+      有时间: coral tint <b>rgba(255,91,46,0.10)</b><br>
+      待规划: neutral <b>rgba(30,36,60,0.05)</b>
+    </div>
+  </div>
+
+  <div class="note-card">
+    <div class="note-label">备注卡片</div>
+    <div class="note-text">
+      使用 <b>sunstone tint</b> 作为备注底色<br>
+      rgba(224,133,0,0.06) fill + 0.12 border<br>
+      圆角 10px，文字 <b>12px textSecondary</b>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

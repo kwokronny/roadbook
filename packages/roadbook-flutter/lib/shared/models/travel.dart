@@ -9,6 +9,7 @@ class Travel {
     required this.startDate,
     required this.endDate,
     required this.isPublic,
+    required this.isAbroad,
     required this.cities,
     required this.collaborators,
     required this.schedules,
@@ -20,28 +21,31 @@ class Travel {
   final DateTime startDate;
   final DateTime endDate;
   final bool isPublic;
+  final bool isAbroad;
   final List<String> cities;
   final List<UserWithRole> collaborators;
   final List<Schedule> schedules;
   final String? equip;
 
   factory Travel.fromJson(Map<String, dynamic> json) {
-    final citiesRaw = json['cities'] as String? ?? '';
-    final cities = citiesRaw.isEmpty
+    // Backend field 'city' (comma-separated string)
+    final cityRaw = json['city'] as String? ?? '';
+    final cities = cityRaw.isEmpty
         ? <String>[]
-        : citiesRaw.split(',').where((s) => s.isNotEmpty).toList();
+        : cityRaw.split(',').where((s) => s.isNotEmpty).toList();
 
     return Travel(
       id: json['id'] as int?,
       name: json['name'] as String,
       startDate: DateTime.parse(json['startDate'] as String),
       endDate: DateTime.parse(json['endDate'] as String),
-      isPublic: json['isPublic'] as bool? ?? false,
+      isPublic: json['public'] as bool? ?? false,          // backend field: public
+      isAbroad: json['isAbroad'] as bool? ?? false,
       cities: cities,
-      collaborators: (json['collaborators'] as List<dynamic>? ?? [])
+      collaborators: (json['Users'] as List<dynamic>? ?? [])    // backend field: Users
           .map((e) => UserWithRole.fromJson(e as Map<String, dynamic>))
           .toList(),
-      schedules: (json['schedules'] as List<dynamic>? ?? [])
+      schedules: (json['Schedules'] as List<dynamic>? ?? [])    // backend field: Schedules
           .map((e) => Schedule.fromJson(e as Map<String, dynamic>))
           .toList(),
       equip: json['equip'] as String?,

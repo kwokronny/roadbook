@@ -1,0 +1,187 @@
+<h2>长途交通行程 — 方案详解</h2>
+<p class="subtitle">手动表单 + 粘贴文本自动解析，两种录入方式互补</p>
+
+<!-- ── 整体流程 ── -->
+<div class="section">
+  <h3>整体交互流程</h3>
+  <div class="mockup">
+    <div class="mockup-header">用户添加行程入口</div>
+    <div class="mockup-body" style="padding:20px;font-size:14px;line-height:2;">
+      <div style="display:flex;gap:12px;margin-bottom:16px;">
+        <div style="flex:1;background:#f0f4ff;border-radius:12px;padding:16px;text-align:center;border:2px solid #4A90D9;">
+          <div style="font-size:24px;">📍</div>
+          <div style="font-weight:600;margin-top:4px;">添加地点</div>
+          <div style="font-size:12px;color:#666;">景点 / 餐厅 / 酒店</div>
+        </div>
+        <div style="flex:1;background:#fff4f0;border-radius:12px;padding:16px;text-align:center;border:2px solid #E8734A;">
+          <div style="font-size:24px;">🚄</div>
+          <div style="font-weight:600;margin-top:4px;">添加交通</div>
+          <div style="font-size:12px;color:#666;">高铁 / 飞机</div>
+        </div>
+      </div>
+      <div style="color:#999;font-size:12px;text-align:center;">现有的「添加行程」入口旁边，新增「添加交通」入口</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 方式一：手动表单 ── -->
+<div class="section">
+  <h3>方式一：手动填写表单</h3>
+  <div class="mockup">
+    <div class="mockup-header">添加长途交通 — 手动录入</div>
+    <div class="mockup-body" style="padding:20px;font-size:14px;">
+
+      <div style="display:flex;gap:8px;margin-bottom:20px;">
+        <div style="flex:1;background:#E8734A;color:white;padding:10px;border-radius:8px;text-align:center;font-weight:600;">🚄 高铁/火车</div>
+        <div style="flex:1;background:#eee;padding:10px;border-radius:8px;text-align:center;color:#666;">✈️ 飞机</div>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <div style="font-size:12px;color:#999;margin-bottom:4px;">车次号（选填）</div>
+        <div style="background:#f5f5f5;padding:10px 12px;border-radius:8px;color:#999;">例如 G1234</div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-bottom:16px;">
+        <div style="flex:1;">
+          <div style="font-size:12px;color:#999;margin-bottom:4px;">出发站</div>
+          <div style="background:#f5f5f5;padding:10px 12px;border-radius:8px;">上海虹桥</div>
+        </div>
+        <div style="padding-top:24px;color:#ccc;">→</div>
+        <div style="flex:1;">
+          <div style="font-size:12px;color:#999;margin-bottom:4px;">到达站</div>
+          <div style="background:#f5f5f5;padding:10px 12px;border-radius:8px;">北京南</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-bottom:16px;">
+        <div style="flex:1;">
+          <div style="font-size:12px;color:#999;margin-bottom:4px;">出发时间</div>
+          <div style="background:#f5f5f5;padding:10px 12px;border-radius:8px;">03/31 08:00</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:12px;color:#999;margin-bottom:4px;">到达时间</div>
+          <div style="background:#f5f5f5;padding:10px 12px;border-radius:8px;">03/31 12:30</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <div style="font-size:12px;color:#999;margin-bottom:4px;">备注（选填）</div>
+        <div style="background:#f5f5f5;padding:10px 12px;border-radius:8px;color:#999;min-height:40px;">座位号、检票口等</div>
+      </div>
+
+      <div style="background:#4A90D9;color:white;padding:12px;border-radius:10px;text-align:center;font-weight:600;">保存</div>
+    </div>
+  </div>
+  <div class="pros-cons">
+    <div class="pros"><h4>优势</h4><ul><li>零依赖，完全可控</li><li>覆盖所有场景</li><li>字段与现有 schedule 模型 traffic 字段对齐</li></ul></div>
+    <div class="cons"><h4>劣势</h4><ul><li>需要手动输入多个字段</li></ul></div>
+  </div>
+</div>
+
+<!-- ── 方式二：粘贴解析 ── -->
+<div class="section">
+  <h3>方式二：粘贴文本自动解析</h3>
+  <div class="mockup">
+    <div class="mockup-header">添加长途交通 — 智能粘贴</div>
+    <div class="mockup-body" style="padding:20px;font-size:14px;">
+
+      <div style="margin-bottom:16px;">
+        <div style="font-size:12px;color:#999;margin-bottom:4px;">粘贴购票信息</div>
+        <div style="background:#fffbe6;padding:12px;border-radius:8px;border:1px dashed #e8c34a;font-size:13px;line-height:1.8;">
+          【铁路12306】郭先生，您已购03月31日G1234次08:00开，上海虹桥站—北京南站，1车01A号，检票口16A。
+        </div>
+      </div>
+
+      <div style="text-align:center;margin:16px 0;">
+        <div style="display:inline-block;background:#4A90D9;color:white;padding:8px 20px;border-radius:8px;font-size:13px;">🔍 识别信息</div>
+      </div>
+
+      <div style="background:#f0f8f0;padding:16px;border-radius:10px;border:1px solid #c3e6c3;">
+        <div style="font-size:12px;color:#4a9;font-weight:600;margin-bottom:10px;">✅ 识别结果</div>
+        <div style="display:grid;grid-template-columns:80px 1fr;gap:6px;font-size:13px;">
+          <span style="color:#999;">类型</span><span>🚄 高铁</span>
+          <span style="color:#999;">车次</span><span>G1234</span>
+          <span style="color:#999;">出发</span><span>上海虹桥站 — 08:00</span>
+          <span style="color:#999;">到达</span><span>北京南站</span>
+          <span style="color:#999;">日期</span><span>03月31日</span>
+          <span style="color:#999;">座位</span><span>1车01A号</span>
+          <span style="color:#999;">检票口</span><span>16A</span>
+        </div>
+      </div>
+
+      <div style="font-size:12px;color:#999;margin-top:12px;">识别后可编辑修改，确认无误后保存</div>
+      <div style="background:#4A90D9;color:white;padding:12px;border-radius:10px;text-align:center;font-weight:600;margin-top:12px;">确认保存</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 支持的文本格式 ── -->
+<div class="section">
+  <h3>可解析的文本格式</h3>
+  <div style="display:grid;gap:12px;">
+    <div style="background:#f8f8f8;padding:16px;border-radius:10px;">
+      <div style="font-weight:600;margin-bottom:8px;">🚄 12306 购票短信</div>
+      <code style="font-size:12px;color:#666;line-height:1.6;word-break:break-all;">
+        【铁路12306】郭先生，您已购03月31日G1234次08:00开，上海虹桥站—北京南站，1车01A号。
+      </code>
+      <div style="font-size:12px;color:#4a9;margin-top:6px;">✓ 可提取：日期、车次、时间、起终站、座位</div>
+    </div>
+    <div style="background:#f8f8f8;padding:16px;border-radius:10px;">
+      <div style="font-weight:600;margin-bottom:8px;">✈️ 航司购票短信</div>
+      <code style="font-size:12px;color:#666;line-height:1.6;word-break:break-all;">
+        【东方航空】尊敬的郭先生,您预订的03月31日MU5101航班,上海虹桥T2-北京首都T3,09:00起飞,已出票成功。
+      </code>
+      <div style="font-size:12px;color:#4a9;margin-top:6px;">✓ 可提取：日期、航班号、时间、起终点、航站楼</div>
+    </div>
+    <div style="background:#f8f8f8;padding:16px;border-radius:10px;">
+      <div style="font-weight:600;margin-bottom:8px;">📋 携程/飞猪订单文本</div>
+      <code style="font-size:12px;color:#666;line-height:1.6;word-break:break-all;">
+        G1234 上海虹桥→北京南 03-31 08:00-12:30
+      </code>
+      <div style="font-size:12px;color:#4a9;margin-top:6px;">✓ 可提取：车次、起终站、日期、时间</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 时间轴展示 ── -->
+<div class="section">
+  <h3>行程列表中的展示效果</h3>
+  <div class="mockup">
+    <div class="mockup-header">时间轴中的交通卡片</div>
+    <div class="mockup-body" style="padding:20px;font-size:14px;">
+
+      <div style="margin-bottom:12px;padding:14px;background:#fff;border-radius:12px;border-left:4px solid #4A90D9;">
+        <div style="font-size:12px;color:#999;">08:00</div>
+        <div style="font-weight:600;">故宫博物院</div>
+        <div style="font-size:12px;color:#666;">北京市东城区景山前街4号</div>
+      </div>
+
+      <!-- 交通卡片 -->
+      <div style="margin-bottom:12px;padding:14px;background:linear-gradient(135deg,#E8734A,#D4603A);border-radius:12px;color:white;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:12px;opacity:0.8;">🚄 G1234</span>
+          <span style="font-size:11px;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:10px;">4h30m</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="text-align:center;">
+            <div style="font-size:16px;font-weight:700;">08:00</div>
+            <div style="font-size:12px;opacity:0.8;">上海虹桥</div>
+          </div>
+          <div style="flex:1;border-top:2px dashed rgba(255,255,255,0.4);margin:0 4px;"></div>
+          <div style="text-align:center;">
+            <div style="font-size:16px;font-weight:700;">12:30</div>
+            <div style="font-size:12px;opacity:0.8;">北京南</div>
+          </div>
+        </div>
+        <div style="font-size:11px;opacity:0.7;margin-top:6px;">1车01A号 · 检票口16A</div>
+      </div>
+
+      <div style="padding:14px;background:#fff;border-radius:12px;border-left:4px solid #4A90D9;">
+        <div style="font-size:12px;color:#999;">14:00</div>
+        <div style="font-weight:600;">外滩</div>
+        <div style="font-size:12px;color:#666;">上海市黄浦区中山东一路</div>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,29 @@
+//
+//  MAOfflineMapViewController.h
+//  MAMapKit
+//
+//  Created by hanxiaoming on 2017/12/14.
+//  Copyright © 2017年 Amap. All rights reserved.
+//
+
+#import "MAConfig.h"
+#if MA_INCLUDE_OFFLINE
+
+#import <UIKit/UIKit.h>
+#import "MAOfflineMap.h"
+
+///离线地图ViewController（since 5.7.0）
+///Offline Map ViewController（since 5.7.0）
+@interface MAOfflineMapViewController : UIViewController
+
+/// MAOfflineMapViewController单例，请使用单例以保证离线地图状态正确同步。
+/// MAOfflineMapViewController singleton, please use the singleton to ensure correct synchronization of offline map status.
++ (instancetype)sharedInstance;
+
+///MAOfflineMap实例
+///MAOfflineMap instance
+@property (nonatomic, readonly) MAOfflineMap *offlineMap;
+
+@end
+
+#endif

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>小肥路书 · Icon System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--canvas:#F2EDE8;--ink:rgba(28,28,30,0.90);--ink2:rgba(28,28,30,0.50);--ink3:rgba(28,28,30,0.28);--coral:#FF6B3D;--dark:rgba(28,28,30,0.88);--frost:rgba(255,255,255,0.52);--frost-border:rgba(255,255,255,0.65);--font:'Outfit',-apple-system,sans-serif}
+  body{font-family:var(--font);background:var(--canvas);color:var(--ink);min-height:100vh;padding:40px 24px 80px}
+
+  .ambient{position:fixed;inset:0;z-index:0;overflow:hidden}
+  .ambient .orb{position:absolute;border-radius:50%;filter:blur(80px);animation:drift 25s ease-in-out infinite}
+  @keyframes drift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(25px,-15px) scale(1.04)}66%{transform:translate(-15px,12px) scale(0.96)}}
+
+  .wrap{position:relative;z-index:1;max-width:900px;margin:0 auto}
+  h1{text-align:center;font-size:32px;font-weight:200;margin-bottom:6px}
+  h1 span{color:var(--coral)}
+  .sub{text-align:center;font-size:14px;color:var(--ink2);margin-bottom:40px}
+
+  .section{margin-bottom:48px}
+  .section-num{font-size:11px;font-weight:400;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px}
+  .section-title{font-size:22px;font-weight:200;margin-bottom:20px}
+
+  .icon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px}
+  .icon-card{
+    background:var(--frost);backdrop-filter:blur(40px) saturate(1.4);-webkit-backdrop-filter:blur(40px) saturate(1.4);
+    border:1px solid var(--frost-border);border-radius:16px;
+    padding:16px 8px;text-align:center;position:relative;overflow:hidden;
+  }
+  .icon-card::after{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(160deg,rgba(255,255,255,0.35) 0%,transparent 40%);pointer-events:none}
+  .icon-card svg{display:block;margin:0 auto 8px}
+  .icon-name{font-size:10px;color:var(--ink2);position:relative;z-index:1}
+  .icon-use{font-size:9px;color:var(--ink3);margin-top:2px;position:relative;z-index:1}
+
+  .icon-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:24px}
+  .icon-demo{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .icon-demo-label{font-size:10px;color:var(--ink3)}
+
+  .frost{background:var(--frost);backdrop-filter:blur(40px) saturate(1.4);-webkit-backdrop-filter:blur(40px) saturate(1.4);border:1px solid var(--frost-border);border-radius:20px;position:relative;overflow:hidden;padding:20px}
+  .frost::after{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(160deg,rgba(255,255,255,0.35) 0%,transparent 40%);pointer-events:none}
+</style>
+</head>
+<body>
+
+<div class="ambient">
+  <div class="orb" style="width:350px;height:350px;background:rgba(245,210,170,0.18);top:-5%;right:-5%"></div>
+  <div class="orb" style="width:300px;height:300px;background:rgba(255,180,140,0.12);bottom:5%;left:-5%;animation-delay:-10s"></div>
+</div>
+
+<div class="wrap">
+
+<h1>小肥路书 <span>Icons</span></h1>
+<p class="sub">SVG Icon System · stroke-width 1.8 · 24×24 viewBox · round cap/join</p>
+
+<!-- Navigation -->
+<div class="section">
+  <div class="section-num">01 — Navigation</div>
+  <div class="section-title">导航与操作</div>
+  <div class="icon-grid">
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      <div class="icon-name">back</div>
+      <div class="icon-use">返回</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <div class="icon-name">plus</div>
+      <div class="icon-use">添加</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <div class="icon-name">close</div>
+      <div class="icon-use">关闭</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      <div class="icon-name">more-h</div>
+      <div class="icon-use">更多（横）</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+      <div class="icon-name">more-v</div>
+      <div class="icon-use">更多（竖）</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <div class="icon-name">search</div>
+      <div class="icon-use">搜索</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      <div class="icon-name">chevron-r</div>
+      <div class="icon-use">跳转</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      <div class="icon-name">chevron-d</div>
+      <div class="icon-use">下拉</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Tab Bar -->
+<div class="section">
+  <div class="section-num">02 — Tab Bar</div>
+  <div class="section-title">底部导航</div>
+  <div class="icon-grid">
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+      <div class="icon-name">map (outline)</div>
+      <div class="icon-use">旅程 tab</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" opacity="0.85"/><line x1="8" y1="2" x2="8" y2="18" stroke="white" stroke-width="1.5"/><line x1="16" y1="6" x2="16" y2="22" stroke="white" stroke-width="1.5"/></svg>
+      <div class="icon-name">map (filled)</div>
+      <div class="icon-use">旅程 active</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <div class="icon-name">user (outline)</div>
+      <div class="icon-use">我的 tab</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <div class="icon-name">user (filled)</div>
+      <div class="icon-use">我的 active</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Travel & Schedule -->
+<div class="section">
+  <div class="section-num">03 — Travel & Schedule</div>
+  <div class="section-title">旅程与行程</div>
+  <div class="icon-grid">
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+      <div class="icon-name">navigate</div>
+      <div class="icon-use">导航</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <div class="icon-name">pin</div>
+      <div class="icon-use">地点标注</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      <div class="icon-name">hotel</div>
+      <div class="icon-use">酒店/住宿</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <div class="icon-name">clock</div>
+      <div class="icon-use">时间</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <div class="icon-name">calendar</div>
+      <div class="icon-use">日期选择</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      <div class="icon-name">list</div>
+      <div class="icon-use">列表视图</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+      <div class="icon-name">map-view</div>
+      <div class="icon-use">地图视图</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Actions -->
+<div class="section">
+  <div class="section-num">04 — Actions</div>
+  <div class="section-title">操作</div>
+  <div class="icon-grid">
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      <div class="icon-name">edit</div>
+      <div class="icon-use">编辑</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      <div class="icon-name">copy</div>
+      <div class="icon-use">克隆/复制</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+      <div class="icon-name">trash</div>
+      <div class="icon-use">删除</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+      <div class="icon-name">upload</div>
+      <div class="icon-use">上传/导入</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <div class="icon-name">image</div>
+      <div class="icon-use">截图/照片</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      <div class="icon-name">camera</div>
+      <div class="icon-use">拍照/头像</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+      <div class="icon-name">link</div>
+      <div class="icon-use">链接/邀请</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      <div class="icon-name">check</div>
+      <div class="icon-use">完成/选中</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Profile & Settings -->
+<div class="section">
+  <div class="section-num">05 — Profile & Settings</div>
+  <div class="section-title">个人与设置</div>
+  <div class="icon-grid">
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      <div class="icon-name">users</div>
+      <div class="icon-use">协作者</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <div class="icon-name">settings</div>
+      <div class="icon-use">设置</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+      <div class="icon-name">key</div>
+      <div class="icon-use">API Key</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <div class="icon-name">message</div>
+      <div class="icon-use">消息</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      <div class="icon-name">moon</div>
+      <div class="icon-use">深色模式</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+      <div class="icon-name">globe</div>
+      <div class="icon-use">语言</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+      <div class="icon-name">folder</div>
+      <div class="icon-use">缓存/文件</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <div class="icon-name">info</div>
+      <div class="icon-use">版本/关于</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Luggage -->
+<div class="section">
+  <div class="section-num">06 — Luggage</div>
+  <div class="section-title">行李清单</div>
+  <div class="icon-grid">
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="7" width="14" height="14" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/><line x1="12" y1="11" x2="12" y2="17"/></svg>
+      <div class="icon-name">luggage</div>
+      <div class="icon-use">行李清单</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <div class="icon-name">check-circle</div>
+      <div class="icon-use">已打包</div>
+    </div>
+
+    <div class="icon-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+      <div class="icon-name">circle</div>
+      <div class="icon-use">未打包</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Sizes demo -->
+<div class="section">
+  <div class="section-num">07 — Sizes</div>
+  <div class="section-title">尺寸规范</div>
+  <div class="frost">
+    <div style="display:flex;gap:24px;align-items:flex-end;flex-wrap:wrap;position:relative;z-index:1">
+      <div class="icon-demo">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <div class="icon-demo-label">16px</div>
+      </div>
+      <div class="icon-demo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <div class="icon-demo-label">18px</div>
+      </div>
+      <div class="icon-demo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <div class="icon-demo-label">20px · 常用</div>
+      </div>
+      <div class="icon-demo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <div class="icon-demo-label">24px · 标准</div>
+      </div>
+      <div class="icon-demo">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <div class="icon-demo-label">28px</div>
+      </div>
+    </div>
+    <div style="margin-top:16px;font-size:12px;color:var(--ink3);position:relative;z-index:1;line-height:1.8">
+      <b style="color:var(--ink2)">ViewBox:</b> 24×24 统一 · <b style="color:var(--ink2)">Stroke:</b> 1.8px · <b style="color:var(--ink2)">Cap/Join:</b> round · <b style="color:var(--ink2)">Fill:</b> none (outline) or currentColor (filled)
+    </div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,167 @@
+<h2>编辑行程面板 — 日历宫格选天</h2>
+<p class="subtitle">参照 Vue 版 LimitDatePicker 交互，适配暖调手账风</p>
+
+<div class="section">
+  <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+
+    <!-- 普通地点编辑 -->
+    <div>
+      <div style="font-size:10px;color:#888;margin-bottom:6px;text-align:center">普通地点 — 单选某天</div>
+      <div style="background:#F5EFE6;border-radius:20px;overflow:hidden;width:220px;border:1px solid #d4c4b0;box-shadow:0 4px 20px #3d2b1f18">
+        <div style="height:60px;background:#e0d5c5;display:flex;align-items:center;justify-content:center">
+          <div style="font-size:9px;color:#a0998f">行程列表（遮罩中）</div>
+        </div>
+        <div style="background:#fff;border-radius:16px 16px 0 0;padding:14px 12px 16px;border-top:1px solid #ede5d8">
+          <div style="width:32px;height:3px;background:#ddd;border-radius:2px;margin:0 auto 11px"></div>
+          <div style="font-size:11px;font-weight:700;color:#3d2b1f;margin-bottom:12px">编辑地点</div>
+
+          <!-- 名称 -->
+          <div style="font-size:8px;color:#a0998f;margin-bottom:3px">地点名称</div>
+          <div style="background:#f5efe6;border-radius:8px;padding:7px 9px;margin-bottom:10px;font-size:10px;color:#3d2b1f;border:1px solid #e0d5c5">故宫博物院</div>
+
+          <!-- 安排在哪天 — 日历宫格 -->
+          <div style="font-size:8px;color:#a0998f;margin-bottom:6px">安排在哪天</div>
+          <div style="background:#f5efe6;border-radius:10px;padding:8px;border:1px solid #e0d5c5;margin-bottom:10px">
+            <!-- 宫格：3列（旅程5天） -->
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px">
+              <!-- Day 1 -->
+              <div style="background:#c4713a;border-radius:7px;padding:5px 3px;text-align:center">
+                <div style="font-size:10px;font-weight:700;color:#fff">第1天</div>
+                <div style="font-size:7px;color:#fff9;margin-top:1px">周三</div>
+              </div>
+              <!-- Day 2 -->
+              <div style="background:#fff;border-radius:7px;padding:5px 3px;text-align:center;border:1px solid #e0d5c5">
+                <div style="font-size:10px;font-weight:600;color:#3d2b1f">第2天</div>
+                <div style="font-size:7px;color:#a0998f;margin-top:1px">周四</div>
+              </div>
+              <!-- Day 3 -->
+              <div style="background:#fff;border-radius:7px;padding:5px 3px;text-align:center;border:1px solid #e0d5c5">
+                <div style="font-size:10px;font-weight:600;color:#3d2b1f">第3天</div>
+                <div style="font-size:7px;color:#a0998f;margin-top:1px">周五</div>
+              </div>
+              <!-- Day 4 -->
+              <div style="background:#fff;border-radius:7px;padding:5px 3px;text-align:center;border:1px solid #e0d5c5">
+                <div style="font-size:10px;font-weight:600;color:#3d2b1f">第4天</div>
+                <div style="font-size:7px;color:#a0998f;margin-top:1px">周六</div>
+              </div>
+              <!-- Day 5 -->
+              <div style="background:#fff;border-radius:7px;padding:5px 3px;text-align:center;border:1px solid #e0d5c5">
+                <div style="font-size:10px;font-weight:600;color:#3d2b1f">第5天</div>
+                <div style="font-size:7px;color:#a0998f;margin-top:1px">周日</div>
+              </div>
+              <!-- 待规划 -->
+              <div style="background:#fff;border-radius:7px;padding:5px 3px;text-align:center;border:1.5px dashed #c4b49e">
+                <div style="font-size:10px;color:#c4b49e">待规划</div>
+                <div style="font-size:7px;color:#d4c4b0;margin-top:1px">未安排</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 时间（小时选择，12列宫格） -->
+          <div style="font-size:8px;color:#a0998f;margin-bottom:6px">时间（可选）</div>
+          <div style="background:#f5efe6;border-radius:10px;padding:8px;border:1px solid #e0d5c5;margin-bottom:12px">
+            <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:3px">
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">0</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">1</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">2</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">3</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">4</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">5</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">6</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">7</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">8</div>
+              <div style="background:#c4713a;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#fff;font-weight:700">9</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">10</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">11</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">12</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">13</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">14</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">15</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">16</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">17</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">18</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">19</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">20</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">21</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">22</div>
+              <div style="background:#fff;border-radius:5px;padding:4px 0;text-align:center;font-size:8px;color:#a0998f">23</div>
+            </div>
+          </div>
+
+          <div style="background:#c4713a;border-radius:10px;padding:9px;text-align:center;font-size:11px;font-weight:600;color:#fff">保存</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 酒店范围选择 -->
+    <div>
+      <div style="font-size:10px;color:#888;margin-bottom:6px;text-align:center">住宿 — 范围框选（hover 预览）</div>
+      <div style="background:#F5EFE6;border-radius:20px;overflow:hidden;width:220px;border:1px solid #d4c4b0;box-shadow:0 4px 20px #3d2b1f18">
+        <div style="height:60px;background:#e0d5c5;display:flex;align-items:center;justify-content:center">
+          <div style="font-size:9px;color:#a0998f">行程列表（遮罩中）</div>
+        </div>
+        <div style="background:#fff;border-radius:16px 16px 0 0;padding:14px 12px 16px;border-top:1px solid #ede5d8">
+          <div style="width:32px;height:3px;background:#ddd;border-radius:2px;margin:0 auto 11px"></div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px">
+            <div style="font-size:11px;font-weight:700;color:#3d2b1f">编辑住宿</div>
+            <div style="background:#4a7c5918;border:1px solid #4a7c5960;border-radius:5px;padding:1px 6px;font-size:8px;color:#4a7c59">住宿</div>
+          </div>
+
+          <div style="font-size:8px;color:#a0998f;margin-bottom:3px">住宿名称</div>
+          <div style="background:#f5efe6;border-radius:8px;padding:7px 9px;margin-bottom:10px;font-size:10px;color:#3d2b1f;border:1px solid #e0d5c5">北京饭店</div>
+
+          <!-- 入住/退房范围选择 -->
+          <div style="font-size:8px;color:#a0998f;margin-bottom:2px">入住 → 退房（点击起点，再点终点）</div>
+          <div style="font-size:7px;color:#c4b49e;margin-bottom:6px">已选：第1天 入住 — 第3天 退房，共2晚</div>
+          <div style="background:#f5efe6;border-radius:10px;padding:8px;border:1px solid #e0d5c5;margin-bottom:12px">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px">
+              <!-- Day 1 — 入住（选中起点） -->
+              <div style="background:#c4713a;border-radius:7px;padding:5px 3px;text-align:center;position:relative">
+                <div style="font-size:10px;font-weight:700;color:#fff">第1天</div>
+                <div style="font-size:7px;color:#fff9;margin-top:1px">周三</div>
+                <div style="position:absolute;bottom:2px;right:3px;font-size:6px;color:#fff9">入住</div>
+              </div>
+              <!-- Day 2 — 范围内（浅色高亮） -->
+              <div style="background:#e8a87c44;border-radius:7px;padding:5px 3px;text-align:center;border:1px solid #c4713a44">
+                <div style="font-size:10px;font-weight:600;color:#9b6b3a">第2天</div>
+                <div style="font-size:7px;color:#c4713a88;margin-top:1px">周四</div>
+              </div>
+              <!-- Day 3 — 退房（选中终点） -->
+              <div style="background:#c4713a;border-radius:7px;padding:5px 3px;text-align:center;position:relative">
+                <div style="font-size:10px;font-weight:700;color:#fff">第3天</div>
+                <div style="font-size:7px;color:#fff9;margin-top:1px">周五</div>
+                <div style="position:absolute;bottom:2px;right:3px;font-size:6px;color:#fff9">退房</div>
+              </div>
+              <!-- Day 4 -->
+              <div style="background:#fff;border-radius:7px;padding:5px 3px;text-align:center;border:1px solid #e0d5c5">
+                <div style="font-size:10px;font-weight:600;color:#3d2b1f">第4天</div>
+                <div style="font-size:7px;color:#a0998f;margin-top:1px">周六</div>
+              </div>
+              <!-- Day 5 -->
+              <div style="background:#fff;border-radius:7px;padding:5px 3px;text-align:center;border:1px solid #e0d5c5">
+                <div style="font-size:10px;font-weight:600;color:#3d2b1f">第5天</div>
+                <div style="font-size:7px;color:#a0998f;margin-top:1px">周日</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 备注 -->
+          <div style="font-size:8px;color:#a0998f;margin-bottom:3px">备注</div>
+          <div style="background:#f5efe6;border-radius:8px;padding:7px 9px;margin-bottom:12px;font-size:9px;color:#c4b49e;border:1px solid #e0d5c5;min-height:28px">添加备注...</div>
+
+          <div style="background:#c4713a;border-radius:10px;padding:9px;text-align:center;font-size:11px;font-weight:600;color:#fff">保存</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section">
+  <span class="label">交互说明</span>
+  <div style="background:#fff;border-radius:10px;padding:14px;border:1px solid #ede5d8;font-size:12px;color:#555;line-height:1.8">
+    <b style="color:#3d2b1f">普通地点</b>：点击宫格单选某天，再在时间宫格（0–23）点选小时。时间可不选（待排状态）。<br>
+    <b style="color:#3d2b1f">住宿</b>：第一次点击选入住天（橙色），第二次点击选退房天（橙色），中间天自动浅色高亮显示范围。"第X天 入住/退房"标签在角落提示。<br>
+    <b style="color:#3d2b1f">待规划</b>：普通地点可选"待规划"格子，不绑定具体天，出现在「?」列。
+  </div>
+</div>

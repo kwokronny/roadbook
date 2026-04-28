@@ -1,0 +1,46 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Build Flutter IPA and upload to Firebase App Distribution"
+  lane :distribute do |options|
+    version  = options[:version]  || ENV["BUILD_VERSION"] || "1.0.0"
+    notes    = options[:notes]    || ENV["BUILD_NOTES"]   || ""
+    env_file = options[:env_file] || ENV["ENV_FILE"]      || nil
+    # Build number: yyMMddHHmm, e.g. 2504271530
+    build_number = Time.now.strftime("%y%m%d%H%M")
+
+    UI.message("▶ Building version #{version} (#{build_number})")
+    UI.message("▶ Release notes: #{notes}")
+
+    # Prepend Homebrew Ruby gems bin to PATH so flutter finds the working CocoaPods
+    ENV["PATH"] = "/opt/homebrew/lib/ruby/gems/4.0.0/bin:/opt/homebrew/opt/ruby/bin:#{ENV['PATH']}"
+
+    # Absolute paths — Fastlane runs from ios/fastlane/, so we resolve from __dir__
+    flutter_root = File.expand_path("../..", __dir__)
+    export_opts  = File.join(flutter_root, "ios", "ExportOptions.plist")
+
+    # Build Flutter IPA (development signing — works with free Apple ID)
+    dart_defines = env_file ? "--dart-define-from-file='#{File.expand_path(env_file, flutter_root)}'" : ""
+    sh(
+      "cd '#{flutter_root}' && flutter build ipa --release " \
+      "--build-name=#{version} " \
+      "--build-number=#{build_number} " \
+      "--export-options-plist=#{export_opts} " \
+      "#{dart_defines}"
+    )
+
+    ipa_path = Dir["#{flutter_root}/build/ios/ipa/*.ipa"].first
+    UI.user_error!("IPA not found at #{flutter_root}/build/ios/ipa/") unless ipa_path
+
+    # Upload to Firebase App Distribution
+    token = ENV["FIREBASE_TOKEN"]
+    firebase_app_distribution(
+      app:              ENV.fetch("FIREBASE_APP_ID", ""),
+      ipa_path:         ipa_path,
+      release_notes:    notes,
+      firebase_cli_token: token.nil? || token.empty? ? nil : token,
+    )
+
+    UI.success("✅ Uploaded #{File.basename(ipa_path)} → Firebase App Distribution")
+  end
+end

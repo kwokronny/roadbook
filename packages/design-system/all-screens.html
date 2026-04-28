@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>小肥路书 · All Screens</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --canvas:#F2EDE8;--frost:rgba(255,255,255,0.52);--frost-s:rgba(255,255,255,0.72);
+    --frost-border:rgba(255,255,255,0.65);--ink:rgba(28,28,30,0.90);--ink2:rgba(28,28,30,0.50);
+    --ink3:rgba(28,28,30,0.28);--coral:#FF6B3D;--coral-t:rgba(255,107,61,0.10);
+    --dark:rgba(28,28,30,0.88);--lav:rgba(140,92,246,0.10);--lav-t:#6D3FC0;
+    --font:'Outfit',-apple-system,sans-serif;--r:24px;--pill:100px;--blur:blur(40px) saturate(1.4);
+  }
+  body{font-family:var(--font);background:var(--canvas);color:var(--ink);min-height:100vh}
+  .ambient{position:fixed;inset:0;z-index:0;overflow:hidden}
+  .ambient .orb{position:absolute;border-radius:50%;filter:blur(80px);animation:drift 25s ease-in-out infinite}
+  @keyframes drift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(25px,-15px) scale(1.04)}66%{transform:translate(-15px,12px) scale(0.96)}}
+
+  .wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:40px 20px 80px}
+  h1{text-align:center;font-size:36px;font-weight:200;margin-bottom:6px}
+  .sub{text-align:center;font-size:14px;color:var(--ink2);margin-bottom:40px}
+
+  .row{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-bottom:48px}
+  .row-label{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink3);margin-bottom:14px;padding-left:4px}
+
+  /* Phone */
+  .ph{width:320px;border-radius:32px;overflow:hidden;border:3px solid rgba(28,28,30,0.06);box-shadow:0 20px 60px rgba(28,28,30,0.10);flex-shrink:0}
+  .sc{min-height:640px;position:relative;overflow:hidden;background:var(--canvas)}
+  .sc .orb{position:absolute;border-radius:50%;filter:blur(50px)}
+
+  /* Glass helpers */
+  .g{background:var(--frost);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--frost-border);border-radius:var(--r);position:relative;overflow:hidden}
+  .g::after{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(160deg,rgba(255,255,255,0.35) 0%,transparent 40%);pointer-events:none}
+  .gs{background:var(--frost-s);backdrop-filter:blur(50px) saturate(1.8);-webkit-backdrop-filter:blur(50px) saturate(1.8);border:1px solid rgba(255,255,255,0.55);border-radius:var(--r) var(--r) 0 0;position:relative;overflow:hidden}
+  .gs::after{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(160deg,rgba(255,255,255,0.30) 0%,transparent 40%);pointer-events:none}
+
+  /* Common */
+  .bar{padding:44px 16px 8px;display:flex;align-items:center;gap:8px;position:relative;z-index:1}
+  .bar-t{font-size:30px;font-weight:200;letter-spacing:-0.02em;flex:1}
+  .dark-c{width:32px;height:32px;border-radius:50%;background:var(--dark);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+  .coral-c{width:32px;height:32px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+  .pill-toggle{display:flex;background:var(--frost);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--frost-border);border-radius:var(--pill);padding:3px}
+  .pill-btn{padding:5px 10px;border-radius:var(--pill);font-size:13px;color:var(--ink3)}
+  .pill-btn.on{background:var(--dark);color:#fff}
+
+  .search{margin:6px 16px 10px;padding:9px 12px;background:rgba(255,255,255,0.45);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.60);border-radius:14px;font-size:13px;color:var(--ink3);position:relative;z-index:1;display:flex;align-items:center;gap:6px}
+
+  .card{margin:0 16px 10px;padding:14px;position:relative;z-index:1}
+  .card-h{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
+  .card-n{font-size:16px;font-weight:500}
+  .card-d{font-size:11px;color:var(--ink3);margin-top:2px}
+  .badge{padding:2px 8px;border-radius:var(--pill);font-size:10px;font-weight:500}
+  .b-on{background:var(--coral-t);color:#D4410A}
+  .b-plan{background:rgba(28,28,30,0.06);color:var(--ink2)}
+  .b-up{background:rgba(224,133,0,0.10);color:#B56800}
+  .tags{display:flex;gap:4px;margin-top:6px}
+  .tag{padding:2px 8px;border-radius:var(--pill);font-size:10px;background:rgba(28,28,30,0.05);color:var(--ink2);border:1px solid rgba(28,28,30,0.08)}
+  .dash{margin:8px 0 4px;border:none;border-top:1px dashed rgba(28,28,30,0.08)}
+  .foot{display:flex;justify-content:space-between;align-items:center}
+  .avs{display:flex}
+  .av{width:20px;height:20px;border-radius:50%;margin-left:-4px;border:2px solid rgba(255,255,255,0.6);font-size:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:500}
+  .av:first-child{margin-left:0}
+
+  /* Dock */
+  .dock{position:absolute;bottom:16px;left:16px;right:16px;height:52px;background:rgba(255,255,255,0.30);backdrop-filter:blur(50px) saturate(1.8) brightness(1.05);-webkit-backdrop-filter:blur(50px) saturate(1.8) brightness(1.05);border:1px solid rgba(255,255,255,0.50);border-radius:var(--pill);display:flex;align-items:center;padding:4px;z-index:10;box-shadow:0 8px 32px rgba(0,0,0,0.06),inset 0 1px 0 rgba(255,255,255,0.55)}
+  .dock-ind{position:absolute;top:4px;height:44px;border-radius:var(--pill);background:rgba(255,255,255,0.45);border:1px solid rgba(255,255,255,0.60);box-shadow:0 2px 8px rgba(0,0,0,0.04),inset 0 1px 0 rgba(255,255,255,0.80);z-index:0;pointer-events:none;overflow:hidden}
+  .dock-ind::after{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(160deg,rgba(255,255,255,0.45) 0%,transparent 40%)}
+  .dtab{flex:1;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;z-index:1}
+  .dtab .di{font-size:18px;line-height:1}
+  .dtab .dl{font-size:9px;margin-top:1px}
+  .dtab.on .di,.dtab.on .dl{color:var(--coral);font-weight:500}
+  .dtab:not(.on) .di,.dtab:not(.on) .dl{color:var(--ink3)}
+
+  /* Day bar */
+  .daybar{display:flex;align-items:center;gap:2px;padding:6px 16px;position:relative;z-index:1;overflow-x:auto}
+  .daybar::-webkit-scrollbar{display:none}
+  .day{padding:6px 14px;border-radius:var(--pill);display:flex;flex-direction:column;align-items:center;border:1px solid transparent;flex-shrink:0}
+  .day.on{background:rgba(255,255,255,0.55);border-color:rgba(255,255,255,0.70);box-shadow:0 2px 8px rgba(0,0,0,0.04);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+  .day .dn{font-size:13px;font-weight:500;color:var(--ink3)}
+  .day .dw{font-size:9px;color:var(--ink3);margin-top:1px}
+  .day.on .dn,.day.on .dw{color:var(--coral)}
+  .daybar-arrow{flex-shrink:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--ink3)}
+
+  /* Schedule card */
+  .scard{margin:0 16px 14px;padding:12px;position:relative;z-index:1}
+  .scard.scard-dark{background:rgba(20,30,48,0.88)!important;backdrop-filter:blur(40px) saturate(1.4);-webkit-backdrop-filter:blur(40px) saturate(1.4);border:1px solid rgba(255,255,255,0.08)!important}
+  .scard.scard-dark::after{background:linear-gradient(160deg,rgba(255,255,255,0.08) 0%,transparent 40%)!important}
+  .scard-dark .sn{color:#fff}
+  .scard-dark .sa{color:rgba(255,255,255,0.60)}
+  .scard-dark .snote{color:rgba(255,255,255,0.70)}
+  .scard-dark .smore{background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.70)}
+  .srow{display:flex;gap:10px;align-items:flex-start}
+  .scov{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+  .scov.poi{background:rgba(255,107,61,0.08);border:1px solid rgba(255,107,61,0.12)}
+  .scov.hot{background:var(--lav);border:1px solid rgba(140,92,246,0.15)}
+  .scov.neu{background:rgba(28,28,30,0.04);border:1px solid rgba(28,28,30,0.06)}
+  .sbod{flex:1;min-width:0}
+  .stime{display:inline-flex;align-items:center;gap:2px;padding:2px 7px;border-radius:var(--pill);font-size:12px;font-weight:500;margin-bottom:4px}
+  .stime.tp{background:var(--coral-t);color:#D4410A}
+  .stime.th{background:rgba(140,92,246,0.15);color:var(--lav-t);font-size:15px;padding:4px 11px;letter-spacing:-0.01em}
+  .stime.tu{background:rgba(28,28,30,0.05);color:var(--ink3)}
+  .stime svg{flex-shrink:0;opacity:0.7}
+  .sn{font-size:17px;font-weight:500;margin-bottom:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .sa{font-size:11px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .smore{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(28,28,30,0.06);display:flex;align-items:center;justify-content:center;color:var(--ink3);z-index:2}
+  .snav-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:var(--pill);background:var(--coral);color:#fff;font-size:12px;font-weight:400;margin-top:8px;position:relative;z-index:1;box-shadow:0 2px 8px rgba(255,107,61,0.25)}
+  .scard-upper{margin-bottom:0!important;border-radius:var(--r) var(--r) 14px 14px!important}
+  .slower{margin:0 16px 14px;padding:16px 18px;background:rgba(28,28,30,0.04);border-radius:14px 14px 20px 20px;position:relative;z-index:1}
+  .slower-dark{background:rgba(20,30,48,0.65);border-radius:14px 14px 20px 20px}
+  .slower-dark .snote{color:rgba(255,255,255,0.60)}
+  .slower-dark .sph{background:rgba(255,255,255,0.10)}
+  .snote{font-size:12px;color:var(--ink2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .sphotos{display:flex;gap:4px;margin-bottom:6px}
+  .sph{width:40px;height:40px;border-radius:8px;background:rgba(28,28,30,0.05)}
+  .slower-btn{font-size:11px;color:var(--ink3);display:flex;align-items:center;gap:2px}
+
+  /* Sheet overlay */
+  .sheet-wrap{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;justify-content:flex-end}
+  .sheet-dim{flex:1;background:rgba(0,0,0,0.15)}
+  .sheet{padding:16px 16px 24px}
+  .sheet .handle{width:36px;height:4px;border-radius:2px;background:rgba(28,28,30,0.16);margin:0 auto 14px}
+  .sheet .sh-head{display:flex;align-items:center;margin-bottom:16px}
+  .sheet .sh-title{font-size:20px;font-weight:300;flex:1}
+  .sheet .sh-close{width:26px;height:26px;border-radius:50%;background:rgba(28,28,30,0.10);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--ink2)}
+
+  /* Form row (iOS left-right) */
+  .fcard{background:#fff;border-radius:14px;margin-bottom:14px}
+  .frow{display:flex;align-items:center;padding:12px 14px}
+  .frow-l{font-size:14px;color:var(--ink);width:60px;flex-shrink:0}
+  .frow-r{flex:1;text-align:right;font-size:14px;color:var(--ink3)}
+  .frow-div{margin-left:14px;border-top:1px solid rgba(28,28,30,0.06)}
+
+  /* Dark CTA */
+  .cta{margin-top:4px;height:44px;border-radius:var(--pill);background:var(--dark);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:400;gap:6px}
+
+  /* City picker list */
+  .cp-search{margin:0 0 8px;padding:8px 12px;background:rgba(28,28,30,0.05);border-radius:10px;font-size:13px;color:var(--ink3);display:flex;align-items:center;gap:6px}
+  .cp-letter{font-size:12px;font-weight:500;color:var(--ink3);padding:8px 0 3px}
+  .cp-item{display:flex;align-items:center;padding:8px 0;font-size:14px;color:var(--ink2)}
+  .cp-check{margin-left:auto;font-size:16px;color:var(--coral)}
+
+  /* Profile */
+  .pcard{margin:0 16px 8px;padding:14px;position:relative;z-index:1}
+  .prow{display:flex;align-items:center;gap:10px}
+  .pav{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,rgba(140,92,246,0.25),rgba(42,126,245,0.20));display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px}
+  .pname{font-size:16px;font-weight:500}
+  .pstats{display:flex;gap:14px;margin-top:4px}
+  .pstat{text-align:center}
+  .pstat-v{font-size:15px;font-weight:500}
+  .pstat-l{font-size:10px;color:var(--ink3)}
+  .mitem{display:flex;align-items:center;padding:10px 14px;gap:10px;position:relative;z-index:1}
+  .micon{width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;flex-shrink:0}
+  .mlabel{font-size:14px;flex:1}
+  .mchev{font-size:12px;color:var(--ink3)}
+  .mdiv{margin-left:48px;border-top:1px solid rgba(28,28,30,0.05)}
+
+  /* Discover */
+  .chips{display:flex;gap:6px;padding:0 16px 8px;overflow-x:auto;position:relative;z-index:1}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{padding:5px 12px;border-radius:var(--pill);font-size:12px;background:rgba(28,28,30,0.05);color:var(--ink2);border:1px solid rgba(28,28,30,0.06);flex-shrink:0}
+  .chip.on{background:var(--coral-t);color:#D4410A;border-color:rgba(255,107,61,0.18)}
+  .dcard{margin:0 16px 10px;border-radius:16px;overflow:hidden;position:relative;z-index:1}
+  .dcard-cover{height:80px;background:linear-gradient(135deg,rgba(255,107,61,0.12),rgba(245,210,170,0.20))}
+  .dcard-body{padding:10px 12px;background:var(--frost);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--frost-border);border-top:none}
+  .dcard-t{font-size:14px;font-weight:500;margin-bottom:2px}
+  .dcard-s{font-size:11px;color:var(--ink3)}
+
+  .section-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink3);text-align:center;margin:32px 0 16px}
+</style>
+</head>
+<body>
+
+<div class="ambient">
+  <div class="orb" style="width:350px;height:350px;background:rgba(245,210,170,0.18);top:-5%;right:-5%;"></div>
+  <div class="orb" style="width:300px;height:300px;background:rgba(255,180,140,0.12);bottom:5%;left:-5%;animation-delay:-10s"></div>
+</div>
+
+<div class="wrap">
+
+<h1>小肥路书 · Frosted Warmth</h1>
+<p class="sub">All Screens & Sheets — based on design spec 2026-04-10</p>
+
+<!-- ═══ PAGES ═══ -->
+<div class="section-label">Pages</div>
+
+<div class="row">
+
+<!-- 1. Travel List -->
+<div class="ph"><div class="sc">
+  <div class="orb" style="width:240px;height:240px;background:rgba(255,107,61,0.10);top:-8%;right:-12%"></div>
+  <div class="orb" style="width:180px;height:180px;background:rgba(245,210,170,0.14);bottom:12%;left:-8%"></div>
+  <div class="bar"><div class="bar-t">旅程</div><div class="dark-c">＋</div></div>
+  <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 搜索旅行计划...</div>
+  <div class="g card">
+    <div class="card-h"><div><div class="card-n">东京自由行</div><div class="card-d">04/10 — 04/17</div></div><div class="badge b-on">旅行中</div></div>
+    <div class="tags"><span class="tag">东京</span><span class="tag">大阪</span></div>
+    <hr class="dash"><div class="foot"><div class="avs"><div class="av" style="background:var(--coral)">R</div><div class="av" style="background:#8C5CF6">L</div></div><div style="font-size:11px;color:var(--ink3)">7天</div></div>
+  </div>
+  <div class="g card">
+    <div class="card-h"><div><div class="card-n">清迈之旅</div><div class="card-d">05/01 — 05/05</div></div><div class="badge b-plan">规划中</div></div>
+    <div class="tags"><span class="tag">清迈</span></div>
+    <hr class="dash"><div class="foot"><div class="avs"><div class="av" style="background:var(--coral)">R</div></div><div style="font-size:11px;color:var(--ink3)">4天</div></div>
+  </div>
+  <div class="g card">
+    <div class="card-h"><div><div class="card-n">首尔美食团</div><div class="card-d">06/12 — 06/16</div></div><div class="badge b-up">即将出发</div></div>
+    <div class="tags"><span class="tag">首尔</span></div>
+    <hr class="dash"><div class="foot"><div class="avs"><div class="av" style="background:var(--coral)">R</div><div class="av" style="background:#E08500">M</div></div><div style="font-size:11px;color:var(--ink3)">4天</div></div>
+  </div>
+  <div class="dock"><div class="dock-ind" style="left:4px;width:calc(50% - 4px)"></div><div class="dtab on"><span class="di"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></span><span class="dl">旅程</span></div><div class="dtab"><span class="di"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><span class="dl">我的</span></div></div>
+</div></div>
+
+<!-- 2. Travel Detail -->
+<div class="ph"><div class="sc">
+  <div class="orb" style="width:260px;height:260px;background:rgba(255,107,61,0.10);top:25%;right:-18%"></div>
+  <div class="orb" style="width:180px;height:180px;background:rgba(245,210,170,0.12);top:-5%;left:-8%"></div>
+  <div class="bar"><div class="dark-c" style="font-size:14px">‹</div><div style="flex:1"><div style="font-size:16px;font-weight:500">东京自由行</div><div style="font-size:11px;color:var(--ink3)">东京 · 大阪</div></div><div class="pill-toggle"><div class="pill-btn on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div><div class="pill-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></div></div><div class="dark-c" style="padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></div></div>
+  <div class="daybar"><div class="day on"><span class="dn">Day 1</span><span class="dw">周四</span></div><div class="day"><span class="dn">Day 2</span><span class="dw">周五</span></div><div class="day"><span class="dn">Day 3</span><span class="dw">周六</span></div><div class="day"><span class="dn">Day 4</span><span class="dw">周日</span></div><div class="day"><span class="dn">Day 5</span><span class="dw">周一</span></div><div class="daybar-arrow">›</div></div>
+
+  <!-- Hotel: dark upper + dark lower -->
+  <div class="g scard scard-dark scard-upper"><div class="srow"><div class="scov hot">🏨</div><div class="sbod"><div class="stime th">入住 15:00 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="sn">新宿格拉斯丽酒店</div><div class="sa">东京都新宿区歌舞伎町</div><div class="snav-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg> 导航前往</div></div><div class="smore" style="background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.70)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></div></div></div>
+  <div class="slower slower-dark"><div class="sphotos"><div class="sph"></div><div class="sph"></div></div><div class="snote">前台可寄存行李，哥斯拉房间在8楼</div></div>
+  <!-- POI: glass upper + tinted lower (notes only) -->
+  <div class="g scard scard-upper"><div class="srow"><div class="scov poi">🍜</div><div class="sbod"><div class="stime tp">11:30 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="sn">一兰拉面 新宿中央东口店</div><div class="sa">东京都新宿区新宿3-34-11</div><div class="snav-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg> 导航前往</div></div><div class="smore"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></div></div></div>
+  <div class="slower"><div class="snote">记得提前在机器点餐，选硬面，汤头选浓厚</div></div>
+  <!-- POI: glass upper + tinted lower (photos + notes) -->
+  <div class="g scard scard-upper"><div class="srow"><div class="scov poi">⛩</div><div class="sbod"><div class="stime tp">14:00 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="sn">明治神宫</div><div class="sa">东京都涩谷区代代木神园町</div><div class="snav-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg> 导航前往</div></div><div class="smore"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></div></div></div>
+  <div class="slower"><div class="sphotos"><div class="sph"></div><div class="sph"></div><div class="sph"></div></div><div class="snote">值得绕到本殿后面的御苑散步，入口需要500日元</div></div>
+  <!-- Unscheduled: no lower section -->
+  <div class="g scard"><div class="srow"><div class="scov neu">🛍</div><div class="sbod"><div class="stime tu">待规划</div><div class="sn">涩谷 Scramble Square</div><div class="sa">东京都涩谷区</div></div><div class="smore"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></div></div></div>
+</div></div>
+
+<div class="ph"><div class="sc">
+  <div class="orb" style="width:240px;height:240px;background:rgba(255,107,61,0.08);top:-8%;right:-10%"></div>
+  <div class="orb" style="width:180px;height:180px;background:rgba(245,210,170,0.12);bottom:15%;left:-8%"></div>
+  <div class="bar"><div class="bar-t">我的</div></div>
+  <div class="g pcard"><div class="prow"><div class="pav">R</div><div style="flex:1"><div class="pname">Ronny</div><div class="pstats"><div class="pstat"><div class="pstat-v">5</div><div class="pstat-l">旅程</div></div><div class="pstat"><div class="pstat-v">12</div><div class="pstat-l">城市</div></div><div class="pstat"><div class="pstat-v">38</div><div class="pstat-l">天数</div></div></div></div><div style="font-size:14px;color:var(--ink3)">›</div></div></div>
+  <div class="g pcard" style="padding:0">
+    <div class="mitem"><div class="micon" style="background:var(--coral)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><div class="mlabel">消息中心</div><div style="padding:2px 6px;border-radius:var(--pill);background:rgba(232,56,122,0.08);border:1px solid rgba(232,56,122,0.15);font-size:9px;color:#C02060">即将推出</div></div>
+    <div class="mdiv"></div>
+    <div class="mitem"><div class="micon" style="background:#34C759"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="mlabel">编辑资料</div><div class="mchev">›</div></div>
+    <div class="mdiv"></div>
+    <div class="mitem"><div class="micon" style="background:var(--ink2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9c.26.46.4.99.4 1.51V21"/></svg></div><div class="mlabel">设置</div><div class="mchev">›</div></div>
+    <div class="mdiv"></div>
+    <div class="mitem"><div class="micon" style="background:#8C5CF6"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div><div class="mlabel">API Key 管理</div><div class="mchev">›</div></div>
+  </div>
+  <div style="height:8px"></div>
+  <div class="g pcard" style="padding:0">
+    <div class="mitem" style="justify-content:center"><div class="mlabel" style="text-align:center;color:#FF3B30;font-weight:500">退出登录</div></div>
+  </div>
+  <div class="dock"><div class="dock-ind" style="left:calc(50% + 1px);width:calc(50% - 4px)"></div><div class="dtab"><span class="di"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></span><span class="dl">旅程</span></div><div class="dtab on"><span class="di"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><span class="dl">我的</span></div></div>
+</div></div>
+
+</div>
+
+<!-- ═══ SHEETS ═══ -->
+<div class="section-label">Detail States</div>
+
+<div class="row">
+
+<!-- Map View -->
+<div class="ph"><div class="sc">
+  <div class="orb" style="width:260px;height:260px;background:rgba(255,107,61,0.08);top:25%;right:-18%"></div>
+  <div class="bar"><div class="dark-c" style="font-size:14px">‹</div><div style="flex:1"><div style="font-size:16px;font-weight:500">东京自由行</div><div style="font-size:11px;color:var(--ink3)">东京 · 大阪</div></div><div class="pill-toggle"><div class="pill-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div><div class="pill-btn on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></div></div><div class="dark-c" style="padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></div></div>
+  <!-- Map area -->
+  <div style="position:absolute;top:88px;left:12px;right:12px;bottom:12px;z-index:1;border-radius:20px;overflow:hidden;background:linear-gradient(180deg,#E8E4DF 0%,#DDD8D2 100%);border:1px solid rgba(28,28,30,0.06)">
+    <!-- Fake map content -->
+    <div style="position:absolute;inset:0;opacity:0.15">
+      <div style="position:absolute;top:20%;left:15%;width:60%;height:1px;background:var(--ink3)"></div>
+      <div style="position:absolute;top:40%;left:10%;width:70%;height:1px;background:var(--ink3)"></div>
+      <div style="position:absolute;top:60%;left:20%;width:50%;height:1px;background:var(--ink3)"></div>
+      <div style="position:absolute;top:20%;left:30%;width:1px;height:50%;background:var(--ink3)"></div>
+      <div style="position:absolute;top:10%;left:55%;width:1px;height:60%;background:var(--ink3)"></div>
+    </div>
+    <!-- Map markers -->
+    <div style="position:absolute;top:25%;left:30%;display:flex;flex-direction:column;align-items:center">
+      <div style="padding:3px 8px;border-radius:8px;background:var(--coral);color:#fff;font-size:10px;font-weight:500;white-space:nowrap;box-shadow:0 2px 8px rgba(255,107,61,0.30)">D1 · 🏨 酒店</div>
+      <div style="width:2px;height:8px;background:var(--coral)"></div>
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--coral);box-shadow:0 0 0 3px rgba(255,107,61,0.20)"></div>
+    </div>
+    <div style="position:absolute;top:45%;left:50%;display:flex;flex-direction:column;align-items:center">
+      <div style="padding:3px 8px;border-radius:8px;background:var(--coral);color:#fff;font-size:10px;font-weight:500;white-space:nowrap;box-shadow:0 2px 8px rgba(255,107,61,0.30)">D1 · 🍜 一兰</div>
+      <div style="width:2px;height:8px;background:var(--coral)"></div>
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--coral);box-shadow:0 0 0 3px rgba(255,107,61,0.20)"></div>
+    </div>
+    <div style="position:absolute;top:62%;left:35%;display:flex;flex-direction:column;align-items:center">
+      <div style="padding:3px 8px;border-radius:8px;background:var(--coral);color:#fff;font-size:10px;font-weight:500;white-space:nowrap;box-shadow:0 2px 8px rgba(255,107,61,0.30)">D1 · ⛩ 明治神宫</div>
+      <div style="width:2px;height:8px;background:var(--coral)"></div>
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--coral);box-shadow:0 0 0 3px rgba(255,107,61,0.20)"></div>
+    </div>
+    <!-- Day selector bar on map -->
+    <div style="position:absolute;top:10px;left:10px;right:10px;display:flex;gap:4px">
+      <div style="padding:4px 10px;border-radius:var(--pill);background:var(--coral);color:#fff;font-size:11px;font-weight:500">Day 1</div>
+      <div style="padding:4px 10px;border-radius:var(--pill);background:rgba(255,255,255,0.70);backdrop-filter:blur(12px);font-size:11px;color:var(--ink2)">Day 2</div>
+      <div style="padding:4px 10px;border-radius:var(--pill);background:rgba(255,255,255,0.70);backdrop-filter:blur(12px);font-size:11px;color:var(--ink2)">Day 3</div>
+      <div style="padding:4px 10px;border-radius:var(--pill);background:rgba(255,255,255,0.70);backdrop-filter:blur(12px);font-size:11px;color:var(--ink2)">待规划</div>
+    </div>
+    <!-- Search FAB -->
+    <div style="position:absolute;bottom:12px;right:12px;width:44px;height:44px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 16px rgba(255,107,61,0.30)">🔍</div>
+    <!-- Bottom info bar -->
+    <div style="position:absolute;bottom:12px;left:12px;right:68px;padding:10px 12px;border-radius:16px;background:rgba(255,255,255,0.85);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.70);box-shadow:0 4px 16px rgba(0,0,0,0.06)">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="font-size:13px;font-weight:500;flex:1;min-width:0">🍜 一兰拉面 新宿中央东口店</div>
+        <div style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:var(--coral);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(255,107,61,0.25)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></div>
+      </div>
+      <div style="font-size:11px;color:var(--ink3);margin-top:2px">11:30 · 东京都新宿区新宿3-34-11</div>
+      <div style="margin-top:6px;display:flex;gap:4px">
+        <div style="width:32px;height:32px;border-radius:6px;background:rgba(28,28,30,0.05)"></div>
+        <div style="width:32px;height:32px;border-radius:6px;background:rgba(28,28,30,0.05)"></div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:flex-end"><span style="font-size:10px;color:var(--coral);font-weight:500">查看备注 ›</span></div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- Multi-select State -->
+
+
+<!-- Map Search State -->
+<div class="ph"><div class="sc">
+  <div class="orb" style="width:260px;height:260px;background:rgba(255,107,61,0.08);top:25%;right:-18%"></div>
+  <div class="bar"><div class="dark-c" style="padding:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></div><div style="flex:1"><div style="font-size:16px;font-weight:500">东京自由行</div><div style="font-size:11px;color:var(--ink3)">东京 · 大阪</div></div><div class="pill-toggle"><div class="pill-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div><div class="pill-btn on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></div></div><div class="dark-c" style="padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></div></div>
+  <!-- Map with search overlay -->
+  <div style="position:absolute;top:88px;left:12px;right:12px;bottom:12px;z-index:1;border-radius:20px;overflow:hidden;background:linear-gradient(180deg,#E8E4DF 0%,#DDD8D2 100%);border:1px solid rgba(28,28,30,0.06)">
+    <!-- Fake map roads -->
+    <div style="position:absolute;inset:0;opacity:0.15">
+      <div style="position:absolute;top:15%;left:15%;width:60%;height:1px;background:var(--ink3)"></div>
+      <div style="position:absolute;top:35%;left:10%;width:70%;height:1px;background:var(--ink3)"></div>
+      <div style="position:absolute;top:20%;left:40%;width:1px;height:30%;background:var(--ink3)"></div>
+    </div>
+    <!-- Search markers (POI results) -->
+    <div style="position:absolute;top:18%;left:25%">
+      <div style="width:28px;height:28px;border-radius:50%;background:var(--coral);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:500;box-shadow:0 2px 8px rgba(255,107,61,0.30)">1</div>
+    </div>
+    <div style="position:absolute;top:32%;left:55%">
+      <div style="width:28px;height:28px;border-radius:50%;background:var(--coral);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:500;box-shadow:0 2px 8px rgba(255,107,61,0.30)">2</div>
+    </div>
+    <div style="position:absolute;top:22%;left:70%">
+      <div style="width:28px;height:28px;border-radius:50%;background:var(--coral);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:500;box-shadow:0 2px 8px rgba(255,107,61,0.30)">3</div>
+    </div>
+
+    <!-- Search bar at top -->
+    <div style="position:absolute;top:10px;left:10px;right:10px;display:flex;gap:8px;align-items:center">
+      <div style="flex:1;padding:8px 10px;border-radius:14px;background:rgba(255,255,255,0.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.70);display:flex;align-items:center;gap:6px;box-shadow:0 2px 12px rgba(0,0,0,0.06)">
+        <div style="padding:4px 10px;border-radius:100px;background:rgba(255,107,61,0.10);border:1px solid rgba(255,107,61,0.18);display:flex;align-items:center;gap:3px;flex-shrink:0">
+          <span style="font-size:11px;color:#D4410A;font-weight:500">东京</span>
+          <span style="font-size:10px;color:rgba(255,107,61,0.50)">▾</span>
+        </div>
+        <span style="font-size:14px;color:var(--ink);font-weight:400">拉面</span>
+        <span style="flex:1"></span>
+        <span style="font-size:14px;color:var(--ink3)">✕</span>
+      </div>
+      <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.70);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--ink2);box-shadow:0 2px 8px rgba(0,0,0,0.05)">✕</div>
+    </div>
+
+    <!-- Draggable search results sheet (bottom) -->
+    <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,0.88);backdrop-filter:blur(40px) saturate(1.8);-webkit-backdrop-filter:blur(40px) saturate(1.8);border-top:1px solid rgba(255,255,255,0.60);border-radius:20px 20px 0 0;padding:0;box-shadow:0 -4px 20px rgba(0,0,0,0.06)">
+      <!-- Drag handle -->
+      <div style="display:flex;justify-content:center;padding:8px 0 6px"><div style="width:36px;height:4px;border-radius:2px;background:rgba(28,28,30,0.12)"></div></div>
+      <!-- Results count -->
+      <div style="padding:0 16px 8px;font-size:12px;color:var(--ink3)">找到 3 个结果</div>
+      <!-- Result items -->
+      <div style="padding:10px 16px;display:flex;align-items:center;gap:10px;border-top:1px solid rgba(28,28,30,0.04)">
+        <div style="width:22px;height:22px;border-radius:50%;background:var(--coral);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:500;flex-shrink:0">1</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:500">一兰拉面 新宿中央东口店</div>
+          <div style="font-size:11px;color:var(--ink3)">东京都新宿区新宿3-34-11</div>
+        </div>
+        <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,107,61,0.10);border:1px solid rgba(255,107,61,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D4410A" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </div>
+      <div style="padding:10px 16px;display:flex;align-items:center;gap:10px;border-top:1px solid rgba(28,28,30,0.04)">
+        <div style="width:22px;height:22px;border-radius:50%;background:var(--coral);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:500;flex-shrink:0">2</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:500">一兰拉面 涩谷店</div>
+          <div style="font-size:11px;color:var(--ink3)">东京都涩谷区神南1-22-7</div>
+        </div>
+        <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,107,61,0.10);border:1px solid rgba(255,107,61,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D4410A" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </div>
+      <div style="padding:10px 16px;display:flex;align-items:center;gap:10px;border-top:1px solid rgba(28,28,30,0.04)">
+        <div style="width:22px;height:22px;border-radius:50%;background:var(--coral);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:500;flex-shrink:0">3</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:500">一兰拉面 上野御徒町店</div>
+          <div style="font-size:11px;color:var(--ink3)">东京都台东区上野6-3-7</div>
+        </div>
+        <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,107,61,0.10);border:1px solid rgba(255,107,61,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D4410A" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<div class="ph"><div class="sc">
+  <div class="orb" style="width:260px;height:260px;background:rgba(255,107,61,0.10);top:25%;right:-18%"></div>
+  <div class="orb" style="width:180px;height:180px;background:rgba(245,210,170,0.12);top:-5%;left:-8%"></div>
+  <div class="bar"><div class="dark-c" style="font-size:14px">‹</div><div style="flex:1"><div style="font-size:16px;font-weight:500">东京自由行</div><div style="font-size:11px;color:var(--ink3)">东京 · 大阪</div></div><div class="pill-toggle"><div class="pill-btn on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div><div class="pill-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></div></div><div class="dark-c" style="padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></div></div>
+  <!-- Selection toolbar -->
+  <div style="margin:0 16px 8px;padding:8px 12px;border-radius:14px;background:rgba(255,255,255,0.60);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.65);display:flex;align-items:center;gap:10px;position:relative;z-index:1">
+    <div style="width:22px;height:22px;border-radius:50%;background:var(--coral);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px">✓</div>
+    <div style="font-size:12px;color:var(--ink2)">已选 2 项</div>
+    <div style="flex:1"></div>
+    <div style="width:28px;height:28px;border-radius:8px;background:rgba(28,28,30,0.06);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--ink2)">📁</div>
+    <div style="width:28px;height:28px;border-radius:8px;background:rgba(255,59,48,0.08);display:flex;align-items:center;justify-content:center;font-size:14px;color:#FF3B30">🗑</div>
+    <div style="width:28px;height:28px;border-radius:8px;background:rgba(28,28,30,0.06);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--ink2)">✕</div>
+  </div>
+  <!-- Cards with checkboxes -->
+  <div style="display:flex;align-items:flex-start;padding:0 16px 14px;gap:8px;position:relative;z-index:1">
+    <div style="padding-top:14px"><div style="width:22px;height:22px;border-radius:50%;background:var(--coral);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px">✓</div></div>
+    <div class="g" style="flex:1;padding:12px;border-radius:20px">
+      <div style="position:relative;z-index:1"><div class="srow"><div class="scov hot">🏨</div><div class="sbod"><div class="stime th">入住 15:00</div><div class="sn">新宿格拉斯丽酒店</div><div class="sa">东京都新宿区</div></div></div></div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:flex-start;padding:0 16px 14px;gap:8px;position:relative;z-index:1">
+    <div style="padding-top:14px"><div style="width:22px;height:22px;border-radius:50%;background:var(--coral);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px">✓</div></div>
+    <div class="g" style="flex:1;padding:12px;border-radius:20px">
+      <div style="position:relative;z-index:1"><div class="srow"><div class="scov poi">🍜</div><div class="sbod"><div class="stime tp">11:30</div><div class="sn">一兰拉面</div><div class="sa">东京都新宿区新宿3-34-11</div></div></div></div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:flex-start;padding:0 16px 14px;gap:8px;position:relative;z-index:1">
+    <div style="padding-top:14px"><div style="width:22px;height:22px;border-radius:50%;border:2px solid var(--ink3)"></div></div>
+    <div class="g" style="flex:1;padding:12px;border-radius:20px">
+      <div style="position:relative;z-index:1"><div class="srow"><div class="scov poi">⛩</div><div class="sbod"><div class="stime tp">14:00</div><div class="sn">明治神宫</div><div class="sa">东京都涩谷区</div></div></div></div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:flex-start;padding:0 16px 14px;gap:8px;position:relative;z-index:1">
+    <div style="padding-top:14px"><div style="width:22px;height:22px;border-radius:50%;border:2px solid var(--ink3)"></div></div>
+    <div class="g" style="flex:1;padding:12px;border-radius:20px">
+      <div style="position:relative;z-index:1"><div class="srow"><div class="scov neu">🛍</div><div class="sbod"><div class="stime tu">待规划</div><div class="sn">涩谷 Scramble Square</div><div class="sa">东京都涩谷区</div></div></div></div>
+    </div>
+  </div>
+</div></div>
+
+</div>
+
+<div class="section-label">Profile Sub-Pages</div>
+
+<div class="row">
+
+<!-- Edit Profile -->
+<div class="ph"><div class="sc">
+  <div class="orb" style="width:220px;height:220px;background:rgba(255,107,61,0.08);top:-5%;right:-10%"></div>
+  <div class="orb" style="width:180px;height:180px;background:rgba(245,210,170,0.12);bottom:15%;left:-8%"></div>
+  <div class="bar">
+    <div class="dark-c" style="font-size:14px">‹</div>
+    <div style="flex:1;font-size:16px;font-weight:500">编辑资料</div>
+    <div style="font-size:14px;color:var(--coral);font-weight:500">保存</div>
+  </div>
+  <!-- Avatar -->
+  <div style="display:flex;flex-direction:column;align-items:center;padding:20px 0;position:relative;z-index:1">
+    <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,rgba(140,92,246,0.25),rgba(42,126,245,0.20));display:flex;align-items:center;justify-content:center;position:relative">
+      <span style="font-size:28px;color:#fff">R</span>
+      <div style="position:absolute;bottom:0;right:0;width:24px;height:24px;border-radius:50%;background:var(--dark);display:flex;align-items:center;justify-content:center;border:2px solid var(--canvas)">
+        <span style="color:#fff"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></span>
+      </div>
+    </div>
+  </div>
+  <!-- Form -->
+  <div style="margin:0 16px;position:relative;z-index:1">
+    <div class="fcard">
+      <div class="frow"><div class="frow-l">用户名</div><div class="frow-r" style="color:var(--ink)">ronny</div></div>
+      <div class="frow-div"></div>
+      <div class="frow"><div class="frow-l">昵称</div><div class="frow-r" style="color:var(--ink)">Ronny</div></div>
+      <div class="frow-div"></div>
+      <div class="frow"><div class="frow-l">密码</div><div class="frow-r" style="display:flex;align-items:center;gap:4px">修改密码 <span style="font-size:12px">›</span></div></div>
+    </div>
+    <div style="font-size:11px;color:var(--ink3);padding:8px 4px">用户名仅用于登录，昵称显示在旅程中</div>
+  </div>
+</div></div>
+
+<!-- Settings -->
+<div class="ph"><div class="sc">
+  <div class="orb" style="width:220px;height:220px;background:rgba(245,210,170,0.10);top:-5%;left:-8%"></div>
+  <div class="orb" style="width:180px;height:180px;background:rgba(255,107,61,0.06);bottom:15%;right:-10%"></div>
+  <div class="bar">
+    <div class="dark-c" style="font-size:14px">‹</div>
+    <div style="flex:1;font-size:16px;font-weight:500">设置</div>
+  </div>
+  <div style="padding:0 16px;position:relative;z-index:1">
+    <!-- General -->
+    <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);padding:14px 4px 6px">通用</div>
+    <div class="g" style="padding:0;border-radius:16px;margin-bottom:12px">
+      <div class="mitem" style="position:relative;z-index:1">
+        <div class="micon" style="background:var(--ink2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></div>
+        <div class="mlabel">深色模式</div>
+        <div style="width:40px;height:22px;border-radius:11px;background:rgba(28,28,30,0.08);position:relative"><div style="width:18px;height:18px;border-radius:50%;background:rgba(28,28,30,0.25);position:absolute;top:2px;left:2px"></div></div>
+      </div>
+      <div class="mdiv"></div>
+      <div class="mitem" style="position:relative;z-index:1">
+        <div class="micon" style="background:#2A7EF5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
+        <div class="mlabel">语言</div>
+        <div style="font-size:12px;color:var(--ink3);display:flex;align-items:center;gap:4px">简体中文 <span>›</span></div>
+      </div>
+    </div>
+    <!-- Storage -->
+    <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);padding:6px 4px 6px">存储</div>
+    <div class="g" style="padding:0;border-radius:16px;margin-bottom:12px">
+      <div class="mitem" style="position:relative;z-index:1">
+        <div class="micon" style="background:#E08500"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div>
+        <div class="mlabel">清除缓存</div>
+        <div style="font-size:12px;color:var(--ink3)">12.5 MB</div>
+      </div>
+    </div>
+    <!-- About -->
+    <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);padding:6px 4px 6px">关于</div>
+    <div class="g" style="padding:0;border-radius:16px">
+      <div class="mitem" style="position:relative;z-index:1">
+        <div class="micon" style="background:#34C759"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
+        <div class="mlabel">版本</div>
+        <div style="font-size:12px;color:var(--ink3)">v1.0.6</div>
+      </div>
+      <div class="mdiv"></div>
+      <div class="mitem" style="position:relative;z-index:1">
+        <div class="micon" style="background:var(--coral)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+        <div class="mlabel">反馈</div>
+        <div class="mchev">›</div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- API Keys -->
+<div class="ph"><div class="sc">
+  <div class="orb" style="width:220px;height:220px;background:rgba(140,92,246,0.06);top:-5%;right:-10%"></div>
+  <div class="orb" style="width:180px;height:180px;background:rgba(245,210,170,0.10);bottom:15%;left:-8%"></div>
+  <div class="bar">
+    <div class="dark-c" style="font-size:14px">‹</div>
+    <div style="flex:1;font-size:16px;font-weight:500">API Key 管理</div>
+    <div class="dark-c" style="padding:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+  </div>
+  <div style="padding:0 16px;position:relative;z-index:1">
+    <!-- API Key card 1 -->
+    <div class="g" style="padding:14px;border-radius:16px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:10px;position:relative;z-index:1">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(140,92,246,0.10);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:500">MCP Assistant</div>
+          <div style="font-size:11px;color:var(--ink3);font-family:monospace;margin-top:1px">rb_sk_••••••a3f8</div>
+          <div style="font-size:10px;color:var(--ink3);margin-top:2px">最近使用: 2026/04/09</div>
+        </div>
+        <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,59,48,0.08);display:flex;align-items:center;justify-content:center;font-size:13px;color:#FF3B30;flex-shrink:0">🗑</div>
+      </div>
+    </div>
+    <!-- API Key card 2 -->
+    <div class="g" style="padding:14px;border-radius:16px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:10px;position:relative;z-index:1">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(140,92,246,0.10);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:500">Cursor Agent</div>
+          <div style="font-size:11px;color:var(--ink3);font-family:monospace;margin-top:1px">rb_sk_••••••7d21</div>
+          <div style="font-size:10px;color:var(--ink3);margin-top:2px">最近使用: 2026/04/07</div>
+        </div>
+        <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,59,48,0.08);display:flex;align-items:center;justify-content:center;font-size:13px;color:#FF3B30;flex-shrink:0">🗑</div>
+      </div>
+    </div>
+    <!-- Help text -->
+    <div style="text-align:center;padding:20px 0">
+      <div style="font-size:12px;color:var(--ink3);line-height:1.6">创建 API Key 后可让 AI 助手<br>通过 MCP 协议管理你的行程</div>
+    </div>
+  </div>
+</div></div>
+
+</div>
+
+<div class="section-label">Bottom Sheets</div>
+
+<div class="row">
+
+<!-- Sheet: Travel Form -->
+<div class="ph"><div class="sc" style="min-height:580px">
+  <div class="orb" style="width:200px;height:200px;background:rgba(255,107,61,0.08);top:5%;right:-10%"></div>
+  <div class="sheet-wrap">
+    <div class="sheet-dim"></div>
+    <div class="gs sheet" style="height:75%;display:flex;flex-direction:column;overflow:hidden">
+      <div class="handle"></div>
+      <div class="sh-head"><div class="sh-title">新建旅程</div><div class="sh-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div></div>
+      <div class="fcard">
+        <div class="frow"><div class="frow-l">名称</div><div class="frow-r">输入旅程名称</div></div>
+        <div class="frow-div"></div>
+        <div class="frow"><div class="frow-l">目的地</div><div class="frow-r">选择城市 ›</div></div>
+        <div class="frow-div"></div>
+        <div class="frow"><div class="frow-l">日期</div><div class="frow-r">2026/04/10 → 2026/04/14 ›</div></div>
+        <div class="frow-div"></div>
+        <div class="frow"><div class="frow-l">公开</div><div class="frow-r" style="display:flex;justify-content:flex-end"><div style="width:40px;height:22px;border-radius:11px;background:rgba(10,173,136,0.20);position:relative"><div style="width:18px;height:18px;border-radius:50%;background:#0AAD88;position:absolute;top:2px;right:2px"></div></div></div></div>
+      </div>
+      <div class="cta">创建旅程 →</div>
+    </div>
+  </div>
+</div></div>
+
+<!-- Sheet: Schedule Edit -->
+<div class="ph"><div class="sc" style="min-height:580px">
+  <div class="orb" style="width:200px;height:200px;background:rgba(245,210,170,0.12);bottom:10%;left:-8%"></div>
+  <div class="sheet-wrap">
+    <div class="sheet-dim"></div>
+    <div class="gs sheet">
+      <div class="handle"></div>
+      <div class="sh-head"><div class="sh-title">编辑行程</div><div class="sh-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div></div>
+      <div class="fcard">
+        <div class="frow"><div class="frow-l">名称</div><div class="frow-r" style="color:var(--ink)">一兰拉面 新宿中央东口店</div></div>
+        <div class="frow-div"></div>
+        <div class="frow">
+          <div class="frow-l">截图</div>
+          <div class="frow-r" style="display:flex;gap:4px;justify-content:flex-end">
+            <div style="width:44px;height:44px;border-radius:8px;background:rgba(28,28,30,0.05)"></div>
+            <div style="width:44px;height:44px;border-radius:8px;background:rgba(28,28,30,0.05)"></div>
+            <div style="width:44px;height:44px;border-radius:8px;background:rgba(28,28,30,0.04);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--ink3)">＋</div>
+          </div>
+        </div>
+        <div class="frow-div"></div>
+        <div class="frow" style="align-items:flex-start">
+          <div class="frow-l" style="padding-top:2px">备注</div>
+          <div class="frow-r" style="text-align:right;color:var(--ink2);min-height:40px;line-height:1.5">记得提前在机器点餐，选硬面、浓汤</div>
+        </div>
+      </div>
+      <div class="cta">保存修改 →</div>
+    </div>
+  </div>
+</div></div>
+
+<!-- Dialog: Calendar Picker -->
+<div class="ph"><div class="sc" style="min-height:580px;display:flex;align-items:center;justify-content:center">
+  <div class="orb" style="width:220px;height:220px;background:rgba(255,107,61,0.08);top:5%;right:-10%"></div>
+  <div class="orb" style="width:180px;height:180px;background:rgba(245,210,170,0.12);bottom:10%;left:-8%"></div>
+  <!-- Dim overlay -->
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.15);z-index:5"></div>
+  <!-- Dialog -->
+  <div class="g" style="width:calc(100% - 40px);padding:20px;z-index:10;border-radius:20px">
+    <div style="position:relative;z-index:1">
+      <!-- Header -->
+      <div style="display:flex;align-items:flex-start;margin-bottom:14px">
+        <div style="flex:1">
+          <div style="font-size:18px;font-weight:300">出行日期</div>
+          <div style="font-size:12px;color:var(--coral);margin-top:2px">已选 4/10 — 请选结束日期</div>
+        </div>
+        <div class="sh-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+      </div>
+      <!-- Month nav -->
+      <div style="display:flex;align-items:center;margin-bottom:10px">
+        <div style="width:28px;height:28px;border-radius:50%;background:rgba(28,28,30,0.05);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--ink2);cursor:pointer">‹</div>
+        <div style="flex:1;text-align:center;font-size:16px;font-weight:500">2026年4月</div>
+        <div style="width:28px;height:28px;border-radius:50%;background:rgba(28,28,30,0.05);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--ink2);cursor:pointer">›</div>
+      </div>
+      <!-- Week labels -->
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:4px">
+        <div style="font-size:11px;color:var(--ink3)">一</div>
+        <div style="font-size:11px;color:var(--ink3)">二</div>
+        <div style="font-size:11px;color:var(--ink3)">三</div>
+        <div style="font-size:11px;color:var(--ink3)">四</div>
+        <div style="font-size:11px;color:var(--ink3)">五</div>
+        <div style="font-size:11px;color:var(--ink3)">六</div>
+        <div style="font-size:11px;color:var(--ink3)">日</div>
+      </div>
+      <!-- Calendar grid -->
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;gap:2px 0">
+        <!-- Offset: April 2026 starts on Wednesday (col 3) -->
+        <div></div><div></div>
+        <!-- 1-5 -->
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">1</div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">2</div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">3</div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">4</div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">5</div>
+        <!-- 6-12 -->
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">6</div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">7</div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">8</div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">9</div>
+        <!-- 10: start date -->
+        <div style="height:34px;font-size:14px;background:linear-gradient(to right,transparent 50%,var(--coral-t) 50%);display:flex;align-items:center;justify-content:center"><span style="width:34px;height:34px;border-radius:50%;background:var(--coral);color:#fff;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0">10</span></div>
+        <!-- 11-12: in range -->
+        <div style="height:34px;font-size:14px;background:var(--coral-t);color:#D4410A;display:flex;align-items:center;justify-content:center">11</div>
+        <div style="height:34px;font-size:14px;background:var(--coral-t);color:#D4410A;display:flex;align-items:center;justify-content:center">12</div>
+        <!-- 13: in range -->
+        <div style="height:34px;font-size:14px;background:var(--coral-t);color:#D4410A;display:flex;align-items:center;justify-content:center">13</div>
+        <!-- 14: end date -->
+        <div style="height:34px;font-size:14px;background:linear-gradient(to right,var(--coral-t) 50%,transparent 50%);display:flex;align-items:center;justify-content:center"><span style="width:34px;height:34px;border-radius:50%;background:var(--coral);color:#fff;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0">14</span></div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">15</div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">16</div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">17</div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">18</div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">19</div>
+        <!-- 20-26 -->
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">20</div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">21</div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">22</div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">23</div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">24</div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">25</div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">26</div>
+        <!-- 27-30 -->
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">27</div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">28</div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">29</div>
+        <div style="padding:8px 0;font-size:14px;color:var(--ink2)">30</div>
+      </div>
+      <!-- Range summary -->
+      <div style="margin-top:14px;padding:10px 14px;border-radius:12px;background:var(--coral-t);display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:13px;color:#D4410A;font-weight:500">4/10 (周五) → 4/14 (周二)</div>
+        <div style="font-size:12px;color:#D4410A">4晚5天</div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- Sheet: City Picker -->
+<div class="ph"><div class="sc" style="min-height:580px">
+  <div class="orb" style="width:200px;height:200px;background:rgba(255,107,61,0.08);top:5%;right:-10%"></div>
+  <div class="sheet-wrap">
+    <div class="sheet-dim"></div>
+    <div class="gs sheet" style="max-height:75%;overflow-y:auto">
+      <div class="handle"></div>
+      <div class="sh-head"><div class="sh-title">选择城市</div><div style="font-size:14px;color:var(--coral);font-weight:500">完成 (2)</div></div>
+      <div class="cp-search">🔍 搜索城市或拼音</div>
+      <div style="display:flex;gap:4px;margin-bottom:10px"><span class="tag" style="background:var(--coral-t);border-color:rgba(255,107,61,0.18);color:#D4410A">东京 ✕</span><span class="tag" style="background:var(--coral-t);border-color:rgba(255,107,61,0.18);color:#D4410A">大阪 ✕</span></div>
+      <div style="flex:1;overflow-y:auto;padding:0 16px"><div class="cp-letter">B</div>
+      <div class="cp-item">北京</div>
+      <div class="cp-item">保定</div>
+      <div class="cp-letter">C</div>
+      <div class="cp-item">成都</div>
+      <div class="cp-item">重庆</div>
+      <div class="cp-item">长沙</div>
+      <div class="cp-letter">D</div>
+      <div class="cp-item">大连<span class="cp-check"></span></div>
+      <div class="cp-item">大阪<span class="cp-check">✓</span></div>
+      <div class="cp-letter">G</div>
+      <div class="cp-item">广州</div>
+    </div></div>
+  </div>
+</div></div>
+
+<!-- Sheet: Collaborator -->
+<div class="ph"><div class="sc" style="min-height:580px">
+  <div class="orb" style="width:200px;height:200px;background:rgba(245,210,170,0.10);bottom:10%;right:-8%"></div>
+  <div class="sheet-wrap">
+    <div class="sheet-dim"></div>
+    <div class="gs sheet">
+      <div class="handle"></div>
+      <div class="sh-head"><div class="sh-title">协作者管理</div><div class="sh-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div></div>
+      <div style="padding:10px 14px;border-radius:var(--pill);border:1px solid rgba(28,28,30,0.10);text-align:center;font-size:13px;color:var(--ink2);margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg> 复制邀请链接</div>
+      <div class="fcard" style="padding:0">
+        <div style="display:flex;align-items:center;padding:10px 14px;gap:10px">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--coral);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px">R</div>
+          <div style="flex:1"><div style="font-size:14px;font-weight:500">Ronny</div><div style="font-size:11px;color:var(--ink3)">@ronny</div></div>
+          <div style="padding:2px 8px;border-radius:var(--pill);background:var(--coral-t);font-size:10px;color:#D4410A">管理者</div>
+        </div>
+        <div class="frow-div"></div>
+        <div style="display:flex;align-items:center;padding:10px 14px;gap:10px">
+          <div style="width:32px;height:32px;border-radius:50%;background:#8C5CF6;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px">L</div>
+          <div style="flex:1"><div style="font-size:14px;font-weight:500">Lisa</div><div style="font-size:11px;color:var(--ink3)">@lisa_travel</div></div>
+          <div style="padding:2px 8px;border-radius:var(--pill);background:rgba(28,28,30,0.06);font-size:10px;color:var(--ink2)">编辑者 ▾</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+</div>
+
+<div class="row">
+
+<!-- Sheet: Quick Time -->
+<div class="ph"><div class="sc" style="min-height:580px">
+  <div class="orb" style="width:200px;height:200px;background:rgba(255,107,61,0.08);top:5%;left:-8%"></div>
+  <div class="sheet-wrap">
+    <div class="sheet-dim"></div>
+    <div class="gs sheet">
+      <div class="handle"></div>
+      <div class="sh-head"><div class="sh-title">修改时间</div><div class="sh-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div></div>
+      <div style="font-size:13px;color:var(--ink2);margin-bottom:10px">一兰拉面 新宿中央东口店</div>
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:6px">选择日期</div>
+      <div style="display:flex;gap:6px;margin-bottom:14px;overflow-x:auto">
+        <div style="width:52px;height:60px;border-radius:12px;background:var(--coral-t);border:1px solid rgba(255,107,61,0.18);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0"><div style="font-size:10px;color:#D4410A">DAY</div><div style="font-size:20px;font-weight:300;color:#D4410A">1</div></div>
+        <div style="width:52px;height:60px;border-radius:12px;background:rgba(28,28,30,0.04);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0"><div style="font-size:10px;color:var(--ink3)">DAY</div><div style="font-size:20px;font-weight:300;color:var(--ink3)">2</div></div>
+        <div style="width:52px;height:60px;border-radius:12px;background:rgba(28,28,30,0.04);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0"><div style="font-size:10px;color:var(--ink3)">DAY</div><div style="font-size:20px;font-weight:300;color:var(--ink3)">3</div></div>
+      </div>
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:6px">选择时间</div>
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:14px">
+        <div style="padding:8px 0;text-align:center;border-radius:8px;background:rgba(28,28,30,0.04);font-size:12px;color:var(--ink3)">08</div>
+        <div style="padding:8px 0;text-align:center;border-radius:8px;background:rgba(28,28,30,0.04);font-size:12px;color:var(--ink3)">09</div>
+        <div style="padding:8px 0;text-align:center;border-radius:8px;background:rgba(28,28,30,0.04);font-size:12px;color:var(--ink3)">10</div>
+        <div style="padding:8px 0;text-align:center;border-radius:8px;background:var(--coral-t);font-size:12px;color:#D4410A;font-weight:500">11</div>
+        <div style="padding:8px 0;text-align:center;border-radius:8px;background:rgba(28,28,30,0.04);font-size:12px;color:var(--ink3)">12</div>
+        <div style="padding:8px 0;text-align:center;border-radius:8px;background:rgba(28,28,30,0.04);font-size:12px;color:var(--ink3)">13</div>
+      </div>
+      <div class="cta">确认 11:30 →</div>
+    </div>
+  </div>
+</div></div>
+
+<!-- Sheet: Collect Import -->
+<div class="ph"><div class="sc" style="min-height:580px">
+  <div class="orb" style="width:200px;height:200px;background:rgba(245,210,170,0.10);top:5%;right:-8%"></div>
+  <div class="sheet-wrap">
+    <div class="sheet-dim"></div>
+    <div class="gs sheet">
+      <div class="handle"></div>
+      <div class="sh-head"><div class="sh-title">批量导入</div><div class="sh-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div></div>
+      <div style="font-size:13px;color:var(--ink2);margin-bottom:10px">粘贴大众点评收藏夹的分享链接</div>
+      <div style="padding:10px 12px;border-radius:12px;background:rgba(28,28,30,0.04);min-height:70px;font-size:13px;color:var(--ink3);margin-bottom:14px;border:1px solid rgba(28,28,30,0.06)">https://m.dianping.com/...</div>
+      <div class="cta">开始导入 →</div>
+    </div>
+  </div>
+</div></div>
+
+<!-- Sign In -->
+<div class="ph"><div class="sc" style="display:flex;flex-direction:column;justify-content:center;min-height:640px">
+  <!-- Background photo with warm overlay -->
+  <div style="position:absolute;inset:0;z-index:0">
+    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80" style="width:100%;height:100%;object-fit:cover" alt="">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(242,237,232,0.45) 0%, rgba(242,237,232,0.30) 30%, rgba(242,237,232,0.40) 60%, rgba(242,237,232,0.80) 100%)"></div>
+    <div style="position:absolute;inset:0;backdrop-filter:blur(2px) saturate(1.2);-webkit-backdrop-filter:blur(2px) saturate(1.2)"></div>
+  </div>
+  <div class="orb" style="width:300px;height:300px;background:rgba(255,107,61,0.12);top:-10%;right:-15%"></div>
+  <div class="orb" style="width:220px;height:220px;background:rgba(245,210,170,0.15);bottom:10%;left:-10%"></div>
+  <div style="padding:0 24px;position:relative;z-index:1">
+    <div style="font-size:34px;font-weight:200;margin-bottom:4px">小肥路书</div>
+    <div style="font-size:14px;color:var(--ink2);margin-bottom:28px">登录你的旅行计划</div>
+    <div class="g" style="padding:20px;margin-bottom:16px">
+      <div style="position:relative;z-index:1">
+        <div style="font-size:12px;color:var(--ink3);margin-bottom:6px">用户名</div>
+        <div style="padding:10px 12px;border-radius:12px;background:rgba(255,255,255,0.45);border:1px solid rgba(255,255,255,0.60);font-size:14px;color:var(--ink3);margin-bottom:12px">输入用户名</div>
+        <div style="font-size:12px;color:var(--ink3);margin-bottom:6px">密码</div>
+        <div style="padding:10px 12px;border-radius:12px;background:rgba(255,255,255,0.45);border:1px solid rgba(255,255,255,0.60);font-size:14px;color:var(--ink3);margin-bottom:16px">输入密码</div>
+        <div class="cta">登录 →</div>
+      </div>
+    </div>
+    <div style="text-align:center;font-size:13px;color:var(--ink2)">没有账号？<span style="color:var(--coral);font-weight:500">注册</span></div>
+  </div>
+</div></div>
+
+</div>
+
+</div>
+
+</body>
+</html>
+

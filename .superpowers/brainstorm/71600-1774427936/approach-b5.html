@@ -1,0 +1,221 @@
+<h2>方案 B5 — 缩小截图缩略图 · 导航图标</h2>
+<p class="subtitle">截图缩略图缩小至 36px · 右上角导航图标 · 点击弹出交通方式选择</p>
+
+<div style="display:flex;gap:24px;margin-top:20px;align-items:flex-start;flex-wrap:wrap;justify-content:center">
+
+  <!-- 手机预览 -->
+  <div style="background:#1c1917;border-radius:32px;padding:12px;width:310px;flex-shrink:0;box-shadow:0 8px 32px rgba(0,0,0,0.3)">
+    <div style="background:#FDFAF6;border-radius:22px;overflow:hidden;min-height:620px;display:flex;flex-direction:column">
+
+      <!-- AppBar -->
+      <div style="background:#FDFAF6;padding:12px 14px 8px;border-bottom:1px solid #F0EBE3;display:flex;align-items:center;gap:8px">
+        <div style="font-size:11px;font-weight:700;color:#1C1917;flex:1">日本九州之旅<br><span style="font-size:9px;font-weight:400;color:#A8A29E">福冈 · 长崎 · 熊本</span></div>
+        <div style="display:flex;border:1px solid #F0EBE3;border-radius:8px;overflow:hidden">
+          <div style="padding:4px 6px"><span style="font-size:10px;color:#A8A29E">🗺</span></div>
+          <div style="padding:4px 6px;background:#F97316"><span style="font-size:10px;color:white">☰</span></div>
+        </div>
+      </div>
+
+      <!-- 主体 -->
+      <div style="display:flex;flex:1">
+
+        <!-- 时间轴 -->
+        <div style="flex:1;padding:14px 10px 14px 14px;position:relative">
+          <div style="position:absolute;left:27px;top:14px;bottom:14px;width:2px;background:#F0EBE3;border-radius:1px"></div>
+
+          <!-- ── 站点 1：有封面 + 有截图 ── -->
+          <div style="display:flex;gap:10px;margin-bottom:18px;align-items:flex-start">
+            <div style="flex-shrink:0;width:40px;z-index:1">
+              <div style="width:40px;height:40px;border-radius:10px;overflow:hidden;border:2px solid #FDFAF6;box-shadow:0 0 0 2px #F97316">
+                <div style="width:100%;height:100%;background:linear-gradient(135deg,#FBBF24,#F97316);display:flex;align-items:center;justify-content:center;font-size:18px">⛩️</div>
+              </div>
+            </div>
+            <div style="flex:1;min-width:0;padding-top:2px">
+              <!-- 时间 + 导航图标同行 -->
+              <div style="display:flex;align-items:center;margin-bottom:3px">
+                <span style="font-size:15px;font-weight:700;color:#F97316;line-height:1;flex:1">09:00</span>
+                <!-- 导航图标 -->
+                <div style="width:26px;height:26px;border-radius:8px;background:#FFF7ED;border:1px solid #FED7AA;display:flex;align-items:center;justify-content:center;flex-shrink:0" title="导航">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2L19.5 20L12 16.5L4.5 20L12 2Z" fill="#F97316"/></svg>
+                </div>
+              </div>
+              <div style="font-size:12px;font-weight:700;color:#1C1917;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">太宰府天满宫</div>
+              <div style="font-size:10px;color:#A8A29E;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">福冈县太宰府市宰府4丁目2番地</div>
+              <!-- 截图缩略图 36px -->
+              <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap">
+                <div style="width:36px;height:36px;border-radius:6px;overflow:hidden;flex-shrink:0">
+                  <div style="width:100%;height:100%;background:linear-gradient(135deg,#FDE68A,#F59E0B);display:flex;align-items:center;justify-content:center;font-size:14px">🌸</div>
+                </div>
+                <div style="width:36px;height:36px;border-radius:6px;overflow:hidden;flex-shrink:0">
+                  <div style="width:100%;height:100%;background:linear-gradient(135deg,#BBF7D0,#16A34A);display:flex;align-items:center;justify-content:center;font-size:14px">🎋</div>
+                </div>
+                <div style="width:36px;height:36px;border-radius:6px;overflow:hidden;flex-shrink:0">
+                  <div style="width:100%;height:100%;background:linear-gradient(135deg,#BFDBFE,#3B82F6);display:flex;align-items:center;justify-content:center;font-size:14px">🏯</div>
+                </div>
+                <div style="width:36px;height:36px;border-radius:6px;background:#F0EBE3;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <span style="font-size:10px;font-weight:700;color:#78716C">+2</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── 站点 2：住宿 ── -->
+          <div style="display:flex;gap:10px;margin-bottom:18px;align-items:flex-start">
+            <div style="flex-shrink:0;width:40px;z-index:1">
+              <div style="width:40px;height:40px;border-radius:10px;overflow:hidden;border:2px solid #FDFAF6;box-shadow:0 0 0 2px #8B5CF6">
+                <div style="width:100%;height:100%;background:linear-gradient(135deg,#C4B5FD,#8B5CF6);display:flex;align-items:center;justify-content:center;font-size:18px">🏨</div>
+              </div>
+            </div>
+            <div style="flex:1;min-width:0;padding-top:2px">
+              <div style="display:flex;align-items:center;margin-bottom:3px">
+                <span style="font-size:15px;font-weight:700;color:#8B5CF6;line-height:1;flex:1">住宿</span>
+                <div style="width:26px;height:26px;border-radius:8px;background:#F5F3FF;border:1px solid #DDD6FE;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2L19.5 20L12 16.5L4.5 20L12 2Z" fill="#8B5CF6"/></svg>
+                </div>
+              </div>
+              <div style="font-size:12px;font-weight:700;color:#1C1917;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">博多阿维斯塔酒店</div>
+              <div style="font-size:10px;color:#A8A29E;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">福冈市博多区博多站前3-23</div>
+            </div>
+          </div>
+
+          <!-- ── 站点 3：无封面，有截图 ── -->
+          <div style="display:flex;gap:10px;margin-bottom:18px;align-items:flex-start">
+            <div style="flex-shrink:0;width:40px;z-index:1">
+              <div style="width:40px;height:40px;border-radius:10px;background:#FEE2C8;border:2px solid #FDFAF6;box-shadow:0 0 0 2px #F97316;display:flex;align-items:center;justify-content:center;font-size:18px">📍</div>
+            </div>
+            <div style="flex:1;min-width:0;padding-top:2px">
+              <div style="display:flex;align-items:center;margin-bottom:3px">
+                <span style="font-size:15px;font-weight:700;color:#F97316;line-height:1;flex:1">14:30</span>
+                <div style="width:26px;height:26px;border-radius:8px;background:#FFF7ED;border:1px solid #FED7AA;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2L19.5 20L12 16.5L4.5 20L12 2Z" fill="#F97316"/></svg>
+                </div>
+              </div>
+              <div style="font-size:12px;font-weight:700;color:#1C1917;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">柳川川下り</div>
+              <div style="font-size:10px;color:#A8A29E;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">福冈县柳川市三橋町高畑329-1</div>
+              <div style="display:flex;gap:4px;margin-top:6px">
+                <div style="width:36px;height:36px;border-radius:6px;overflow:hidden;flex-shrink:0">
+                  <div style="width:100%;height:100%;background:linear-gradient(135deg,#BAE6FD,#0284C7);display:flex;align-items:center;justify-content:center;font-size:14px">🚣</div>
+                </div>
+                <div style="width:36px;height:36px;border-radius:6px;overflow:hidden;flex-shrink:0">
+                  <div style="width:100%;height:100%;background:linear-gradient(135deg,#D1FAE5,#059669);display:flex;align-items:center;justify-content:center;font-size:14px">🌿</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── 待规划 ── -->
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <div style="flex-shrink:0;width:40px;z-index:1">
+              <div style="width:40px;height:40px;border-radius:10px;background:#EDE8E3;border:2px solid #FDFAF6;box-shadow:0 0 0 2px #D4C8BF;display:flex;align-items:center;justify-content:center;font-size:18px">📍</div>
+            </div>
+            <div style="flex:1;min-width:0;padding-top:2px">
+              <div style="display:flex;align-items:center;margin-bottom:3px">
+                <span style="font-size:15px;font-weight:700;color:#A8A29E;line-height:1;flex:1">待规划</span>
+                <div style="width:26px;height:26px;border-radius:8px;background:#F5F5F4;border:1px solid #E8E0D8;display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:0.5">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2L19.5 20L12 16.5L4.5 20L12 2Z" fill="#A8A29E"/></svg>
+                </div>
+              </div>
+              <div style="font-size:12px;font-weight:700;color:#78716C;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">柳川温泉旅馆</div>
+              <div style="font-size:10px;color:#A8A29E;margin-top:1px">尚未分配日期</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧天数栏 -->
+        <div style="width:56px;border-left:1px solid #F0EBE3;padding:10px 5px;display:flex;flex-direction:column;gap:5px">
+          <div style="height:58px;border-radius:10px;background:#FFF7ED;border:1px solid #FED7AA;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
+            <span style="font-size:7px;font-weight:600;color:#F97316;letter-spacing:0.5px">DAY</span>
+            <span style="font-size:18px;font-weight:900;color:#F97316;line-height:1">1</span>
+            <span style="font-size:8px;color:#F97316;opacity:0.6">周一</span>
+          </div>
+          <div style="height:58px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
+            <span style="font-size:7px;color:#C4B8B0;letter-spacing:0.5px">DAY</span>
+            <span style="font-size:18px;font-weight:700;color:#C4B8B0;line-height:1">2</span>
+            <span style="font-size:8px;color:#C4B8B0">周二</span>
+          </div>
+          <div style="height:58px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
+            <span style="font-size:7px;color:#C4B8B0;letter-spacing:0.5px">DAY</span>
+            <span style="font-size:18px;font-weight:700;color:#C4B8B0;line-height:1">3</span>
+            <span style="font-size:8px;color:#C4B8B0">周三</span>
+          </div>
+          <div style="height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center">
+            <span style="font-size:7px;font-weight:600;color:#C4B8B0">待规划</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FAB -->
+      <div style="display:flex;justify-content:flex-end;padding:0 14px 14px">
+        <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#F97316,#FBBF24);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(249,115,22,0.4)">
+          <span style="color:white;font-size:22px;line-height:1">+</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右侧：导航弹窗 + 说明 -->
+  <div style="flex:1;min-width:200px;max-width:320px;display:flex;flex-direction:column;gap:16px">
+
+    <!-- 导航交通方式弹窗 -->
+    <div class="section">
+      <div class="label">点击导航图标后 — 交通方式 BottomSheet</div>
+      <div style="margin-top:10px;background:#fff;border-radius:16px;border:1px solid #F0EBE3;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1)">
+        <div style="padding:14px 16px 10px;border-bottom:1px solid #F0EBE3">
+          <div style="font-size:13px;font-weight:700;color:#1C1917">导航至太宰府天满宫</div>
+          <div style="font-size:10px;color:#A8A29E;margin-top:2px">选择出行方式</div>
+        </div>
+        <!-- 5种交通方式 -->
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);padding:12px 8px;gap:4px">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border-radius:10px;background:#FFF7ED;border:1px solid #FED7AA">
+            <span style="font-size:20px">🚗</span>
+            <span style="font-size:9px;font-weight:600;color:#F97316">驾车</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border-radius:10px;background:#F5F5F4">
+            <span style="font-size:20px">🚕</span>
+            <span style="font-size:9px;color:#78716C">打车</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border-radius:10px;background:#F5F5F4">
+            <span style="font-size:20px">🚌</span>
+            <span style="font-size:9px;color:#78716C">公交</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border-radius:10px;background:#F5F5F4">
+            <span style="font-size:20px">🚶</span>
+            <span style="font-size:9px;color:#78716C">步行</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border-radius:10px;background:#F5F5F4">
+            <span style="font-size:20px">🚲</span>
+            <span style="font-size:9px;color:#78716C">骑行</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flutter 导航 URL 规则 -->
+    <div class="section">
+      <div class="label">导航 URL 逻辑（参考 Vue TrafficBtn）</div>
+      <div style="background:#1C1917;border-radius:10px;padding:12px;margin-top:8px;font-size:10px;line-height:1.8;color:#E5E7EB;font-family:monospace">
+        <div style="color:#FBBF24">// coordinate = "lon,lat"</div>
+        <div style="color:#86EFAC;margin-top:4px">iOS:</div>
+        <div style="color:#E5E7EB;padding-left:8px">iosamap://path?dlat={lat}</div>
+        <div style="color:#E5E7EB;padding-left:8px">&dlon={lon}&dname={name}&t={mode}</div>
+        <div style="color:#86EFAC;margin-top:4px">Android:</div>
+        <div style="color:#E5E7EB;padding-left:8px">amapuri://route/plan/?dlat={lat}</div>
+        <div style="color:#E5E7EB;padding-left:8px">&dlon={lon}&dname={name}&t={mode}</div>
+        <div style="color:#FBBF24;margin-top:4px">// mode: car=0, bus=1, walk=2, ride=3</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="label">设计要点</div>
+      <ul style="margin:8px 0 0;padding-left:18px;line-height:2;font-size:13px">
+        <li>截图缩略图缩小至 <b>36×36px</b></li>
+        <li>导航图标（26×26）置于时间行<b>右端</b>，按类型着色</li>
+        <li>点击弹出 BottomSheet，5种交通方式选择</li>
+        <li>选中后用 <code>url_launcher</code> 按平台打开高德</li>
+        <li>待规划行程导航图标<b>半透明禁用</b>（坐标为 0,0）</li>
+      </ul>
+    </div>
+  </div>
+
+</div>

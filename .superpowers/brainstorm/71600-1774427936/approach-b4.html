@@ -1,0 +1,189 @@
+<h2>方案 B4 — 封面图替换圆点 · 无卡片 · 截图缩略图</h2>
+<p class="subtitle">时间轴锚点改为封面图，内容无背景直排，截图行内展示可点击放大</p>
+
+<div style="display:flex;gap:24px;margin-top:20px;align-items:flex-start;flex-wrap:wrap;justify-content:center">
+
+  <!-- 手机预览 -->
+  <div style="background:#1c1917;border-radius:32px;padding:12px;width:310px;flex-shrink:0;box-shadow:0 8px 32px rgba(0,0,0,0.3)">
+    <div style="background:#FDFAF6;border-radius:22px;overflow:hidden;min-height:620px;display:flex;flex-direction:column">
+
+      <!-- AppBar -->
+      <div style="background:#FDFAF6;padding:12px 14px 8px;border-bottom:1px solid #F0EBE3;display:flex;align-items:center;gap:8px">
+        <div style="font-size:11px;font-weight:700;color:#1C1917;flex:1">日本九州之旅<br><span style="font-size:9px;font-weight:400;color:#A8A29E">福冈 · 长崎 · 熊本</span></div>
+        <div style="display:flex;border:1px solid #F0EBE3;border-radius:8px;overflow:hidden">
+          <div style="padding:4px 6px"><span style="font-size:10px;color:#A8A29E">🗺</span></div>
+          <div style="padding:4px 6px;background:#F97316"><span style="font-size:10px;color:white">☰</span></div>
+        </div>
+      </div>
+
+      <!-- 主体 -->
+      <div style="display:flex;flex:1">
+
+        <!-- 时间轴内容区 -->
+        <div style="flex:1;padding:14px 10px 14px 14px;position:relative">
+          <!-- 竖线：从第一个封面图中心穿过 -->
+          <div style="position:absolute;left:27px;top:14px;bottom:14px;width:2px;background:#F0EBE3;border-radius:1px"></div>
+
+          <!-- ── 站点 1：有封面图 + 有截图 ── -->
+          <div style="display:flex;gap:10px;margin-bottom:20px;align-items:flex-start">
+            <!-- 封面图替代圆点（40×40，圆角，盖在竖线上） -->
+            <div style="flex-shrink:0;width:40px;z-index:1">
+              <div style="width:40px;height:40px;border-radius:10px;overflow:hidden;border:2px solid #FDFAF6;box-shadow:0 0 0 2px #F97316">
+                <div style="width:100%;height:100%;background:linear-gradient(135deg,#FBBF24,#F97316);display:flex;align-items:center;justify-content:center;font-size:18px">⛩️</div>
+              </div>
+            </div>
+            <!-- 内容（无卡片背景） -->
+            <div style="flex:1;min-width:0;padding-top:2px">
+              <div style="font-size:15px;font-weight:700;color:#F97316;line-height:1;margin-bottom:4px">09:00</div>
+              <div style="font-size:12px;font-weight:700;color:#1C1917;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">太宰府天满宫</div>
+              <div style="font-size:10px;color:#A8A29E;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">福冈县太宰府市宰府4丁目2番地</div>
+              <!-- 截图缩略图 -->
+              <div style="display:flex;gap:5px;margin-top:7px">
+                <div style="width:46px;height:46px;border-radius:7px;overflow:hidden;flex-shrink:0;cursor:pointer">
+                  <div style="width:100%;height:100%;background:linear-gradient(135deg,#FDE68A,#F59E0B);display:flex;align-items:center;justify-content:center;font-size:16px">🌸</div>
+                </div>
+                <div style="width:46px;height:46px;border-radius:7px;overflow:hidden;flex-shrink:0;cursor:pointer">
+                  <div style="width:100%;height:100%;background:linear-gradient(135deg,#BBF7D0,#16A34A);display:flex;align-items:center;justify-content:center;font-size:16px">🎋</div>
+                </div>
+                <div style="width:46px;height:46px;border-radius:7px;overflow:hidden;flex-shrink:0;cursor:pointer">
+                  <div style="width:100%;height:100%;background:linear-gradient(135deg,#BFDBFE,#3B82F6);display:flex;align-items:center;justify-content:center;font-size:16px">🏯</div>
+                </div>
+                <!-- +N 溢出 -->
+                <div style="width:46px;height:46px;border-radius:7px;background:#F0EBE3;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <span style="font-size:11px;font-weight:700;color:#78716C">+2</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── 站点 2：住宿，有封面图，无截图 ── -->
+          <div style="display:flex;gap:10px;margin-bottom:20px;align-items:flex-start">
+            <div style="flex-shrink:0;width:40px;z-index:1">
+              <div style="width:40px;height:40px;border-radius:10px;overflow:hidden;border:2px solid #FDFAF6;box-shadow:0 0 0 2px #8B5CF6">
+                <div style="width:100%;height:100%;background:linear-gradient(135deg,#C4B5FD,#8B5CF6);display:flex;align-items:center;justify-content:center;font-size:18px">🏨</div>
+              </div>
+            </div>
+            <div style="flex:1;min-width:0;padding-top:2px">
+              <div style="font-size:15px;font-weight:700;color:#8B5CF6;line-height:1;margin-bottom:4px">住宿</div>
+              <div style="font-size:12px;font-weight:700;color:#1C1917;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">博多阿维斯塔酒店</div>
+              <div style="font-size:10px;color:#A8A29E;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">福冈市博多区博多站前3-23</div>
+            </div>
+          </div>
+
+          <!-- ── 站点 3：无封面图（默认图标），有截图 ── -->
+          <div style="display:flex;gap:10px;margin-bottom:20px;align-items:flex-start">
+            <div style="flex-shrink:0;width:40px;z-index:1">
+              <div style="width:40px;height:40px;border-radius:10px;background:#FEE2C8;border:2px solid #FDFAF6;box-shadow:0 0 0 2px #F97316;display:flex;align-items:center;justify-content:center;font-size:18px">📍</div>
+            </div>
+            <div style="flex:1;min-width:0;padding-top:2px">
+              <div style="font-size:15px;font-weight:700;color:#F97316;line-height:1;margin-bottom:4px">14:30</div>
+              <div style="font-size:12px;font-weight:700;color:#1C1917;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">柳川川下り</div>
+              <div style="font-size:10px;color:#A8A29E;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">福冈县柳川市三橋町高畑329-1</div>
+              <!-- 截图缩略图 2张 -->
+              <div style="display:flex;gap:5px;margin-top:7px">
+                <div style="width:46px;height:46px;border-radius:7px;overflow:hidden;flex-shrink:0">
+                  <div style="width:100%;height:100%;background:linear-gradient(135deg,#BAE6FD,#0284C7);display:flex;align-items:center;justify-content:center;font-size:16px">🚣</div>
+                </div>
+                <div style="width:46px;height:46px;border-radius:7px;overflow:hidden;flex-shrink:0">
+                  <div style="width:100%;height:100%;background:linear-gradient(135deg,#D1FAE5,#059669);display:flex;align-items:center;justify-content:center;font-size:16px">🌿</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── 站点 4：待规划 ── -->
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <div style="flex-shrink:0;width:40px;z-index:1">
+              <div style="width:40px;height:40px;border-radius:10px;background:#EDE8E3;border:2px solid #FDFAF6;box-shadow:0 0 0 2px #D4C8BF;display:flex;align-items:center;justify-content:center;font-size:18px">📍</div>
+            </div>
+            <div style="flex:1;min-width:0;padding-top:2px">
+              <div style="font-size:15px;font-weight:700;color:#A8A29E;line-height:1;margin-bottom:4px">待规划</div>
+              <div style="font-size:12px;font-weight:700;color:#78716C;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">柳川温泉旅馆</div>
+              <div style="font-size:10px;color:#A8A29E;margin-top:1px">尚未分配日期</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧天数栏 -->
+        <div style="width:56px;border-left:1px solid #F0EBE3;padding:10px 5px;display:flex;flex-direction:column;gap:5px">
+          <div style="height:58px;border-radius:10px;background:#FFF7ED;border:1px solid #FED7AA;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
+            <span style="font-size:7px;font-weight:600;color:#F97316;letter-spacing:0.5px;opacity:0.8">DAY</span>
+            <span style="font-size:18px;font-weight:900;color:#F97316;line-height:1">1</span>
+            <span style="font-size:8px;color:#F97316;opacity:0.6">周一</span>
+          </div>
+          <div style="height:58px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
+            <span style="font-size:7px;color:#C4B8B0;letter-spacing:0.5px">DAY</span>
+            <span style="font-size:18px;font-weight:700;color:#C4B8B0;line-height:1">2</span>
+            <span style="font-size:8px;color:#C4B8B0">周二</span>
+          </div>
+          <div style="height:58px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
+            <span style="font-size:7px;color:#C4B8B0;letter-spacing:0.5px">DAY</span>
+            <span style="font-size:18px;font-weight:700;color:#C4B8B0;line-height:1">3</span>
+            <span style="font-size:8px;color:#C4B8B0">周三</span>
+          </div>
+          <div style="height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center">
+            <span style="font-size:7px;font-weight:600;color:#C4B8B0">待规划</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FAB -->
+      <div style="display:flex;justify-content:flex-end;padding:0 14px 14px">
+        <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#F97316,#FBBF24);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(249,115,22,0.4)">
+          <span style="color:white;font-size:22px;line-height:1">+</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 截图查看器示意 -->
+  <div style="flex:1;min-width:220px;max-width:340px;display:flex;flex-direction:column;gap:16px">
+
+    <div class="section">
+      <div class="label">截图全屏查看器（点击缩略图后）</div>
+      <div style="margin-top:10px;background:#111;border-radius:16px;overflow:hidden;position:relative;aspect-ratio:9/16;max-height:340px;display:flex;align-items:center;justify-content:center">
+        <!-- 全屏图片 -->
+        <div style="width:100%;height:100%;background:linear-gradient(135deg,#FDE68A,#F59E0B);display:flex;align-items:center;justify-content:center;font-size:64px">🌸</div>
+        <!-- 左右切换箭头 -->
+        <div style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:32px;height:32px;background:rgba(0,0,0,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:14px">‹</div>
+        <div style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:32px;height:32px;background:rgba(0,0,0,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:14px">›</div>
+        <!-- 标题栏 -->
+        <div style="position:absolute;top:0;left:0;right:0;padding:12px 14px;background:linear-gradient(to bottom,rgba(0,0,0,0.5),transparent);display:flex;align-items:center;gap:8px">
+          <span style="color:white;font-size:16px;cursor:pointer">✕</span>
+          <span style="color:white;font-size:12px;font-weight:600">太宰府天满宫</span>
+          <span style="color:rgba(255,255,255,0.6);font-size:10px;margin-left:auto">1 / 5</span>
+        </div>
+        <!-- 底部缩略图 -->
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:10px;background:linear-gradient(to top,rgba(0,0,0,0.6),transparent);display:flex;gap:5px;justify-content:center">
+          <div style="width:36px;height:36px;border-radius:5px;overflow:hidden;border:2px solid white;flex-shrink:0">
+            <div style="width:100%;height:100%;background:linear-gradient(135deg,#FDE68A,#F59E0B);display:flex;align-items:center;justify-content:center;font-size:14px">🌸</div>
+          </div>
+          <div style="width:36px;height:36px;border-radius:5px;overflow:hidden;border:2px solid transparent;flex-shrink:0;opacity:0.7">
+            <div style="width:100%;height:100%;background:linear-gradient(135deg,#BBF7D0,#16A34A);display:flex;align-items:center;justify-content:center;font-size:14px">🎋</div>
+          </div>
+          <div style="width:36px;height:36px;border-radius:5px;overflow:hidden;border:2px solid transparent;flex-shrink:0;opacity:0.7">
+            <div style="width:100%;height:100%;background:linear-gradient(135deg,#BFDBFE,#3B82F6);display:flex;align-items:center;justify-content:center;font-size:14px">🏯</div>
+          </div>
+          <div style="width:36px;height:36px;border-radius:5px;overflow:hidden;border:2px solid transparent;flex-shrink:0;opacity:0.7">
+            <div style="width:100%;height:100%;background:linear-gradient(135deg,#FCA5A5,#EF4444);display:flex;align-items:center;justify-content:center;font-size:14px">🍜</div>
+          </div>
+          <div style="width:36px;height:36px;border-radius:5px;overflow:hidden;border:2px solid transparent;flex-shrink:0;opacity:0.7">
+            <div style="width:100%;height:100%;background:linear-gradient(135deg,#DDD6FE,#8B5CF6);display:flex;align-items:center;justify-content:center;font-size:14px">⛩️</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="label">设计要点</div>
+      <ul style="margin:8px 0 0;padding-left:18px;line-height:2;font-size:13px">
+        <li><b>封面图替代圆点</b>：40×40 圆角，轮廓色区分类型（橙/紫/灰）</li>
+        <li><b>无卡片背景</b>：时间、名称、地址直接排版在竖线右侧</li>
+        <li><b>截图缩略图</b>：46×46 圆角，超出显示 +N</li>
+        <li><b>全屏查看</b>：黑底全屏，左右箭头 + 底部胶片条，标题+计数</li>
+      </ul>
+    </div>
+  </div>
+
+</div>

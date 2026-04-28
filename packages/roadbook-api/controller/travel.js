@@ -35,7 +35,8 @@ class TravelController {
         endDate: { type: "dateTime", required: true },
         equip: { type: "string", required: false, allowEmpty: true },
         city: { type: "string", required: false, allowEmpty: true },
-        public: { type: "boolean", required: true }
+        public: { type: "boolean", required: true },
+        isAbroad: { type: "boolean", required: false }
       });
       ctx.body = ajaxReturn(await TravelService.save(ctx.state.user.id, ctx.request.body));
     } catch (e) {
@@ -177,14 +178,13 @@ class TravelController {
   async setSchedule(ctx) {
     try {
       let data = ctx.request.body
-      await ctx.verifyParams({
+      // Only validate dateTime fields when non-null; null means "clear the field"
+      const rules = {
         id: "int",
         name: { type: "string", required: false },
         coordinate: { type: "string", required: false },
         address: { type: "string", allowEmpty: true, required: false },
         isHotel: { type: "boolean", required: false },
-        startTime: { type: "dateTime", required: false },
-        endTime: { type: "dateTime", required: false },
         traffic: {
           type: "enum",
           values: ["car", "taxi", "walk", "bus", "train", "ship", "ride", "plane"],
@@ -192,7 +192,10 @@ class TravelController {
         },
         screenshots: { type: "string", allowEmpty: true, required: false },
         notes: { type: "string", allowEmpty: true, required: false },
-      });
+      };
+      if (data.startTime != null) rules.startTime = { type: "dateTime", required: false };
+      if (data.endTime != null) rules.endTime = { type: "dateTime", required: false };
+      await ctx.verifyParams(rules);
       ctx.body = ajaxReturn(
         await ScheduleService.set(ctx.state.user?.id, data)
       );
@@ -215,6 +218,20 @@ class TravelController {
     }
   }
 
+  async discover(ctx) {
+    try {
+      await ctx.verifyParams({
+        page:     { type: 'int', required: false },
+        pageSize: { type: 'int', required: false },
+        city:     { type: 'string', required: false, allowEmpty: true },
+        keyword:  { type: 'string', required: false, allowEmpty: true },
+      });
+      ctx.body = ajaxReturn(await TravelService.discover(ctx.request.body));
+    } catch (e) {
+      ctx.body = ajaxReturn(e, 500);
+    }
+  }
+
   async removeSchedule(ctx) {
     try {
       await ctx.verifyParams({
@@ -232,6 +249,7 @@ class TravelController {
 module.exports = (router) => {
   let route = new Router();
   let controller = new TravelController();
+  route.post("/discover", controller.discover);
   route.post("/page", controller.page);
   route.post("/detail", controller.detail);
   route.post("/save", controller.save);

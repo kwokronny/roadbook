@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>旅程详情页 v6 · 完整卡片</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+    color: rgba(30,36,60,0.92);
+    min-height: 100vh;
+    padding: 32px 24px 48px;
+    background:
+      radial-gradient(ellipse 70% 55% at 15% 25%, rgba(180,210,255,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 65% at 85% 15%, rgba(200,185,255,0.35) 0%, transparent 55%),
+      radial-gradient(ellipse 65% 50% at 65% 85%, rgba(160,230,210,0.3) 0%, transparent 60%),
+      #eef2ff;
+  }
+
+  .page-title { text-align: center; font-size: 28px; font-weight: 300; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .page-sub { text-align: center; font-size: 14px; color: rgba(30,36,60,0.45); margin-bottom: 32px; }
+
+  .phone-center { display: flex; justify-content: center; margin-bottom: 24px; }
+  .phone { width: 375px; border-radius: 40px; overflow: hidden; border: 3px solid rgba(30,36,60,0.08); box-shadow: 0 16px 48px rgba(30,36,60,0.12); }
+  .screen {
+    min-height: 820px; position: relative;
+    background: radial-gradient(ellipse 70% 55% at 15% 25%, rgba(255,180,160,0.30) 0%, transparent 60%), radial-gradient(ellipse 55% 65% at 85% 15%, rgba(200,185,255,0.40) 0%, transparent 55%), radial-gradient(ellipse 65% 50% at 65% 85%, rgba(160,230,210,0.30) 0%, transparent 60%), #f2f0ff;
+  }
+
+  /* AppBar */
+  .appbar { padding: 52px 16px 10px; display: flex; align-items: center; gap: 8px; }
+  .glass-circle {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(255,255,255,0.55); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.85); box-shadow: 0 2px 8px rgba(100,120,200,0.08);
+    display: flex; align-items: center; justify-content: center; font-size: 16px; color: rgba(30,36,60,0.65);
+  }
+  .appbar-info { flex: 1; }
+  .appbar-title { font-size: 18px; font-weight: 500; }
+  .appbar-cities { font-size: 12px; color: rgba(30,36,60,0.40); margin-top: 1px; }
+  .toggle-pill {
+    display: flex; background: rgba(255,255,255,0.55); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.85); border-radius: 100px; padding: 3px; box-shadow: 0 2px 8px rgba(100,120,200,0.08);
+  }
+  .toggle-btn { width: 34px; height: 30px; border-radius: 100px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: rgba(30,36,60,0.35); }
+  .toggle-btn.active { background: rgba(30,36,60,0.88); color: #fff; }
+
+  /* Day Bar */
+  .day-bar { display: flex; gap: 6px; padding: 8px 16px; overflow-x: auto; scrollbar-width: none; }
+  .day-bar::-webkit-scrollbar { display: none; }
+  .day-chip {
+    flex-shrink: 0; padding: 6px 14px; border-radius: 100px;
+    display: flex; flex-direction: column; align-items: center; cursor: pointer; border: 1px solid transparent;
+  }
+  .day-chip.selected {
+    background: rgba(255,255,255,0.60); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-color: rgba(255,255,255,0.90);
+    box-shadow: 0 2px 12px rgba(100,120,180,0.10), inset 0 1px 0 rgba(255,255,255,0.95);
+    position: relative;
+  }
+  .day-chip.selected::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(145deg, rgba(255,255,255,0.50) 0%, transparent 40%); pointer-events: none; }
+  .day-chip .chip-label { font-size: 13px; font-weight: 500; line-height: 1.2; position: relative; z-index: 1; }
+  .day-chip .chip-week { font-size: 10px; font-weight: 400; line-height: 1.2; position: relative; z-index: 1; }
+  .day-chip.selected .chip-label { color: #FF5B2E; }
+  .day-chip.selected .chip-week { color: rgba(255,91,46,0.55); }
+  .day-chip:not(.selected) .chip-label { color: rgba(30,36,60,0.30); }
+  .day-chip:not(.selected) .chip-week { color: rgba(30,36,60,0.22); }
+
+  /* ─── Glass Schedule Card ─── */
+  .timeline { padding: 4px 16px 100px; overflow-y: auto; }
+
+  .sched-card {
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(28px) saturate(2.2); -webkit-backdrop-filter: blur(28px) saturate(2.2);
+    border: 1px solid rgba(255,255,255,0.90);
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(100,120,180,0.10), 0 1px 4px rgba(100,120,180,0.07), inset 0 1px 0 rgba(255,255,255,0.95);
+    margin-bottom: 10px; position: relative; overflow: hidden;
+  }
+  .sched-card::after {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(145deg, rgba(255,255,255,0.50) 0%, transparent 45%); pointer-events: none;
+  }
+  .sched-card.hotel-tint::before {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(135deg, rgba(124,85,240,0.05) 0%, rgba(124,85,240,0.01) 100%); pointer-events: none;
+  }
+
+  /* Upper: main info + action buttons */
+  .sc-upper { padding: 12px; position: relative; z-index: 1; }
+  .sc-row { display: flex; gap: 10px; align-items: flex-start; }
+
+  .sc-cover {
+    width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+  }
+  .sc-cover.hotel { background: rgba(124,85,240,0.10); border: 1px solid rgba(124,85,240,0.18); }
+  .sc-cover.poi { background: rgba(255,91,46,0.08); border: 1px solid rgba(255,91,46,0.12); }
+  .sc-cover.neutral { background: rgba(30,36,60,0.05); border: 1px solid rgba(30,36,60,0.06); }
+
+  .sc-body { flex: 1; min-width: 0; }
+  .sc-time { display: inline-block; padding: 2px 8px; border-radius: 100px; font-size: 11px; font-weight: 500; margin-bottom: 3px; }
+  .sc-time.hotel { background: rgba(124,85,240,0.10); color: #5c38cc; }
+  .sc-time.timed { background: rgba(255,91,46,0.10); color: #c43d15; }
+  .sc-time.unset { background: rgba(30,36,60,0.05); color: rgba(30,36,60,0.40); }
+  .sc-name { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
+  .sc-addr { font-size: 12px; color: rgba(30,36,60,0.40); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* Action row */
+  .sc-actions {
+    display: flex; gap: 6px; margin-top: 8px;
+    align-items: center;
+  }
+  .sc-action-btn {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 4px 10px; border-radius: 100px;
+    font-size: 12px; font-weight: 500;
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid; cursor: pointer;
+  }
+  .sc-action-btn.nav {
+    background: rgba(255,91,46,0.08); border-color: rgba(255,91,46,0.15); color: #c43d15;
+  }
+  .sc-action-btn.nav-hotel {
+    background: rgba(124,85,240,0.08); border-color: rgba(124,85,240,0.15); color: #5c38cc;
+  }
+  .sc-action-btn.more {
+    background: rgba(30,36,60,0.04); border-color: rgba(30,36,60,0.08); color: rgba(30,36,60,0.45);
+  }
+  .sc-action-icon { font-size: 13px; }
+
+  /* Full-width dashed divider */
+  .sc-divider-wrap {
+    position: relative; z-index: 1;
+    height: 1px;
+    background-image: repeating-linear-gradient(to right, rgba(30,36,60,0.10) 0, rgba(30,36,60,0.10) 5px, transparent 5px, transparent 8px);
+  }
+
+  /* Lower: photos + note (tinted bg) */
+  .sc-lower {
+    padding: 10px 12px;
+    background: rgba(30,36,60,0.025);
+    position: relative; z-index: 1;
+    border-radius: 0 0 15px 15px;
+  }
+
+  .sc-photos { display: flex; gap: 4px; }
+  .sc-photo { width: 52px; height: 52px; border-radius: 8px; background: rgba(30,36,60,0.05); border: 1px solid rgba(30,36,60,0.04); }
+  .sc-photo-more {
+    width: 52px; height: 52px; border-radius: 8px; background: rgba(30,36,60,0.04);
+    display: flex; align-items: center; justify-content: center; font-size: 12px; color: rgba(30,36,60,0.35); font-weight: 500;
+  }
+
+  .sc-note { font-size: 12px; color: rgba(30,36,60,0.55); line-height: 1.5; }
+  .sc-note-icon { color: rgba(224,133,0,0.70); margin-right: 4px; }
+
+  .sc-photos + .sc-note { margin-top: 8px; }
+
+  .fab {
+    position: absolute; bottom: 24px; right: 18px;
+    width: 48px; height: 48px; border-radius: 50%;
+    background: #FF5B2E; color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 24px;
+    box-shadow: 0 4px 16px rgba(255,91,46,0.30); z-index: 5;
+  }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">旅程详情页 · Liquid Glass v6</h1>
+<p class="page-sub">虚线到顶 · 截图在备注上方 · 导航+更多按钮</p>
+
+<div class="phone-center">
+  <div class="phone">
+    <div class="screen">
+
+      <div class="appbar">
+        <div class="glass-circle">‹</div>
+        <div class="appbar-info">
+          <div class="appbar-title">东京自由行</div>
+          <div class="appbar-cities">东京 · 大阪</div>
+        </div>
+        <div class="toggle-pill">
+          <div class="toggle-btn active">☰</div>
+          <div class="toggle-btn">🗺</div>
+        </div>
+        <div class="glass-circle" style="font-size:14px;">⋮</div>
+      </div>
+
+      <div class="day-bar">
+        <div class="day-chip selected"><span class="chip-label">Day 1</span><span class="chip-week">周四</span></div>
+        <div class="day-chip"><span class="chip-label">Day 2</span><span class="chip-week">周五</span></div>
+        <div class="day-chip"><span class="chip-label">Day 3</span><span class="chip-week">周六</span></div>
+        <div class="day-chip"><span class="chip-label">Day 4</span><span class="chip-week">周日</span></div>
+        <div class="day-chip"><span class="chip-label">Day 5</span><span class="chip-week">周一</span></div>
+        <div class="day-chip"><span class="chip-label">Day 6</span><span class="chip-week">周二</span></div>
+        <div class="day-chip"><span class="chip-label">Day 7</span><span class="chip-week">周三</span></div>
+        <div class="day-chip"><span class="chip-label">待规划</span></div>
+      </div>
+
+      <div class="timeline">
+
+        <!-- Hotel: upper + nav + more, no lower -->
+        <div class="sched-card hotel-tint">
+          <div class="sc-upper">
+            <div class="sc-row">
+              <div class="sc-cover hotel">🏨</div>
+              <div class="sc-body">
+                <div class="sc-time hotel">入住 15:00</div>
+                <div class="sc-name">新宿格拉斯丽酒店</div>
+                <div class="sc-addr">东京都新宿区歌舞伎町1-19-1</div>
+              </div>
+            </div>
+            <div class="sc-actions">
+              <div class="sc-action-btn nav-hotel"><span class="sc-action-icon">🧭</span>导航</div>
+              <div class="sc-action-btn more"><span class="sc-action-icon">⋯</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- POI with note only -->
+        <div class="sched-card">
+          <div class="sc-upper">
+            <div class="sc-row">
+              <div class="sc-cover poi">🍜</div>
+              <div class="sc-body">
+                <div class="sc-time timed">11:30</div>
+                <div class="sc-name">一兰拉面 新宿中央东口店</div>
+                <div class="sc-addr">东京都新宿区新宿3-34-11</div>
+              </div>
+            </div>
+            <div class="sc-actions">
+              <div class="sc-action-btn nav"><span class="sc-action-icon">🧭</span>导航</div>
+              <div class="sc-action-btn more"><span class="sc-action-icon">⋯</span></div>
+            </div>
+          </div>
+          <div class="sc-divider-wrap"></div>
+          <div class="sc-lower">
+            <div class="sc-note"><span class="sc-note-icon">🗒</span>记得提前在机器点餐，选硬面、浓汤</div>
+          </div>
+        </div>
+
+        <!-- POI with photos only -->
+        <div class="sched-card">
+          <div class="sc-upper">
+            <div class="sc-row">
+              <div class="sc-cover poi">⛩</div>
+              <div class="sc-body">
+                <div class="sc-time timed">14:00</div>
+                <div class="sc-name">明治神宫</div>
+                <div class="sc-addr">东京都涩谷区代代木神园町1-1</div>
+              </div>
+            </div>
+            <div class="sc-actions">
+              <div class="sc-action-btn nav"><span class="sc-action-icon">🧭</span>导航</div>
+              <div class="sc-action-btn more"><span class="sc-action-icon">⋯</span></div>
+            </div>
+          </div>
+          <div class="sc-divider-wrap"></div>
+          <div class="sc-lower">
+            <div class="sc-photos">
+              <div class="sc-photo"></div>
+              <div class="sc-photo"></div>
+              <div class="sc-photo"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- POI: no lower section -->
+        <div class="sched-card">
+          <div class="sc-upper">
+            <div class="sc-row">
+              <div class="sc-cover neutral">🛍</div>
+              <div class="sc-body">
+                <div class="sc-time unset">待规划</div>
+                <div class="sc-name">涩谷 Scramble Square</div>
+                <div class="sc-addr">东京都涩谷区涩谷2-24-12</div>
+              </div>
+            </div>
+            <div class="sc-actions">
+              <div class="sc-action-btn more"><span class="sc-action-icon">⋯</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- POI with photos + note -->
+        <div class="sched-card">
+          <div class="sc-upper">
+            <div class="sc-row">
+              <div class="sc-cover poi">🌸</div>
+              <div class="sc-body">
+                <div class="sc-time timed">17:00</div>
+                <div class="sc-name">目黑川夜樱散步</div>
+                <div class="sc-addr">东京都目黑区目黑川沿线</div>
+              </div>
+            </div>
+            <div class="sc-actions">
+              <div class="sc-action-btn nav"><span class="sc-action-icon">🧭</span>导航</div>
+              <div class="sc-action-btn more"><span class="sc-action-icon">⋯</span></div>
+            </div>
+          </div>
+          <div class="sc-divider-wrap"></div>
+          <div class="sc-lower">
+            <div class="sc-photos">
+              <div class="sc-photo"></div>
+              <div class="sc-photo"></div>
+              <div class="sc-photo-more">+3</div>
+            </div>
+            <div class="sc-note"><span class="sc-note-icon">🗒</span>日落后去最美，带三脚架拍夜景</div>
+          </div>
+        </div>
+
+        <!-- Simple POI -->
+        <div class="sched-card">
+          <div class="sc-upper">
+            <div class="sc-row">
+              <div class="sc-cover poi">🍣</div>
+              <div class="sc-body">
+                <div class="sc-time timed">19:30</div>
+                <div class="sc-name">寿司大 築地本店</div>
+                <div class="sc-addr">东京都中央区築地4-13-9</div>
+              </div>
+            </div>
+            <div class="sc-actions">
+              <div class="sc-action-btn nav"><span class="sc-action-icon">🧭</span>导航</div>
+              <div class="sc-action-btn more"><span class="sc-action-icon">⋯</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="fab">＋</div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

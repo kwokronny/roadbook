@@ -1,0 +1,154 @@
+<h2>暖调手账风 — 编辑面板更新</h2>
+<p class="subtitle">去掉交通方式选择 · 日期改为选择第几天</p>
+
+<div class="section">
+  <div style="display:flex;gap:16px;flex-wrap:wrap">
+
+    <!-- 行程列表页（不变，作参照） -->
+    <div>
+      <div style="font-size:10px;color:#888;margin-bottom:6px;text-align:center">行程列表（不变）</div>
+      <div style="background:#F5EFE6;border-radius:20px;overflow:hidden;width:200px;border:1px solid #d4c4b0;box-shadow:0 4px 20px #3d2b1f18">
+        <div style="background:#fff;padding:9px 12px;border-bottom:1px solid #ede5d8;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:10px;color:#3d2b1f">←</div>
+          <div style="font-size:11px;font-weight:700;color:#3d2b1f">北京三日游</div>
+          <div style="font-size:10px;color:#c4713a">⋯</div>
+        </div>
+        <div style="background:#fff;display:flex;border-bottom:2px solid #ede5d8">
+          <div style="flex:1;padding:6px 0;text-align:center;font-size:9px;color:#a0998f">🗺 地图</div>
+          <div style="flex:1;padding:6px 0;text-align:center;font-size:9px;font-weight:700;color:#c4713a;border-bottom:2px solid #c4713a;margin-bottom:-2px">📋 行程</div>
+        </div>
+        <div style="display:flex;height:250px">
+          <div style="width:34px;background:#fff;border-right:1px solid #ede5d8;padding:8px 3px;display:flex;flex-direction:column;gap:5px;align-items:center">
+            <div style="width:26px;height:26px;background:#C4713A;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff">1</div>
+            <div style="width:26px;height:26px;background:#f5efe6;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#a0998f;border:1px solid #e0d5c5">2</div>
+            <div style="width:26px;height:26px;background:#f5efe6;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#a0998f;border:1px solid #e0d5c5">3</div>
+            <div style="width:26px;height:26px;background:#f5efe6;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#a0998f;border:1px dashed #c4b49e">?</div>
+          </div>
+          <div style="flex:1;padding:7px;display:flex;flex-direction:column;gap:5px">
+            <div style="font-size:8px;color:#a0998f">10月1日 · 周三</div>
+            <div style="background:#fff;border-radius:9px;padding:8px;border:1px solid #ede5d8">
+              <div style="display:flex;align-items:center;gap:5px">
+                <div style="width:22px;height:22px;border-radius:5px;background:#fff3e8;display:flex;align-items:center;justify-content:center;font-size:9px">📍</div>
+                <div>
+                  <div style="font-size:9px;font-weight:600;color:#3d2b1f">故宫博物院</div>
+                  <div style="font-size:7px;color:#a0998f">09:00 — 12:00</div>
+                </div>
+              </div>
+            </div>
+            <div style="background:#fff;border-radius:9px;padding:8px;border:1px solid #ede5d8">
+              <div style="display:flex;align-items:center;gap:5px">
+                <div style="width:22px;height:22px;border-radius:5px;background:#f0f7f3;display:flex;align-items:center;justify-content:center;font-size:9px">🏨</div>
+                <div>
+                  <div style="font-size:9px;font-weight:600;color:#3d2b1f">北京饭店</div>
+                  <div style="font-size:7px;color:#4a7c59">住宿 · 2晚</div>
+                </div>
+              </div>
+            </div>
+            <div style="background:#fff;border-radius:9px;padding:8px;border:1px solid #ede5d8">
+              <div style="display:flex;align-items:center;gap:5px">
+                <div style="width:22px;height:22px;border-radius:5px;background:#fff3e8;display:flex;align-items:center;justify-content:center;font-size:9px">🍜</div>
+                <div>
+                  <div style="font-size:9px;font-weight:600;color:#3d2b1f">全聚德烤鸭店</div>
+                  <div style="font-size:7px;color:#a0998f">12:30 — 14:00</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 编辑底部面板（更新版） -->
+    <div>
+      <div style="font-size:10px;color:#888;margin-bottom:6px;text-align:center">编辑行程底部面板（更新）</div>
+      <div style="background:#F5EFE6;border-radius:20px;overflow:hidden;width:200px;border:1px solid #d4c4b0;box-shadow:0 4px 20px #3d2b1f18;position:relative">
+        <div style="height:80px;background:#e0d5c5;display:flex;align-items:center;justify-content:center">
+          <div style="font-size:9px;color:#a0998f">行程列表（遮罩中）</div>
+        </div>
+        <!-- Bottom sheet -->
+        <div style="background:#fff;border-radius:16px 16px 0 0;padding:14px 12px 16px;border-top:1px solid #ede5d8">
+          <div style="width:32px;height:3px;background:#ddd;border-radius:2px;margin:0 auto 11px"></div>
+          <div style="font-size:11px;font-weight:700;color:#3d2b1f;margin-bottom:11px">编辑地点</div>
+
+          <!-- 名称 -->
+          <div style="font-size:8px;color:#a0998f;margin-bottom:3px">地点名称</div>
+          <div style="background:#f5efe6;border-radius:8px;padding:7px 9px;margin-bottom:9px;font-size:10px;color:#3d2b1f;border:1px solid #e0d5c5">故宫博物院</div>
+
+          <!-- 备注 -->
+          <div style="font-size:8px;color:#a0998f;margin-bottom:3px">备注</div>
+          <div style="background:#f5efe6;border-radius:8px;padding:7px 9px;margin-bottom:9px;font-size:9px;color:#c4b49e;border:1px solid #e0d5c5;min-height:28px">添加备注...</div>
+
+          <!-- 安排在哪天 -->
+          <div style="font-size:8px;color:#a0998f;margin-bottom:5px">安排在第几天</div>
+          <div style="display:flex;gap:5px;margin-bottom:9px;flex-wrap:wrap">
+            <div style="padding:5px 9px;border-radius:7px;background:#c4713a;font-size:9px;color:#fff;font-weight:600">第1天</div>
+            <div style="padding:5px 9px;border-radius:7px;background:#f5efe6;border:1px solid #e0d5c5;font-size:9px;color:#a0998f">第2天</div>
+            <div style="padding:5px 9px;border-radius:7px;background:#f5efe6;border:1px solid #e0d5c5;font-size:9px;color:#a0998f">第3天</div>
+            <div style="padding:5px 9px;border-radius:7px;background:#f5efe6;border:1px dashed #c4b49e;font-size:9px;color:#c4b49e">待规划</div>
+          </div>
+
+          <!-- 时间（仅非酒店显示） -->
+          <div style="font-size:8px;color:#a0998f;margin-bottom:5px">时间（可选）</div>
+          <div style="display:flex;gap:6px;margin-bottom:12px">
+            <div style="flex:1;background:#f5efe6;border-radius:8px;padding:7px 9px;font-size:10px;color:#3d2b1f;border:1px solid #e0d5c5;text-align:center">09:00</div>
+            <div style="font-size:10px;color:#c4b49e;align-self:center">—</div>
+            <div style="flex:1;background:#f5efe6;border-radius:8px;padding:7px 9px;font-size:10px;color:#3d2b1f;border:1px solid #e0d5c5;text-align:center">12:00</div>
+          </div>
+
+          <!-- 截图（缩略） -->
+          <div style="font-size:8px;color:#a0998f;margin-bottom:5px">截图</div>
+          <div style="display:flex;gap:5px;margin-bottom:12px">
+            <div style="width:36px;height:36px;border-radius:7px;background:#ede5d8;display:flex;align-items:center;justify-content:center;font-size:14px">🖼</div>
+            <div style="width:36px;height:36px;border-radius:7px;background:#f5efe6;border:1.5px dashed #c4b49e;display:flex;align-items:center;justify-content:center;font-size:14px;color:#c4b49e">＋</div>
+          </div>
+
+          <div style="background:#c4713a;border-radius:10px;padding:9px;text-align:center;font-size:11px;font-weight:600;color:#fff">保存</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 酒店编辑面板 -->
+    <div>
+      <div style="font-size:10px;color:#888;margin-bottom:6px;text-align:center">酒店 — 选择入住/退房天</div>
+      <div style="background:#F5EFE6;border-radius:20px;overflow:hidden;width:200px;border:1px solid #d4c4b0;box-shadow:0 4px 20px #3d2b1f18">
+        <div style="height:80px;background:#e0d5c5;display:flex;align-items:center;justify-content:center">
+          <div style="font-size:9px;color:#a0998f">行程列表（遮罩中）</div>
+        </div>
+        <div style="background:#fff;border-radius:16px 16px 0 0;padding:14px 12px 16px;border-top:1px solid #ede5d8">
+          <div style="width:32px;height:3px;background:#ddd;border-radius:2px;margin:0 auto 11px"></div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:11px">
+            <div style="font-size:11px;font-weight:700;color:#3d2b1f">编辑住宿</div>
+            <div style="background:#4a7c5920;border:1px solid #4a7c5960;border-radius:5px;padding:1px 6px;font-size:8px;color:#4a7c59">住宿</div>
+          </div>
+
+          <div style="font-size:8px;color:#a0998f;margin-bottom:3px">住宿名称</div>
+          <div style="background:#f5efe6;border-radius:8px;padding:7px 9px;margin-bottom:9px;font-size:10px;color:#3d2b1f;border:1px solid #e0d5c5">北京饭店</div>
+
+          <div style="font-size:8px;color:#a0998f;margin-bottom:3px">备注</div>
+          <div style="background:#f5efe6;border-radius:8px;padding:7px 9px;margin-bottom:9px;font-size:9px;color:#c4b49e;border:1px solid #e0d5c5;min-height:28px">添加备注...</div>
+
+          <!-- 入住天 -->
+          <div style="font-size:8px;color:#a0998f;margin-bottom:5px">入住</div>
+          <div style="display:flex;gap:5px;margin-bottom:9px">
+            <div style="padding:5px 9px;border-radius:7px;background:#c4713a;font-size:9px;color:#fff;font-weight:600">第1天</div>
+            <div style="padding:5px 9px;border-radius:7px;background:#f5efe6;border:1px solid #e0d5c5;font-size:9px;color:#a0998f">第2天</div>
+            <div style="padding:5px 9px;border-radius:7px;background:#f5efe6;border:1px solid #e0d5c5;font-size:9px;color:#a0998f">第3天</div>
+          </div>
+
+          <!-- 退房天 -->
+          <div style="font-size:8px;color:#a0998f;margin-bottom:5px">退房</div>
+          <div style="display:flex;gap:5px;margin-bottom:12px">
+            <div style="padding:5px 9px;border-radius:7px;background:#f5efe6;border:1px solid #e0d5c5;font-size:9px;color:#a0998f">第1天</div>
+            <div style="padding:5px 9px;border-radius:7px;background:#f5efe6;border:1px solid #e0d5c5;font-size:9px;color:#a0998f">第2天</div>
+            <div style="padding:5px 9px;border-radius:7px;background:#c4713a;font-size:9px;color:#fff;font-weight:600">第3天</div>
+          </div>
+
+          <div style="background:#c4713a;border-radius:10px;padding:9px;text-align:center;font-size:11px;font-weight:600;color:#fff">保存</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<p style="color:#666;font-size:12px;margin-top:8px">普通地点：选第几天 + 可选时间段。酒店：选入住天和退房天（自动计算跨天）。两种均无交通方式选择。</p>

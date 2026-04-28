@@ -1,0 +1,97 @@
+<h2>顶部 Day 选择器</h2>
+<p class="subtitle">切换天数时地图自动显示当天路线和 marker。选一种样式。</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#e8f4e8;padding:12px 12px 0 12px;height:200px;position:relative;overflow:hidden">
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,#e8f4e8,#d4edd4);border-radius:8px 8px 0 0"></div>
+      <!-- Chip selector -->
+      <div style="position:relative;z-index:2;display:flex;gap:6px;flex-wrap:nowrap;overflow:hidden;padding:4px 0 8px">
+        <div style="background:#F97316;color:white;border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(249,115,22,.35)">Day 1</div>
+        <div style="background:white;color:#666;border-radius:20px;padding:5px 14px;font-size:11px;font-weight:500;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.1)">Day 2</div>
+        <div style="background:white;color:#666;border-radius:20px;padding:5px 14px;font-size:11px;font-weight:500;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.1)">Day 3</div>
+        <div style="background:white;color:#666;border-radius:20px;padding:5px 14px;font-size:11px;font-weight:500;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.1)">Day 4</div>
+      </div>
+      <!-- Map area -->
+      <div style="position:relative;z-index:1;flex:1">
+        <svg style="position:absolute;top:0;left:0;width:100%;height:120px" viewBox="0 0 260 120">
+          <path d="M 60 30 Q 100 55 130 70 Q 120 90 115 105" stroke="#F97316" stroke-width="2.5" stroke-dasharray="6,4" fill="none"/>
+        </svg>
+        <div style="position:absolute;top:22px;left:52px;width:22px;height:22px;background:#F97316;border-radius:6px;border:2px solid white;box-shadow:0 2px 5px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;color:white;font-size:9px;font-weight:800">1</div>
+        <div style="position:absolute;top:58px;left:122px;width:22px;height:22px;background:#F97316;border-radius:6px;border:2px solid white;box-shadow:0 2px 5px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;color:white;font-size:9px;font-weight:800">2</div>
+        <div style="position:absolute;top:90px;left:108px;width:22px;height:22px;background:#8B5CF6;border-radius:6px;border:2px solid white;box-shadow:0 2px 5px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;font-size:10px">🏨</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — 胶囊 Chip，悬浮在地图顶部</h3>
+      <p>Day 1 / Day 2 / Day 3... 横向滚动 Chip，当前天高亮橙色。叠加在地图上方，地图空间最大。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#e8f4e8;height:200px;position:relative;overflow:hidden;border-radius:8px 8px 0 0">
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,#e8f4e8,#d4edd4)"></div>
+      <!-- Top bar with date info -->
+      <div style="position:relative;z-index:2;background:white;padding:8px 12px;display:flex;align-items:center;gap:0;box-shadow:0 1px 4px rgba(0,0,0,.08)">
+        <div style="flex:1;text-align:center;padding:4px 0;border-bottom:2.5px solid #F97316">
+          <div style="font-size:10px;font-weight:800;color:#F97316">Day 1</div>
+          <div style="font-size:9px;color:#999;margin-top:1px">3月24日</div>
+        </div>
+        <div style="flex:1;text-align:center;padding:4px 0;border-bottom:2px solid transparent">
+          <div style="font-size:10px;font-weight:600;color:#999">Day 2</div>
+          <div style="font-size:9px;color:#ccc;margin-top:1px">3月25日</div>
+        </div>
+        <div style="flex:1;text-align:center;padding:4px 0;border-bottom:2px solid transparent">
+          <div style="font-size:10px;font-weight:600;color:#999">Day 3</div>
+          <div style="font-size:9px;color:#ccc;margin-top:1px">3月26日</div>
+        </div>
+        <div style="flex:1;text-align:center;padding:4px 0;border-bottom:2px solid transparent">
+          <div style="font-size:10px;font-weight:600;color:#999">Day 4</div>
+          <div style="font-size:9px;color:#ccc;margin-top:1px">3月27日</div>
+        </div>
+      </div>
+      <!-- Map area -->
+      <div style="position:relative;height:150px">
+        <svg style="position:absolute;top:0;left:0;width:100%;height:100%" viewBox="0 0 260 150">
+          <path d="M 60 30 Q 110 65 140 80 Q 130 110 125 135" stroke="#F97316" stroke-width="2.5" stroke-dasharray="6,4" fill="none"/>
+        </svg>
+        <div style="position:absolute;top:22px;left:52px;width:22px;height:22px;background:#F97316;border-radius:6px;border:2px solid white;box-shadow:0 2px 5px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;color:white;font-size:9px;font-weight:800">1</div>
+        <div style="position:absolute;top:68px;left:132px;width:22px;height:22px;background:#F97316;border-radius:6px;border:2px solid white;box-shadow:0 2px 5px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;color:white;font-size:9px;font-weight:800">2</div>
+        <div style="position:absolute;top:118px;left:118px;width:22px;height:22px;background:#8B5CF6;border-radius:6px;border:2px solid white;box-shadow:0 2px 5px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;font-size:10px">🏨</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Tab 栏，显示日期，固定在地图上方</h3>
+      <p>白色背景 Tab 栏，下划线高亮当前天，同时显示具体日期（3月24日）。更正式，占用固定高度，但信息量更多。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#e8f4e8;height:200px;position:relative;overflow:hidden;border-radius:8px 8px 0 0">
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,#e8f4e8,#d4edd4)"></div>
+      <!-- Map only, no top bar -->
+      <!-- Left side day pill -->
+      <div style="position:absolute;top:10px;left:10px;z-index:3;display:flex;flex-direction:column;gap:5px">
+        <div style="background:#F97316;color:white;border-radius:10px;padding:5px 10px;font-size:10px;font-weight:800;box-shadow:0 2px 6px rgba(249,115,22,.4);text-align:center">
+          <div>D1</div>
+        </div>
+        <div style="background:rgba(255,255,255,.85);color:#666;border-radius:10px;padding:5px 10px;font-size:10px;font-weight:600;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.1)">D2</div>
+        <div style="background:rgba(255,255,255,.85);color:#666;border-radius:10px;padding:5px 10px;font-size:10px;font-weight:600;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.1)">D3</div>
+        <div style="background:rgba(255,255,255,.85);color:#666;border-radius:10px;padding:5px 10px;font-size:10px;font-weight:600;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.1)">D4</div>
+      </div>
+      <!-- Map content -->
+      <svg style="position:absolute;top:0;left:0;width:100%;height:100%" viewBox="0 0 260 200">
+        <path d="M 100 50 Q 140 80 160 100 Q 148 130 140 160" stroke="#F97316" stroke-width="2.5" stroke-dasharray="6,4" fill="none"/>
+      </svg>
+      <div style="position:absolute;top:40px;left:92px;width:22px;height:22px;background:#F97316;border-radius:6px;border:2px solid white;box-shadow:0 2px 5px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;color:white;font-size:9px;font-weight:800">1</div>
+      <div style="position:absolute;top:88px;left:152px;width:22px;height:22px;background:#F97316;border-radius:6px;border:2px solid white;box-shadow:0 2px 5px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;color:white;font-size:9px;font-weight:800">2</div>
+      <div style="position:absolute;top:148px;left:132px;width:22px;height:22px;background:#8B5CF6;border-radius:6px;border:2px solid white;box-shadow:0 2px 5px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;font-size:10px">🏨</div>
+    </div>
+    <div class="card-body">
+      <h3>C — 左侧垂直 Day 列表</h3>
+      <p>D1/D2/D3 竖排在地图左侧，像侧边导航。地图可用宽度最大，但纵向占用较多，适合天数少（≤5天）的行程。</p>
+    </div>
+  </div>
+
+</div>

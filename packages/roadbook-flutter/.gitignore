@@ -44,3 +44,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Secrets — do not commit
+.env.json
+ios/Flutter/Secret.xcconfig
+ios/Runner/GoogleService-Info.plist
+android/local.properties
+android/app/google-services.json

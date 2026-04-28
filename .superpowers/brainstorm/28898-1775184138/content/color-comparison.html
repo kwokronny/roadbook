@@ -1,0 +1,465 @@
+<style>
+  :root {
+    --coral: #FF5B2E;
+    --coral-tint: rgba(255,91,46,0.12);
+    --coral-border: rgba(255,91,46,0.25);
+    --coral-text: #c43d15;
+    --blue: #2A7EF5;
+    --blue-tint: rgba(42,126,245,0.10);
+    --blue-border: rgba(42,126,245,0.25);
+    --blue-text: #1a5fc8;
+    --teal: #0AAD88;
+    --pink: #E8387A;
+    --amber: #E08500;
+    --purple: #7C55F0;
+    --g-bg: rgba(255,255,255,0.55);
+    --g-border: rgba(255,255,255,0.90);
+    --g-shadow: 0 4px 24px rgba(100,120,180,0.10), 0 1px 4px rgba(100,120,180,0.07), inset 0 1px 0 rgba(255,255,255,0.95);
+    --text-primary: rgba(30,36,60,0.92);
+    --text-secondary: rgba(30,36,60,0.55);
+    --text-tertiary: rgba(30,36,60,0.35);
+  }
+
+  .phone-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+    margin: 24px 0;
+  }
+
+  .phone-wrapper { text-align: center; }
+  .phone-label-main { font-size: 15px; font-weight: 500; color: var(--text-primary); margin-bottom: 4px; }
+  .phone-label-sub { font-size: 12px; color: var(--text-tertiary); margin-bottom: 12px; }
+
+  .phone {
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+    border-radius: 32px;
+    overflow: hidden;
+    border: 2px solid rgba(30,36,60,0.08);
+    box-shadow: 0 8px 32px rgba(30,36,60,0.10);
+    position: relative;
+  }
+
+  .phone-screen {
+    padding: 20px 14px 16px;
+    min-height: 480px;
+    position: relative;
+  }
+
+  /* Mesh backgrounds */
+  .mesh-coral {
+    background:
+      radial-gradient(ellipse 70% 55% at 15% 25%, rgba(255,180,160,0.45) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 65% at 85% 15%, rgba(255,140,100,0.35) 0%, transparent 55%),
+      radial-gradient(ellipse 65% 50% at 65% 85%, rgba(255,200,180,0.30) 0%, transparent 60%),
+      #faf5f2;
+  }
+  .mesh-blue {
+    background:
+      radial-gradient(ellipse 70% 55% at 15% 25%, rgba(180,210,255,0.55) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 65% at 85% 15%, rgba(200,185,255,0.45) 0%, transparent 55%),
+      radial-gradient(ellipse 65% 50% at 65% 85%, rgba(160,230,210,0.40) 0%, transparent 60%),
+      #eef2ff;
+  }
+  .mesh-mixed {
+    background:
+      radial-gradient(ellipse 70% 55% at 15% 25%, rgba(255,180,160,0.35) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 65% at 85% 15%, rgba(200,185,255,0.40) 0%, transparent 55%),
+      radial-gradient(ellipse 65% 50% at 65% 85%, rgba(160,230,210,0.35) 0%, transparent 60%),
+      #f2f0ff;
+  }
+
+  /* Glass card */
+  .glass-card {
+    background: var(--g-bg);
+    backdrop-filter: blur(28px) saturate(2.2) brightness(1.05);
+    -webkit-backdrop-filter: blur(28px) saturate(2.2) brightness(1.05);
+    border: 1px solid var(--g-border);
+    border-radius: 20px;
+    box-shadow: var(--g-shadow);
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .glass-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(145deg, rgba(255,255,255,0.55) 0%, transparent 45%);
+    pointer-events: none;
+  }
+
+  /* App bar */
+  .app-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding: 0 2px;
+  }
+  .app-title { font-size: 28px; font-weight: 300; letter-spacing: -0.02em; color: var(--text-primary); }
+  .app-bar-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--g-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.85);
+    box-shadow: 0 2px 8px rgba(100,120,200,0.08), inset 0 1px 0 rgba(255,255,255,0.9);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+
+  /* Search bar */
+  .search-bar {
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.80);
+    border-radius: 14px;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: var(--text-tertiary);
+    margin-bottom: 16px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.90), 0 1px 3px rgba(100,120,200,0.06);
+  }
+
+  /* Travel card internals */
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; position: relative; z-index: 1; }
+  .card-title { font-size: 17px; font-weight: 500; color: var(--text-primary); margin-bottom: 2px; }
+  .card-date { font-size: 12px; color: var(--text-tertiary); }
+  .card-cities { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; position: relative; z-index: 1; }
+
+  /* Tags per scheme */
+  .tag {
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid;
+  }
+
+  /* Status badge */
+  .status-badge {
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  /* Scheme A - Coral */
+  .scheme-a .tag { background: var(--coral-tint); border-color: var(--coral-border); color: var(--coral-text); }
+  .scheme-a .status-ongoing { background: rgba(255,91,46,0.14); color: var(--coral-text); }
+  .scheme-a .status-planning { background: rgba(255,91,46,0.08); color: rgba(255,91,46,0.6); }
+  .scheme-a .accent-dot { background: var(--coral); }
+
+  /* Scheme B - Blue */
+  .scheme-b .tag { background: var(--blue-tint); border-color: var(--blue-border); color: var(--blue-text); }
+  .scheme-b .status-ongoing { background: rgba(10,173,136,0.12); color: #0a8a6d; }
+  .scheme-b .status-planning { background: rgba(42,126,245,0.10); color: var(--blue-text); }
+  .scheme-b .accent-dot { background: var(--blue); }
+
+  /* Scheme C - Mixed */
+  .scheme-c .tag-city { background: rgba(124,85,240,0.10); border-color: rgba(124,85,240,0.22); color: #5c38cc; }
+  .scheme-c .tag-city:nth-child(2) { background: rgba(10,173,136,0.10); border-color: rgba(10,173,136,0.22); color: #0a8a6d; }
+  .scheme-c .status-ongoing { background: rgba(10,173,136,0.12); color: #0a8a6d; }
+  .scheme-c .status-planning { background: rgba(42,126,245,0.10); color: var(--blue-text); }
+
+  /* CTA button */
+  .fab {
+    position: absolute;
+    bottom: 80px;
+    right: 18px;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; color: #fff;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    z-index: 2;
+  }
+
+  /* Bottom nav */
+  .bottom-nav {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(40px) saturate(2.2);
+    -webkit-backdrop-filter: blur(40px) saturate(2.2);
+    border-top: 1px solid rgba(255,255,255,0.85);
+    padding: 8px 0 20px;
+    display: flex;
+    justify-content: space-around;
+  }
+  .nav-item { text-align: center; font-size: 10px; color: var(--text-tertiary); }
+  .nav-icon { font-size: 20px; margin-bottom: 2px; }
+
+  /* Avatars */
+  .avatar-stack { display: flex; margin-top: 8px; position: relative; z-index: 1; }
+  .avatar {
+    width: 24px; height: 24px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.8);
+    margin-left: -6px;
+    font-size: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+  }
+  .avatar:first-child { margin-left: 0; }
+
+  /* Dashed divider */
+  .card-divider {
+    border: none;
+    border-top: 1px dashed rgba(30,36,60,0.10);
+    margin: 10px 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+  .card-duration { font-size: 12px; color: var(--text-secondary); }
+
+  @media (max-width: 900px) {
+    .phone-grid { grid-template-columns: 1fr; max-width: 320px; margin: 24px auto; }
+  }
+</style>
+
+<h2>主色调方案对比</h2>
+<p class="subtitle">点击选择你偏好的配色方案</p>
+
+<div class="phone-grid">
+
+  <!-- A: Keep Coral -->
+  <div class="phone-wrapper">
+    <div class="phone-label-main">A · 保留珊瑚橙</div>
+    <div class="phone-label-sub">品牌色不变，玻璃质感加持</div>
+    <div class="option" data-choice="a" onclick="toggleSelect(this)" style="border-radius:32px;padding:0;overflow:hidden;border:2px solid rgba(30,36,60,0.08);">
+      <div class="phone-screen mesh-coral scheme-a">
+        <div class="app-bar">
+          <div class="app-title">旅程</div>
+          <div class="app-bar-btn">＋</div>
+        </div>
+        <div class="search-bar">🔍 搜索旅行计划...</div>
+
+        <div class="glass-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">东京自由行</div>
+              <div class="card-date">04/10 – 04/17</div>
+            </div>
+            <div class="status-badge status-ongoing">进行中</div>
+          </div>
+          <div class="card-cities">
+            <span class="tag">东京</span>
+            <span class="tag">大阪</span>
+          </div>
+          <hr class="card-divider">
+          <div class="card-footer">
+            <div class="avatar-stack">
+              <div class="avatar" style="background:var(--coral);">R</div>
+              <div class="avatar" style="background:#E08500;">L</div>
+            </div>
+            <div class="card-duration">7天</div>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">清迈之旅</div>
+              <div class="card-date">05/01 – 05/05</div>
+            </div>
+            <div class="status-badge status-planning">计划中</div>
+          </div>
+          <div class="card-cities">
+            <span class="tag">清迈</span>
+          </div>
+          <hr class="card-divider">
+          <div class="card-footer">
+            <div class="avatar-stack">
+              <div class="avatar" style="background:var(--coral);">R</div>
+            </div>
+            <div class="card-duration">4天</div>
+          </div>
+        </div>
+
+        <div class="fab" style="background:var(--coral);">＋</div>
+
+        <div class="bottom-nav">
+          <div class="nav-item" style="color:var(--coral);"><div class="nav-icon">🗺</div>旅程</div>
+          <div class="nav-item"><div class="nav-icon">🔍</div>发现</div>
+          <div class="nav-item"><div class="nav-icon">👤</div>我的</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B: Full Blue -->
+  <div class="phone-wrapper">
+    <div class="phone-label-main">B · Sky Blue 全面替换</div>
+    <div class="phone-label-sub">完全融入 Liquid Glass 色彩</div>
+    <div class="option" data-choice="b" onclick="toggleSelect(this)" style="border-radius:32px;padding:0;overflow:hidden;border:2px solid rgba(30,36,60,0.08);">
+      <div class="phone-screen mesh-blue scheme-b">
+        <div class="app-bar">
+          <div class="app-title">旅程</div>
+          <div class="app-bar-btn">＋</div>
+        </div>
+        <div class="search-bar">🔍 搜索旅行计划...</div>
+
+        <div class="glass-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">东京自由行</div>
+              <div class="card-date">04/10 – 04/17</div>
+            </div>
+            <div class="status-badge status-ongoing">进行中</div>
+          </div>
+          <div class="card-cities">
+            <span class="tag">东京</span>
+            <span class="tag">大阪</span>
+          </div>
+          <hr class="card-divider">
+          <div class="card-footer">
+            <div class="avatar-stack">
+              <div class="avatar" style="background:var(--blue);">R</div>
+              <div class="avatar" style="background:var(--purple);">L</div>
+            </div>
+            <div class="card-duration">7天</div>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">清迈之旅</div>
+              <div class="card-date">05/01 – 05/05</div>
+            </div>
+            <div class="status-badge status-planning">计划中</div>
+          </div>
+          <div class="card-cities">
+            <span class="tag">清迈</span>
+          </div>
+          <hr class="card-divider">
+          <div class="card-footer">
+            <div class="avatar-stack">
+              <div class="avatar" style="background:var(--blue);">R</div>
+            </div>
+            <div class="card-duration">4天</div>
+          </div>
+        </div>
+
+        <div class="fab" style="background:rgba(30,36,60,0.88);">＋</div>
+
+        <div class="bottom-nav">
+          <div class="nav-item" style="color:var(--blue);"><div class="nav-icon">🗺</div>旅程</div>
+          <div class="nav-item"><div class="nav-icon">🔍</div>发现</div>
+          <div class="nav-item"><div class="nav-icon">👤</div>我的</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C: Mixed -->
+  <div class="phone-wrapper">
+    <div class="phone-label-main">C · 混合方案</div>
+    <div class="phone-label-sub">珊瑚橙品牌色 + Liquid Glass 色板</div>
+    <div class="option" data-choice="c" onclick="toggleSelect(this)" style="border-radius:32px;padding:0;overflow:hidden;border:2px solid rgba(30,36,60,0.08);">
+      <div class="phone-screen mesh-mixed scheme-c">
+        <div class="app-bar">
+          <div class="app-title">旅程</div>
+          <div class="app-bar-btn">＋</div>
+        </div>
+        <div class="search-bar">🔍 搜索旅行计划...</div>
+
+        <div class="glass-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">东京自由行</div>
+              <div class="card-date">04/10 – 04/17</div>
+            </div>
+            <div class="status-badge status-ongoing">进行中</div>
+          </div>
+          <div class="card-cities">
+            <span class="tag tag-city">东京</span>
+            <span class="tag tag-city">大阪</span>
+          </div>
+          <hr class="card-divider">
+          <div class="card-footer">
+            <div class="avatar-stack">
+              <div class="avatar" style="background:#FF5B2E;">R</div>
+              <div class="avatar" style="background:var(--purple);">L</div>
+            </div>
+            <div class="card-duration">7天</div>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">清迈之旅</div>
+              <div class="card-date">05/01 – 05/05</div>
+            </div>
+            <div class="status-badge status-planning">计划中</div>
+          </div>
+          <div class="card-cities">
+            <span class="tag tag-city">清迈</span>
+          </div>
+          <hr class="card-divider">
+          <div class="card-footer">
+            <div class="avatar-stack">
+              <div class="avatar" style="background:#FF5B2E;">R</div>
+            </div>
+            <div class="card-duration">4天</div>
+          </div>
+        </div>
+
+        <div class="fab" style="background:#FF5B2E;">＋</div>
+
+        <div class="bottom-nav">
+          <div class="nav-item" style="color:#FF5B2E;"><div class="nav-icon">🗺</div>旅程</div>
+          <div class="nav-item"><div class="nav-icon">🔍</div>发现</div>
+          <div class="nav-item"><div class="nav-icon">👤</div>我的</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="section" style="margin-top: 8px;">
+  <div class="label" style="margin-bottom: 8px;">关键差异</div>
+  <table style="width:100%;font-size:13px;color:rgba(30,36,60,0.75);border-collapse:collapse;">
+    <tr style="border-bottom:1px solid rgba(30,36,60,0.06);">
+      <td style="padding:8px 0;font-weight:500;color:rgba(30,36,60,0.92);">背景网格</td>
+      <td style="padding:8px 12px;">暖色珊瑚渐变</td>
+      <td style="padding:8px 12px;">冷色蓝紫绿渐变</td>
+      <td style="padding:8px 12px;">暖冷混合渐变</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(30,36,60,0.06);">
+      <td style="padding:8px 0;font-weight:500;color:rgba(30,36,60,0.92);">城市标签</td>
+      <td style="padding:8px 12px;">统一珊瑚色</td>
+      <td style="padding:8px 12px;">统一蓝色</td>
+      <td style="padding:8px 12px;">多色（紫/绿/粉…）</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(30,36,60,0.06);">
+      <td style="padding:8px 0;font-weight:500;color:rgba(30,36,60,0.92);">CTA/FAB</td>
+      <td style="padding:8px 12px;">珊瑚橙</td>
+      <td style="padding:8px 12px;">深色 dark glass</td>
+      <td style="padding:8px 12px;">珊瑚橙品牌色</td>
+    </tr>
+    <tr>
+      <td style="padding:8px 0;font-weight:500;color:rgba(30,36,60,0.92);">品牌辨识</td>
+      <td style="padding:8px 12px;">最强</td>
+      <td style="padding:8px 12px;">最弱</td>
+      <td style="padding:8px 12px;">中等</td>
+    </tr>
+  </table>
+</div>

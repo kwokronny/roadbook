@@ -1,0 +1,242 @@
+<h2>方案 B7 — 住宿快捷编辑 · 完整 0–23h · 范围选择</h2>
+<p class="subtitle">普通行程 & 住宿均支持快捷时间弹窗，住宿分入住/退房两段选择</p>
+
+<div style="display:flex;gap:20px;margin-top:16px;align-items:flex-start;flex-wrap:wrap;justify-content:center">
+
+  <!-- ══ 普通行程弹窗 ══ -->
+  <div style="flex:1;min-width:240px;max-width:300px">
+    <div class="section">
+      <div class="label">普通行程 — 快捷时间弹窗</div>
+      <div style="margin-top:10px;background:#fff;border-radius:16px;border:1px solid #F0EBE3;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1)">
+        <div style="padding:14px 16px 10px;border-bottom:1px solid #F0EBE3;display:flex;align-items:center">
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#1C1917">修改出发时间</div>
+            <div style="font-size:10px;color:#A8A29E;margin-top:1px">太宰府天满宫</div>
+          </div>
+          <div style="flex:1"></div>
+          <span style="font-size:14px;color:#A8A29E">✕</span>
+        </div>
+        <div style="padding:14px 16px">
+
+          <!-- 出行日（横向滚动） -->
+          <div style="font-size:10px;font-weight:600;color:#A8A29E;margin-bottom:7px;letter-spacing:0.5px">出行日</div>
+          <div style="display:flex;gap:5px;overflow:hidden;margin-bottom:14px">
+            <div style="height:38px;padding:0 10px;border-radius:8px;background:#FFF7ED;border:1px solid #FED7AA;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+              <span style="font-size:7px;font-weight:600;color:#F97316">DAY</span>
+              <span style="font-size:13px;font-weight:800;color:#F97316;line-height:1">1</span>
+            </div>
+            <div style="height:38px;padding:0 10px;border-radius:8px;background:#F5F5F4;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+              <span style="font-size:7px;color:#A8A29E">DAY</span>
+              <span style="font-size:13px;font-weight:700;color:#A8A29E;line-height:1">2</span>
+            </div>
+            <div style="height:38px;padding:0 10px;border-radius:8px;background:#F5F5F4;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+              <span style="font-size:7px;color:#A8A29E">DAY</span>
+              <span style="font-size:13px;font-weight:700;color:#A8A29E;line-height:1">3</span>
+            </div>
+            <div style="height:38px;padding:0 12px;border-radius:8px;background:#F5F5F4;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <span style="font-size:9px;font-weight:600;color:#A8A29E">待规划</span>
+            </div>
+          </div>
+
+          <!-- 小时宫格 0–23，6列，完整24格 -->
+          <div style="font-size:10px;font-weight:600;color:#A8A29E;margin-bottom:7px;letter-spacing:0.5px">出发时间（可选）</div>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:14px">
+            <!-- 0–8 未选 -->
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">0</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">1</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">2</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">3</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">4</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">5</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">6</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">7</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">8</span></div>
+            <!-- 9 = 选中 -->
+            <div style="height:26px;border-radius:5px;background:#FFF7ED;border:1px solid #FED7AA;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;font-weight:700;color:#F97316">9</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">10</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">11</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">12</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">13</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">14</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">15</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">16</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">17</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">18</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">19</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">20</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">21</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">22</span></div>
+            <div style="height:26px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">23</span></div>
+          </div>
+
+          <div style="height:38px;border-radius:10px;background:linear-gradient(135deg,#F97316,#FBBF24);display:flex;align-items:center;justify-content:center">
+            <span style="color:white;font-size:13px;font-weight:700">确认修改</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 住宿弹窗 ══ -->
+  <div style="flex:1;min-width:240px;max-width:300px">
+    <div class="section">
+      <div class="label">住宿 — 快捷时间弹窗（入住 + 退房）</div>
+      <div style="margin-top:10px;background:#fff;border-radius:16px;border:1px solid #F0EBE3;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1)">
+        <div style="padding:14px 16px 10px;border-bottom:1px solid #F0EBE3;display:flex;align-items:center">
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#1C1917">修改住宿时间</div>
+            <div style="font-size:10px;color:#A8A29E;margin-top:1px">博多阿维斯塔酒店</div>
+          </div>
+          <div style="flex:1"></div>
+          <span style="font-size:14px;color:#A8A29E">✕</span>
+        </div>
+        <div style="padding:14px 16px">
+
+          <!-- 周期选择：天范围 -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
+            <span style="font-size:10px;font-weight:600;color:#A8A29E;letter-spacing:0.5px">住宿周期</span>
+            <!-- 当前状态提示，动态切换 -->
+            <span style="font-size:10px;font-weight:600;color:#8B5CF6">点击选择入住日</span>
+          </div>
+          <!-- 天格，range 模式：Day2=入住(选中)，Day3=中间段，Day4=退房(选中) -->
+          <div style="display:flex;gap:5px;overflow:hidden;margin-bottom:14px">
+            <div style="height:38px;padding:0 10px;border-radius:8px;background:#F5F5F4;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+              <span style="font-size:7px;color:#A8A29E">DAY</span>
+              <span style="font-size:13px;font-weight:700;color:#A8A29E;line-height:1">1</span>
+            </div>
+            <!-- 入住 -->
+            <div style="height:38px;padding:0 8px;border-radius:8px;background:#F5F3FF;border:1px solid #8B5CF6;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;position:relative">
+              <span style="font-size:7px;font-weight:600;color:#8B5CF6">DAY</span>
+              <span style="font-size:13px;font-weight:800;color:#8B5CF6;line-height:1">2</span>
+              <span style="position:absolute;bottom:-14px;font-size:8px;color:#8B5CF6;white-space:nowrap">入住</span>
+            </div>
+            <!-- 中间段 -->
+            <div style="height:38px;padding:0 10px;border-radius:8px;background:#F5F3FF;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+              <span style="font-size:7px;color:#8B5CF6;opacity:0.6">DAY</span>
+              <span style="font-size:13px;font-weight:700;color:#8B5CF6;opacity:0.6;line-height:1">3</span>
+            </div>
+            <!-- 退房 -->
+            <div style="height:38px;padding:0 8px;border-radius:8px;background:#F5F3FF;border:1px solid #8B5CF6;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;position:relative">
+              <span style="font-size:7px;font-weight:600;color:#8B5CF6">DAY</span>
+              <span style="font-size:13px;font-weight:800;color:#8B5CF6;line-height:1">4</span>
+              <span style="position:absolute;bottom:-14px;font-size:8px;color:#8B5CF6;white-space:nowrap">退房</span>
+            </div>
+            <div style="height:38px;padding:0 10px;border-radius:8px;background:#F5F5F4;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+              <span style="font-size:7px;color:#A8A29E">DAY</span>
+              <span style="font-size:13px;font-weight:700;color:#A8A29E;line-height:1">5</span>
+            </div>
+          </div>
+
+          <!-- 间距补偿 -->
+          <div style="margin-bottom:10px"></div>
+
+          <!-- 入住时间（小时，0-23） -->
+          <div style="font-size:10px;font-weight:600;color:#A8A29E;margin-bottom:7px;letter-spacing:0.5px">入住时间（可选）</div>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:12px">
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">0</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">1</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">2</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">3</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">4</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">5</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">6</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">7</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">8</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">9</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">10</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">11</span></div>
+            <!-- 12 = 入住默认选中 -->
+            <div style="height:24px;border-radius:5px;background:#F5F3FF;border:1px solid #DDD6FE;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;font-weight:700;color:#8B5CF6">12</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">13</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">14</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">15</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">16</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">17</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">18</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">19</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">20</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">21</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">22</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">23</span></div>
+          </div>
+
+          <!-- 退房时间（小时） -->
+          <div style="font-size:10px;font-weight:600;color:#A8A29E;margin-bottom:7px;letter-spacing:0.5px">退房时间（可选）</div>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:14px">
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">0</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">1</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">2</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">3</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">4</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">5</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">6</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">7</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">8</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">9</span></div>
+            <!-- 10 = 退房默认 -->
+            <div style="height:24px;border-radius:5px;background:#F5F3FF;border:1px solid #DDD6FE;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;font-weight:700;color:#8B5CF6">10</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">11</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">12</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">13</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">14</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">15</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">16</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">17</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">18</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">19</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">20</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">21</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">22</span></div>
+            <div style="height:24px;border-radius:5px;background:#F5F5F4;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#A8A29E">23</span></div>
+          </div>
+
+          <div style="height:38px;border-radius:10px;background:linear-gradient(135deg,#8B5CF6,#A78BFA);display:flex;align-items:center;justify-content:center">
+            <span style="color:white;font-size:13px;font-weight:700">确认修改</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 设计说明 ══ -->
+  <div style="width:100%;max-width:620px">
+    <div class="section">
+      <div class="label">设计说明</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;font-size:13px">
+        <div>
+          <div style="font-weight:600;color:#F97316;margin-bottom:6px">普通行程</div>
+          <ul style="padding-left:16px;line-height:2;margin:0">
+            <li>天格横向滚动（Day1~N + 待规划）</li>
+            <li>小时宫格 0–23，6列，点击可取消（再次点击同格）</li>
+            <li>橙色配色</li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-weight:600;color:#8B5CF6;margin-bottom:6px">住宿</div>
+          <ul style="padding-left:16px;line-height:2;margin:0">
+            <li>天格范围选择：首次点选入住，再次点选退房（复用现有逻辑）</li>
+            <li>入住时间 + 退房时间各一套 0–23 小时宫格</li>
+            <li>紫色配色，确认按钮同步变紫</li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-weight:600;color:#1C1917;margin-bottom:6px">提交逻辑</div>
+          <ul style="padding-left:16px;line-height:2;margin:0">
+            <li>点「确认修改」→ 乐观更新列表时间显示</li>
+            <li>后台 PATCH <code>/api/schedules/:id</code></li>
+            <li>失败时回滚并 SnackBar 提示</li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-weight:600;color:#1C1917;margin-bottom:6px">编辑图标可见性</div>
+          <ul style="padding-left:16px;line-height:2;margin:0">
+            <li>仅 <code>canEdit</code> 权限时显示</li>
+            <li>普通行程 + 住宿均显示</li>
+            <li>待规划行程也支持（弹窗可分配日期）</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
