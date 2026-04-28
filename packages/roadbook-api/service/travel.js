@@ -37,7 +37,6 @@ class TravelService {
           city: t.city,
           startDate: t.startDate,
           endDate: t.endDate,
-          viewCount: t.viewCount,
           owner: t.Users && t.Users[0]
             ? { id: t.Users[0].id, username: t.Users[0].username, name: t.Users[0].name, avatar: t.Users[0].avatar }
             : null,
@@ -88,9 +87,6 @@ class TravelService {
           },
         ],
       })
-      if (travel && travel.public && !uid) {
-        travel.increment('viewCount').catch(() => {});
-      }
       if (travel && (travel.public || (uid && travel.hasUser(uid)))) return travel
       else throw "旅程不存在";
     } catch (e) {
